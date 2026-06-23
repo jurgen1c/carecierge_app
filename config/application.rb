@@ -36,7 +36,22 @@ module CareciergeApp
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    # Don't generate system test files.
-    config.generators.system_tests = nil
+    config.active_record.generate_secure_token_on = :initialize
+
+    config.factory_bot.definition_file_paths = [ Rails.root.join("spec/factories") ]
+
+    config.view_component.generate.parent_class = "ApplicationViewComponent"
+    config.view_component.generate.preview = true
+    config.view_component.generate.preview_path = "spec/components/previews"
+    config.view_component.generate.sidecar = true
+    config.view_component.previews.paths = [ Rails.root.join("spec/components/previews").to_s ]
+
+    config.generators do |generate|
+      generate.orm :active_record, primary_key_type: :uuid
+      generate.test_framework :rspec, fixture: true
+      generate.fixture_replacement :factory_bot, dir: "spec/factories"
+      generate.factory_bot dir: "spec/factories", suffix: "factory"
+      generate.system_tests = nil
+    end
   end
 end

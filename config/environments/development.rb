@@ -25,14 +25,16 @@ Rails.application.configure do
     config.action_controller.perform_caching = false
   end
 
-  # Change to :null_store to avoid any caching.
-  config.cache_store = :memory_store
+  # Use the same database-backed cache store locally that production uses.
+  config.cache_store = :solid_cache_store
+  config.solid_cache.connects_to = { database: { writing: :cache } }
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.delivery_method = :letter_opener_web
 
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false

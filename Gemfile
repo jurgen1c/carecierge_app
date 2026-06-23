@@ -58,3 +58,32 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
+
+gem "rspec-rails", "~> 8.0", groups: [ :development, :test ]
+gem "factory_bot_rails", "~> 6.5", groups: [ :development, :test ]
+gem "faker", "~> 3.8", groups: [ :development, :test ]
+gem "letter_opener_web", "~> 3.0", groups: [ :development, :test ]
+gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]
+
+gem "capybara", "~> 3.40", group: :test
+gem "cuprite", "~> 0.17", group: :test
+gem "simplecov", "~> 0.22.0", group: :test
+
+gem "annotaterb", "~> 4.22", group: :development
+
+gem "devise", "~> 5.0"
+gem "omniauth-google-oauth2", "~> 1.2"
+gem "omniauth-rails_csrf_protection", "~> 2.0"
+gem "pundit", "~> 2.5"
+gem "pagy", "~> 43.5"
+gem "ransack", "~> 4.4"
+gem "semantic_logger", "~> 4.18"
+gem "ferrum_pdf", "~> 3.1"
+gem "view_component", "~> 4.12"
+gem "dry-initializer", "~> 3.2"
+gem "dry-monads", "~> 1.10"
+gem "friendly_id", "~> 5.7"
+gem "noticed", "~> 3.0"
+gem "data_migrate", "~> 11.3"
+
+gem "shoulda-matchers", "~> 8.0", group: :test

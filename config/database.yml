@@ -21,8 +21,13 @@ default: &default
 
 
 development:
-  <<: *default
-  database: carecierge_app_development
+  primary: &primary_development
+    <<: *default
+    database: carecierge_app_development
+  cache:
+    <<: *primary_development
+    database: carecierge_app_development_cache
+    migrations_paths: db/cache_migrate
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

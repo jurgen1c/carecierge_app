@@ -37,21 +37,29 @@ module CareciergeApp
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.active_record.generate_secure_token_on = :initialize
+    component_view_path = "app/views/components"
+    config.paths.add component_view_path, autoload: true, eager_load: true
+
 
     config.factory_bot.definition_file_paths = [ Rails.root.join("spec/factories") ]
-
-    config.view_component.generate.parent_class = "ApplicationViewComponent"
-    config.view_component.generate.preview = true
-    config.view_component.generate.preview_path = "spec/components/previews"
-    config.view_component.generate.sidecar = true
-    config.view_component.previews.paths = [ Rails.root.join("spec/components/previews").to_s ]
-
+    
     config.generators do |generate|
       generate.orm :active_record, primary_key_type: :uuid
       generate.test_framework :rspec, fixture: true
       generate.fixture_replacement :factory_bot, dir: "spec/factories"
       generate.factory_bot dir: "spec/factories", suffix: "factory"
       generate.system_tests = nil
+    end
+    
+    config.view_component.tap do |comp_config|
+      comp_config.generate.sidecar = true
+      comp_config.generate.preview_path = "spec/components/previews"
+      comp_config.generate.preview = true
+      comp_config.view_component_path = component_view_path
+      comp_config.generate.path = component_view_path
+      comp_config.parent_class = "ApplicationViewComponent"
+      comp_config.generate.use_component_path_for_rspec_tests = true
+      comp_config.previews.paths = [ Rails.root.join("spec/components/previews").to_s ]
     end
   end
 end

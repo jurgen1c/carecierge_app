@@ -37,6 +37,15 @@ RSpec.describe FeatureFlag, type: :model do
       expect(described_class.enabled?("calendar_integration", environment: "production")).to be(false)
     end
 
+    it "allows an account assignment to enable a disabled flag" do
+      account = Struct.new(:id).new(SecureRandom.uuid)
+      flag = create(:feature_flag, key: "marketplace", enabled: false)
+      create(:feature_flag_assignment, feature_flag: flag, target_kind: "account", target_value: account.id, enabled: true)
+
+      expect(described_class.enabled?("marketplace", account:)).to be(true)
+      expect(described_class.enabled?("marketplace", account: Struct.new(:id).new(SecureRandom.uuid))).to be(false)
+    end
+
     it "applies deterministic assignment precedence from user to global" do
       user = create(:user)
       flag = create(:feature_flag, key: "ai_memory_extraction", enabled: false)

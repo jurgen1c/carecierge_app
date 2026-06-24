@@ -1,0 +1,28 @@
+last_updated: "2026-06-24"
+routes:
+  root:
+    controller: "welcome#index"
+    system: authentication
+  dashboard:
+    controller: "dashboard#index"
+    system: authentication
+  new_user_registration:
+    controller: "devise/registrations#new"
+    system: authentication
+  new_user_session:
+    controller: "devise/sessions#new"
+    system: authentication
+models:
+  User:
+    file: "app/models/user.rb"
+    system: authentication
+capabilities:
+  account_registration:
+    route: "new_user_registration"
+    system: authentication
+  account_login:
+    route: "new_user_session"
+    system: authentication
+  account_logout:
+    route: "destroy_user_session"
+    system: authentication

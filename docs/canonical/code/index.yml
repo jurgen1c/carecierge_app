@@ -1,0 +1,9 @@
+last_updated: "2026-06-24"
+domains:
+  authentication:
+    status: implemented
+    readme: "docs/canonical/code/authentication/README.md"
+    systems:
+      - authentication
+    interactions:
+      - user_access_flow

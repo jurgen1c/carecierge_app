@@ -8,7 +8,7 @@ This repository uses an agentic workflow. Agents must produce reviewable artifac
 - **Small, scoped changes**: Prefer incremental diffs over broad refactors.
 - **Deterministic artifacts**: Plans, acceptance criteria, review reports, and canonical patches must be explicit and saved.
 - **Security and tenancy first**: Never leak data across tenants. Assume all inputs are untrusted.
-- **Localization baseline is mandatory**: Always keep both `es` and `en` locales configured; `es` must remain the default locale and `en` must remain available.
+- **Localization baseline is mandatory**: Always keep both `en` and `es` locales configured; `en` must remain the default locale and `es` must remain available.
 
 ### Definition of Done (DoD)
 A task/feature is **Done** only when all are true:
@@ -102,8 +102,8 @@ Use `docs/canonical/templates/system_readme.md` for new system docs.
 ## Localization Policy (Rails I18n)
 - Use Rails standard I18n (`I18n.t` / `t`) for user-facing copy.
 - Keep `config.i18n.available_locales` including both `:es` and `:en`.
-- Keep `config.i18n.default_locale` set to `:es`.
-- Do not remove or regress English support while adding/updating Spanish translations.
+- Keep `config.i18n.default_locale` set to `:en`.
+- Do not remove or regress Spanish support while adding/updating English translations.
 
 ## Data & Performance
 - Any DB migration must be reviewed for:

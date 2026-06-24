@@ -10,7 +10,11 @@ class ApplicationController < ActionController::Base
   protected
 
   def after_sign_in_path_for(_resource)
-    rails_health_check_path
+    dashboard_path
+  end
+
+  def after_sign_out_path_for(_resource_or_scope)
+    root_path
   end
 
   private

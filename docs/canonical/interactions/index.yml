@@ -1,0 +1,26 @@
+last_updated: "2026-06-24"
+interactions:
+  user_access_flow:
+    status: implemented
+    name: "User access flow"
+    systems:
+      - authentication
+    trigger: "A visitor registers, confirms, signs in, or signs out through Devise routes."
+    handoff:
+      - "Registration creates a confirmable User and sends confirmation instructions."
+      - "Successful login redirects to dashboard#index as the onboarding-ready destination."
+      - "Logout redirects to welcome#index."
+    failure_modes:
+      - "Invalid registration input re-renders the registration form with accessible error text."
+      - "Invalid login credentials keep the visitor on the login flow with a recoverable alert."
+      - "Unauthenticated dashboard access redirects to Devise sign-in."
+    source_files:
+      - "app/controllers/application_controller.rb"
+      - "app/controllers/dashboard_controller.rb"
+      - "app/controllers/welcome_controller.rb"
+      - "app/views/devise/registrations/new.html.erb"
+      - "app/views/devise/sessions/new.html.erb"
+      - "config/routes.rb"
+    spec_files:
+      - "spec/system/user_access_flow_spec.rb"
+      - "spec/requests/localization_spec.rb"

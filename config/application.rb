@@ -40,9 +40,11 @@ module CareciergeApp
     component_view_path = "app/views/components"
     config.paths.add component_view_path, autoload: true, eager_load: true
 
+    config.i18n.default_locale = :en
+    config.i18n.available_locales = [ :es, :en ]
 
     config.factory_bot.definition_file_paths = [ Rails.root.join("spec/factories") ]
-    
+
     config.generators do |generate|
       generate.orm :active_record, primary_key_type: :uuid
       generate.test_framework :rspec, fixture: true
@@ -50,14 +52,14 @@ module CareciergeApp
       generate.factory_bot dir: "spec/factories", suffix: "factory"
       generate.system_tests = nil
     end
-    
+
     config.view_component.tap do |comp_config|
       comp_config.generate.sidecar = true
       comp_config.generate.preview_path = "spec/components/previews"
       comp_config.generate.preview = true
       comp_config.view_component_path = component_view_path
       comp_config.generate.path = component_view_path
-      comp_config.parent_class = "ApplicationViewComponent"
+      comp_config.generate.parent_class = "ApplicationViewComponent"
       comp_config.generate.use_component_path_for_rspec_tests = true
       comp_config.previews.paths = [ Rails.root.join("spec/components/previews").to_s ]
     end

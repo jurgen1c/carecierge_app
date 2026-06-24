@@ -7,3 +7,11 @@ domains:
       - authentication
     interactions:
       - user_access_flow
+  feature_flags:
+    status: implemented
+    readme: "docs/canonical/code/feature_flags/README.md"
+    systems:
+      - feature_flags
+    interactions:
+      - feature_flag_decision_flow
+      - feature_flag_admin_visibility

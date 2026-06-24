@@ -24,3 +24,46 @@ interactions:
     spec_files:
       - "spec/system/user_access_flow_spec.rb"
       - "spec/requests/localization_spec.rb"
+  feature_flag_decision_flow:
+    status: implemented
+    name: "Feature flag decision flow"
+    systems:
+      - feature_flags
+    trigger: "Application code asks whether a named feature flag is enabled for a request context."
+    handoff:
+      - "FeatureFlag.enabled? finds the normalized flag key and builds an explicit context from user, account, segment, rollout group, and environment inputs."
+      - "FeatureFlagAssignment matches the context using deterministic precedence: user, account, segment, rollout group, environment, then global."
+      - "Retired flags always resolve disabled so cleanup candidates cannot accidentally protect live behavior."
+    failure_modes:
+      - "Unknown flags resolve disabled."
+      - "No matching targeted assignment falls back to the flag default."
+      - "Retired flags resolve disabled even when a matching assignment would otherwise enable them."
+    source_files:
+      - "app/models/feature_flag.rb"
+      - "app/models/feature_flag_assignment.rb"
+      - "app/models/feature_flags/context.rb"
+      - "app/models/rollout_group.rb"
+    spec_files:
+      - "spec/models/feature_flag_spec.rb"
+  feature_flag_admin_visibility:
+    status: implemented
+    name: "Feature flag admin visibility"
+    systems:
+      - authentication
+      - feature_flags
+    trigger: "An authenticated user requests the admin feature flag registry."
+    handoff:
+      - "Devise authenticates the user before the admin feature flag controller runs."
+      - "FeatureFlagPolicy allows visibility only when the current user is an admin."
+      - "The admin view presents flag state, assignment counts, rollout groups, and retired flag cleanup state with localized copy."
+    failure_modes:
+      - "Unauthenticated users are redirected to Devise sign-in."
+      - "Authenticated non-admin users receive a forbidden response."
+    source_files:
+      - "app/controllers/admin/feature_flags_controller.rb"
+      - "app/models/user.rb"
+      - "app/policies/feature_flag_policy.rb"
+      - "app/views/admin/feature_flags/index.html.erb"
+      - "config/routes.rb"
+    spec_files:
+      - "spec/requests/admin_feature_flags_spec.rb"

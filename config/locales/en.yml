@@ -30,7 +30,24 @@
 en:
   activerecord:
     attributes:
+      feature_flag:
+        description: "Description"
+        enabled: "Enabled"
+        key: "Key"
+        name: "Name"
+        retired_at: "Retired at"
+      feature_flag_assignment:
+        enabled: "Enabled"
+        target_kind: "Target type"
+        target_value: "Target"
+      rollout_group:
+        criteria: "Criteria"
+        description: "Description"
+        key: "Key"
+        name: "Name"
+        retired_at: "Retired at"
       user:
+        admin: "Admin"
         email: "Email"
         password: "Password"
         password_confirmation: "Confirm password"
@@ -65,6 +82,40 @@ en:
       important_dates_body: "Capture birthdays, anniversaries, and moments you want to remember before they become urgent."
       privacy_title: "Private by default"
       privacy_body: "Carecierge keeps relationship setup inside your account and prepares future approval paths before automation."
+  admin:
+    feature_flags:
+      index:
+        title: "Feature flags"
+        kicker: "Operations"
+        heading: "Feature flags"
+        body: "Review staged rollout controls for sensitive AI, automation, integration, and marketplace behavior before those capabilities reach broader audiences."
+        admin_only: "Admin access only"
+        flags_title: "Flag registry"
+        flags_body: "Defaults and targeted assignments are deterministic so rollout decisions can be tested and explained."
+        flags_count:
+          one: "1 flag"
+          other: "%{count} flags"
+        flag: "Flag"
+        state: "State"
+        assignments: "Assignments"
+        cleanup: "Cleanup"
+        states:
+          enabled: "Enabled"
+          disabled: "Disabled"
+          retired: "Retired"
+        assignment_count:
+          one: "1 assignment"
+          other: "%{count} assignments"
+        retired_at: "Retired %{date}"
+        not_retired: "Not retired"
+        empty_title: "No feature flags yet"
+        empty_body: "Create flags before introducing experimental behavior so new capabilities can be protected from their first release."
+        rollout_groups_title: "Rollout groups"
+        rollout_groups_body: "Groups make cohort-based decisions visible without relying on hidden code paths."
+        rollout_groups_count:
+          one: "1 group"
+          other: "%{count} groups"
+        rollout_groups_empty: "No rollout groups have been defined yet."
   devise:
     forms:
       errors:

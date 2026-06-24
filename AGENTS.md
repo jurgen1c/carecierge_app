@@ -8,7 +8,7 @@ This repository uses an agentic workflow. Agents must produce reviewable artifac
 - **Small, scoped changes**: Prefer incremental diffs over broad refactors.
 - **Deterministic artifacts**: Plans, acceptance criteria, review reports, and canonical patches must be explicit and saved.
 - **Security and tenancy first**: Never leak data across tenants. Assume all inputs are untrusted.
-- **Localization baseline is mandatory**: Always keep both `es` and `en` locales configured; `es` must remain the default locale and `en` must remain available.
+- **Localization baseline is mandatory**: Always keep both `en` and `es` locales configured; `en` must remain the default locale and `es` must remain available.
 
 ### Definition of Done (DoD)
 A task/feature is **Done** only when all are true:
@@ -74,20 +74,25 @@ Use `docs/canonical/templates/system_readme.md` for new system docs.
 - UI should use the canonical design system (tokens, components, patterns).
 - **Must adhere to `STYLE_GUIDE.md` (e.g., no inline styles).**
 - Agents must treat `STYLE_GUIDE.md` as the first-stop style authority for UI changes; follow linked docs from there for implementation details (for example, component styling workflows like `StyleVariants`).
-- Agents must also use the project design context:
+- Before planning or implementing frontend/UI changes, agents must read and follow the project design context:
   - `PRODUCT.md` for product/register strategy, users, brand personality, anti-references, design principles, and accessibility baseline.
   - `DESIGN.md` for visual tokens, component rules, elevation, typography, and Do/Don't guardrails.
   - `.impeccable/design.json` as the generated sidecar used by impeccable live/design tooling; regenerate it with `$impeccable document` whenever `DESIGN.md` is regenerated.
 - Use the `$impeccable` skill for frontend design work, including app shells, dashboards, forms, settings, onboarding, empty states, UX copy, responsive behavior, accessibility polish, visual audits, and component extraction. Do not invoke it for backend-only work.
+- When building a new view or substantially new user-facing surface, agents must use `$impeccable craft <surface or feature>` before implementation unless the user has already provided a concrete design brief with acceptance criteria.
 - If the task is to build or substantially change a UI, prefer `$impeccable shape <surface>` or `$impeccable craft <feature>` before implementation unless the user has already supplied a concrete design brief.
 - If the task is to improve an existing UI, choose the narrowest useful command:
   - `$impeccable critique <surface>` for a scored UX review.
   - `$impeccable audit <surface>` for accessibility, performance, responsive, and technical UI checks.
   - `$impeccable polish <surface>` for pre-ship visual and interaction refinement.
   - `$impeccable layout`, `typeset`, `colorize`, `clarify`, `adapt`, `harden`, or `onboard` when the weakness is specific.
-- For visual-system changes, update `STYLE_GUIDE.md`, `DESIGN.md`, and `.impeccable/design.json` together when applicable. Preserve Facturi's current product register and "Quiet Ledger" / "Ledger Emerald" direction unless the user explicitly asks for a redesign.
+- For visual-system changes, update `STYLE_GUIDE.md`, `DESIGN.md`, and `.impeccable/design.json` together when applicable. Preserve Carecierge's `PRODUCT.md` positioning and `DESIGN.md` direction unless the user explicitly asks for a redesign.
 - `$impeccable live` is available for browser-based visual iteration; live mode is configured through `.impeccable/live/config.json`.
-- Prefer ViewComponent + Lookbook previews for reusable UI.
+- Reusable UI must use the ViewComponent gem when the element appears in more than one place, carries variants/state, or forms part of the design system. Prefer Lookbook previews and focused component specs for reusable UI.
+- ViewComponents must use `dry-initializer` for options, following the application component base pattern.
+- ViewComponent styles must use `app/helpers/style_variants_helper.rb` for base styles, variants, defaults, and compound variants instead of scattered conditional class strings.
+- Rails views must use ERB templates and Rails view best practices: semantic HTML, Rails helpers, accessible forms, partials for local one-off composition, ViewComponent for reusable composition, Rails I18n for user-facing copy, and no inline styles.
+- ERB templates must render ViewComponents through the `component` helper from `app/helpers/application_helper.rb` rather than manually instantiating component classes inline.
 - UI should be mobile first.
 - Turbo/Stimulus changes must include verification:
   - correct DOM targets
@@ -97,8 +102,8 @@ Use `docs/canonical/templates/system_readme.md` for new system docs.
 ## Localization Policy (Rails I18n)
 - Use Rails standard I18n (`I18n.t` / `t`) for user-facing copy.
 - Keep `config.i18n.available_locales` including both `:es` and `:en`.
-- Keep `config.i18n.default_locale` set to `:es`.
-- Do not remove or regress English support while adding/updating Spanish translations.
+- Keep `config.i18n.default_locale` set to `:en`.
+- Do not remove or regress Spanish support while adding/updating English translations.
 
 ## Data & Performance
 - Any DB migration must be reviewed for:

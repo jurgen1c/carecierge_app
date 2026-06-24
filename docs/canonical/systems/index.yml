@@ -1,0 +1,27 @@
+last_updated: "2026-06-24"
+systems:
+  authentication:
+    status: implemented
+    name: "Authentication"
+    summary: "Devise-backed account registration, login, logout, confirmation, lockout, and Google OAuth account access."
+    owners:
+      - "Application"
+    boundaries:
+      - "Owns user account access and session lifecycle."
+      - "Redirects authenticated users to the onboarding-ready dashboard."
+      - "Does not own relationship profile onboarding beyond the post-login landing surface."
+    source_files:
+      - "app/models/user.rb"
+      - "app/controllers/application_controller.rb"
+      - "app/controllers/dashboard_controller.rb"
+      - "app/controllers/welcome_controller.rb"
+      - "app/controllers/users/omniauth_callbacks_controller.rb"
+      - "app/views/devise/registrations/new.html.erb"
+      - "app/views/devise/sessions/new.html.erb"
+      - "config/routes.rb"
+      - "config/initializers/devise.rb"
+    spec_files:
+      - "spec/system/user_access_flow_spec.rb"
+      - "spec/models/user_spec.rb"
+      - "spec/controllers/users/omniauth_callbacks_controller_spec.rb"
+      - "spec/requests/localization_spec.rb"

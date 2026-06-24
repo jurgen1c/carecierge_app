@@ -1,0 +1,10 @@
+<% if resource.errors.any? %>
+  <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-950" role="alert">
+    <h2 class="text-sm font-semibold"><%= t("devise.forms.errors.heading", count: resource.errors.count) %></h2>
+    <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+      <% resource.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

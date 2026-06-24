@@ -28,4 +28,75 @@
 #       enabled: "ON"
 
 en:
-  hello: "Hello world"
+  activerecord:
+    attributes:
+      user:
+        email: "Email"
+        password: "Password"
+        password_confirmation: "Confirm password"
+  errors:
+    messages:
+      confirmation: "does not match %{attribute}"
+  layouts:
+    application:
+      title: "Carecierge"
+  welcome:
+    index:
+      title: "Carecierge"
+      kicker: "Private relationship care"
+      heading: "Remember what matters, follow through with care."
+      body: "Carecierge helps you keep personal context organized so future reminders, notes, and onboarding can support the relationships you care about."
+      create_account: "Create account"
+      sign_in: "Sign in"
+      panel_title: "Built for a careful first step"
+      private_memory: "Start with a private account before adding relationship details."
+      clear_guidance: "Use familiar sign-in and recovery paths if something goes wrong."
+      onboarding_ready: "Land on a calm dashboard that can grow into onboarding."
+  dashboard:
+    index:
+      title: "Dashboard"
+      kicker: "Carecierge"
+      heading: "Ready to start"
+      body: "Your account is active. The next step is onboarding, where Carecierge will help you add the first relationship context with care."
+      sign_out: "Sign out"
+      relationship_profile_title: "First relationship"
+      relationship_profile_body: "Add the person, context, and relationship type that should anchor your first reminders."
+      important_dates_title: "Important dates"
+      important_dates_body: "Capture birthdays, anniversaries, and moments you want to remember before they become urgent."
+      privacy_title: "Private by default"
+      privacy_body: "Carecierge keeps relationship setup inside your account and prepares future approval paths before automation."
+  devise:
+    forms:
+      errors:
+        heading:
+          one: "We could not create your account"
+          other: "We could not create your account"
+    registrations:
+      new:
+        title: "Create account"
+        kicker: "Start privately"
+        heading: "Create your Carecierge account"
+        body: "Use an email and password to reserve your private workspace. After confirmation, onboarding can help you add relationship context."
+        email: "Email"
+        password: "Password"
+        password_confirmation: "Confirm password"
+        password_hint: "%{count} characters minimum"
+        submit: "Create account"
+        existing_account: "Already have an account?"
+        sign_in: "Sign in"
+    sessions:
+      new:
+        title: "Sign in"
+        kicker: "Welcome back"
+        heading: "Sign in to Carecierge"
+        body: "Return to your private relationship workspace and continue setup when you are ready."
+        email: "Email"
+        password: "Password"
+        remember_me: "Remember me"
+        submit: "Sign in"
+        forgot_password: "Forgot your password?"
+        resend_confirmation: "Resend confirmation instructions"
+        resend_unlock: "Resend unlock instructions"
+        new_account: "New to Carecierge?"
+        create_account: "Create account"
+        sign_in_with_google: "Continue with Google"

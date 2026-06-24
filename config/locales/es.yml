@@ -1,0 +1,77 @@
+es:
+  activerecord:
+    attributes:
+      user:
+        email: "Correo electronico"
+        password: "Contrasena"
+        password_confirmation: "Confirmar contrasena"
+  errors:
+    messages:
+      blank: "no puede estar en blanco"
+      confirmation: "no coincide con %{attribute}"
+      invalid: "no es valido"
+      taken: "ya esta en uso"
+      too_short: "es demasiado corta; minimo %{count} caracteres"
+  devise:
+    forms:
+      errors:
+        heading:
+          one: "No pudimos crear tu cuenta"
+          other: "No pudimos crear tu cuenta"
+    registrations:
+      new:
+        title: "Crear cuenta"
+        kicker: "Empieza en privado"
+        heading: "Crea tu cuenta de Carecierge"
+        body: "Usa un correo y una contrasena para reservar tu espacio privado. Despues de confirmar tu cuenta, el onboarding podra ayudarte a agregar contexto sobre tus relaciones."
+        email: "Correo electronico"
+        password: "Contrasena"
+        password_confirmation: "Confirmar contrasena"
+        password_hint: "%{count} caracteres como minimo"
+        submit: "Crear cuenta"
+        existing_account: "Ya tienes una cuenta?"
+        sign_in: "Iniciar sesion"
+    sessions:
+      new:
+        title: "Iniciar sesion"
+        kicker: "Bienvenido de vuelta"
+        heading: "Inicia sesion en Carecierge"
+        body: "Regresa a tu espacio privado de relaciones y continua la configuracion cuando estes listo."
+        email: "Correo electronico"
+        password: "Contrasena"
+        remember_me: "Recordarme"
+        submit: "Iniciar sesion"
+        forgot_password: "Olvidaste tu contrasena?"
+        resend_confirmation: "Reenviar instrucciones de confirmacion"
+        resend_unlock: "Reenviar instrucciones de desbloqueo"
+        new_account: "Nuevo en Carecierge?"
+        create_account: "Crear cuenta"
+        sign_in_with_google: "Continuar con Google"
+  layouts:
+    application:
+      title: "Carecierge"
+  welcome:
+    index:
+      title: "Carecierge"
+      kicker: "Cuidado privado de relaciones"
+      heading: "Recuerda lo importante y da seguimiento con cuidado."
+      body: "Carecierge te ayuda a organizar contexto personal para que futuros recordatorios, notas y onboarding apoyen las relaciones que te importan."
+      create_account: "Crear cuenta"
+      sign_in: "Iniciar sesion"
+      panel_title: "Construido para un primer paso cuidadoso"
+      private_memory: "Empieza con una cuenta privada antes de agregar detalles de relaciones."
+      clear_guidance: "Usa rutas familiares de inicio de sesion y recuperacion si algo sale mal."
+      onboarding_ready: "Llega a un panel tranquilo que puede crecer hacia onboarding."
+  dashboard:
+    index:
+      title: "Panel"
+      kicker: "Carecierge"
+      heading: "Listo para empezar"
+      body: "Tu cuenta esta activa. El siguiente paso es onboarding, donde Carecierge te ayudara a agregar el primer contexto de relacion con cuidado."
+      sign_out: "Cerrar sesion"
+      relationship_profile_title: "Primera relacion"
+      relationship_profile_body: "Agrega la persona, el contexto y el tipo de relacion que deberian anclar tus primeros recordatorios."
+      important_dates_title: "Fechas importantes"
+      important_dates_body: "Captura cumpleanos, aniversarios y momentos que quieres recordar antes de que se vuelvan urgentes."
+      privacy_title: "Privado por defecto"
+      privacy_body: "Carecierge mantiene la configuracion de relaciones dentro de tu cuenta y prepara futuras rutas de aprobacion antes de la automatizacion."

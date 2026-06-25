@@ -12,6 +12,6 @@
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
-    "@jurgen1c/agent-memory-cli": "^0.1.0"
+    "@jurgen1c/agent-memory-cli": "0.1.0"
   }
 }

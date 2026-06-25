@@ -8,9 +8,13 @@ default_queries:
   - product design source of truth
   - style variants helper
 watched_files:
+  - .github/workflows/ci.yml
   - AGENTS.md
   - PRODUCT.md
   - DESIGN.md
+  - package.json
+  - bun.lock
+  - .tool-versions
   - app/helpers/style_variants_helper.rb
   - .impeccable/live/config.json
 tags:

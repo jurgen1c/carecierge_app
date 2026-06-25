@@ -65,6 +65,26 @@ RSpec.describe FeatureFlag, type: :model do
           environment: "test"
         )
       ).to be(false)
+
+      expect(
+        described_class.enabled?(
+          "ai_memory_extraction",
+          segment: "care_team",
+          rollout_group: "early_access",
+          environment: "test"
+        )
+      ).to be(true)
+
+      expect(
+        described_class.enabled?(
+          "ai_memory_extraction",
+          rollout_group: "early_access",
+          environment: "test"
+        )
+      ).to be(false)
+
+      expect(described_class.enabled?("ai_memory_extraction", environment: "test")).to be(true)
+      expect(described_class.enabled?("ai_memory_extraction", environment: "production")).to be(false)
     end
 
     it "keeps retired flags disabled even when assignments match" do

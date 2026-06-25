@@ -175,5 +175,5 @@ Agents should ask for clarification (via Product Analyst or directly) when:
 Agents must use standard Rails commands, such as:
 - bin/rails db:migrate
 - bin/rails g model <Model Name> <attributes>
-- bin/rails g migraiton  <Migration Name> <attributes>
+- bin/rails g migration <Migration Name> <attributes>
 - bundle exec rspec

@@ -37,4 +37,18 @@ RSpec.describe FeatureFlagAssignment, type: :model do
 
     expect(assignment).to be_valid
   end
+
+  it "validates duplicate targets against target value" do
+    existing = create(:feature_flag_assignment, target_kind: "environment", target_value: "staging")
+    duplicate = build(
+      :feature_flag_assignment,
+      feature_flag: existing.feature_flag,
+      target_kind: existing.target_kind,
+      target_value: existing.target_value
+    )
+
+    expect(duplicate).not_to be_valid
+    expect(duplicate.errors[:target_value]).to include("has already been taken")
+    expect(duplicate.errors[:target_kind]).to be_empty
+  end
 end

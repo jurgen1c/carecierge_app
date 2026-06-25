@@ -33,7 +33,7 @@ class FeatureFlagAssignment < ApplicationRecord
 
   validates :target_kind, presence: true, inclusion: { in: TARGET_KINDS }
   validates :target_value, presence: true
-  validates :target_kind, uniqueness: { scope: [ :feature_flag_id, :target_value ] }
+  validates :target_value, uniqueness: { scope: [ :feature_flag_id, :target_kind ] }
   validate :global_target_value_is_all
 
   def matches?(context)

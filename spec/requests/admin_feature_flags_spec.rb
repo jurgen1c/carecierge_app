@@ -35,5 +35,21 @@ RSpec.describe "Admin feature flags", type: :request do
       expect(response.body).to include("Early access")
       expect(response.body).to include(retired.key)
     end
+
+    it "renders Spanish admin registry copy when Spanish is the active locale" do
+      admin = create(:user, :admin)
+      create(:feature_flag, key: "vendor_discovery", name: "Vendor discovery", enabled: true)
+
+      sign_in admin
+
+      I18n.with_locale(:es) do
+        get admin_feature_flags_path
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Solo acceso administrador")
+      expect(response.body).to include("Registro de flags")
+      expect(response.body).to include("Habilitada")
+    end
   end
 end

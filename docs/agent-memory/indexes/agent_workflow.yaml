@@ -1,0 +1,19 @@
+id: agent_workflow
+name: Agent Workflow
+summary: Repository agent instructions, durable memory workflow, frontend policy, and source-of-truth files for agent behavior.
+claim_globs:
+  - claims/agent_workflow/**/*.md
+default_queries:
+  - agent workflow frontend policy
+  - product design source of truth
+  - style variants helper
+watched_files:
+  - AGENTS.md
+  - PRODUCT.md
+  - DESIGN.md
+  - app/helpers/style_variants_helper.rb
+  - .impeccable/live/config.json
+tags:
+  - agent_workflow
+  - frontend
+  - design-system

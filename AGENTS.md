@@ -1,12 +1,12 @@
 # AGENTS.md
 
 ## Purpose
-This repository uses an agentic workflow. Agents must produce reviewable artifacts, respect ownership boundaries, and avoid unscoped changes. The goal is: predictable diffs, strong tests, and up-to-date canonical documentation.
+This repository uses an agentic workflow. Agents must produce reviewable artifacts, respect ownership boundaries, and avoid unscoped changes. The goal is: predictable diffs, strong tests, and up-to-date agent-readable memory.
 
 ## Global Non-Negotiables
 - **No hallucination**: If information is unknown, say so and propose how to verify.
 - **Small, scoped changes**: Prefer incremental diffs over broad refactors.
-- **Deterministic artifacts**: Plans, acceptance criteria, review reports, and canonical patches must be explicit and saved.
+- **Deterministic artifacts**: Plans, acceptance criteria, review reports, and memory patches must be explicit and saved.
 - **Security and tenancy first**: Never leak data across tenants. Assume all inputs are untrusted.
 - **Localization baseline is mandatory**: Always keep both `en` and `es` locales configured; `en` must remain the default locale and `es` must remain available.
 
@@ -15,49 +15,57 @@ A task/feature is **Done** only when all are true:
 - Acceptance criteria are met (explicitly confirmed).
 - Tests are **green** (unit + integration as required).
 - Reviews are completed and **blockers resolved**.
-- Canonical documentation updates are applied (if required by changes).
-- Canonical indexes remain valid and consistent (`docs/canonical/index.yml`, `systems`, `interactions`, `lookup`).
+- Agent-memory updates are applied when behavior, architecture, workflow, or critical constraints change.
+- Agent-memory artifacts remain valid and consistent (`docs/agent-memory/claims`, `graph`, `indexes`, `recipes`, `waivers`).
 - No unauthorized files were modified (see “Edit boundaries”).
 
 ## Edit Boundaries
 - Engineers may change application code within approved scopes (typically `app/`, `lib/`, `spec/`, `config/`)
 
-## Canonical Knowledge Base
-Canonical documentation lives in:
-- `docs/canonical/`
+## Agent Memory Knowledge Base
+Durable repository knowledge lives in:
+- `docs/agent-memory/`
 
 It must remain:
-- queryable via index routing (`docs/canonical/index.yml` + domain indexes)
+- queryable through `bin/memory context`, `bin/memory query`, `bin/memory show`, and `bin/memory system`
 - versioned and reviewable
 
-### Canonical-First Workflow (Required)
+Generated memory lives in `.agent-memory/` and must not be committed.
+
+### Agent-Memory-First Workflow (Required)
 Before planning or writing code, agents must resolve context in this order:
-1. `docs/canonical/systems/index.yml` (system ownership, boundaries, source-of-truth files, specs)
-2. `docs/canonical/interactions/index.yml` (cross-system flows, handoffs, failure modes)
-3. `docs/canonical/lookup.yml` (route/job/model/capability quick mapping)
-4. Domain docs from `docs/canonical/code/index.yml` and architecture indexes
+1. Run `bin/memory sync` so the generated SQLite cache matches committed memory.
+2. Run `bin/memory context --task "<task>"` before planning non-trivial work.
+3. If files are already known, run `bin/memory context --changed-files <file1> <file2>`.
+4. If working from an existing diff, run `bin/memory context --git-diff`.
+5. Use `bin/memory query`, `bin/memory show`, or `bin/memory system` when more precise claim, graph, recipe, or watched-file context is needed.
 
-Agents must cite the system IDs and interaction IDs they used in their plan/PR notes when the task is non-trivial.
+Agents must cite the relevant memory claim IDs, system IDs, and verification commands they used in their plan/PR notes when the task is non-trivial.
 
-### Canonical Update Rules
-Update canonical docs in the same change when behavior changes.
+### Agent Memory Update Rules
+Update agent memory in the same change when durable repository knowledge changes.
 
 - If a system boundary, interface, auth rule, or dependency changes:
-  - update `docs/canonical/systems/index.yml`
+  - add or update atomic claims under `docs/agent-memory/claims/<system>/`
 - If a trigger/handoff/failure mode between systems changes:
-  - update `docs/canonical/interactions/index.yml`
+  - update graph relationships under `docs/agent-memory/graph/`
 - If route/job/model discoverability changes:
-  - update `docs/canonical/lookup.yml`
+  - update watched files and default queries under `docs/agent-memory/indexes/`
 - If implementation details change:
-  - update corresponding `docs/canonical/code/*/README.md`
+  - update the relevant claim `source_files`, `related_files`, `symbols`, `routes`, and `verification`
+- If a repeatable workflow is discovered:
+  - add or update a recipe under `docs/agent-memory/recipes/`
 
-Use `docs/canonical/templates/system_readme.md` for new system docs.
+Use `bin/memory templates list` and `bin/memory templates show <template>` before creating new memory artifacts.
 
-### Canonical Status and Consistency
-- Status values must be one of: `implemented`, `partial`, `planned`, `deprecated`.
-- `last_updated` fields must be quoted strings (`YYYY-MM-DD`) for deterministic YAML parsing.
-- New interactions must reference valid system IDs from `docs/canonical/systems/index.yml`.
-- Every canonical claim about behavior should map to at least one source file and one spec file.
+### Agent Memory Status and Consistency
+- Claim status values must be one of: `current`, `proposed`, `stale`, `deprecated`, `experimental`, `needs_verification`, `needs_review`, `rejected`.
+- Claim confidence values must be one of: `low`, `medium`, `high`, `verified`.
+- Every durable claim about behavior must map to at least one source file and one verification step.
+- Prefer one atomic claim per file.
+- Keep graph edges referencing valid claim IDs.
+- Keep indexes focused on discoverability: claim globs, default queries, watched files, and tags.
+- Run `bin/memory validate` and `bin/memory sync` before finishing any change that touches memory.
 
 ## Testing Policy (Rails)
 - Backend changes must follow **TDD**: failing test first, then implementation, then green.
@@ -71,13 +79,12 @@ Use `docs/canonical/templates/system_readme.md` for new system docs.
   - broadcasts (if any)
 
 ## Frontend Policy (Rails + Turbo)
-- UI should use the canonical design system (tokens, components, patterns).
-- **Must adhere to `STYLE_GUIDE.md` (e.g., no inline styles).**
-- Agents must treat `STYLE_GUIDE.md` as the first-stop style authority for UI changes; follow linked docs from there for implementation details (for example, component styling workflows like `StyleVariants`).
-- Before planning or implementing frontend/UI changes, agents must read and follow the project design context:
+- UI should use the project design system (tokens, components, patterns).
+- Agents must treat `PRODUCT.md` and `DESIGN.md` as the first-stop style authorities for UI changes:
   - `PRODUCT.md` for product/register strategy, users, brand personality, anti-references, design principles, and accessibility baseline.
   - `DESIGN.md` for visual tokens, component rules, elevation, typography, and Do/Don't guardrails.
-  - `.impeccable/design.json` as the generated sidecar used by impeccable live/design tooling; regenerate it with `$impeccable document` whenever `DESIGN.md` is regenerated.
+- Before planning or implementing frontend/UI changes, agents must read and follow `PRODUCT.md` and `DESIGN.md`.
+- Reusable component styling must use `app/helpers/style_variants_helper.rb` for base classes, variants, defaults, and compound variants. Do not invent scattered conditional class strings when a ViewComponent style variant is appropriate.
 - Use the `$impeccable` skill for frontend design work, including app shells, dashboards, forms, settings, onboarding, empty states, UX copy, responsive behavior, accessibility polish, visual audits, and component extraction. Do not invoke it for backend-only work.
 - When building a new view or substantially new user-facing surface, agents must use `$impeccable craft <surface or feature>` before implementation unless the user has already provided a concrete design brief with acceptance criteria.
 - If the task is to build or substantially change a UI, prefer `$impeccable shape <surface>` or `$impeccable craft <feature>` before implementation unless the user has already supplied a concrete design brief.
@@ -86,7 +93,7 @@ Use `docs/canonical/templates/system_readme.md` for new system docs.
   - `$impeccable audit <surface>` for accessibility, performance, responsive, and technical UI checks.
   - `$impeccable polish <surface>` for pre-ship visual and interaction refinement.
   - `$impeccable layout`, `typeset`, `colorize`, `clarify`, `adapt`, `harden`, or `onboard` when the weakness is specific.
-- For visual-system changes, update `STYLE_GUIDE.md`, `DESIGN.md`, and `.impeccable/design.json` together when applicable. Preserve Carecierge's `PRODUCT.md` positioning and `DESIGN.md` direction unless the user explicitly asks for a redesign.
+- For visual-system changes, update `PRODUCT.md` and `DESIGN.md` together when applicable. If `.impeccable/design.json` is generated in the repo, regenerate it with `$impeccable document` whenever `DESIGN.md` changes. Preserve Carecierge's `PRODUCT.md` positioning and `DESIGN.md` direction unless the user explicitly asks for a redesign.
 - `$impeccable live` is available for browser-based visual iteration; live mode is configured through `.impeccable/live/config.json`.
 - Reusable UI must use the ViewComponent gem when the element appears in more than one place, carries variants/state, or forms part of the design system. Prefer Lookbook previews and focused component specs for reusable UI.
 - ViewComponents must use `dry-initializer` for options, following the application component base pattern.
@@ -145,7 +152,7 @@ Use `docs/canonical/templates/system_readme.md` for new system docs.
 
 ## Documentation & Developer Experience
 - DX Writer: maintains developer-facing docs, runbooks, setup instructions, and "how to test" notes.
-  - DX Writer writes/updates non-canonical documentation directly (e.g., README, runbooks) within scope.
+  - DX Writer writes/updates non-memory documentation directly (e.g., README, runbooks) within scope.
 - Local CI is the source of truth for PR verification:
   - `bin/setup` must configure `core.hooksPath` to `.githooks`.
   - Agents must use normal `git push`; do not use `--no-verify` or `TRAIL_CROWD_AFTER_PUSH_CI=false` unless the user explicitly approves bypassing the after-push local CI queue.
@@ -165,7 +172,7 @@ Agents should ask for clarification (via Product Analyst or directly) when:
 - the change touches payment, security boundaries, or tenant isolation and requirements are unclear
 
 ## Rails
-Agents must use canonical rails commands, such as:
+Agents must use standard Rails commands, such as:
 - bin/rails db:migrate
 - bin/rails g model <Model Name> <attributes>
 - bin/rails g migraiton  <Migration Name> <attributes>

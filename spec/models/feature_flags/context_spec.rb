@@ -39,5 +39,12 @@ RSpec.describe FeatureFlags::Context do
       expect(context.value_for("rollout_group")).to eq("beta")
       expect(context.value_for("environment")).to be_nil
     end
+
+    it "does not treat objects with keyed lookup methods as zero-arity key accessors" do
+      context = described_class.new(rollout_group: { key: "early_access" })
+
+      expect { context.value_for("rollout_group") }.not_to raise_error
+      expect(context.value_for("rollout_group")).to eq({ key: "early_access" }.to_s)
+    end
   end
 end

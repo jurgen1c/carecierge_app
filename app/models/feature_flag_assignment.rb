@@ -34,6 +34,7 @@ class FeatureFlagAssignment < ApplicationRecord
   validates :target_kind, presence: true, inclusion: { in: TARGET_KINDS }
   validates :target_value, presence: true
   validates :target_kind, uniqueness: { scope: [ :feature_flag_id, :target_value ] }
+  validate :global_target_value_is_all
 
   def matches?(context)
     context.value_for(target_kind) == target_value
@@ -41,5 +42,14 @@ class FeatureFlagAssignment < ApplicationRecord
 
   def precedence
     PRECEDENCE.fetch(target_kind)
+  end
+
+  private
+
+  def global_target_value_is_all
+    return unless target_kind == "global"
+    return if target_value == "all"
+
+    errors.add(:target_value, :invalid, message: "must be all for global assignments")
   end
 end

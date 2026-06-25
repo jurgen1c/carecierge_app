@@ -27,7 +27,7 @@ RSpec.describe FeatureFlagPolicy do
     let(:user) { nil }
 
     it "denies index access and resolves no flags" do
-      expect(policy.index?).to be(false)
+      expect(policy.index?).to be_falsey
       expect(described_class::Scope.new(user, FeatureFlag).resolve).to be_empty
     end
   end

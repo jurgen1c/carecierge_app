@@ -20,6 +20,11 @@ watched_files:
   - config/locales/en.yml
   - config/locales/es.yml
   - config/routes.rb
+  - spec/models/feature_flag_assignment_spec.rb
+  - spec/models/feature_flag_spec.rb
+  - spec/models/feature_flags/context_spec.rb
+  - spec/policies/feature_flag_policy_spec.rb
+  - spec/requests/admin_feature_flags_spec.rb
 tags:
   - feature_flags
   - rollout

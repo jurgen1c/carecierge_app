@@ -28,10 +28,10 @@ RSpec.describe "Admin feature flags", type: :request do
       get admin_feature_flags_path
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Feature flags")
-      expect(response.body).to include("Vendor discovery")
-      expect(response.body).to include("Enabled")
-      expect(response.body).to include("Assignments")
+      expect(response.body).to include(I18n.t("admin.feature_flags.index.title"))
+      expect(response.body).to include(flag.name)
+      expect(response.body).to include(I18n.t("admin.feature_flags.index.states.enabled"))
+      expect(response.body).to include(I18n.t("admin.feature_flags.index.assignments"))
       expect(response.body).to include("Early access")
       expect(response.body).to include(retired.key)
     end
@@ -47,9 +47,9 @@ RSpec.describe "Admin feature flags", type: :request do
       end
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Solo acceso administrador")
-      expect(response.body).to include("Registro de flags")
-      expect(response.body).to include("Habilitada")
+      expect(response.body).to include(I18n.t("admin.feature_flags.index.admin_only", locale: :es))
+      expect(response.body).to include(I18n.t("admin.feature_flags.index.flags_title", locale: :es))
+      expect(response.body).to include(I18n.t("admin.feature_flags.index.states.enabled", locale: :es))
     end
   end
 end

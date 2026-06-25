@@ -16,6 +16,11 @@ edges:
     relation: same_area
     reason: Both claims define feature flag decision semantics and safe fallback behavior.
     strength: 75
+  - source: feature_flags.global_assignment_target
+    target: feature_flags.decision_precedence
+    relation: constrains
+    reason: Global assignments are part of deterministic decision precedence and must use the only value that can match global context.
+    strength: 80
   - source: feature_flags.admin_registry_authorization
     target: authentication.account_access_boundary
     relation: requires

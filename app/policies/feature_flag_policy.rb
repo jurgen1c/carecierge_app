@@ -1,6 +1,6 @@
 class FeatureFlagPolicy < ApplicationPolicy
   def index?
-    user&.admin? || false
+    user&.admin?
   end
 
   class Scope < ApplicationPolicy::Scope

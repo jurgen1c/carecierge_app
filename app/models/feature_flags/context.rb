@@ -32,7 +32,7 @@ module FeatureFlags
     def identifier_for(value)
       return if value.blank?
 
-      if value.respond_to?(:key)
+      if value.respond_to?(:key) && value.method(:key).arity.zero?
         value.key.to_s
       elsif value.respond_to?(:id)
         value.id.to_s

@@ -1,0 +1,22 @@
+id: authentication
+name: Authentication
+summary: Devise-backed account registration, confirmation, login, logout, lockout, recovery, sessions, and Google OAuth account access.
+claim_globs:
+  - claims/authentication/**/*.md
+default_queries:
+  - authentication account access
+  - devise registration login logout dashboard
+  - google oauth user account
+watched_files:
+  - app/models/user.rb
+  - app/controllers/application_controller.rb
+  - app/controllers/dashboard_controller.rb
+  - app/controllers/welcome_controller.rb
+  - app/controllers/users/omniauth_callbacks_controller.rb
+  - app/views/devise/registrations/new.html.erb
+  - app/views/devise/sessions/new.html.erb
+  - config/initializers/devise.rb
+  - config/routes.rb
+tags:
+  - authentication
+  - devise

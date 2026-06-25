@@ -6,6 +6,9 @@ routes:
   dashboard:
     controller: "dashboard#index"
     system: authentication
+  admin_feature_flags:
+    controller: "admin/feature_flags#index"
+    system: feature_flags
   new_user_registration:
     controller: "devise/registrations#new"
     system: authentication
@@ -16,6 +19,18 @@ models:
   User:
     file: "app/models/user.rb"
     system: authentication
+  FeatureFlag:
+    file: "app/models/feature_flag.rb"
+    system: feature_flags
+  FeatureFlagAssignment:
+    file: "app/models/feature_flag_assignment.rb"
+    system: feature_flags
+  FeatureFlagAuditEvent:
+    file: "app/models/feature_flag_audit_event.rb"
+    system: feature_flags
+  RolloutGroup:
+    file: "app/models/rollout_group.rb"
+    system: feature_flags
 capabilities:
   account_registration:
     route: "new_user_registration"
@@ -26,3 +41,9 @@ capabilities:
   account_logout:
     route: "destroy_user_session"
     system: authentication
+  feature_flag_decision:
+    model: "FeatureFlag"
+    system: feature_flags
+  feature_flag_registry:
+    route: "admin_feature_flags"
+    system: feature_flags

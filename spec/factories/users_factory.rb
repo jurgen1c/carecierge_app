@@ -4,6 +4,7 @@
 # Database name: primary
 #
 #  id                     :uuid             not null, primary key
+#  admin                  :boolean          default(FALSE), not null
 #  confirmation_sent_at   :datetime
 #  confirmation_token     :string
 #  confirmed_at           :datetime
@@ -40,5 +41,9 @@ FactoryBot.define do
     password { "password123" }
     password_confirmation { password }
     confirmed_at { Time.current }
+
+    trait :admin do
+      admin { true }
+    end
   end
 end

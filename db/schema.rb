@@ -10,10 +10,48 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_120953) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_23_210646) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "feature_flag_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "enabled", default: true, null: false
+    t.uuid "feature_flag_id", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.string "target_kind", null: false
+    t.string "target_value", null: false
+    t.datetime "updated_at", null: false
+    t.index ["feature_flag_id", "target_kind", "target_value"], name: "index_feature_flag_assignments_on_flag_and_target", unique: true
+    t.index ["feature_flag_id"], name: "index_feature_flag_assignments_on_feature_flag_id"
+    t.index ["target_kind", "target_value"], name: "index_feature_flag_assignments_on_target_kind_and_target_value"
+  end
+
+  create_table "feature_flag_audit_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "action", null: false
+    t.uuid "actor_id"
+    t.datetime "created_at", null: false
+    t.jsonb "details", default: {}, null: false
+    t.uuid "feature_flag_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_feature_flag_audit_events_on_action"
+    t.index ["actor_id"], name: "index_feature_flag_audit_events_on_actor_id"
+    t.index ["feature_flag_id"], name: "index_feature_flag_audit_events_on_feature_flag_id"
+  end
+
+  create_table "feature_flags", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.boolean "enabled", default: false, null: false
+    t.string "key", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.string "name", null: false
+    t.datetime "retired_at"
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_feature_flags_on_key", unique: true
+    t.index ["retired_at"], name: "index_feature_flags_on_retired_at"
+  end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.datetime "created_at"
@@ -50,7 +88,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_120953) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "rollout_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.jsonb "criteria", default: {}, null: false
+    t.text "description"
+    t.string "key", null: false
+    t.string "name", null: false
+    t.datetime "retired_at"
+    t.datetime "updated_at", null: false
+    t.index ["key"], name: "index_rollout_groups_on_key", unique: true
+    t.index ["retired_at"], name: "index_rollout_groups_on_retired_at"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "admin", default: false, null: false
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
     t.datetime "confirmed_at"
@@ -78,4 +129,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_120953) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
+
+  add_foreign_key "feature_flag_assignments", "feature_flags"
+  add_foreign_key "feature_flag_audit_events", "feature_flags"
+  add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
 end

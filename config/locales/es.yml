@@ -1,7 +1,24 @@
 es:
   activerecord:
     attributes:
+      feature_flag:
+        description: "Descripcion"
+        enabled: "Habilitada"
+        key: "Clave"
+        name: "Nombre"
+        retired_at: "Retirada el"
+      feature_flag_assignment:
+        enabled: "Habilitada"
+        target_kind: "Tipo de destino"
+        target_value: "Destino"
+      rollout_group:
+        criteria: "Criterios"
+        description: "Descripcion"
+        key: "Clave"
+        name: "Nombre"
+        retired_at: "Retirado el"
       user:
+        admin: "Administrador"
         email: "Correo electronico"
         password: "Contrasena"
         password_confirmation: "Confirmar contrasena"
@@ -75,3 +92,37 @@ es:
       important_dates_body: "Captura cumpleanos, aniversarios y momentos que quieres recordar antes de que se vuelvan urgentes."
       privacy_title: "Privado por defecto"
       privacy_body: "Carecierge mantiene la configuracion de relaciones dentro de tu cuenta y prepara futuras rutas de aprobacion antes de la automatizacion."
+  admin:
+    feature_flags:
+      index:
+        title: "Feature flags"
+        kicker: "Operaciones"
+        heading: "Feature flags"
+        body: "Revisa los controles de lanzamiento gradual para comportamiento sensible de IA, automatizacion, integraciones y marketplace antes de que esas capacidades lleguen a mas audiencias."
+        admin_only: "Solo acceso administrador"
+        flags_title: "Registro de flags"
+        flags_body: "Los valores predeterminados y las asignaciones dirigidas son deterministicos para que las decisiones de lanzamiento puedan probarse y explicarse."
+        flags_count:
+          one: "1 flag"
+          other: "%{count} flags"
+        flag: "Flag"
+        state: "Estado"
+        assignments: "Asignaciones"
+        cleanup: "Limpieza"
+        states:
+          enabled: "Habilitada"
+          disabled: "Deshabilitada"
+          retired: "Retirada"
+        assignment_count:
+          one: "1 asignacion"
+          other: "%{count} asignaciones"
+        retired_at: "Retirada %{date}"
+        not_retired: "No retirada"
+        empty_title: "Aun no hay feature flags"
+        empty_body: "Crea flags antes de introducir comportamiento experimental para que las nuevas capacidades esten protegidas desde su primer lanzamiento."
+        rollout_groups_title: "Grupos de lanzamiento"
+        rollout_groups_body: "Los grupos hacen visibles las decisiones por cohortes sin depender de rutas ocultas en el codigo."
+        rollout_groups_count:
+          one: "1 grupo"
+          other: "%{count} grupos"
+        rollout_groups_empty: "Aun no se han definido grupos de lanzamiento."

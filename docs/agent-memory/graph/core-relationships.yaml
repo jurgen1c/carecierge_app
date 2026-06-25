@@ -1,0 +1,38 @@
+id: core_relationships
+name: Core system relationships
+edges:
+  - source: authentication.account_access_boundary
+    target: authentication.user_access_flow
+    relation: explains
+    reason: Authentication ownership explains why registration, login, logout, and dashboard redirects belong to the same access flow.
+    strength: 80
+  - source: authentication.localization_baseline
+    target: authentication.user_access_flow
+    relation: constrains
+    reason: The access flow must preserve localized recovery and error behavior.
+    strength: 70
+  - source: feature_flags.decision_precedence
+    target: feature_flags.disabled_fallbacks
+    relation: same_area
+    reason: Both claims define feature flag decision semantics and safe fallback behavior.
+    strength: 75
+  - source: feature_flags.global_assignment_target
+    target: feature_flags.decision_precedence
+    relation: constrains
+    reason: Global assignments are part of deterministic decision precedence and must use the only value that can match global context.
+    strength: 80
+  - source: feature_flags.admin_registry_authorization
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: The admin registry relies on authenticated account access before feature flag authorization runs.
+    strength: 80
+  - source: feature_flags.localization_baseline
+    target: feature_flags.admin_registry_authorization
+    relation: constrains
+    reason: The admin registry surface must preserve English and Spanish user-facing copy.
+    strength: 70
+  - source: feature_flags.audit_event_placeholder
+    target: feature_flags.admin_registry_authorization
+    relation: same_area
+    reason: Both claims describe the admin feature flag control surface and future write behavior.
+    strength: 55

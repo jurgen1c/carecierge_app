@@ -13,5 +13,9 @@ Rails.application.routes.draw do
 
   get "dashboard" => "dashboard#index", as: :dashboard
 
+  namespace :admin do
+    resources :feature_flags, only: :index
+  end
+
   root "welcome#index"
 end

@@ -1,0 +1,30 @@
+id: feature_flags
+name: Feature Flags
+summary: Admin-visible deterministic rollout controls for staged AI, automation, integration, marketplace, and experimental capabilities.
+claim_globs:
+  - claims/feature_flags/**/*.md
+default_queries:
+  - feature flag decision precedence
+  - admin feature flag registry authorization
+  - rollout group assignments retired flags
+watched_files:
+  - app/controllers/admin/feature_flags_controller.rb
+  - app/models/feature_flag.rb
+  - app/models/feature_flag_assignment.rb
+  - app/models/feature_flag_audit_event.rb
+  - app/models/feature_flags/context.rb
+  - app/models/rollout_group.rb
+  - app/models/user.rb
+  - app/policies/feature_flag_policy.rb
+  - app/views/admin/feature_flags/index.html.erb
+  - config/locales/en.yml
+  - config/locales/es.yml
+  - config/routes.rb
+  - spec/models/feature_flag_assignment_spec.rb
+  - spec/models/feature_flag_spec.rb
+  - spec/models/feature_flags/context_spec.rb
+  - spec/policies/feature_flag_policy_spec.rb
+  - spec/requests/admin_feature_flags_spec.rb
+tags:
+  - feature_flags
+  - rollout

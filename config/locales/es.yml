@@ -17,6 +17,27 @@ es:
         key: "Clave"
         name: "Nombre"
         retired_at: "Retirado el"
+      relationship_profile:
+        birthday: "Cumpleanos"
+        first_name: "Nombre"
+        last_name: "Apellido"
+        notes: "Notas"
+        preferred_name: "Nombre preferido"
+        private_notes: "Notas privadas"
+        pronouns: "Pronombres"
+        relationship_type: "Tipo de relacion"
+        structured_preferences: "Preferencias estructuradas"
+      relationship_type:
+        name: "Tipo de relacion"
+      contact_method:
+        kind: "Tipo de contacto"
+        value: "Dato de contacto"
+      relationship_note:
+        body: "Nota"
+        category: "Categoria"
+        private: "Privada"
+      relationship_tag:
+        name: "Etiqueta"
       user:
         admin: "Administrador"
         email: "Correo electronico"
@@ -88,10 +109,93 @@ es:
       sign_out: "Cerrar sesion"
       relationship_profile_title: "Primera relacion"
       relationship_profile_body: "Agrega la persona, el contexto y el tipo de relacion que deberian anclar tus primeros recordatorios."
+      relationship_profile_action: "Gestionar relaciones"
       important_dates_title: "Fechas importantes"
       important_dates_body: "Captura cumpleanos, aniversarios y momentos que quieres recordar antes de que se vuelvan urgentes."
       privacy_title: "Privado por defecto"
       privacy_body: "Carecierge mantiene la configuracion de relaciones dentro de tu cuenta y prepara futuras rutas de aprobacion antes de la automatizacion."
+  relationship_profiles:
+    index:
+      title: "Relaciones"
+      kicker: "Perfiles de relacion"
+      heading: "Personas que cuidas"
+      body: "Mantén detalles principales, contexto de contacto, notas y preferencias en un lugar privado antes de agregar recordatorios o automatizacion."
+      new_profile: "Agregar relacion"
+      filters_title: "Encontrar una relacion"
+      search_label: "Buscar"
+      search_placeholder: "Buscar nombres, notas o tipo de relacion"
+      status_label: "Estado"
+      statuses:
+        active: "Activas"
+        archived: "Archivadas"
+        all: "Todas"
+      apply_filters: "Aplicar filtros"
+      profiles_label: "Perfiles de relacion"
+      unknown_type: "Tipo de relacion sin definir"
+      archived: "Archivada"
+      empty_title: "Aun no hay perfiles de relacion"
+      empty_body: "Empieza con una persona y solo los detalles que sean utiles ahora. Puedes agregar contacto, notas y preferencias despues."
+    show:
+      unknown_type: "Tipo de relacion sin definir"
+      edit: "Editar"
+      archive: "Archivar"
+      details_title: "Detalles principales"
+      birthday: "Cumpleanos"
+      pronouns: "Pronombres"
+      notes: "Notas"
+      private_notes: "Notas privadas"
+      contact_title: "Detalles de contacto"
+      contact_kinds:
+        email: "Correo electronico"
+        phone: "Telefono"
+      preferences_title: "Preferencias estructuradas"
+      tags_title: "Etiquetas"
+      not_provided: "Sin informacion"
+      back: "Volver a relaciones"
+      delete: "Eliminar"
+      delete_confirm: "Eliminar este perfil de relacion? Esto elimina sus detalles de contacto, notas y etiquetas."
+    new:
+      title: "Agregar relacion"
+      kicker: "Privado por defecto"
+      heading: "Agrega un perfil de relacion"
+      body: "Captura la persona, el contexto y las preferencias que te ayudan a cuidar esta relacion con mas intencion."
+    edit:
+      title: "Editar %{name}"
+      kicker: "Perfil de relacion"
+      heading: "Editar %{name}"
+      body: "Actualiza detalles a medida que la relacion cambia. El historial archivado queda disponible a menos que elimines el perfil."
+    form:
+      errors_heading:
+        one: "Revisa este campo"
+        other: "Revisa estos %{count} campos"
+      core_details: "Detalles principales"
+      first_name: "Nombre"
+      last_name: "Apellido"
+      preferred_name: "Nombre preferido"
+      relationship_type: "Tipo de relacion"
+      pronouns: "Pronombres"
+      birthday: "Cumpleanos"
+      contact_details: "Detalles de contacto"
+      email: "Correo electronico"
+      phone: "Telefono"
+      context_title: "Contexto y notas de cuidado"
+      notes: "Notas"
+      private_notes: "Notas privadas o sensibles"
+      private_notes_hint: "Mantén el contexto sensible explicito y separado para que futuras funciones de compartir o automatizacion puedan evitarlo por defecto."
+      structured_preferences: "Preferencias estructuradas"
+      structured_preferences_hint: "Usa una preferencia por linea, como Cafe: descafeinado o Temas: libros."
+      tag_names: "Etiquetas"
+      tag_names_placeholder: "familia, mentor, club de lectura"
+      submit: "Guardar perfil"
+      cancel: "Cancelar"
+    create:
+      notice: "El perfil de relacion fue creado."
+    update:
+      notice: "El perfil de relacion fue actualizado."
+    archive:
+      notice: "El perfil de relacion fue archivado."
+    destroy:
+      notice: "El perfil de relacion fue eliminado."
   admin:
     feature_flags:
       index:

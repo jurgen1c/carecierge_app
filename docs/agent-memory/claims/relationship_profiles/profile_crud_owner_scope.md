@@ -11,11 +11,11 @@ title: Relationship profile CRUD is owner scoped
 claim: >
   Relationship profiles are authenticated, user-owned records for core details,
   Rails STI-backed relationship types across common family, romantic, work,
-  school, community, care, and professional categories, nested contact methods,
-  associated Lexxy/Action Text-backed rich relationship notes, associated
-  structured preferences, tags, friendly slugs, and discard-backed archive
-  status; RelationshipProfilePolicy and policy scopes restrict CRUD, archive,
-  search, and filter access to the signed-in owner.
+  school, community, care, and professional categories, nested add/edit/remove
+  contact methods, associated Lexxy/Action Text-backed rich relationship notes,
+  associated structured preferences, tags, friendly slugs, and discard-backed
+  archive status; RelationshipProfilePolicy and policy scopes restrict CRUD,
+  archive, search, and filter access to the signed-in owner.
 
 source_files:
   - app/models/user.rb
@@ -101,6 +101,7 @@ related_files:
   - app/views/relationship_profiles/index.html.erb
   - app/views/relationship_profiles/_form.html.erb
   - app/views/relationship_profiles/show.html.erb
+  - spec/system/relationship_profile_edit_spec.rb
   - config/locales/en.yml
   - config/locales/es.yml
 symbols:
@@ -197,11 +198,11 @@ last_verified_commit: null
 
 Relationship profiles are authenticated, user-owned records for core details,
 Rails STI-backed relationship types across common family, romantic, work,
-school, community, care, and professional categories, nested contact methods,
-associated Lexxy/Action Text-backed rich relationship notes, associated
-structured preferences, tags, friendly slugs, and discard-backed archive
-status; RelationshipProfilePolicy and policy scopes restrict CRUD, archive,
-search, and filter access to the signed-in owner.
+school, community, care, and professional categories, nested add/edit/remove
+contact methods, associated Lexxy/Action Text-backed rich relationship notes,
+associated structured preferences, tags, friendly slugs, and discard-backed
+archive status; RelationshipProfilePolicy and policy scopes restrict CRUD,
+archive, search, and filter access to the signed-in owner.
 
 ## Why It Matters
 
@@ -227,6 +228,7 @@ stores.
 - `app/policies/relationship_profile_policy.rb`
 - `app/views/relationship_profiles/show.html.erb`
 - `app/views/relationship_profiles/_form.html.erb`
+- `spec/system/relationship_profile_edit_spec.rb`
 - `app/javascript/application.js`
 - `config/routes.rb`
 - `db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb`
@@ -238,5 +240,6 @@ stores.
 - `bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb`
 - `bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb`
 - `bundle exec rspec spec/requests/relationship_profiles_spec.rb`
+- `bundle exec rspec spec/system/relationship_profile_edit_spec.rb`
 - `bundle exec rspec spec/system/relationship_profile_lexxy_spec.rb`
 - `bundle exec rspec`

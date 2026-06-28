@@ -279,6 +279,40 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(contact_method.reload).to be_preferred
     end
 
+    it "removes nested relationship details marked for destruction" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      contact_method = create(:contact_method, relationship_profile: profile, kind: "email", value: "maya@example.com")
+      note = create(:relationship_note, relationship_profile: profile, body: "Remember tea.")
+      preference = create(:relationship_preference, relationship_profile: profile, key: "Coffee", value: "decaf")
+      tag = create(:relationship_tag, relationship_profile: profile, name: "garden")
+      sign_in user
+
+      expect do
+        patch relationship_profile_path(profile), params: {
+          relationship_profile: {
+            contact_methods_attributes: {
+              "0" => { id: contact_method.id, kind: "email", value: contact_method.value, _destroy: "1" }
+            },
+            relationship_notes_attributes: {
+              "0" => { id: note.id, private: "0", category: "General", body: "Remember tea.", _destroy: "1" }
+            },
+            relationship_preferences_attributes: {
+              "0" => { id: preference.id, key: preference.key, value: preference.value, _destroy: "1" }
+            },
+            relationship_tags_attributes: {
+              "0" => { id: tag.id, name: tag.name, _destroy: "1" }
+            }
+          }
+        }
+      end.to change(ContactMethod, :count).by(-1)
+        .and change(RelationshipNote, :count).by(-1)
+        .and change(RelationshipPreference, :count).by(-1)
+        .and change(RelationshipTag, :count).by(-1)
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+    end
+
     it "preserves virtual form fields when an update is invalid" do
       user = create(:user)
       profile = create(:relationship_profile, user:, first_name: "Maya")

@@ -51,6 +51,12 @@
           <%= contact_fields.hidden_field :kind, value: "email" %>
           <%= contact_fields.label :value, t(".email"), class: "block text-sm font-medium text-stone-800" %>
           <%= contact_fields.email_field :value, autocomplete: "email", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if contact_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
 
@@ -60,6 +66,12 @@
           <%= contact_fields.hidden_field :kind, value: "personal_phone" %>
           <%= contact_fields.label :value, t(".personal_phone"), class: "block text-sm font-medium text-stone-800" %>
           <%= contact_fields.telephone_field :value, autocomplete: "tel", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if contact_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
 
@@ -69,6 +81,12 @@
           <%= contact_fields.hidden_field :kind, value: "business_phone" %>
           <%= contact_fields.label :value, t(".business_phone"), class: "block text-sm font-medium text-stone-800" %>
           <%= contact_fields.telephone_field :value, autocomplete: "tel", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if contact_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>
@@ -84,6 +102,12 @@
           <%= note_fields.hidden_field :category, value: "General" %>
           <%= note_fields.label :body, t(".notes"), class: "block text-sm font-medium text-stone-800" %>
           <%= note_fields.rich_text_area :body, class: "lexxy-content mt-2 min-h-32 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if note_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= note_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= note_fields.label :_destroy, t(".remove_note"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
 
@@ -95,6 +119,12 @@
           <%= note_fields.label :body, t(".private_notes"), class: "block text-sm font-medium text-stone-800" %>
           <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".private_notes_hint") %></p>
           <%= note_fields.rich_text_area :body, class: "lexxy-content mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if note_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= note_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= note_fields.label :_destroy, t(".remove_private_note"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
 
@@ -110,6 +140,12 @@
                 <%= preference_fields.text_field :key, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
                 <%= preference_fields.label :value, t(".preference_value"), class: "text-sm font-medium text-stone-800" %>
                 <%= preference_fields.text_field :value, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <% if preference_fields.object.persisted? %>
+                  <div class="flex items-center gap-2 text-sm text-stone-700">
+                    <%= preference_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+                    <%= preference_fields.label :_destroy, t(".remove_preference"), class: "font-medium text-stone-700" %>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           <% end %>
@@ -125,6 +161,12 @@
                 <%= tag_fields.hidden_field :id if tag_fields.object.persisted? %>
                 <%= tag_fields.label :name, t(".tag_name"), class: "sr-only" %>
                 <%= tag_fields.text_field :name, placeholder: t(".tag_name_placeholder"), class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 placeholder:text-stone-500 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <% if tag_fields.object.persisted? %>
+                  <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+                    <%= tag_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+                    <%= tag_fields.label :_destroy, t(".remove_tag"), class: "font-medium text-stone-700" %>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           <% end %>

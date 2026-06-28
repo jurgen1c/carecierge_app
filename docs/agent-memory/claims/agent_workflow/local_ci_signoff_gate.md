@@ -13,7 +13,8 @@ claim: >
   Bun audit, Bundler Audit, Brakeman, and RSpec before writing the GitHub
   signoff status with gh signoff; CI_SIGNOFF=false runs the same checks without
   writing the signoff status. The signoff step fails on tracked dirty changes or
-  unpushed commits, while allowing unrelated untracked local files.
+  unpushed commits, while allowing unrelated untracked local files. GitHub
+  Actions CI must remain absent because local signoff is the PR merge signal.
 
 source_files:
   - config/ci.rb
@@ -31,6 +32,7 @@ tags:
 verification:
   - CI_SIGNOFF=false bin/ci
   - gh extension list
+  - test ! -f .github/workflows/ci.yml
 
 last_verified_commit: null
 ---
@@ -50,6 +52,8 @@ The signoff step must fail when tracked files are dirty or the current commit ha
 not been pushed to the upstream branch. It may allow unrelated untracked local
 files so local artifacts do not block signing off a verified pushed commit.
 
+GitHub Actions CI must remain absent because local signoff is the PR merge signal.
+
 ## Severity
 
 Important.
@@ -64,3 +68,4 @@ signoff commands from bypassing tests, lint, or security audits.
 
 - `CI_SIGNOFF=false bin/ci`
 - `gh extension list`
+- `test ! -f .github/workflows/ci.yml`

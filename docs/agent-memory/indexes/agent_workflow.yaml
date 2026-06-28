@@ -10,7 +10,6 @@ default_queries:
   - project dependency list
   - local CI signoff gate
 watched_files:
-  - .github/workflows/ci.yml
   - AGENTS.md
   - config/ci.rb
   - eslint.config.mjs

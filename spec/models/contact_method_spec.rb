@@ -28,8 +28,11 @@ RSpec.describe ContactMethod, type: :model do
 
   it { is_expected.to belong_to(:relationship_profile) }
   it { is_expected.to validate_presence_of(:kind) }
-  it { is_expected.to validate_inclusion_of(:kind).in_array(%w[email phone]) }
   it { is_expected.to validate_presence_of(:value) }
+
+  it "defines contact kinds as a Rails enum" do
+    expect(described_class.defined_enums["kind"]).to eq("email" => "email", "phone" => "phone")
+  end
 
   it "allows one contact method per kind for each relationship profile" do
     profile = create(:relationship_profile)

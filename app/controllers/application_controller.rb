@@ -2,6 +2,8 @@ class ApplicationController < ActionController::Base
   include Pagy::Method
   include Pundit::Authorization
 
+  before_action :authenticate_user!, unless: :devise_controller?
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 

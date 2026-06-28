@@ -1,52 +1,23 @@
-# == Schema Information
-#
-# Table name: relationship_profiles
-# Database name: primary
-#
-#  id                     :uuid             not null, primary key
-#  archived_at            :datetime
-#  birthday               :date
-#  first_name             :string           not null
-#  last_name              :string
-#  notes                  :text
-#  preferred_name         :string
-#  private_notes          :text
-#  pronouns               :string
-#  structured_preferences :jsonb            not null
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  relationship_type_id   :uuid
-#  user_id                :uuid             not null
-#
-# Indexes
-#
-#  index_relationship_profiles_on_first_name               (first_name)
-#  index_relationship_profiles_on_last_name                (last_name)
-#  index_relationship_profiles_on_preferred_name           (preferred_name)
-#  index_relationship_profiles_on_relationship_type_id     (relationship_type_id)
-#  index_relationship_profiles_on_user_id                  (user_id)
-#  index_relationship_profiles_on_user_id_and_archived_at  (user_id,archived_at)
-#
-# Foreign Keys
-#
-#  fk_rails_...                         (relationship_type_id => relationship_types.id)
-#  fk_rails_...                         (user_id => users.id)
-#  fk_relationship_profiles_type_owner  ([relationship_type_id, user_id] => relationship_types[id, user_id])
-#
 class RelationshipProfile < ApplicationRecord
+  extend FriendlyId
+  include Discard::Model
+
+  friendly_id :display_name, use: :slugged
+
   belongs_to :user
-  belongs_to :relationship_type, optional: true
   has_many :contact_methods, dependent: :destroy
   has_many :relationship_notes, dependent: :destroy
+  has_many :relationship_preferences, dependent: :destroy
   has_many :relationship_tags, dependent: :destroy
 
-  attr_writer :relationship_type_name, :email, :phone, :tag_names, :structured_preferences_text
+  attr_writer :email, :phone, :tag_names, :structured_preferences_text
+
+  before_validation :normalize_relationship_type_name
 
   validates :first_name, presence: true
-  validate :relationship_type_owned_by_user
 
-  scope :active, -> { where(archived_at: nil) }
-  scope :archived, -> { where.not(archived_at: nil) }
+  scope :active, -> { kept }
+  scope :archived, -> { discarded }
   scope :ordered, -> { order(Arel.sql("lower(first_name) ASC"), Arel.sql("lower(last_name) ASC NULLS LAST")) }
 
   def full_name
@@ -58,17 +29,11 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def archived?
-    archived_at.present?
+    discarded?
   end
 
   def archive!
-    update!(archived_at: Time.current)
-  end
-
-  def relationship_type_name
-    return @relationship_type_name if defined?(@relationship_type_name)
-
-    relationship_type&.name
+    discard!
   end
 
   def email
@@ -95,12 +60,17 @@ class RelationshipProfile < ApplicationRecord
     structured_preferences.map { |key, value| "#{key}: #{value}" }.join("\n")
   end
 
+  def structured_preferences
+    relationship_preferences.index_by(&:key).transform_values(&:value)
+  end
+
+  def should_generate_new_friendly_id?
+    slug.blank? || first_name_changed? || last_name_changed? || preferred_name_changed?
+  end
+
   private
 
-  def relationship_type_owned_by_user
-    return if relationship_type.blank? || user.blank?
-    return if relationship_type.user_id == user_id
-
-    errors.add(:relationship_type, :invalid)
+  def normalize_relationship_type_name
+    self.relationship_type_name = relationship_type_name.to_s.strip.presence
   end
 end

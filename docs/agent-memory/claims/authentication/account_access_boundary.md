@@ -11,10 +11,14 @@ title: Authentication owns account access and session lifecycle
 claim: >
   The authentication system owns Carecierge account access through Devise-backed registration,
   email confirmation, login, logout, lockout, rememberable sessions, password recovery, and
-  Google OAuth account creation.
+  Google OAuth account creation. ApplicationController requires authentication by default for
+  application routes, while Devise controllers and explicitly public pages remain reachable
+  without an existing session.
 
 source_files:
   - app/models/user.rb
+  - app/controllers/application_controller.rb
+  - app/controllers/welcome_controller.rb
   - app/controllers/users/omniauth_callbacks_controller.rb
   - config/initializers/devise.rb
   - config/routes.rb
@@ -22,16 +26,19 @@ source_files:
 related_files: []
 symbols:
   - User
+  - ApplicationController
+  - WelcomeController
   - Users::OmniauthCallbacksController
 routes:
   - new_user_registration
   - new_user_session
+  - root
 tags:
   - authentication
   - devise
 
 verification:
-  - bundle exec rspec spec/models/user_spec.rb spec/controllers/users/omniauth_callbacks_controller_spec.rb spec/system/user_access_flow_spec.rb
+  - bundle exec rspec spec/models/user_spec.rb spec/controllers/users/omniauth_callbacks_controller_spec.rb spec/requests/authentication_gate_spec.rb spec/system/user_access_flow_spec.rb
 last_verified_commit: 59c16d37d66419852ab109e5f68ef29f0a746e53
 ---
 
@@ -41,7 +48,9 @@ last_verified_commit: 59c16d37d66419852ab109e5f68ef29f0a746e53
 
 The authentication system owns Carecierge account access through Devise-backed registration,
 email confirmation, login, logout, lockout, rememberable sessions, password recovery, and
-Google OAuth account creation.
+Google OAuth account creation. `ApplicationController` requires authentication by default for
+application routes, while Devise controllers and explicitly public pages remain reachable
+without an existing session.
 
 ## Why It Matters
 
@@ -51,10 +60,12 @@ spread across unrelated systems.
 ## Evidence
 
 - `app/models/user.rb`
+- `app/controllers/application_controller.rb`
+- `app/controllers/welcome_controller.rb`
 - `app/controllers/users/omniauth_callbacks_controller.rb`
 - `config/initializers/devise.rb`
 - `config/routes.rb`
 
 ## Verification
 
-- `bundle exec rspec spec/models/user_spec.rb spec/controllers/users/omniauth_callbacks_controller_spec.rb spec/system/user_access_flow_spec.rb`
+- `bundle exec rspec spec/models/user_spec.rb spec/controllers/users/omniauth_callbacks_controller_spec.rb spec/requests/authentication_gate_spec.rb spec/system/user_access_flow_spec.rb`

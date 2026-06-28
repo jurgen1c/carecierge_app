@@ -10,8 +10,8 @@ RSpec.describe "Relationship profiles", type: :request do
 
     it "shows only active profiles owned by the signed-in user" do
       user = create(:user)
-      visible = create(:relationship_profile, user:, first_name: "Maya")
-      create(:relationship_profile, user:, first_name: "ZeldaArchived", archived_at: Time.current)
+      visible = create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera")
+      create(:relationship_profile, user:, first_name: "ZeldaArchived", discarded_at: Time.current)
       create(:relationship_profile, first_name: "HiddenPerson")
 
       sign_in user
@@ -26,9 +26,8 @@ RSpec.describe "Relationship profiles", type: :request do
 
     it "searches by profile details and filters archived profiles" do
       user = create(:user)
-      relationship_type = create(:relationship_type, user:, name: "Mentor")
-      create(:relationship_profile, user:, first_name: "Rafa", preferred_name: "Coach", relationship_type:)
-      archived = create(:relationship_profile, user:, first_name: "Nora", archived_at: Time.current)
+      create(:relationship_profile, user:, first_name: "Rafa", preferred_name: "Coach", relationship_type_name: "Mentor")
+      archived = create(:relationship_profile, user:, first_name: "Nora", discarded_at: Time.current)
 
       sign_in user
 
@@ -85,6 +84,17 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).to include("Correo electronico")
       expect(response.body).to include("Telefono")
     end
+
+    it "uses friendly profile slugs in user-facing routes" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera")
+      sign_in user
+
+      get relationship_profile_path(profile)
+
+      expect(relationship_profile_path(profile)).to include("maya-rivera")
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   describe "POST /relationship_profiles" do
@@ -110,48 +120,31 @@ RSpec.describe "Relationship profiles", type: :request do
         }
       end.to change(RelationshipProfile, :count).by(1)
         .and change(ContactMethod, :count).by(2)
+        .and change(RelationshipPreference, :count).by(2)
         .and change(RelationshipTag, :count).by(2)
 
       profile = RelationshipProfile.find_by!(first_name: "Maya")
       expect(profile.user).to eq(user)
-      expect(profile.relationship_type.name).to eq("Friend")
+      expect(profile.relationship_type_name).to eq("Friend")
       expect(profile.structured_preferences).to include("Coffee" => "decaf", "Topics" => "books")
       expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ], [ "phone", "+506 8888 0000" ])
       expect(response).to redirect_to(relationship_profile_path(profile))
     end
 
-    it "does not create another user's relationship type with the same name" do
+    it "normalizes profile-owned relationship type names" do
       user = create(:user)
-      other_user = create(:user)
-      create(:relationship_type, user: other_user, name: "Friend")
-
-      sign_in user
-
-      post relationship_profiles_path, params: {
-        relationship_profile: {
-          first_name: "Kai",
-          relationship_type_name: "Friend"
-        }
-      }
-
-      expect(user.relationship_types.pluck(:name)).to contain_exactly("Friend")
-    end
-
-    it "reuses the signed-in user's relationship type case-insensitively" do
-      user = create(:user)
-      relationship_type = create(:relationship_type, user:, name: "Friend")
       sign_in user
 
       expect do
         post relationship_profiles_path, params: {
           relationship_profile: {
             first_name: "Kai",
-            relationship_type_name: "friend"
+            relationship_type_name: "  Friend  "
           }
         }
-      end.not_to change(RelationshipType, :count)
+      end.to change(RelationshipProfile, :count).by(1)
 
-      expect(RelationshipProfile.find_by!(first_name: "Kai").relationship_type).to eq(relationship_type)
+      expect(RelationshipProfile.find_by!(first_name: "Kai").relationship_type_name).to eq("Friend")
     end
 
     it "deduplicates tag names case-insensitively" do
@@ -184,20 +177,19 @@ RSpec.describe "Relationship profiles", type: :request do
         }
       }
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
       expect(profile.reload.first_name).to eq("Amaya")
+      expect(response).to redirect_to(relationship_profile_path(profile))
       expect(profile.private_notes).to eq("Updated sensitive context.")
     end
 
     it "preserves relationship details omitted from a partial update" do
       user = create(:user)
-      relationship_type = create(:relationship_type, user:, name: "Friend")
       profile = create(
         :relationship_profile,
         user:,
-        relationship_type:,
-        structured_preferences: { "Coffee" => "decaf" }
+        relationship_type_name: "Friend"
       )
+      create(:relationship_preference, relationship_profile: profile, key: "Coffee", value: "decaf")
       create(:contact_method, relationship_profile: profile, kind: "email", value: "maya@example.com")
       create(:relationship_tag, relationship_profile: profile, name: "garden")
       sign_in user
@@ -208,8 +200,8 @@ RSpec.describe "Relationship profiles", type: :request do
         }
       }
 
+      expect(profile.reload.relationship_type_name).to eq("Friend")
       expect(response).to redirect_to(relationship_profile_path(profile))
-      expect(profile.reload.relationship_type).to eq(relationship_type)
       expect(profile.structured_preferences).to eq("Coffee" => "decaf")
       expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ])
       expect(profile.relationship_tags.pluck(:name)).to contain_exactly("garden")
@@ -336,7 +328,8 @@ RSpec.describe "Relationship profiles", type: :request do
       end.not_to change(RelationshipProfile, :count)
 
       expect(response).to redirect_to(relationship_profiles_path)
-      expect(profile.reload).to be_archived
+      expect(profile.reload).to be_discarded
+      expect(profile).to be_archived
     end
   end
 

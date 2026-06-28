@@ -22,14 +22,11 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class ContactMethod < ApplicationRecord
-  KINDS = %w[email phone].freeze
+  enum :kind, { email: "email", phone: "phone" }
 
   belongs_to :relationship_profile
 
-  validates :kind, presence: true, inclusion: { in: KINDS }
+  validates :kind, presence: true
   validates :value, presence: true
   validates :kind, uniqueness: { scope: :relationship_profile_id }
-
-  scope :email, -> { where(kind: "email") }
-  scope :phone, -> { where(kind: "phone") }
 end

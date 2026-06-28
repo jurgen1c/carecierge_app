@@ -131,6 +131,8 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.6.2)
+    discard (2.0.0)
+      activerecord (>= 7.0, < 9.0)
     docile (1.4.1)
     dotenv (3.2.0)
     dotenv-rails (3.2.0)
@@ -545,6 +547,7 @@ DEPENDENCIES
   data_migrate (~> 11.3)
   debug
   devise (~> 5.0)
+  discard (~> 2.0)
   dotenv-rails (~> 3.2)
   dry-initializer (~> 3.2)
   dry-monads (~> 1.10)

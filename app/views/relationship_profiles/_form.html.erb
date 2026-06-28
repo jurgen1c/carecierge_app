@@ -29,8 +29,8 @@
         <%= form.label :relationship_type_name, t(".relationship_type"), class: "block text-sm font-medium text-stone-800" %>
         <%= form.text_field :relationship_type_name, list: "relationship-type-options", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
         <datalist id="relationship-type-options">
-          <% current_user.relationship_types.active.order(:name).each do |relationship_type| %>
-            <option value="<%= relationship_type.name %>"></option>
+          <% current_user.relationship_profiles.distinct.order(:relationship_type_name).pluck(:relationship_type_name).compact_blank.each do |relationship_type_name| %>
+            <option value="<%= relationship_type_name %>"></option>
           <% end %>
         </datalist>
       </div>

@@ -149,6 +149,8 @@ Use `bin/memory templates list` and `bin/memory templates show <template>` befor
 - FactoryBot Rails: https://github.com/thoughtbot/factory_bot_rails
 - Lookbook (ViewComponent previews): https://lookbook.build/
 - Noticed
+- FriendlyId: https://github.com/norman/friendly_id
+- Discard: https://github.com/jhawthorn/discard
 
 ## Documentation & Developer Experience
 - DX Writer: maintains developer-facing docs, runbooks, setup instructions, and "how to test" notes.

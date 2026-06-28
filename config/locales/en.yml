@@ -56,8 +56,6 @@ en:
         pronouns: "Pronouns"
         relationship_type: "Relationship type"
         structured_preferences: "Structured preferences"
-      relationship_type:
-        name: "Relationship type"
       contact_method:
         kind: "Contact type"
         value: "Contact value"
@@ -65,6 +63,9 @@ en:
         body: "Note"
         category: "Category"
         private: "Private"
+      relationship_preference:
+        key: "Preference"
+        value: "Preference value"
       relationship_tag:
         name: "Tag"
       user:

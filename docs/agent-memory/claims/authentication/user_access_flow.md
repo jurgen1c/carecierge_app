@@ -11,7 +11,9 @@ title: User access flow redirects through welcome and dashboard surfaces
 claim: >
   Visitors start at welcome#index, Devise registration creates a confirmable User, successful
   login redirects to dashboard#index, logout redirects to welcome#index, and invalid access
-  attempts keep localized recovery paths available.
+  attempts keep localized recovery paths available. Authenticated application access is enforced
+  from ApplicationController, with welcome#index explicitly opted out and Devise controllers left
+  public for sign-in and registration.
 
 source_files:
   - app/controllers/application_controller.rb
@@ -22,6 +24,7 @@ source_files:
   - config/routes.rb
 
 related_files:
+  - spec/requests/authentication_gate_spec.rb
   - spec/system/user_access_flow_spec.rb
   - spec/requests/localization_spec.rb
 symbols:
@@ -38,6 +41,7 @@ tags:
 
 verification:
   - bundle exec rspec spec/system/user_access_flow_spec.rb spec/requests/localization_spec.rb
+  - bundle exec rspec spec/requests/authentication_gate_spec.rb
 last_verified_commit: 59c16d37d66419852ab109e5f68ef29f0a746e53
 ---
 
@@ -47,7 +51,9 @@ last_verified_commit: 59c16d37d66419852ab109e5f68ef29f0a746e53
 
 Visitors start at `welcome#index`, Devise registration creates a confirmable `User`, successful
 login redirects to `dashboard#index`, logout redirects to `welcome#index`, and invalid access
-attempts keep localized recovery paths available.
+attempts keep localized recovery paths available. Authenticated application access is enforced
+from `ApplicationController`, with `welcome#index` explicitly opted out and Devise controllers
+left public for sign-in and registration.
 
 ## Why It Matters
 
@@ -66,3 +72,4 @@ when changing routes, controllers, or Devise views.
 ## Verification
 
 - `bundle exec rspec spec/system/user_access_flow_spec.rb spec/requests/localization_spec.rb`
+- `bundle exec rspec spec/requests/authentication_gate_spec.rb`

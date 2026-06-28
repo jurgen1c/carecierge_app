@@ -10,7 +10,8 @@ title: Feature flag registry is admin-only
 
 claim: >
   The admin feature flag registry at admin/feature_flags#index is visible only to authenticated
-  admin users through Devise authentication and FeatureFlagPolicy authorization.
+  admin users through ApplicationController's default Devise authentication gate and
+  FeatureFlagPolicy authorization.
 
 source_files:
   - app/controllers/admin/feature_flags_controller.rb
@@ -42,7 +43,8 @@ last_verified_commit: 59c16d37d66419852ab109e5f68ef29f0a746e53
 ## Claim
 
 The admin feature flag registry at `admin/feature_flags#index` is visible only to authenticated
-admin users through Devise authentication and `FeatureFlagPolicy` authorization.
+admin users through `ApplicationController`'s default Devise authentication gate and
+`FeatureFlagPolicy` authorization.
 
 ## Why It Matters
 

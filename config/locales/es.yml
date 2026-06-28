@@ -27,8 +27,6 @@ es:
         pronouns: "Pronombres"
         relationship_type: "Tipo de relacion"
         structured_preferences: "Preferencias estructuradas"
-      relationship_type:
-        name: "Tipo de relacion"
       contact_method:
         kind: "Tipo de contacto"
         value: "Dato de contacto"
@@ -36,6 +34,9 @@ es:
         body: "Nota"
         category: "Categoria"
         private: "Privada"
+      relationship_preference:
+        key: "Preferencia"
+        value: "Valor de preferencia"
       relationship_tag:
         name: "Etiqueta"
       user:

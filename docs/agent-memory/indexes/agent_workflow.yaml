@@ -1,12 +1,13 @@
 id: agent_workflow
 name: Agent Workflow
-summary: Repository agent instructions, durable memory workflow, frontend policy, and source-of-truth files for agent behavior.
+summary: Repository agent instructions, durable memory workflow, key dependency list, frontend policy, and source-of-truth files for agent behavior.
 claim_globs:
   - claims/agent_workflow/**/*.md
 default_queries:
   - agent workflow frontend policy
   - product design source of truth
   - style variants helper
+  - project dependency list
 watched_files:
   - .github/workflows/ci.yml
   - AGENTS.md

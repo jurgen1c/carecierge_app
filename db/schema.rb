@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_25_121000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_121100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -111,25 +111,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_121000) do
     t.index ["relationship_profile_id"], name: "index_relationship_notes_on_relationship_profile_id"
   end
 
+  create_table "relationship_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "value", null: false
+    t.index "relationship_profile_id, lower((key)::text)", name: "idx_relationship_preferences_on_profile_and_lower_key", unique: true
+    t.index ["relationship_profile_id"], name: "index_relationship_preferences_on_relationship_profile_id"
+  end
+
   create_table "relationship_profiles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "archived_at"
     t.date "birthday"
     t.datetime "created_at", null: false
+    t.datetime "discarded_at"
     t.string "first_name", null: false
     t.string "last_name"
     t.text "notes"
     t.string "preferred_name"
     t.text "private_notes"
     t.string "pronouns"
-    t.uuid "relationship_type_id"
-    t.jsonb "structured_preferences", default: {}, null: false
+    t.string "relationship_type_name"
+    t.string "slug"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["first_name"], name: "index_relationship_profiles_on_first_name"
     t.index ["last_name"], name: "index_relationship_profiles_on_last_name"
     t.index ["preferred_name"], name: "index_relationship_profiles_on_preferred_name"
-    t.index ["relationship_type_id"], name: "index_relationship_profiles_on_relationship_type_id"
-    t.index ["user_id", "archived_at"], name: "index_relationship_profiles_on_user_id_and_archived_at"
+    t.index ["relationship_type_name"], name: "index_relationship_profiles_on_relationship_type_name"
+    t.index ["slug"], name: "index_relationship_profiles_on_slug", unique: true
+    t.index ["user_id", "discarded_at"], name: "index_relationship_profiles_on_user_id_and_discarded_at"
     t.index ["user_id"], name: "index_relationship_profiles_on_user_id"
   end
 
@@ -140,18 +151,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_121000) do
     t.datetime "updated_at", null: false
     t.index "relationship_profile_id, lower((name)::text)", name: "index_relationship_tags_on_profile_id_and_lower_name", unique: true
     t.index ["relationship_profile_id"], name: "index_relationship_tags_on_relationship_profile_id"
-  end
-
-  create_table "relationship_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.boolean "active", default: true, null: false
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "user_id", null: false
-    t.index "user_id, lower((name)::text)", name: "index_relationship_types_on_user_id_and_lower_name", unique: true
-    t.index ["id", "user_id"], name: "index_relationship_types_on_id_and_user_id", unique: true
-    t.index ["user_id"], name: "index_relationship_types_on_user_id"
   end
 
   create_table "rollout_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -201,9 +200,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_121000) do
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
   add_foreign_key "relationship_notes", "relationship_profiles"
-  add_foreign_key "relationship_profiles", "relationship_types"
-  add_foreign_key "relationship_profiles", "relationship_types", column: ["relationship_type_id", "user_id"], primary_key: ["id", "user_id"], name: "fk_relationship_profiles_type_owner"
+  add_foreign_key "relationship_preferences", "relationship_profiles"
   add_foreign_key "relationship_profiles", "users"
   add_foreign_key "relationship_tags", "relationship_profiles"
-  add_foreign_key "relationship_types", "users"
 end

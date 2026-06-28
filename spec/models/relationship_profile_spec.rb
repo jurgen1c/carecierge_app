@@ -86,6 +86,15 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(described_class.type_options).to include([ "Friend", "FriendRelationshipProfile" ])
   end
 
+  it "localizes relationship type labels" do
+    profile = build(:relationship_profile, type: "BestFriendRelationshipProfile")
+
+    I18n.with_locale(:es) do
+      expect(profile.relationship_type_label).to eq("Mejor amigo")
+      expect(described_class.type_options).to include([ "Mejor amigo", "BestFriendRelationshipProfile" ])
+    end
+  end
+
   it "offers common family, romantic, work, and social STI relationship types" do
     expect(described_class.type_options).to include(
       [ "Friend", "FriendRelationshipProfile" ],

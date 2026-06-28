@@ -56,6 +56,21 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).not_to include("Nora")
     end
 
+    it "eager loads notes and rich text bodies for profile cards" do
+      user = create(:user)
+      2.times do |index|
+        profile = create(:relationship_profile, user:, first_name: "Maya#{index}")
+        create(:relationship_note, relationship_profile: profile, body: "<p>Garden #{index}</p>")
+      end
+      sign_in user
+
+      sql = capture_sql { get relationship_profiles_path }
+
+      expect(response).to have_http_status(:ok)
+      expect(sql.grep(/FROM "relationship_notes"/).size).to eq(1)
+      expect(sql.grep(/FROM "action_text_rich_texts"/).size).to eq(1)
+    end
+
     it "ignores malformed search params" do
       user = create(:user)
       profile = create(:relationship_profile, user:, first_name: "Maya")
@@ -175,6 +190,28 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(RelationshipProfile.find_by!(first_name: "Kai")).to be_a(MentorRelationshipProfile)
     end
 
+    it "renders validation errors instead of raising for tampered relationship type and contact kind" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            type: "BogusRelationshipProfile",
+            contact_methods_attributes: {
+              "0" => { kind: "pager", value: "555-1111" }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship type is not included in the list")
+      expect(response.body).to include("Contact methods kind")
+      expect(response.body).to include("blank")
+    end
+
     it "rejects blank nested association rows" do
       user = create(:user)
       sign_in user
@@ -212,6 +249,29 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(profile.reload.first_name).to eq("Amaya")
       expect(response).to redirect_to(relationship_profile_path(profile))
       expect(profile.private_notes.first.body.to_plain_text).to include("Updated sensitive context.")
+    end
+
+    it "renders validation errors instead of raising when tampered update params include discriminators" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:, first_name: "Maya", type: "FriendRelationshipProfile")
+      contact_method = create(:contact_method, relationship_profile: profile, kind: "email", value: "maya@example.com")
+      sign_in user
+
+      patch relationship_profile_path(profile), params: {
+        relationship_profile: {
+          type: "BogusRelationshipProfile",
+          contact_methods_attributes: {
+            "0" => { id: contact_method.id, kind: "pager", value: "555-1111" }
+          }
+        }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship type is not included in the list")
+      expect(response.body).to include("Contact methods kind")
+      expect(response.body).to include("blank")
+      expect(profile.reload.type).to eq("FriendRelationshipProfile")
+      expect(contact_method.reload.kind).to eq("email")
     end
 
     it "preserves relationship details omitted from a partial update" do
@@ -427,5 +487,18 @@ RSpec.describe "Relationship profiles", type: :request do
 
       expect(response).to redirect_to(relationship_profiles_path)
     end
+  end
+
+  def capture_sql
+    queries = []
+    subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == "SCHEMA"
+
+      queries << payload[:sql]
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { yield }
+
+    queries
   end
 end

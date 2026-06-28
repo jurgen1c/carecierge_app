@@ -40,9 +40,18 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
       lower(profile_table[:first_name]).matches(term),
       lower(profile_table[:last_name]).matches(term),
       lower(profile_table[:preferred_name]).matches(term),
-      lower(profile_table[:type]).matches(term),
+      relationship_type_condition(profile_table, term),
       matching_rich_text_exists(profile_table, notes_table, rich_text_table, term)
     ].reduce(&:or)
+  end
+
+  def relationship_type_condition(profile_table, term)
+    condition = lower(profile_table[:type]).matches(term)
+    matching_type_classes = RelationshipProfile.type_classes_matching_label(search_query)
+
+    return condition if matching_type_classes.empty?
+
+    condition.or(profile_table[:type].in(matching_type_classes))
   end
 
   def lower(attribute)

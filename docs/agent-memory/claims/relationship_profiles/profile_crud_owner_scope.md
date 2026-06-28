@@ -10,13 +10,15 @@ title: Relationship profile CRUD is owner scoped
 
 claim: >
   Relationship profiles are authenticated, user-owned records for core details,
-  Rails STI-backed relationship types across common family, romantic, work,
-  school, community, care, and professional categories, nested add/edit/remove
-  contact methods, associated add/edit/remove Lexxy/Action Text-backed rich
-  relationship notes, associated add/edit/remove structured preferences and tags,
-  friendly slugs, and discard-backed archive status; RelationshipProfilePolicy
-  and policy scopes restrict CRUD, archive, search, and filter access to the
-  signed-in owner.
+  localized and searchable Rails STI-backed relationship types across common
+  family, romantic, work, school, community, care, and professional categories,
+  nested add/edit/remove contact methods, associated add/edit/remove Lexxy/Action
+  Text-backed rich relationship notes, associated add/edit/remove structured
+  preferences and tags, friendly slugs, and discard-backed archive status;
+  RelationshipProfilesController sanitizes tampered STI and contact-kind
+  discriminator params before assignment, index preloads tags and rich notes for
+  profile cards, and RelationshipProfilePolicy and policy scopes restrict CRUD,
+  archive, search, and filter access to the signed-in owner.
 
 source_files:
   - app/models/user.rb
@@ -205,13 +207,15 @@ last_verified_commit: null
 ## Claim
 
 Relationship profiles are authenticated, user-owned records for core details,
-Rails STI-backed relationship types across common family, romantic, work,
-school, community, care, and professional categories, nested add/edit/remove
-contact methods, associated add/edit/remove Lexxy/Action Text-backed rich
-relationship notes, associated add/edit/remove structured preferences and tags,
-friendly slugs, and discard-backed archive status; RelationshipProfilePolicy
-and policy scopes restrict CRUD, archive, search, and filter access to the
-signed-in owner.
+localized and searchable Rails STI-backed relationship types across common
+family, romantic, work, school, community, care, and professional categories,
+nested add/edit/remove contact methods, associated add/edit/remove Lexxy/Action
+Text-backed rich relationship notes, associated add/edit/remove structured
+preferences and tags, friendly slugs, and discard-backed archive status;
+`RelationshipProfilesController` sanitizes tampered STI and contact-kind
+discriminator params before assignment, index preloads tags and rich notes for
+profile cards, and `RelationshipProfilePolicy` and policy scopes restrict CRUD,
+archive, search, and filter access to the signed-in owner.
 
 ## Why It Matters
 

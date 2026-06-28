@@ -35,66 +35,67 @@ class RelationshipProfile < ApplicationRecord
   include Discard::Model
 
   TYPE_OPTIONS = [
-    [ "Friend", "FriendRelationshipProfile" ],
-    [ "Best friend", "BestFriendRelationshipProfile" ],
-    [ "Acquaintance", "AcquaintanceRelationshipProfile" ],
-    [ "Spouse", "SpouseRelationshipProfile" ],
-    [ "Partner", "PartnerRelationshipProfile" ],
-    [ "Fiance", "FianceRelationshipProfile" ],
-    [ "Fiancee", "FianceeRelationshipProfile" ],
-    [ "Significant other", "SignificantOtherRelationshipProfile" ],
-    [ "Family", "FamilyRelationshipProfile" ],
-    [ "Mother", "MotherRelationshipProfile" ],
-    [ "Father", "FatherRelationshipProfile" ],
-    [ "Parent", "ParentRelationshipProfile" ],
-    [ "Stepparent", "StepparentRelationshipProfile" ],
-    [ "Guardian", "GuardianRelationshipProfile" ],
-    [ "Child", "ChildRelationshipProfile" ],
-    [ "Son", "SonRelationshipProfile" ],
-    [ "Daughter", "DaughterRelationshipProfile" ],
-    [ "Sibling", "SiblingRelationshipProfile" ],
-    [ "Brother", "BrotherRelationshipProfile" ],
-    [ "Sister", "SisterRelationshipProfile" ],
-    [ "Grandparent", "GrandparentRelationshipProfile" ],
-    [ "Grandmother", "GrandmotherRelationshipProfile" ],
-    [ "Grandfather", "GrandfatherRelationshipProfile" ],
-    [ "Grandchild", "GrandchildRelationshipProfile" ],
-    [ "Aunt", "AuntRelationshipProfile" ],
-    [ "Uncle", "UncleRelationshipProfile" ],
-    [ "Cousin", "CousinRelationshipProfile" ],
-    [ "Niece", "NieceRelationshipProfile" ],
-    [ "Nephew", "NephewRelationshipProfile" ],
-    [ "In-law", "InLawRelationshipProfile" ],
-    [ "Extended family", "ExtendedFamilyRelationshipProfile" ],
-    [ "Boss", "BossRelationshipProfile" ],
-    [ "Manager", "ManagerRelationshipProfile" ],
-    [ "Direct report", "DirectReportRelationshipProfile" ],
-    [ "Coworker", "CoworkerRelationshipProfile" ],
-    [ "Mentor", "MentorRelationshipProfile" ],
-    [ "Mentee", "MenteeRelationshipProfile" ],
-    [ "Advisor", "AdvisorRelationshipProfile" ],
-    [ "Colleague", "ColleagueRelationshipProfile" ],
-    [ "Business partner", "BusinessPartnerRelationshipProfile" ],
-    [ "Client", "ClientRelationshipProfile" ],
-    [ "Customer", "CustomerRelationshipProfile" ],
-    [ "Vendor", "VendorRelationshipProfile" ],
-    [ "Neighbor", "NeighborRelationshipProfile" ],
-    [ "Roommate", "RoommateRelationshipProfile" ],
-    [ "Housemate", "HousemateRelationshipProfile" ],
-    [ "Classmate", "ClassmateRelationshipProfile" ],
-    [ "Teacher", "TeacherRelationshipProfile" ],
-    [ "Student", "StudentRelationshipProfile" ],
-    [ "Coach", "CoachRelationshipProfile" ],
-    [ "Teammate", "TeammateRelationshipProfile" ],
-    [ "Community member", "CommunityMemberRelationshipProfile" ],
-    [ "Caregiver", "CaregiverRelationshipProfile" ],
-    [ "Care recipient", "CareRecipientRelationshipProfile" ],
-    [ "Doctor", "DoctorRelationshipProfile" ],
-    [ "Therapist", "TherapistRelationshipProfile" ],
-    [ "Other", "OtherRelationshipProfile" ]
+    [ :friend, "FriendRelationshipProfile" ],
+    [ :best_friend, "BestFriendRelationshipProfile" ],
+    [ :acquaintance, "AcquaintanceRelationshipProfile" ],
+    [ :spouse, "SpouseRelationshipProfile" ],
+    [ :partner, "PartnerRelationshipProfile" ],
+    [ :fiance, "FianceRelationshipProfile" ],
+    [ :fiancee, "FianceeRelationshipProfile" ],
+    [ :significant_other, "SignificantOtherRelationshipProfile" ],
+    [ :family, "FamilyRelationshipProfile" ],
+    [ :mother, "MotherRelationshipProfile" ],
+    [ :father, "FatherRelationshipProfile" ],
+    [ :parent, "ParentRelationshipProfile" ],
+    [ :stepparent, "StepparentRelationshipProfile" ],
+    [ :guardian, "GuardianRelationshipProfile" ],
+    [ :child, "ChildRelationshipProfile" ],
+    [ :son, "SonRelationshipProfile" ],
+    [ :daughter, "DaughterRelationshipProfile" ],
+    [ :sibling, "SiblingRelationshipProfile" ],
+    [ :brother, "BrotherRelationshipProfile" ],
+    [ :sister, "SisterRelationshipProfile" ],
+    [ :grandparent, "GrandparentRelationshipProfile" ],
+    [ :grandmother, "GrandmotherRelationshipProfile" ],
+    [ :grandfather, "GrandfatherRelationshipProfile" ],
+    [ :grandchild, "GrandchildRelationshipProfile" ],
+    [ :aunt, "AuntRelationshipProfile" ],
+    [ :uncle, "UncleRelationshipProfile" ],
+    [ :cousin, "CousinRelationshipProfile" ],
+    [ :niece, "NieceRelationshipProfile" ],
+    [ :nephew, "NephewRelationshipProfile" ],
+    [ :in_law, "InLawRelationshipProfile" ],
+    [ :extended_family, "ExtendedFamilyRelationshipProfile" ],
+    [ :boss, "BossRelationshipProfile" ],
+    [ :manager, "ManagerRelationshipProfile" ],
+    [ :direct_report, "DirectReportRelationshipProfile" ],
+    [ :coworker, "CoworkerRelationshipProfile" ],
+    [ :mentor, "MentorRelationshipProfile" ],
+    [ :mentee, "MenteeRelationshipProfile" ],
+    [ :advisor, "AdvisorRelationshipProfile" ],
+    [ :colleague, "ColleagueRelationshipProfile" ],
+    [ :business_partner, "BusinessPartnerRelationshipProfile" ],
+    [ :client, "ClientRelationshipProfile" ],
+    [ :customer, "CustomerRelationshipProfile" ],
+    [ :vendor, "VendorRelationshipProfile" ],
+    [ :neighbor, "NeighborRelationshipProfile" ],
+    [ :roommate, "RoommateRelationshipProfile" ],
+    [ :housemate, "HousemateRelationshipProfile" ],
+    [ :classmate, "ClassmateRelationshipProfile" ],
+    [ :teacher, "TeacherRelationshipProfile" ],
+    [ :student, "StudentRelationshipProfile" ],
+    [ :coach, "CoachRelationshipProfile" ],
+    [ :teammate, "TeammateRelationshipProfile" ],
+    [ :community_member, "CommunityMemberRelationshipProfile" ],
+    [ :caregiver, "CaregiverRelationshipProfile" ],
+    [ :care_recipient, "CareRecipientRelationshipProfile" ],
+    [ :doctor, "DoctorRelationshipProfile" ],
+    [ :therapist, "TherapistRelationshipProfile" ],
+    [ :other, "OtherRelationshipProfile" ]
   ].freeze
-  TYPE_LABELS = TYPE_OPTIONS.to_h { |label, class_name| [ class_name, label ] }.freeze
+  TYPE_LABELS = TYPE_OPTIONS.to_h { |label_key, class_name| [ class_name, label_key ] }.freeze
   DEFAULT_TYPE = "FriendRelationshipProfile"
+  INVALID_TYPE = "__invalid_relationship_profile_type__"
   CONTACT_FORM_KINDS = %w[email personal_phone business_phone].freeze
   FORM_SLOT_COUNT = 3
 
@@ -134,11 +135,22 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def relationship_type_label
-    TYPE_LABELS.fetch(type.presence || DEFAULT_TYPE)
+    self.class.type_label(type.presence || DEFAULT_TYPE)
   end
 
   def self.type_options
-    TYPE_OPTIONS
+    TYPE_OPTIONS.map { |label_key, class_name| [ type_label_for_key(label_key), class_name ] }
+  end
+
+  def self.type_label(class_name)
+    type_label_for_key(TYPE_LABELS.fetch(class_name))
+  end
+
+  def self.type_classes_matching_label(query)
+    term = query.to_s.downcase
+    TYPE_OPTIONS.filter_map do |label_key, class_name|
+      class_name if type_label_for_key(label_key).downcase.include?(term)
+    end
   end
 
   def self.policy_class
@@ -242,6 +254,11 @@ class RelationshipProfile < ApplicationRecord
   def default_type
     self.type = DEFAULT_TYPE if type.blank?
   end
+
+  def self.type_label_for_key(label_key)
+    I18n.t("relationship_profiles.types.#{label_key}")
+  end
+  private_class_method :type_label_for_key
 
   def fill_slots(records)
     records.tap do |slots|

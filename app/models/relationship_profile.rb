@@ -3,26 +3,26 @@
 # Table name: relationship_profiles
 # Database name: primary
 #
-#  id                     :uuid             not null, primary key
-#  birthday               :date
-#  discarded_at           :datetime
-#  first_name             :string           not null
-#  last_name              :string
-#  preferred_name         :string
-#  pronouns               :string
-#  relationship_type_name :string
-#  slug                   :string
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  user_id                :uuid             not null
+#  id             :uuid             not null, primary key
+#  birthday       :date
+#  discarded_at   :datetime
+#  first_name     :string           not null
+#  last_name      :string
+#  preferred_name :string
+#  pronouns       :string
+#  slug           :string
+#  type           :string           not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  user_id        :uuid             not null
 #
 # Indexes
 #
 #  index_relationship_profiles_on_first_name                (first_name)
 #  index_relationship_profiles_on_last_name                 (last_name)
 #  index_relationship_profiles_on_preferred_name            (preferred_name)
-#  index_relationship_profiles_on_relationship_type_name    (relationship_type_name)
 #  index_relationship_profiles_on_slug                      (slug) UNIQUE
+#  index_relationship_profiles_on_type                      (type)
 #  index_relationship_profiles_on_user_id                   (user_id)
 #  index_relationship_profiles_on_user_id_and_discarded_at  (user_id,discarded_at)
 #
@@ -34,21 +34,37 @@ class RelationshipProfile < ApplicationRecord
   extend FriendlyId
   include Discard::Model
 
+  TYPE_OPTIONS = [
+    [ "Friend", "FriendRelationshipProfile" ],
+    [ "Family", "FamilyRelationshipProfile" ],
+    [ "Mentor", "MentorRelationshipProfile" ],
+    [ "Colleague", "ColleagueRelationshipProfile" ],
+    [ "Neighbor", "NeighborRelationshipProfile" ],
+    [ "Other", "OtherRelationshipProfile" ]
+  ].freeze
+  TYPE_LABELS = TYPE_OPTIONS.to_h { |label, class_name| [ class_name, label ] }.freeze
+  DEFAULT_TYPE = "FriendRelationshipProfile"
+  CONTACT_FORM_KINDS = %w[email personal_phone business_phone].freeze
+  FORM_SLOT_COUNT = 3
+
   friendly_id :display_name, use: :slugged
 
   belongs_to :user
-  has_rich_text :notes
-  has_rich_text :private_notes
   has_many :contact_methods, dependent: :destroy
   has_many :relationship_notes, dependent: :destroy
   has_many :relationship_preferences, dependent: :destroy
   has_many :relationship_tags, dependent: :destroy
 
-  attr_writer :email, :phone, :tag_names, :structured_preferences_text
+  accepts_nested_attributes_for :contact_methods, allow_destroy: true
+  accepts_nested_attributes_for :relationship_notes, allow_destroy: true
+  accepts_nested_attributes_for :relationship_preferences, allow_destroy: true
+  accepts_nested_attributes_for :relationship_tags, allow_destroy: true
 
-  before_validation :normalize_relationship_type_name
+  before_validation :default_type
 
   validates :first_name, presence: true
+  validates :type, inclusion: { in: TYPE_LABELS.keys }
+  validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_tags
 
   scope :active, -> { kept }
   scope :archived, -> { discarded }
@@ -66,36 +82,104 @@ class RelationshipProfile < ApplicationRecord
     discarded?
   end
 
+  def relationship_type_label
+    TYPE_LABELS.fetch(type.presence || DEFAULT_TYPE)
+  end
+
+  def self.type_options
+    TYPE_OPTIONS
+  end
+
+  def self.policy_class
+    RelationshipProfilePolicy
+  end
+
   def archive!
     discard!
   end
 
   def email
-    return @email if defined?(@email)
-
-    contact_methods.find { |method| method.kind == "email" }&.value
+    contact_methods.find { |method| %w[email personal_email business_email].include?(method.kind) }&.value
   end
 
   def phone
-    return @phone if defined?(@phone)
-
-    contact_methods.find { |method| method.kind == "phone" }&.value
+    contact_methods.find { |method| %w[phone personal_phone business_phone].include?(method.kind) }&.value
   end
 
   def tag_names
-    return @tag_names if defined?(@tag_names)
-
     relationship_tags.map(&:name).join(", ")
   end
 
   def structured_preferences_text
-    return @structured_preferences_text if defined?(@structured_preferences_text)
-
     structured_preferences.map { |key, value| "#{key}: #{value}" }.join("\n")
   end
 
   def structured_preferences
     relationship_preferences.index_by(&:key).transform_values(&:value)
+  end
+
+  def contact_method_for(kind)
+    contact_methods.detect { |method| method.kind == kind } || contact_methods.build(kind:)
+  end
+
+  def public_note
+    relationship_notes.detect { |note| !note.private? } || relationship_notes.build(private: false, category: "General")
+  end
+
+  def private_note
+    relationship_notes.detect(&:private?) || relationship_notes.build(private: true, category: "Private")
+  end
+
+  def public_notes
+    relationship_notes.reject(&:private?)
+  end
+
+  def private_notes
+    relationship_notes.select(&:private?)
+  end
+
+  def public_notes_preview
+    public_notes.map { |note| note.body.to_plain_text }.compact_blank.join(" ")
+  end
+
+  def preference_slots
+    fill_slots(relationship_preferences.to_a) { relationship_preferences.build }
+  end
+
+  def tag_slots
+    fill_slots(relationship_tags.to_a) { relationship_tags.build }
+  end
+
+  def prepare_nested_form_associations
+    CONTACT_FORM_KINDS.each { |kind| contact_method_for(kind) }
+    public_note
+    private_note
+    preference_slots
+    tag_slots
+  end
+
+  def contact_methods_attributes=(attributes)
+    super(reject_blank_new_nested_attributes(attributes) { |nested_attributes| nested_attributes["value"].blank? })
+  end
+
+  def relationship_notes_attributes=(attributes)
+    super(
+      reject_blank_new_nested_attributes(attributes) do |nested_attributes|
+        ActionText::Content.new(nested_attributes["body"].to_s).to_plain_text.blank?
+      end
+    )
+  end
+
+  def relationship_preferences_attributes=(attributes)
+    super(
+      reject_blank_new_nested_attributes(attributes) do |nested_attributes|
+        nested_attributes["key"].blank? && nested_attributes["value"].blank?
+      end
+    )
+  end
+
+  def relationship_tags_attributes=(attributes)
+    super(reject_blank_new_nested_attributes(attributes) { |nested_attributes| nested_attributes["name"].blank? })
   end
 
   def should_generate_new_friendly_id?
@@ -104,7 +188,19 @@ class RelationshipProfile < ApplicationRecord
 
   private
 
-  def normalize_relationship_type_name
-    self.relationship_type_name = relationship_type_name.to_s.strip.presence
+  def default_type
+    self.type = DEFAULT_TYPE if type.blank?
+  end
+
+  def fill_slots(records)
+    records.tap do |slots|
+      (FORM_SLOT_COUNT - slots.size).times { slots << yield }
+    end
+  end
+
+  def reject_blank_new_nested_attributes(attributes)
+    attributes.to_h.reject do |_index, nested_attributes|
+      nested_attributes["id"].blank? && yield(nested_attributes)
+    end
   end
 end

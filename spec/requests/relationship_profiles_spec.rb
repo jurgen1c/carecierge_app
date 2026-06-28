@@ -26,12 +26,12 @@ RSpec.describe "Relationship profiles", type: :request do
 
     it "searches by profile details and filters archived profiles" do
       user = create(:user)
-      create(:relationship_profile, user:, first_name: "Rafa", preferred_name: "Coach", relationship_type_name: "Mentor")
+      create(:relationship_profile, user:, first_name: "Rafa", preferred_name: "Coach", type: "MentorRelationshipProfile")
       archived = create(:relationship_profile, user:, first_name: "Nora", last_name: "Lane", discarded_at: Time.current)
 
       sign_in user
 
-      get relationship_profiles_path, params: { q: { first_name_or_last_name_or_preferred_name_or_notes_or_relationship_type_name_cont: "mentor" } }
+      get relationship_profiles_path, params: { q: { RelationshipProfile::SearchQuery::SEARCH_PREDICATE => "mentor" } }
 
       expect(response.body).to include("Coach")
       expect(response.body).not_to include("Nora")
@@ -44,11 +44,13 @@ RSpec.describe "Relationship profiles", type: :request do
 
     it "searches rich text profile notes" do
       user = create(:user)
-      visible = create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera", notes: "<p>Met through the neighborhood garden.</p>")
-      create(:relationship_profile, user:, first_name: "Nora", last_name: "Lane", notes: "<p>Prefers quiet dinners.</p>")
+      visible = create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera")
+      hidden = create(:relationship_profile, user:, first_name: "Nora", last_name: "Lane")
+      create(:relationship_note, relationship_profile: visible, body: "<p>Met through the neighborhood garden.</p>")
+      create(:relationship_note, relationship_profile: hidden, body: "<p>Prefers quiet dinners.</p>")
       sign_in user
 
-      get relationship_profiles_path, params: { q: { first_name_or_last_name_or_preferred_name_or_notes_or_relationship_type_name_cont: "garden" } }
+      get relationship_profiles_path, params: { q: { RelationshipProfile::SearchQuery::SEARCH_PREDICATE => "garden" } }
 
       expect(response.body).to include(visible.full_name)
       expect(response.body).not_to include("Nora")
@@ -121,32 +123,43 @@ RSpec.describe "Relationship profiles", type: :request do
             first_name: "Maya",
             last_name: "Rivera",
             preferred_name: "May",
-            relationship_type_name: "Friend",
-            email: "maya@example.com",
-            phone: "+506 8888 0000",
+            type: "FriendRelationshipProfile",
             birthday: "1992-04-12",
-            notes: "Met through the neighborhood garden.",
-            private_notes: "Prefers low-key check-ins.",
-            structured_preferences_text: "Coffee: decaf\nTopics: books",
-            tag_names: "gardening, book club"
+            contact_methods_attributes: {
+              "0" => { kind: "email", value: "maya@example.com" },
+              "1" => { kind: "personal_phone", value: "+506 8888 0000" }
+            },
+            relationship_notes_attributes: {
+              "0" => { private: "0", category: "General", body: "Met through the neighborhood garden." },
+              "1" => { private: "1", category: "Private", body: "Prefers low-key check-ins." }
+            },
+            relationship_preferences_attributes: {
+              "0" => { key: "Coffee", value: "decaf" },
+              "1" => { key: "Topics", value: "books" }
+            },
+            relationship_tags_attributes: {
+              "0" => { name: "gardening" },
+              "1" => { name: "book club" }
+            }
           }
         }
       end.to change(RelationshipProfile, :count).by(1)
         .and change(ContactMethod, :count).by(2)
+        .and change(RelationshipNote, :count).by(2)
         .and change(RelationshipPreference, :count).by(2)
         .and change(RelationshipTag, :count).by(2)
 
       profile = RelationshipProfile.find_by!(first_name: "Maya")
       expect(profile.user).to eq(user)
-      expect(profile.relationship_type_name).to eq("Friend")
-      expect(profile.notes.to_plain_text).to include("Met through the neighborhood garden.")
-      expect(profile.private_notes.to_plain_text).to include("Prefers low-key check-ins.")
+      expect(profile.relationship_type_label).to eq("Friend")
+      expect(profile.public_notes.first.body.to_plain_text).to include("Met through the neighborhood garden.")
+      expect(profile.private_notes.first.body.to_plain_text).to include("Prefers low-key check-ins.")
       expect(profile.structured_preferences).to include("Coffee" => "decaf", "Topics" => "books")
-      expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ], [ "phone", "+506 8888 0000" ])
+      expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ], [ "personal_phone", "+506 8888 0000" ])
       expect(response).to redirect_to(relationship_profile_path(profile))
     end
 
-    it "normalizes profile-owned relationship type names" do
+    it "stores the native STI relationship type" do
       user = create(:user)
       sign_in user
 
@@ -154,15 +167,15 @@ RSpec.describe "Relationship profiles", type: :request do
         post relationship_profiles_path, params: {
           relationship_profile: {
             first_name: "Kai",
-            relationship_type_name: "  Friend  "
+            type: "MentorRelationshipProfile"
           }
         }
       end.to change(RelationshipProfile, :count).by(1)
 
-      expect(RelationshipProfile.find_by!(first_name: "Kai").relationship_type_name).to eq("Friend")
+      expect(RelationshipProfile.find_by!(first_name: "Kai")).to be_a(MentorRelationshipProfile)
     end
 
-    it "deduplicates tag names case-insensitively" do
+    it "rejects blank nested association rows" do
       user = create(:user)
       sign_in user
 
@@ -170,12 +183,14 @@ RSpec.describe "Relationship profiles", type: :request do
         post relationship_profiles_path, params: {
           relationship_profile: {
             first_name: "Kai",
-            tag_names: "family, Family"
+            relationship_tags_attributes: {
+              "0" => { name: "" }
+            }
           }
         }
-      end.to change(RelationshipTag, :count).by(1)
+      end.not_to change(RelationshipTag, :count)
 
-      expect(RelationshipProfile.find_by!(first_name: "Kai").relationship_tags.pluck(:name)).to contain_exactly("Family")
+      expect(response).to redirect_to(relationship_profile_path(RelationshipProfile.find_by!(first_name: "Kai")))
     end
   end
 
@@ -188,13 +203,15 @@ RSpec.describe "Relationship profiles", type: :request do
       patch relationship_profile_path(profile), params: {
         relationship_profile: {
           first_name: "Amaya",
-          private_notes: "Updated sensitive context."
+          relationship_notes_attributes: {
+            "0" => { private: "1", category: "Private", body: "Updated sensitive context." }
+          }
         }
       }
 
       expect(profile.reload.first_name).to eq("Amaya")
       expect(response).to redirect_to(relationship_profile_path(profile))
-      expect(profile.private_notes.to_plain_text).to include("Updated sensitive context.")
+      expect(profile.private_notes.first.body.to_plain_text).to include("Updated sensitive context.")
     end
 
     it "preserves relationship details omitted from a partial update" do
@@ -202,7 +219,7 @@ RSpec.describe "Relationship profiles", type: :request do
       profile = create(
         :relationship_profile,
         user:,
-        relationship_type_name: "Friend"
+        type: "FriendRelationshipProfile"
       )
       create(:relationship_preference, relationship_profile: profile, key: "Coffee", value: "decaf")
       create(:contact_method, relationship_profile: profile, kind: "email", value: "maya@example.com")
@@ -215,7 +232,7 @@ RSpec.describe "Relationship profiles", type: :request do
         }
       }
 
-      expect(profile.reload.relationship_type_name).to eq("Friend")
+      expect(profile.reload.relationship_type_label).to eq("Friend")
       expect(response).to redirect_to(relationship_profile_path(profile))
       expect(profile.structured_preferences).to eq("Coffee" => "decaf")
       expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ])
@@ -226,19 +243,21 @@ RSpec.describe "Relationship profiles", type: :request do
       user = create(:user)
       profile = create(:relationship_profile, user:)
       create(:contact_method, relationship_profile: profile, kind: "email", value: "old@example.com")
-      create(:contact_method, relationship_profile: profile, kind: "phone", value: "+506 1111 2222")
+      create(:contact_method, relationship_profile: profile, kind: "personal_phone", value: "+506 1111 2222")
       sign_in user
 
       patch relationship_profile_path(profile), params: {
         relationship_profile: {
-          email: "new@example.com"
+          contact_methods_attributes: {
+            "0" => { id: profile.contact_methods.email.first.id, kind: "email", value: "new@example.com" }
+          }
         }
       }
 
       expect(response).to redirect_to(relationship_profile_path(profile))
       expect(profile.contact_methods.reload.pluck(:kind, :value)).to include(
         [ "email", "new@example.com" ],
-        [ "phone", "+506 1111 2222" ]
+        [ "personal_phone", "+506 1111 2222" ]
       )
     end
 
@@ -250,7 +269,9 @@ RSpec.describe "Relationship profiles", type: :request do
 
       patch relationship_profile_path(profile), params: {
         relationship_profile: {
-          email: "maya@example.com"
+          contact_methods_attributes: {
+            "0" => { id: contact_method.id, kind: "email", value: "maya@example.com" }
+          }
         }
       }
 
@@ -261,21 +282,25 @@ RSpec.describe "Relationship profiles", type: :request do
     it "preserves virtual form fields when an update is invalid" do
       user = create(:user)
       profile = create(:relationship_profile, user:, first_name: "Maya")
-      create(:contact_method, relationship_profile: profile, kind: "email", value: "old@example.com")
-      create(:relationship_tag, relationship_profile: profile, name: "garden")
+      contact_method = create(:contact_method, relationship_profile: profile, kind: "email", value: "old@example.com")
+      tag = create(:relationship_tag, relationship_profile: profile, name: "garden")
       sign_in user
 
       patch relationship_profile_path(profile), params: {
         relationship_profile: {
           first_name: "",
-          email: "new@example.com",
-          tag_names: "books, travel"
+          contact_methods_attributes: {
+            "0" => { id: contact_method.id, kind: "email", value: "new@example.com" }
+          },
+          relationship_tags_attributes: {
+            "0" => { id: tag.id, name: "books" }
+          }
         }
       }
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("new@example.com")
-      expect(response.body).to include("books, travel")
+      expect(response.body).to include("books")
       expect(profile.reload.first_name).to eq("Maya")
       expect(profile.email).to eq("old@example.com")
       expect(profile.tag_names).to eq("garden")
@@ -284,15 +309,19 @@ RSpec.describe "Relationship profiles", type: :request do
     it "preserves blank virtual form fields when an update is invalid" do
       user = create(:user)
       profile = create(:relationship_profile, user:, first_name: "Maya")
-      create(:contact_method, relationship_profile: profile, kind: "email", value: "old@example.com")
-      create(:relationship_tag, relationship_profile: profile, name: "garden")
+      contact_method = create(:contact_method, relationship_profile: profile, kind: "email", value: "old@example.com")
+      tag = create(:relationship_tag, relationship_profile: profile, name: "garden")
       sign_in user
 
       patch relationship_profile_path(profile), params: {
         relationship_profile: {
           first_name: "",
-          email: "",
-          tag_names: ""
+          contact_methods_attributes: {
+            "0" => { id: contact_method.id, kind: "email", value: "" }
+          },
+          relationship_tags_attributes: {
+            "0" => { id: tag.id, name: "" }
+          }
         }
       }
 

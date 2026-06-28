@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_25_121400) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -166,15 +166,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_121400) do
     t.string "last_name"
     t.string "preferred_name"
     t.string "pronouns"
-    t.string "relationship_type_name"
     t.string "slug"
+    t.string "type", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["first_name"], name: "index_relationship_profiles_on_first_name"
     t.index ["last_name"], name: "index_relationship_profiles_on_last_name"
     t.index ["preferred_name"], name: "index_relationship_profiles_on_preferred_name"
-    t.index ["relationship_type_name"], name: "index_relationship_profiles_on_relationship_type_name"
     t.index ["slug"], name: "index_relationship_profiles_on_slug", unique: true
+    t.index ["type"], name: "index_relationship_profiles_on_type"
     t.index ["user_id", "discarded_at"], name: "index_relationship_profiles_on_user_id_and_discarded_at"
     t.index ["user_id"], name: "index_relationship_profiles_on_user_id"
   end

@@ -22,7 +22,14 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class ContactMethod < ApplicationRecord
-  enum :kind, { email: "email", phone: "phone" }
+  enum :kind, {
+    email: "email",
+    personal_email: "personal_email",
+    business_email: "business_email",
+    phone: "phone",
+    personal_phone: "personal_phone",
+    business_phone: "business_phone"
+  }
 
   belongs_to :relationship_profile
 

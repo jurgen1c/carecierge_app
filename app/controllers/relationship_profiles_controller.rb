@@ -22,27 +22,33 @@ class RelationshipProfilesController < ApplicationController
 
   def new
     @relationship_profile = current_user.relationship_profiles.new
+    @relationship_profile.prepare_nested_form_associations
     authorize @relationship_profile
   end
 
   def edit
+    @relationship_profile.prepare_nested_form_associations
   end
 
   def create
-    @relationship_profile = current_user.relationship_profiles.new
+    @relationship_profile = current_user.relationship_profiles.new(relationship_profile_params)
     authorize @relationship_profile
 
-    if profile_form.save
-      redirect_to @relationship_profile, notice: t(".notice")
+    if @relationship_profile.save
+      redirect_to relationship_profile_path(@relationship_profile), notice: t(".notice")
     else
+      @relationship_profile.prepare_nested_form_associations
       render :new, status: :unprocessable_entity
     end
   end
 
   def update
-    if profile_form.save
-      redirect_to @relationship_profile, notice: t(".notice")
+    @relationship_profile.assign_attributes(relationship_profile_params)
+
+    if @relationship_profile.save
+      redirect_to relationship_profile_path(@relationship_profile), notice: t(".notice")
     else
+      @relationship_profile.prepare_nested_form_associations
       render :edit, status: :unprocessable_entity
     end
   end
@@ -64,7 +70,7 @@ class RelationshipProfilesController < ApplicationController
   def set_relationship_profile
     @relationship_profile = authorize current_user
       .relationship_profiles
-      .includes(:contact_methods, :relationship_preferences, :relationship_tags)
+      .includes(:contact_methods, :relationship_notes, :relationship_preferences, :relationship_tags)
       .friendly
       .find(params[:id])
   end
@@ -76,20 +82,11 @@ class RelationshipProfilesController < ApplicationController
       :preferred_name,
       :pronouns,
       :birthday,
-      :notes,
-      :private_notes,
-      :relationship_type_name,
-      :email,
-      :phone,
-      :structured_preferences_text,
-      :tag_names
-    )
-  end
-
-  def profile_form
-    @profile_form ||= RelationshipProfileForm.new(
-      profile: @relationship_profile,
-      params: relationship_profile_params
+      :type,
+      contact_methods_attributes: %i[id kind value label preferred _destroy],
+      relationship_notes_attributes: %i[id category private body _destroy],
+      relationship_preferences_attributes: %i[id key value _destroy],
+      relationship_tags_attributes: %i[id name _destroy]
     )
   end
 

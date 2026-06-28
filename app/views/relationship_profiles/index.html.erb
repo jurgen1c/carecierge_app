@@ -15,8 +15,8 @@
     <h2 id="relationship-profile-filters" class="text-base font-semibold text-stone-950"><%= t(".filters_title") %></h2>
     <%= form_with url: relationship_profiles_path, method: :get, class: "mt-4 grid gap-4 md:grid-cols-[1fr_auto_auto]" do %>
       <div>
-        <%= label_tag "q[first_name_or_last_name_or_preferred_name_or_notes_or_relationship_type_name_cont]", t(".search_label"), class: "block text-sm font-medium text-stone-800" %>
-        <%= text_field_tag "q[first_name_or_last_name_or_preferred_name_or_notes_or_relationship_type_name_cont]", @search_query, placeholder: t(".search_placeholder"), class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 placeholder:text-stone-500 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+        <%= label_tag "q[#{RelationshipProfile::SearchQuery::SEARCH_PREDICATE}]", t(".search_label"), class: "block text-sm font-medium text-stone-800" %>
+        <%= text_field_tag "q[#{RelationshipProfile::SearchQuery::SEARCH_PREDICATE}]", @search_query, placeholder: t(".search_placeholder"), class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 placeholder:text-stone-500 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
       </div>
 
       <div>
@@ -37,7 +37,7 @@
           <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2 class="text-lg font-semibold text-stone-950"><%= link_to profile.display_name, relationship_profile_path(profile), class: "rounded-sm hover:text-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %></h2>
-              <p class="mt-1 text-sm text-stone-700"><%= profile.relationship_type_name.presence || t(".unknown_type") %></p>
+              <p class="mt-1 text-sm text-stone-700"><%= profile.relationship_type_label %></p>
             </div>
 
             <% if profile.archived? %>
@@ -45,7 +45,7 @@
             <% end %>
           </div>
 
-          <% notes_preview = profile.notes.to_plain_text %>
+          <% notes_preview = profile.public_notes_preview %>
           <% if notes_preview.present? %>
             <p class="mt-4 text-sm leading-6 text-stone-700"><%= truncate(notes_preview, length: 140) %></p>
           <% end %>

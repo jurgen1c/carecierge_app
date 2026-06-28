@@ -30,15 +30,5 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-FactoryBot.define do
-  factory :relationship_profile do
-    user
-    type { "FriendRelationshipProfile" }
-    first_name { Faker::Name.first_name }
-    last_name { Faker::Name.last_name }
-    preferred_name { nil }
-    pronouns { nil }
-    birthday { nil }
-    discarded_at { nil }
-  end
+class NeighborRelationshipProfile < RelationshipProfile
 end

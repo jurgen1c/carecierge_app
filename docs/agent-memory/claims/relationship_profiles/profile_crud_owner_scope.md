@@ -10,20 +10,25 @@ title: Relationship profile CRUD is owner scoped
 
 claim: >
   Relationship profiles are authenticated, user-owned records for core details,
-  profile-owned relationship type labels, contact methods, Lexxy/Action
-  Text-backed rich notes, associated structured preferences, rich private notes,
-  tags, friendly slugs, and discard-backed archive status; RelationshipProfilePolicy
-  and policy scopes restrict CRUD, archive, search, and filter access to the
-  signed-in owner.
+  Rails STI-backed relationship types, nested contact methods, associated
+  Lexxy/Action Text-backed rich relationship notes, associated structured
+  preferences, tags, friendly slugs, and discard-backed archive status;
+  RelationshipProfilePolicy and policy scopes restrict CRUD, archive, search,
+  and filter access to the signed-in owner.
 
 source_files:
   - app/models/user.rb
   - app/models/relationship_profile.rb
+  - app/models/friend_relationship_profile.rb
+  - app/models/family_relationship_profile.rb
+  - app/models/mentor_relationship_profile.rb
+  - app/models/colleague_relationship_profile.rb
+  - app/models/neighbor_relationship_profile.rb
+  - app/models/other_relationship_profile.rb
   - app/models/contact_method.rb
   - app/models/relationship_note.rb
   - app/models/relationship_preference.rb
   - app/models/relationship_tag.rb
-  - app/forms/relationship_profile_form.rb
   - app/queries/relationship_profile/search_query.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/policies/relationship_profile_policy.rb
@@ -36,6 +41,7 @@ source_files:
   - db/migrate/20260625121200_create_active_storage_tables.active_storage.rb
   - db/migrate/20260625121300_create_action_text_tables.action_text.rb
   - db/migrate/20260625121400_move_relationship_notes_to_action_text.rb
+  - db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb
 
 related_files:
   - app/javascript/application.js
@@ -48,11 +54,16 @@ related_files:
 symbols:
   - User
   - RelationshipProfile
+  - FriendRelationshipProfile
+  - FamilyRelationshipProfile
+  - MentorRelationshipProfile
+  - ColleagueRelationshipProfile
+  - NeighborRelationshipProfile
+  - OtherRelationshipProfile
   - ContactMethod
   - RelationshipNote
   - RelationshipPreference
   - RelationshipTag
-  - RelationshipProfileForm
   - RelationshipProfile::SearchQuery
   - RelationshipProfilesController
   - RelationshipProfilePolicy
@@ -72,6 +83,7 @@ verification:
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb
   - bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb
   - bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb
+  - bundle exec rspec spec/system/relationship_profile_lexxy_spec.rb
   - bundle exec rspec
 last_verified_commit: null
 ---
@@ -81,11 +93,11 @@ last_verified_commit: null
 ## Claim
 
 Relationship profiles are authenticated, user-owned records for core details,
-profile-owned relationship type labels, contact methods, Lexxy/Action
-Text-backed rich notes, associated structured preferences, rich private notes,
-tags, friendly slugs, and discard-backed archive status; RelationshipProfilePolicy
-and policy scopes restrict CRUD, archive, search, and filter access to the
-signed-in owner.
+Rails STI-backed relationship types, nested contact methods, associated
+Lexxy/Action Text-backed rich relationship notes, associated structured
+preferences, tags, friendly slugs, and discard-backed archive status;
+RelationshipProfilePolicy and policy scopes restrict CRUD, archive, search,
+and filter access to the signed-in owner.
 
 ## Why It Matters
 
@@ -97,9 +109,14 @@ stores.
 ## Evidence
 
 - `app/models/relationship_profile.rb`
+- `app/models/friend_relationship_profile.rb`
+- `app/models/family_relationship_profile.rb`
+- `app/models/mentor_relationship_profile.rb`
+- `app/models/colleague_relationship_profile.rb`
+- `app/models/neighbor_relationship_profile.rb`
+- `app/models/other_relationship_profile.rb`
 - `app/models/user.rb`
 - `app/models/relationship_preference.rb`
-- `app/forms/relationship_profile_form.rb`
 - `app/queries/relationship_profile/search_query.rb`
 - `app/controllers/relationship_profiles_controller.rb`
 - `app/policies/relationship_profile_policy.rb`
@@ -107,6 +124,7 @@ stores.
 - `app/views/relationship_profiles/_form.html.erb`
 - `app/javascript/application.js`
 - `config/routes.rb`
+- `db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb`
 - `db/migrate/20260625121400_move_relationship_notes_to_action_text.rb`
 - `db/migrate/20260625120300_create_relationship_preferences.rb`
 
@@ -115,4 +133,5 @@ stores.
 - `bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb`
 - `bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb`
 - `bundle exec rspec spec/requests/relationship_profiles_spec.rb`
+- `bundle exec rspec spec/system/relationship_profile_lexxy_spec.rb`
 - `bundle exec rspec`

@@ -1,5 +1,5 @@
 class RelationshipProfile::SearchQuery < ApplicationQuery
-  SEARCH_PREDICATE = "first_name_or_last_name_or_preferred_name_or_notes_or_relationship_type_name_cont"
+  SEARCH_PREDICATE = "first_name_or_last_name_or_preferred_name_or_notes_or_type_cont"
   STATUSES = %w[active archived all].freeze
 
   attr_reader :ransack, :search_params, :status
@@ -32,6 +32,7 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
 
   def search_condition
     profile_table = RelationshipProfile.arel_table
+    notes_table = RelationshipNote.arel_table
     rich_text_table = ActionText::RichText.arel_table
     term = "%#{ActiveRecord::Base.sanitize_sql_like(search_query.downcase)}%"
 
@@ -39,8 +40,8 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
       lower(profile_table[:first_name]).matches(term),
       lower(profile_table[:last_name]).matches(term),
       lower(profile_table[:preferred_name]).matches(term),
-      lower(profile_table[:relationship_type_name]).matches(term),
-      matching_rich_text_exists(profile_table, rich_text_table, term)
+      lower(profile_table[:type]).matches(term),
+      matching_rich_text_exists(profile_table, notes_table, rich_text_table, term)
     ].reduce(&:or)
   end
 
@@ -48,12 +49,16 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
     Arel::Nodes::NamedFunction.new("LOWER", [ attribute ])
   end
 
-  def matching_rich_text_exists(profile_table, rich_text_table, term)
-    rich_text_table
+  def matching_rich_text_exists(profile_table, notes_table, rich_text_table, term)
+    notes_table
       .project(Arel.sql("1"))
-      .where(rich_text_table[:record_type].eq("RelationshipProfile"))
-      .where(rich_text_table[:record_id].eq(profile_table[:id]))
-      .where(rich_text_table[:name].in(%w[notes private_notes]))
+      .join(rich_text_table)
+      .on(
+        rich_text_table[:record_type].eq("RelationshipNote")
+          .and(rich_text_table[:record_id].eq(notes_table[:id]))
+          .and(rich_text_table[:name].eq("body"))
+      )
+      .where(notes_table[:relationship_profile_id].eq(profile_table[:id]))
       .where(lower(rich_text_table[:body]).matches(term))
       .exists
   end

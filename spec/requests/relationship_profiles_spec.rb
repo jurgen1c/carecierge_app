@@ -27,7 +27,7 @@ RSpec.describe "Relationship profiles", type: :request do
     it "searches by profile details and filters archived profiles" do
       user = create(:user)
       create(:relationship_profile, user:, first_name: "Rafa", preferred_name: "Coach", relationship_type_name: "Mentor")
-      archived = create(:relationship_profile, user:, first_name: "Nora", discarded_at: Time.current)
+      archived = create(:relationship_profile, user:, first_name: "Nora", last_name: "Lane", discarded_at: Time.current)
 
       sign_in user
 
@@ -44,8 +44,8 @@ RSpec.describe "Relationship profiles", type: :request do
 
     it "searches rich text profile notes" do
       user = create(:user)
-      visible = create(:relationship_profile, user:, first_name: "Maya", notes: "<p>Met through the neighborhood garden.</p>")
-      create(:relationship_profile, user:, first_name: "Nora", notes: "<p>Prefers quiet dinners.</p>")
+      visible = create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera", notes: "<p>Met through the neighborhood garden.</p>")
+      create(:relationship_profile, user:, first_name: "Nora", last_name: "Lane", notes: "<p>Prefers quiet dinners.</p>")
       sign_in user
 
       get relationship_profiles_path, params: { q: { first_name_or_last_name_or_preferred_name_or_notes_or_relationship_type_name_cont: "garden" } }

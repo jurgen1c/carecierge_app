@@ -149,7 +149,7 @@ RSpec.describe "Relationship profiles", type: :request do
         .and change(RelationshipPreference, :count).by(2)
         .and change(RelationshipTag, :count).by(2)
 
-      profile = RelationshipProfile.find_by!(first_name: "Maya")
+      profile = user.relationship_profiles.find_by!(first_name: "Maya")
       expect(profile.user).to eq(user)
       expect(profile.relationship_type_label).to eq("Friend")
       expect(profile.public_notes.first.body.to_plain_text).to include("Met through the neighborhood garden.")

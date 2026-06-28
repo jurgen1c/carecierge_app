@@ -1,0 +1,2 @@
+class DirectReportRelationshipProfile < RelationshipProfile
+end

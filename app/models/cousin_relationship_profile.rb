@@ -1,0 +1,2 @@
+class CousinRelationshipProfile < RelationshipProfile
+end

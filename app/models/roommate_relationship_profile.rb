@@ -1,0 +1,2 @@
+class RoommateRelationshipProfile < RelationshipProfile
+end

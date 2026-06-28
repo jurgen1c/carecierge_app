@@ -1,0 +1,2 @@
+class FatherRelationshipProfile < RelationshipProfile
+end

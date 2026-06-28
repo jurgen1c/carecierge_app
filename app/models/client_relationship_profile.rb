@@ -1,0 +1,2 @@
+class ClientRelationshipProfile < RelationshipProfile
+end

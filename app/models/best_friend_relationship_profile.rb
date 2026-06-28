@@ -1,0 +1,2 @@
+class BestFriendRelationshipProfile < RelationshipProfile
+end

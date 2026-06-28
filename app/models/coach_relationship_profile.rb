@@ -1,0 +1,2 @@
+class CoachRelationshipProfile < RelationshipProfile
+end

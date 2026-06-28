@@ -1,0 +1,2 @@
+class SignificantOtherRelationshipProfile < RelationshipProfile
+end

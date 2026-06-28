@@ -1,0 +1,2 @@
+class CoworkerRelationshipProfile < RelationshipProfile
+end

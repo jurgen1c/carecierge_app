@@ -1,0 +1,2 @@
+class TeammateRelationshipProfile < RelationshipProfile
+end

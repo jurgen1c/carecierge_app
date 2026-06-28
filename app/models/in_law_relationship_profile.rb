@@ -1,0 +1,2 @@
+class InLawRelationshipProfile < RelationshipProfile
+end

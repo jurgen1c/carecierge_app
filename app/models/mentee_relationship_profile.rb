@@ -1,0 +1,2 @@
+class MenteeRelationshipProfile < RelationshipProfile
+end

@@ -1,0 +1,2 @@
+class FianceRelationshipProfile < RelationshipProfile
+end

@@ -1,0 +1,2 @@
+class TherapistRelationshipProfile < RelationshipProfile
+end

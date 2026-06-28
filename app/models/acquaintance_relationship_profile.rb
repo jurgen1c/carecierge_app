@@ -1,0 +1,2 @@
+class AcquaintanceRelationshipProfile < RelationshipProfile
+end

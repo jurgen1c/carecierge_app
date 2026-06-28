@@ -1,0 +1,2 @@
+class StudentRelationshipProfile < RelationshipProfile
+end

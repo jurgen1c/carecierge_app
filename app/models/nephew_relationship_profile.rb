@@ -1,0 +1,2 @@
+class NephewRelationshipProfile < RelationshipProfile
+end

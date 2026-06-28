@@ -1,0 +1,2 @@
+class BossRelationshipProfile < RelationshipProfile
+end

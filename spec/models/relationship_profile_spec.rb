@@ -86,6 +86,23 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(described_class.type_options).to include([ "Friend", "FriendRelationshipProfile" ])
   end
 
+  it "offers common family, romantic, work, and social STI relationship types" do
+    expect(described_class.type_options).to include(
+      [ "Friend", "FriendRelationshipProfile" ],
+      [ "Spouse", "SpouseRelationshipProfile" ],
+      [ "Partner", "PartnerRelationshipProfile" ],
+      [ "Boss", "BossRelationshipProfile" ],
+      [ "Mother", "MotherRelationshipProfile" ],
+      [ "Other", "OtherRelationshipProfile" ]
+    )
+  end
+
+  it "maps every configured relationship type to a concrete STI subclass" do
+    described_class.type_options.each do |_label, class_name|
+      expect(class_name.constantize).to be < described_class
+    end
+  end
+
   it "allows Ransack to search profile and relationship type fields" do
     expect(described_class.ransackable_attributes).to include("first_name", "preferred_name", "type")
   end

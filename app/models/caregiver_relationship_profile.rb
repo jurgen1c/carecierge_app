@@ -1,0 +1,2 @@
+class CaregiverRelationshipProfile < RelationshipProfile
+end

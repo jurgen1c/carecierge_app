@@ -1,0 +1,2 @@
+class GuardianRelationshipProfile < RelationshipProfile
+end

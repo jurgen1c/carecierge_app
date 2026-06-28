@@ -1,0 +1,2 @@
+class ParentRelationshipProfile < RelationshipProfile
+end

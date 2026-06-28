@@ -1,0 +1,2 @@
+class GrandfatherRelationshipProfile < RelationshipProfile
+end

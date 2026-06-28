@@ -1,0 +1,2 @@
+class StepparentRelationshipProfile < RelationshipProfile
+end

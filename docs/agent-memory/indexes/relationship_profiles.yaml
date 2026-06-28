@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with profile-owned relationship type labels, contact details, Lexxy/Action Text rich notes, associated structured preferences, rich private notes, tags, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with STI-backed relationship type labels, contact details, Lexxy/Action Text rich notes, associated structured preferences, rich private notes, tags, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -15,7 +15,6 @@ watched_files:
   - app/models/relationship_note.rb
   - app/models/relationship_preference.rb
   - app/models/relationship_tag.rb
-  - app/forms/relationship_profile_form.rb
   - app/queries/relationship_profile/search_query.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/policies/relationship_profile_policy.rb

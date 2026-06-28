@@ -8,9 +8,12 @@ default_queries:
   - product design source of truth
   - style variants helper
   - project dependency list
+  - local CI signoff gate
 watched_files:
   - .github/workflows/ci.yml
   - AGENTS.md
+  - config/ci.rb
+  - eslint.config.mjs
   - PRODUCT.md
   - DESIGN.md
   - package.json
@@ -22,3 +25,5 @@ tags:
   - agent_workflow
   - frontend
   - design-system
+  - ci
+  - signoff

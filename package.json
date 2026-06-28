@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "bun bun.config.js",
-    "build:css": "bunx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
+    "build:css": "bunx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+    "lint:js": "eslint app/javascript bun.config.js"
   },
   "dependencies": {
     "@37signals/lexxy": "^0.9.20",
@@ -14,6 +15,8 @@
     "tailwindcss": "^4.3.1"
   },
   "devDependencies": {
-    "@jurgen1c/agent-memory-cli": "0.1.0"
+    "@eslint/js": "^10.0.1",
+    "@jurgen1c/agent-memory-cli": "0.1.0",
+    "eslint": "^10.6.0"
   }
 }

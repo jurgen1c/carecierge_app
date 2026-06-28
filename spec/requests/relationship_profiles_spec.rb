@@ -229,6 +229,31 @@ RSpec.describe "Relationship profiles", type: :request do
 
       expect(response).to redirect_to(relationship_profile_path(RelationshipProfile.find_by!(first_name: "Kai")))
     end
+
+    it "renders validation errors for duplicate nested preferences and tags" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            relationship_preferences_attributes: {
+              "0" => { key: "Coffee", value: "decaf" },
+              "1" => { key: " coffee ", value: "regular" }
+            },
+            relationship_tags_attributes: {
+              "0" => { name: "garden" },
+              "1" => { name: " Garden " }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship preferences contains duplicate keys")
+      expect(response.body).to include("Relationship tags contains duplicate names")
+    end
   end
 
   describe "PATCH /relationship_profiles/:id" do

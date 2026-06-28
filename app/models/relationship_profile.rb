@@ -117,6 +117,8 @@ class RelationshipProfile < ApplicationRecord
   validates :first_name, presence: true
   validates :type, inclusion: { in: TYPE_LABELS.keys }
   validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_tags
+  validate :unique_nested_preference_keys
+  validate :unique_nested_tag_names
 
   scope :active, -> { kept }
   scope :archived, -> { discarded }
@@ -255,6 +257,18 @@ class RelationshipProfile < ApplicationRecord
     self.type = DEFAULT_TYPE if type.blank?
   end
 
+  def unique_nested_preference_keys
+    return unless duplicate_nested_value?(relationship_preferences, :key)
+
+    errors.add(:relationship_preferences, "contains duplicate keys")
+  end
+
+  def unique_nested_tag_names
+    return unless duplicate_nested_value?(relationship_tags, :name)
+
+    errors.add(:relationship_tags, "contains duplicate names")
+  end
+
   def self.type_label_for_key(label_key)
     I18n.t("relationship_profiles.types.#{label_key}")
   end
@@ -270,5 +284,14 @@ class RelationshipProfile < ApplicationRecord
     attributes.to_h.reject do |_index, nested_attributes|
       nested_attributes["id"].blank? && yield(nested_attributes)
     end
+  end
+
+  def duplicate_nested_value?(records, attribute)
+    normalized_values = records.reject(&:marked_for_destruction?).filter_map do |record|
+      value = record.public_send(attribute).to_s.strip.downcase
+      value.presence
+    end
+
+    normalized_values.uniq.size != normalized_values.size
   end
 end

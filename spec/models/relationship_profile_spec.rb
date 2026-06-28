@@ -67,6 +67,24 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(profile.structured_preferences_text).to eq("Coffee: decaf\nTopics: books")
   end
 
+  it "validates duplicate nested preference keys before hitting database constraints" do
+    profile = build(:relationship_profile)
+    profile.relationship_preferences.build(key: "Coffee", value: "decaf")
+    profile.relationship_preferences.build(key: " coffee ", value: "regular")
+
+    expect(profile).not_to be_valid
+    expect(profile.errors[:relationship_preferences]).to include("contains duplicate keys")
+  end
+
+  it "validates duplicate nested tag names before hitting database constraints" do
+    profile = build(:relationship_profile)
+    profile.relationship_tags.build(name: "garden")
+    profile.relationship_tags.build(name: " Garden ")
+
+    expect(profile).not_to be_valid
+    expect(profile.errors[:relationship_tags]).to include("contains duplicate names")
+  end
+
   it "stores notes as associated rich text relationship notes" do
     profile = create(:relationship_profile)
     note = create(:relationship_note, relationship_profile: profile, body: "<p>Bring <strong>tea</strong>.</p>")

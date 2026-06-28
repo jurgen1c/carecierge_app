@@ -1,12 +1,13 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with profile-owned relationship type labels, contact details, notes, associated structured preferences, private notes, tags, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with profile-owned relationship type labels, contact details, Lexxy/Action Text rich notes, associated structured preferences, rich private notes, tags, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
   - relationship profile owner scoped CRUD
   - relationship profiles search filter archive
-  - contact details private notes structured preferences
+  - contact details rich private notes structured preferences
+  - Lexxy Action Text relationship notes
 watched_files:
   - app/models/user.rb
   - app/models/relationship_profile.rb
@@ -23,8 +24,12 @@ watched_files:
   - config/locales/en.yml
   - config/locales/es.yml
   - db/migrate/*relationship*.rb
+  - db/migrate/*active_storage*.rb
+  - db/migrate/*action_text*.rb
 tags:
   - relationship_profiles
   - privacy
   - pundit
   - ransack
+  - action_text
+  - lexxy

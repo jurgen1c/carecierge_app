@@ -1,3 +1,35 @@
+# == Schema Information
+#
+# Table name: relationship_profiles
+# Database name: primary
+#
+#  id                     :uuid             not null, primary key
+#  birthday               :date
+#  discarded_at           :datetime
+#  first_name             :string           not null
+#  last_name              :string
+#  preferred_name         :string
+#  pronouns               :string
+#  relationship_type_name :string
+#  slug                   :string
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  user_id                :uuid             not null
+#
+# Indexes
+#
+#  index_relationship_profiles_on_first_name                (first_name)
+#  index_relationship_profiles_on_last_name                 (last_name)
+#  index_relationship_profiles_on_preferred_name            (preferred_name)
+#  index_relationship_profiles_on_relationship_type_name    (relationship_type_name)
+#  index_relationship_profiles_on_slug                      (slug) UNIQUE
+#  index_relationship_profiles_on_user_id                   (user_id)
+#  index_relationship_profiles_on_user_id_and_discarded_at  (user_id,discarded_at)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
 class RelationshipProfile < ApplicationRecord
   extend FriendlyId
   include Discard::Model
@@ -5,6 +37,8 @@ class RelationshipProfile < ApplicationRecord
   friendly_id :display_name, use: :slugged
 
   belongs_to :user
+  has_rich_text :notes
+  has_rich_text :private_notes
   has_many :contact_methods, dependent: :destroy
   has_many :relationship_notes, dependent: :destroy
   has_many :relationship_preferences, dependent: :destroy

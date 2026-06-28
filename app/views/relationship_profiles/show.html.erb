@@ -34,12 +34,20 @@
 
       <div class="mt-6">
         <h3 class="text-sm font-semibold text-stone-950"><%= t(".notes") %></h3>
-        <p class="mt-2 whitespace-pre-line text-sm leading-6 text-stone-700"><%= @relationship_profile.notes.presence || t(".not_provided") %></p>
+        <% if @relationship_profile.notes.to_plain_text.present? %>
+          <div class="lexxy-content mt-2 text-sm leading-6 text-stone-700"><%= @relationship_profile.notes %></div>
+        <% else %>
+          <p class="mt-2 text-sm leading-6 text-stone-700"><%= t(".not_provided") %></p>
+        <% end %>
       </div>
 
       <div class="mt-6 rounded-lg border border-stone-200 bg-stone-50 p-4">
         <h3 class="text-sm font-semibold text-stone-950"><%= t(".private_notes") %></h3>
-        <p class="mt-2 whitespace-pre-line text-sm leading-6 text-stone-700"><%= @relationship_profile.private_notes.presence || t(".not_provided") %></p>
+        <% if @relationship_profile.private_notes.to_plain_text.present? %>
+          <div class="lexxy-content mt-2 text-sm leading-6 text-stone-700"><%= @relationship_profile.private_notes %></div>
+        <% else %>
+          <p class="mt-2 text-sm leading-6 text-stone-700"><%= t(".not_provided") %></p>
+        <% end %>
       </div>
     </article>
 

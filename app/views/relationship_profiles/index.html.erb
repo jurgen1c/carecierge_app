@@ -45,8 +45,9 @@
             <% end %>
           </div>
 
-          <% if profile.notes.present? %>
-            <p class="mt-4 text-sm leading-6 text-stone-700"><%= truncate(profile.notes, length: 140) %></p>
+          <% notes_preview = profile.notes.to_plain_text %>
+          <% if notes_preview.present? %>
+            <p class="mt-4 text-sm leading-6 text-stone-700"><%= truncate(notes_preview, length: 140) %></p>
           <% end %>
 
           <% if profile.relationship_tags.any? %>

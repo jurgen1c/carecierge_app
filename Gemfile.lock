@@ -229,6 +229,8 @@ GEM
       letter_opener (~> 1.9)
       railties (>= 6.1)
       rexml
+    lexxy (0.9.20)
+      rails (>= 8.0.2)
     lint_roller (1.1.0)
     logger (1.7.0)
     loofah (2.25.1)
@@ -559,6 +561,7 @@ DEPENDENCIES
   jsbundling-rails
   kamal
   letter_opener_web (~> 3.0)
+  lexxy (~> 0.9.20)
   noticed (~> 3.0)
   omniauth-google-oauth2 (~> 1.2)
   omniauth-rails_csrf_protection (~> 2.0)

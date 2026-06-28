@@ -12,7 +12,7 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
   end
 
   def resolve
-    @ransack = filtered_relation.ransack(search_params)
+    @ransack = searched_relation.ransack({})
     ransack.result.ordered
   end
 
@@ -23,6 +23,40 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
   private
 
   attr_reader :params
+
+  def searched_relation
+    return filtered_relation if search_query.blank?
+
+    filtered_relation.where(search_condition)
+  end
+
+  def search_condition
+    profile_table = RelationshipProfile.arel_table
+    rich_text_table = ActionText::RichText.arel_table
+    term = "%#{ActiveRecord::Base.sanitize_sql_like(search_query.downcase)}%"
+
+    [
+      lower(profile_table[:first_name]).matches(term),
+      lower(profile_table[:last_name]).matches(term),
+      lower(profile_table[:preferred_name]).matches(term),
+      lower(profile_table[:relationship_type_name]).matches(term),
+      matching_rich_text_exists(profile_table, rich_text_table, term)
+    ].reduce(&:or)
+  end
+
+  def lower(attribute)
+    Arel::Nodes::NamedFunction.new("LOWER", [ attribute ])
+  end
+
+  def matching_rich_text_exists(profile_table, rich_text_table, term)
+    rich_text_table
+      .project(Arel.sql("1"))
+      .where(rich_text_table[:record_type].eq("RelationshipProfile"))
+      .where(rich_text_table[:record_id].eq(profile_table[:id]))
+      .where(rich_text_table[:name].in(%w[notes private_notes]))
+      .where(lower(rich_text_table[:body]).matches(term))
+      .exists
+  end
 
   def filtered_relation
     case status

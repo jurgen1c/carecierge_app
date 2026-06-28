@@ -4,7 +4,6 @@
 # Database name: primary
 #
 #  id                      :uuid             not null, primary key
-#  body                    :text             not null
 #  category                :string
 #  private                 :boolean          default(FALSE), not null
 #  created_at              :datetime         not null

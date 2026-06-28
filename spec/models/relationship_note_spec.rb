@@ -19,15 +19,24 @@
 #
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
-class RelationshipNote < ApplicationRecord
-  belongs_to :relationship_profile
-  has_rich_text :body
+require "rails_helper"
 
-  validate :body_has_visible_text
+RSpec.describe RelationshipNote, type: :model do
+  subject(:note) { build(:relationship_note) }
 
-  private
+  it { is_expected.to belong_to(:relationship_profile) }
 
-  def body_has_visible_text
-    errors.add(:body, :blank) if body.to_plain_text.blank?
+  it "stores the note body as rich text" do
+    note = create(:relationship_note, body: "<p>Remember <strong>travel</strong> timing.</p>")
+
+    expect(note.body.to_plain_text).to include("Remember travel timing.")
+    expect(described_class.reflect_on_association(:rich_text_body)).to be_present
+  end
+
+  it "requires visible body text" do
+    note.body = ""
+
+    expect(note).not_to be_valid
+    expect(note.errors[:body]).to include("can't be blank")
   end
 end

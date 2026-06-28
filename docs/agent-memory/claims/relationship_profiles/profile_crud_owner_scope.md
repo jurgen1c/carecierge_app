@@ -10,10 +10,11 @@ title: Relationship profile CRUD is owner scoped
 
 claim: >
   Relationship profiles are authenticated, user-owned records for core details,
-  profile-owned relationship type labels, contact methods, notes, associated
-  structured preferences, private notes, tags, friendly slugs, and discard-backed
-  archive status; RelationshipProfilePolicy and policy scopes restrict CRUD,
-  archive, search, and filter access to the signed-in owner.
+  profile-owned relationship type labels, contact methods, Lexxy/Action
+  Text-backed rich notes, associated structured preferences, rich private notes,
+  tags, friendly slugs, and discard-backed archive status; RelationshipProfilePolicy
+  and policy scopes restrict CRUD, archive, search, and filter access to the
+  signed-in owner.
 
 source_files:
   - app/models/user.rb
@@ -32,8 +33,13 @@ source_files:
   - db/migrate/20260625120200_create_relationship_notes.rb
   - db/migrate/20260625120300_create_relationship_preferences.rb
   - db/migrate/20260625120400_create_relationship_tags.rb
+  - db/migrate/20260625121200_create_active_storage_tables.active_storage.rb
+  - db/migrate/20260625121300_create_action_text_tables.action_text.rb
+  - db/migrate/20260625121400_move_relationship_notes_to_action_text.rb
 
 related_files:
+  - app/javascript/application.js
+  - app/views/layouts/application.html.erb
   - app/views/relationship_profiles/index.html.erb
   - app/views/relationship_profiles/_form.html.erb
   - app/views/relationship_profiles/show.html.erb
@@ -58,11 +64,13 @@ tags:
   - relationship_profiles
   - pundit
   - ransack
+  - action_text
+  - lexxy
   - privacy
 
 verification:
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb
-  - bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_preference_spec.rb
+  - bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb
   - bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb
   - bundle exec rspec
 last_verified_commit: null
@@ -73,10 +81,11 @@ last_verified_commit: null
 ## Claim
 
 Relationship profiles are authenticated, user-owned records for core details,
-profile-owned relationship type labels, contact methods, notes, associated
-structured preferences, private notes, tags, friendly slugs, and discard-backed
-archive status; RelationshipProfilePolicy and policy scopes restrict CRUD,
-archive, search, and filter access to the signed-in owner.
+profile-owned relationship type labels, contact methods, Lexxy/Action
+Text-backed rich notes, associated structured preferences, rich private notes,
+tags, friendly slugs, and discard-backed archive status; RelationshipProfilePolicy
+and policy scopes restrict CRUD, archive, search, and filter access to the
+signed-in owner.
 
 ## Why It Matters
 
@@ -95,13 +104,15 @@ stores.
 - `app/controllers/relationship_profiles_controller.rb`
 - `app/policies/relationship_profile_policy.rb`
 - `app/views/relationship_profiles/show.html.erb`
+- `app/views/relationship_profiles/_form.html.erb`
+- `app/javascript/application.js`
 - `config/routes.rb`
-- `db/migrate/20260625120000_create_relationship_profiles.rb`
+- `db/migrate/20260625121400_move_relationship_notes_to_action_text.rb`
 - `db/migrate/20260625120300_create_relationship_preferences.rb`
 
 ## Verification
 
-- `bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_preference_spec.rb`
+- `bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb`
 - `bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb`
 - `bundle exec rspec spec/requests/relationship_profiles_spec.rb`
 - `bundle exec rspec`

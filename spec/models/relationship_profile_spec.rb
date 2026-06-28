@@ -8,10 +8,9 @@
 #  discarded_at           :datetime
 #  first_name             :string           not null
 #  last_name              :string
-#  notes                  :text
 #  preferred_name         :string
-#  private_notes          :text
 #  pronouns               :string
+#  relationship_type_name :string
 #  slug                   :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
@@ -19,16 +18,17 @@
 #
 # Indexes
 #
-#  index_relationship_profiles_on_first_name               (first_name)
-#  index_relationship_profiles_on_last_name                (last_name)
-#  index_relationship_profiles_on_preferred_name           (preferred_name)
-#  index_relationship_profiles_on_slug                    (slug) UNIQUE
-#  index_relationship_profiles_on_user_id                  (user_id)
-#  index_relationship_profiles_on_user_id_and_discarded_at (user_id,discarded_at)
+#  index_relationship_profiles_on_first_name                (first_name)
+#  index_relationship_profiles_on_last_name                 (last_name)
+#  index_relationship_profiles_on_preferred_name            (preferred_name)
+#  index_relationship_profiles_on_relationship_type_name    (relationship_type_name)
+#  index_relationship_profiles_on_slug                      (slug) UNIQUE
+#  index_relationship_profiles_on_user_id                   (user_id)
+#  index_relationship_profiles_on_user_id_and_discarded_at  (user_id,discarded_at)
 #
 # Foreign Keys
 #
-#  fk_rails_...                         (user_id => users.id)
+#  fk_rails_...  (user_id => users.id)
 #
 require "rails_helper"
 
@@ -67,7 +67,15 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(profile.structured_preferences_text).to eq("Coffee: decaf\nTopics: books")
   end
 
+  it "stores profile notes as rich text" do
+    profile = create(:relationship_profile, notes: "<p>Bring <strong>tea</strong>.</p>")
+
+    expect(profile.notes.to_plain_text).to include("Bring tea.")
+    expect(described_class.reflect_on_association(:rich_text_notes)).to be_present
+    expect(described_class.reflect_on_association(:rich_text_private_notes)).to be_present
+  end
+
   it "allows Ransack to search profile and relationship type fields" do
-    expect(described_class.ransackable_attributes).to include("first_name", "preferred_name", "notes", "relationship_type_name")
+    expect(described_class.ransackable_attributes).to include("first_name", "preferred_name", "relationship_type_name")
   end
 end

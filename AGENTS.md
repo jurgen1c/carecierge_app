@@ -151,6 +151,9 @@ Use `bin/memory templates list` and `bin/memory templates show <template>` befor
 - Noticed
 - FriendlyId: https://github.com/norman/friendly_id
 - Discard: https://github.com/jhawthorn/discard
+- Action Text: https://guides.rubyonrails.org/action_text_overview.html
+- Active Storage: https://guides.rubyonrails.org/active_storage_overview.html
+- Lexxy: https://github.com/basecamp/lexxy
 
 ## Documentation & Developer Experience
 - DX Writer: maintains developer-facing docs, runbooks, setup instructions, and "how to test" notes.

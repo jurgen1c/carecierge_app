@@ -42,6 +42,18 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).not_to include("Rafa")
     end
 
+    it "searches rich text profile notes" do
+      user = create(:user)
+      visible = create(:relationship_profile, user:, first_name: "Maya", notes: "<p>Met through the neighborhood garden.</p>")
+      create(:relationship_profile, user:, first_name: "Nora", notes: "<p>Prefers quiet dinners.</p>")
+      sign_in user
+
+      get relationship_profiles_path, params: { q: { first_name_or_last_name_or_preferred_name_or_notes_or_relationship_type_name_cont: "garden" } }
+
+      expect(response.body).to include(visible.full_name)
+      expect(response.body).not_to include("Nora")
+    end
+
     it "ignores malformed search params" do
       user = create(:user)
       profile = create(:relationship_profile, user:, first_name: "Maya")
@@ -65,6 +77,7 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(I18n.t("relationship_profiles.new.heading", locale: :es))
       expect(response.body).to include(I18n.t("relationship_profiles.form.private_notes", locale: :es))
+      expect(response.body).to include("<lexxy-editor")
     end
   end
 
@@ -126,6 +139,8 @@ RSpec.describe "Relationship profiles", type: :request do
       profile = RelationshipProfile.find_by!(first_name: "Maya")
       expect(profile.user).to eq(user)
       expect(profile.relationship_type_name).to eq("Friend")
+      expect(profile.notes.to_plain_text).to include("Met through the neighborhood garden.")
+      expect(profile.private_notes.to_plain_text).to include("Prefers low-key check-ins.")
       expect(profile.structured_preferences).to include("Coffee" => "decaf", "Topics" => "books")
       expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ], [ "phone", "+506 8888 0000" ])
       expect(response).to redirect_to(relationship_profile_path(profile))
@@ -179,7 +194,7 @@ RSpec.describe "Relationship profiles", type: :request do
 
       expect(profile.reload.first_name).to eq("Amaya")
       expect(response).to redirect_to(relationship_profile_path(profile))
-      expect(profile.private_notes).to eq("Updated sensitive context.")
+      expect(profile.private_notes.to_plain_text).to include("Updated sensitive context.")
     end
 
     it "preserves relationship details omitted from a partial update" do

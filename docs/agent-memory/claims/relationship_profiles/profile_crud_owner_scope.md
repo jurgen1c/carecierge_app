@@ -10,7 +10,7 @@ title: Relationship profile CRUD is owner scoped
 
 claim: >
   Relationship profiles are authenticated, user-owned records for core details,
-  localized and searchable Rails STI-backed relationship types across common
+  localized and searchable namespaced Rails STI-backed relationship types across common
   family, romantic, work, school, community, care, and professional categories,
   nested add/edit/remove contact methods, associated add/edit/remove Lexxy/Action
   Text-backed rich relationship notes, associated add/edit/remove structured
@@ -24,63 +24,63 @@ claim: >
 source_files:
   - app/models/user.rb
   - app/models/relationship_profile.rb
-  - app/models/acquaintance_relationship_profile.rb
-  - app/models/advisor_relationship_profile.rb
-  - app/models/aunt_relationship_profile.rb
-  - app/models/best_friend_relationship_profile.rb
-  - app/models/boss_relationship_profile.rb
-  - app/models/brother_relationship_profile.rb
-  - app/models/business_partner_relationship_profile.rb
-  - app/models/caregiver_relationship_profile.rb
-  - app/models/care_recipient_relationship_profile.rb
-  - app/models/child_relationship_profile.rb
-  - app/models/classmate_relationship_profile.rb
-  - app/models/client_relationship_profile.rb
-  - app/models/coach_relationship_profile.rb
-  - app/models/community_member_relationship_profile.rb
-  - app/models/cousin_relationship_profile.rb
-  - app/models/coworker_relationship_profile.rb
-  - app/models/customer_relationship_profile.rb
-  - app/models/daughter_relationship_profile.rb
-  - app/models/direct_report_relationship_profile.rb
-  - app/models/doctor_relationship_profile.rb
-  - app/models/extended_family_relationship_profile.rb
-  - app/models/friend_relationship_profile.rb
-  - app/models/family_relationship_profile.rb
-  - app/models/father_relationship_profile.rb
-  - app/models/fiance_relationship_profile.rb
-  - app/models/fiancee_relationship_profile.rb
-  - app/models/grandchild_relationship_profile.rb
-  - app/models/grandfather_relationship_profile.rb
-  - app/models/grandmother_relationship_profile.rb
-  - app/models/grandparent_relationship_profile.rb
-  - app/models/guardian_relationship_profile.rb
-  - app/models/housemate_relationship_profile.rb
-  - app/models/in_law_relationship_profile.rb
-  - app/models/manager_relationship_profile.rb
-  - app/models/mentor_relationship_profile.rb
-  - app/models/mentee_relationship_profile.rb
-  - app/models/mother_relationship_profile.rb
-  - app/models/colleague_relationship_profile.rb
-  - app/models/neighbor_relationship_profile.rb
-  - app/models/nephew_relationship_profile.rb
-  - app/models/niece_relationship_profile.rb
-  - app/models/other_relationship_profile.rb
-  - app/models/parent_relationship_profile.rb
-  - app/models/partner_relationship_profile.rb
-  - app/models/roommate_relationship_profile.rb
-  - app/models/sibling_relationship_profile.rb
-  - app/models/significant_other_relationship_profile.rb
-  - app/models/sister_relationship_profile.rb
-  - app/models/son_relationship_profile.rb
-  - app/models/spouse_relationship_profile.rb
-  - app/models/stepparent_relationship_profile.rb
-  - app/models/student_relationship_profile.rb
-  - app/models/teacher_relationship_profile.rb
-  - app/models/teammate_relationship_profile.rb
-  - app/models/therapist_relationship_profile.rb
-  - app/models/uncle_relationship_profile.rb
-  - app/models/vendor_relationship_profile.rb
+  - app/models/relationship_profiles/acquaintance.rb
+  - app/models/relationship_profiles/advisor.rb
+  - app/models/relationship_profiles/aunt.rb
+  - app/models/relationship_profiles/best_friend.rb
+  - app/models/relationship_profiles/boss.rb
+  - app/models/relationship_profiles/brother.rb
+  - app/models/relationship_profiles/business_partner.rb
+  - app/models/relationship_profiles/caregiver.rb
+  - app/models/relationship_profiles/care_recipient.rb
+  - app/models/relationship_profiles/child.rb
+  - app/models/relationship_profiles/classmate.rb
+  - app/models/relationship_profiles/client.rb
+  - app/models/relationship_profiles/coach.rb
+  - app/models/relationship_profiles/community_member.rb
+  - app/models/relationship_profiles/cousin.rb
+  - app/models/relationship_profiles/coworker.rb
+  - app/models/relationship_profiles/customer.rb
+  - app/models/relationship_profiles/daughter.rb
+  - app/models/relationship_profiles/direct_report.rb
+  - app/models/relationship_profiles/doctor.rb
+  - app/models/relationship_profiles/extended_family.rb
+  - app/models/relationship_profiles/friend.rb
+  - app/models/relationship_profiles/family.rb
+  - app/models/relationship_profiles/father.rb
+  - app/models/relationship_profiles/fiance.rb
+  - app/models/relationship_profiles/fiancee.rb
+  - app/models/relationship_profiles/grandchild.rb
+  - app/models/relationship_profiles/grandfather.rb
+  - app/models/relationship_profiles/grandmother.rb
+  - app/models/relationship_profiles/grandparent.rb
+  - app/models/relationship_profiles/guardian.rb
+  - app/models/relationship_profiles/housemate.rb
+  - app/models/relationship_profiles/in_law.rb
+  - app/models/relationship_profiles/manager.rb
+  - app/models/relationship_profiles/mentor.rb
+  - app/models/relationship_profiles/mentee.rb
+  - app/models/relationship_profiles/mother.rb
+  - app/models/relationship_profiles/colleague.rb
+  - app/models/relationship_profiles/neighbor.rb
+  - app/models/relationship_profiles/nephew.rb
+  - app/models/relationship_profiles/niece.rb
+  - app/models/relationship_profiles/other.rb
+  - app/models/relationship_profiles/parent.rb
+  - app/models/relationship_profiles/partner.rb
+  - app/models/relationship_profiles/roommate.rb
+  - app/models/relationship_profiles/sibling.rb
+  - app/models/relationship_profiles/significant_other.rb
+  - app/models/relationship_profiles/sister.rb
+  - app/models/relationship_profiles/son.rb
+  - app/models/relationship_profiles/spouse.rb
+  - app/models/relationship_profiles/stepparent.rb
+  - app/models/relationship_profiles/student.rb
+  - app/models/relationship_profiles/teacher.rb
+  - app/models/relationship_profiles/teammate.rb
+  - app/models/relationship_profiles/therapist.rb
+  - app/models/relationship_profiles/uncle.rb
+  - app/models/relationship_profiles/vendor.rb
   - app/models/contact_method.rb
   - app/models/relationship_note.rb
   - app/models/relationship_preference.rb
@@ -117,63 +117,63 @@ related_files:
 symbols:
   - User
   - RelationshipProfile
-  - AcquaintanceRelationshipProfile
-  - AdvisorRelationshipProfile
-  - AuntRelationshipProfile
-  - BestFriendRelationshipProfile
-  - BossRelationshipProfile
-  - BrotherRelationshipProfile
-  - BusinessPartnerRelationshipProfile
-  - CaregiverRelationshipProfile
-  - CareRecipientRelationshipProfile
-  - ChildRelationshipProfile
-  - ClassmateRelationshipProfile
-  - ClientRelationshipProfile
-  - CoachRelationshipProfile
-  - CommunityMemberRelationshipProfile
-  - CousinRelationshipProfile
-  - CoworkerRelationshipProfile
-  - CustomerRelationshipProfile
-  - DaughterRelationshipProfile
-  - DirectReportRelationshipProfile
-  - DoctorRelationshipProfile
-  - ExtendedFamilyRelationshipProfile
-  - FriendRelationshipProfile
-  - FamilyRelationshipProfile
-  - FatherRelationshipProfile
-  - FianceRelationshipProfile
-  - FianceeRelationshipProfile
-  - GrandchildRelationshipProfile
-  - GrandfatherRelationshipProfile
-  - GrandmotherRelationshipProfile
-  - GrandparentRelationshipProfile
-  - GuardianRelationshipProfile
-  - HousemateRelationshipProfile
-  - InLawRelationshipProfile
-  - ManagerRelationshipProfile
-  - MentorRelationshipProfile
-  - MenteeRelationshipProfile
-  - MotherRelationshipProfile
-  - ColleagueRelationshipProfile
-  - NeighborRelationshipProfile
-  - NephewRelationshipProfile
-  - NieceRelationshipProfile
-  - OtherRelationshipProfile
-  - ParentRelationshipProfile
-  - PartnerRelationshipProfile
-  - RoommateRelationshipProfile
-  - SiblingRelationshipProfile
-  - SignificantOtherRelationshipProfile
-  - SisterRelationshipProfile
-  - SonRelationshipProfile
-  - SpouseRelationshipProfile
-  - StepparentRelationshipProfile
-  - StudentRelationshipProfile
-  - TeacherRelationshipProfile
-  - TeammateRelationshipProfile
-  - TherapistRelationshipProfile
-  - UncleRelationshipProfile
-  - VendorRelationshipProfile
+  - RelationshipProfiles::Acquaintance
+  - RelationshipProfiles::Advisor
+  - RelationshipProfiles::Aunt
+  - RelationshipProfiles::BestFriend
+  - RelationshipProfiles::Boss
+  - RelationshipProfiles::Brother
+  - RelationshipProfiles::BusinessPartner
+  - RelationshipProfiles::Caregiver
+  - RelationshipProfiles::CareRecipient
+  - RelationshipProfiles::Child
+  - RelationshipProfiles::Classmate
+  - RelationshipProfiles::Client
+  - RelationshipProfiles::Coach
+  - RelationshipProfiles::CommunityMember
+  - RelationshipProfiles::Cousin
+  - RelationshipProfiles::Coworker
+  - RelationshipProfiles::Customer
+  - RelationshipProfiles::Daughter
+  - RelationshipProfiles::DirectReport
+  - RelationshipProfiles::Doctor
+  - RelationshipProfiles::ExtendedFamily
+  - RelationshipProfiles::Friend
+  - RelationshipProfiles::Family
+  - RelationshipProfiles::Father
+  - RelationshipProfiles::Fiance
+  - RelationshipProfiles::Fiancee
+  - RelationshipProfiles::Grandchild
+  - RelationshipProfiles::Grandfather
+  - RelationshipProfiles::Grandmother
+  - RelationshipProfiles::Grandparent
+  - RelationshipProfiles::Guardian
+  - RelationshipProfiles::Housemate
+  - RelationshipProfiles::InLaw
+  - RelationshipProfiles::Manager
+  - RelationshipProfiles::Mentor
+  - RelationshipProfiles::Mentee
+  - RelationshipProfiles::Mother
+  - RelationshipProfiles::Colleague
+  - RelationshipProfiles::Neighbor
+  - RelationshipProfiles::Nephew
+  - RelationshipProfiles::Niece
+  - RelationshipProfiles::Other
+  - RelationshipProfiles::Parent
+  - RelationshipProfiles::Partner
+  - RelationshipProfiles::Roommate
+  - RelationshipProfiles::Sibling
+  - RelationshipProfiles::SignificantOther
+  - RelationshipProfiles::Sister
+  - RelationshipProfiles::Son
+  - RelationshipProfiles::Spouse
+  - RelationshipProfiles::Stepparent
+  - RelationshipProfiles::Student
+  - RelationshipProfiles::Teacher
+  - RelationshipProfiles::Teammate
+  - RelationshipProfiles::Therapist
+  - RelationshipProfiles::Uncle
+  - RelationshipProfiles::Vendor
   - ContactMethod
   - RelationshipNote
   - RelationshipPreference
@@ -208,7 +208,7 @@ last_verified_commit: null
 ## Claim
 
 Relationship profiles are authenticated, user-owned records for core details,
-localized and searchable Rails STI-backed relationship types across common
+localized and searchable namespaced Rails STI-backed relationship types across common
 family, romantic, work, school, community, care, and professional categories,
 nested add/edit/remove contact methods, associated add/edit/remove Lexxy/Action
 Text-backed rich relationship notes, associated add/edit/remove structured
@@ -229,13 +229,13 @@ stores.
 ## Evidence
 
 - `app/models/relationship_profile.rb`
-- `app/models/*_relationship_profile.rb`
-- `app/models/friend_relationship_profile.rb`
-- `app/models/family_relationship_profile.rb`
-- `app/models/mentor_relationship_profile.rb`
-- `app/models/colleague_relationship_profile.rb`
-- `app/models/neighbor_relationship_profile.rb`
-- `app/models/other_relationship_profile.rb`
+- `app/models/relationship_profiles/*.rb`
+- `app/models/relationship_profiles/friend.rb`
+- `app/models/relationship_profiles/family.rb`
+- `app/models/relationship_profiles/mentor.rb`
+- `app/models/relationship_profiles/colleague.rb`
+- `app/models/relationship_profiles/neighbor.rb`
+- `app/models/relationship_profiles/other.rb`
 - `app/models/user.rb`
 - `app/models/relationship_preference.rb`
 - `app/queries/relationship_profile/search_query.rb`

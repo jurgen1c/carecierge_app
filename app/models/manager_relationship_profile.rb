@@ -1,2 +1,0 @@
-class ManagerRelationshipProfile < RelationshipProfile
-end

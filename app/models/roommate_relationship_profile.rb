@@ -1,2 +1,0 @@
-class RoommateRelationshipProfile < RelationshipProfile
-end

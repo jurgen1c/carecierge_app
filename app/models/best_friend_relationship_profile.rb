@@ -1,2 +1,0 @@
-class BestFriendRelationshipProfile < RelationshipProfile
-end

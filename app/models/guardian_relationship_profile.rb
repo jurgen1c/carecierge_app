@@ -1,2 +1,0 @@
-class GuardianRelationshipProfile < RelationshipProfile
-end

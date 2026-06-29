@@ -1,2 +1,0 @@
-class VendorRelationshipProfile < RelationshipProfile
-end

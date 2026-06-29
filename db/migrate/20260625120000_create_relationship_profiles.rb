@@ -6,7 +6,7 @@ class CreateRelationshipProfiles < ActiveRecord::Migration[8.1]
       t.string :last_name
       t.string :preferred_name
       t.string :pronouns
-      t.string :relationship_type_name
+      t.string :type, null: false
       t.date :birthday
       t.text :notes
       t.text :private_notes
@@ -20,7 +20,7 @@ class CreateRelationshipProfiles < ActiveRecord::Migration[8.1]
     add_index :relationship_profiles, :first_name
     add_index :relationship_profiles, :last_name
     add_index :relationship_profiles, :preferred_name
-    add_index :relationship_profiles, :relationship_type_name
+    add_index :relationship_profiles, :type
     add_index :relationship_profiles, :slug, unique: true
   end
 end

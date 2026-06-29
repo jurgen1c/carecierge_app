@@ -1,2 +1,0 @@
-class AdvisorRelationshipProfile < RelationshipProfile
-end

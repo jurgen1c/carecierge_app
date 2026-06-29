@@ -1,2 +1,0 @@
-class BossRelationshipProfile < RelationshipProfile
-end

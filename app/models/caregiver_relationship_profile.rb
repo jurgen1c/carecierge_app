@@ -1,2 +1,0 @@
-class CaregiverRelationshipProfile < RelationshipProfile
-end

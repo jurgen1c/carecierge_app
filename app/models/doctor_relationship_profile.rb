@@ -1,2 +1,0 @@
-class DoctorRelationshipProfile < RelationshipProfile
-end

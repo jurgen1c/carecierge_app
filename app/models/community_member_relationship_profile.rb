@@ -1,2 +1,0 @@
-class CommunityMemberRelationshipProfile < RelationshipProfile
-end

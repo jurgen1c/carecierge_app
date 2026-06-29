@@ -33,7 +33,7 @@
 FactoryBot.define do
   factory :relationship_profile do
     user
-    type { "FriendRelationshipProfile" }
+    type { "RelationshipProfiles::Friend" }
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }
     preferred_name { nil }

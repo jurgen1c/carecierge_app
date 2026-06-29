@@ -1,2 +1,0 @@
-class ExtendedFamilyRelationshipProfile < RelationshipProfile
-end

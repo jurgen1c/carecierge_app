@@ -1,2 +1,0 @@
-class ParentRelationshipProfile < RelationshipProfile
-end

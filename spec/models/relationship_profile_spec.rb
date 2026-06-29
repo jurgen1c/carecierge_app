@@ -95,32 +95,32 @@ RSpec.describe RelationshipProfile, type: :model do
   end
 
   it "uses STI types as the relationship type source for forms" do
-    profile = create(:relationship_profile, type: "MentorRelationshipProfile")
+    profile = create(:relationship_profile, type: "RelationshipProfiles::Mentor")
 
     reloaded_profile = described_class.find(profile.id)
 
-    expect(reloaded_profile).to be_a(MentorRelationshipProfile)
+    expect(reloaded_profile).to be_a(RelationshipProfiles::Mentor)
     expect(reloaded_profile.relationship_type_label).to eq("Mentor")
-    expect(described_class.type_options).to include([ "Friend", "FriendRelationshipProfile" ])
+    expect(described_class.type_options).to include([ "Friend", "RelationshipProfiles::Friend" ])
   end
 
   it "localizes relationship type labels" do
-    profile = build(:relationship_profile, type: "BestFriendRelationshipProfile")
+    profile = build(:relationship_profile, type: "RelationshipProfiles::BestFriend")
 
     I18n.with_locale(:es) do
       expect(profile.relationship_type_label).to eq("Mejor amigo")
-      expect(described_class.type_options).to include([ "Mejor amigo", "BestFriendRelationshipProfile" ])
+      expect(described_class.type_options).to include([ "Mejor amigo", "RelationshipProfiles::BestFriend" ])
     end
   end
 
   it "offers common family, romantic, work, and social STI relationship types" do
     expect(described_class.type_options).to include(
-      [ "Friend", "FriendRelationshipProfile" ],
-      [ "Spouse", "SpouseRelationshipProfile" ],
-      [ "Partner", "PartnerRelationshipProfile" ],
-      [ "Boss", "BossRelationshipProfile" ],
-      [ "Mother", "MotherRelationshipProfile" ],
-      [ "Other", "OtherRelationshipProfile" ]
+      [ "Friend", "RelationshipProfiles::Friend" ],
+      [ "Spouse", "RelationshipProfiles::Spouse" ],
+      [ "Partner", "RelationshipProfiles::Partner" ],
+      [ "Boss", "RelationshipProfiles::Boss" ],
+      [ "Mother", "RelationshipProfiles::Mother" ],
+      [ "Other", "RelationshipProfiles::Other" ]
     )
   end
 

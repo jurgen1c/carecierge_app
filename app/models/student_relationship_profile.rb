@@ -1,2 +1,0 @@
-class StudentRelationshipProfile < RelationshipProfile
-end

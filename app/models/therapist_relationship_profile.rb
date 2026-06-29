@@ -1,2 +1,0 @@
-class TherapistRelationshipProfile < RelationshipProfile
-end

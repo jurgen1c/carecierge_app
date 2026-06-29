@@ -1,2 +1,0 @@
-class NephewRelationshipProfile < RelationshipProfile
-end

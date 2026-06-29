@@ -26,7 +26,7 @@ RSpec.describe "Relationship profiles", type: :request do
 
     it "searches by profile details and filters archived profiles" do
       user = create(:user)
-      create(:relationship_profile, user:, first_name: "Rafa", preferred_name: "Coach", type: "MentorRelationshipProfile")
+      create(:relationship_profile, user:, first_name: "Rafa", preferred_name: "Coach", type: "RelationshipProfiles::Mentor")
       archived = create(:relationship_profile, user:, first_name: "Nora", last_name: "Lane", discarded_at: Time.current)
 
       sign_in user
@@ -138,7 +138,7 @@ RSpec.describe "Relationship profiles", type: :request do
             first_name: "Maya",
             last_name: "Rivera",
             preferred_name: "May",
-            type: "FriendRelationshipProfile",
+            type: "RelationshipProfiles::Friend",
             birthday: "1992-04-12",
             contact_methods_attributes: {
               "0" => { kind: "email", value: "maya@example.com" },
@@ -182,12 +182,12 @@ RSpec.describe "Relationship profiles", type: :request do
         post relationship_profiles_path, params: {
           relationship_profile: {
             first_name: "Kai",
-            type: "MentorRelationshipProfile"
+            type: "RelationshipProfiles::Mentor"
           }
         }
       end.to change(RelationshipProfile, :count).by(1)
 
-      expect(RelationshipProfile.find_by!(first_name: "Kai")).to be_a(MentorRelationshipProfile)
+      expect(RelationshipProfile.find_by!(first_name: "Kai")).to be_a(RelationshipProfiles::Mentor)
     end
 
     it "renders validation errors instead of raising for tampered relationship type and contact kind" do
@@ -278,7 +278,7 @@ RSpec.describe "Relationship profiles", type: :request do
 
     it "renders validation errors instead of raising when tampered update params include discriminators" do
       user = create(:user)
-      profile = create(:relationship_profile, user:, first_name: "Maya", type: "FriendRelationshipProfile")
+      profile = create(:relationship_profile, user:, first_name: "Maya", type: "RelationshipProfiles::Friend")
       contact_method = create(:contact_method, relationship_profile: profile, kind: "email", value: "maya@example.com")
       sign_in user
 
@@ -295,7 +295,7 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).to include("Relationship type is not included in the list")
       expect(response.body).to include("Contact methods kind")
       expect(response.body).to include("blank")
-      expect(profile.reload.type).to eq("FriendRelationshipProfile")
+      expect(profile.reload.type).to eq("RelationshipProfiles::Friend")
       expect(contact_method.reload.kind).to eq("email")
     end
 
@@ -304,7 +304,7 @@ RSpec.describe "Relationship profiles", type: :request do
       profile = create(
         :relationship_profile,
         user:,
-        type: "FriendRelationshipProfile"
+        type: "RelationshipProfiles::Friend"
       )
       create(:relationship_preference, relationship_profile: profile, key: "Coffee", value: "decaf")
       create(:contact_method, relationship_profile: profile, kind: "email", value: "maya@example.com")

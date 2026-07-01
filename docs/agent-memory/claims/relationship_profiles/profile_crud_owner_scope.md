@@ -1,0 +1,270 @@
+---
+id: relationship_profiles.profile_crud_owner_scope
+type: fact
+system: relationship_profiles
+status: current
+confidence: verified
+severity: important
+
+title: Relationship profile CRUD is owner scoped
+
+claim: >
+  Relationship profiles are authenticated, user-owned records for core details,
+  localized and searchable namespaced Rails STI-backed relationship types across common
+  family, romantic, work, school, community, care, and professional categories,
+  nested add/edit/remove contact methods with in-memory duplicate kind checks,
+  associated add/edit/remove Lexxy/Action Text-backed rich relationship notes,
+  associated add/edit/remove structured preferences and tags with in-memory
+  duplicate checks matching their normalized case-insensitive indexes, friendly
+  slugs, and discard-backed archive status;
+  RelationshipProfilesController sanitizes tampered STI and contact-kind
+  discriminator params before assignment, index preloads tags and rich notes for
+  profile cards, explicitly authorizes profiles after owner-scoped lookup, and
+  RelationshipProfilePolicy and policy scopes restrict CRUD, archive, search,
+  and filter access to the signed-in owner.
+
+source_files:
+  - app/models/user.rb
+  - app/models/relationship_profile.rb
+  - app/models/relationship_profiles/acquaintance.rb
+  - app/models/relationship_profiles/advisor.rb
+  - app/models/relationship_profiles/aunt.rb
+  - app/models/relationship_profiles/best_friend.rb
+  - app/models/relationship_profiles/boss.rb
+  - app/models/relationship_profiles/brother.rb
+  - app/models/relationship_profiles/business_partner.rb
+  - app/models/relationship_profiles/caregiver.rb
+  - app/models/relationship_profiles/care_recipient.rb
+  - app/models/relationship_profiles/child.rb
+  - app/models/relationship_profiles/classmate.rb
+  - app/models/relationship_profiles/client.rb
+  - app/models/relationship_profiles/coach.rb
+  - app/models/relationship_profiles/community_member.rb
+  - app/models/relationship_profiles/cousin.rb
+  - app/models/relationship_profiles/coworker.rb
+  - app/models/relationship_profiles/customer.rb
+  - app/models/relationship_profiles/daughter.rb
+  - app/models/relationship_profiles/direct_report.rb
+  - app/models/relationship_profiles/doctor.rb
+  - app/models/relationship_profiles/extended_family.rb
+  - app/models/relationship_profiles/friend.rb
+  - app/models/relationship_profiles/family.rb
+  - app/models/relationship_profiles/father.rb
+  - app/models/relationship_profiles/fiance.rb
+  - app/models/relationship_profiles/fiancee.rb
+  - app/models/relationship_profiles/grandchild.rb
+  - app/models/relationship_profiles/grandfather.rb
+  - app/models/relationship_profiles/grandmother.rb
+  - app/models/relationship_profiles/grandparent.rb
+  - app/models/relationship_profiles/guardian.rb
+  - app/models/relationship_profiles/housemate.rb
+  - app/models/relationship_profiles/in_law.rb
+  - app/models/relationship_profiles/manager.rb
+  - app/models/relationship_profiles/mentor.rb
+  - app/models/relationship_profiles/mentee.rb
+  - app/models/relationship_profiles/mother.rb
+  - app/models/relationship_profiles/colleague.rb
+  - app/models/relationship_profiles/neighbor.rb
+  - app/models/relationship_profiles/nephew.rb
+  - app/models/relationship_profiles/niece.rb
+  - app/models/relationship_profiles/other.rb
+  - app/models/relationship_profiles/parent.rb
+  - app/models/relationship_profiles/partner.rb
+  - app/models/relationship_profiles/roommate.rb
+  - app/models/relationship_profiles/sibling.rb
+  - app/models/relationship_profiles/significant_other.rb
+  - app/models/relationship_profiles/sister.rb
+  - app/models/relationship_profiles/son.rb
+  - app/models/relationship_profiles/spouse.rb
+  - app/models/relationship_profiles/stepparent.rb
+  - app/models/relationship_profiles/student.rb
+  - app/models/relationship_profiles/teacher.rb
+  - app/models/relationship_profiles/teammate.rb
+  - app/models/relationship_profiles/therapist.rb
+  - app/models/relationship_profiles/uncle.rb
+  - app/models/relationship_profiles/vendor.rb
+  - app/models/contact_method.rb
+  - app/models/relationship_note.rb
+  - app/models/relationship_preference.rb
+  - app/models/relationship_tag.rb
+  - app/queries/relationship_profile/search_query.rb
+  - app/controllers/relationship_profiles_controller.rb
+  - app/policies/relationship_profile_policy.rb
+  - config/routes.rb
+  - db/migrate/20260625120000_create_relationship_profiles.rb
+  - db/migrate/20260625120100_create_contact_methods.rb
+  - db/migrate/20260625120200_create_relationship_notes.rb
+  - db/migrate/20260625120300_create_relationship_preferences.rb
+  - db/migrate/20260625120400_create_relationship_tags.rb
+  - db/migrate/20260625120500_add_case_insensitive_relationship_indexes.rb
+  - db/migrate/20260625121000_add_relationship_profile_integrity_constraints.rb
+  - db/migrate/20260625121100_update_existing_relationship_profile_schema.rb
+  - db/migrate/20260625121200_create_active_storage_tables.active_storage.rb
+  - db/migrate/20260625121300_create_action_text_tables.action_text.rb
+  - db/migrate/20260625121400_move_relationship_notes_to_action_text.rb
+  - db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb
+
+related_files:
+  - app/javascript/application.js
+  - app/views/layouts/application.html.erb
+  - app/views/relationship_profiles/index.html.erb
+  - app/views/relationship_profiles/new.html.erb
+  - app/views/relationship_profiles/edit.html.erb
+  - app/views/relationship_profiles/_form.html.erb
+  - app/views/relationship_profiles/show.html.erb
+  - spec/requests/relationship_profiles_spec.rb
+  - spec/system/relationship_profile_edit_spec.rb
+  - config/locales/en.yml
+  - config/locales/es.yml
+symbols:
+  - User
+  - RelationshipProfile
+  - RelationshipProfiles::Acquaintance
+  - RelationshipProfiles::Advisor
+  - RelationshipProfiles::Aunt
+  - RelationshipProfiles::BestFriend
+  - RelationshipProfiles::Boss
+  - RelationshipProfiles::Brother
+  - RelationshipProfiles::BusinessPartner
+  - RelationshipProfiles::Caregiver
+  - RelationshipProfiles::CareRecipient
+  - RelationshipProfiles::Child
+  - RelationshipProfiles::Classmate
+  - RelationshipProfiles::Client
+  - RelationshipProfiles::Coach
+  - RelationshipProfiles::CommunityMember
+  - RelationshipProfiles::Cousin
+  - RelationshipProfiles::Coworker
+  - RelationshipProfiles::Customer
+  - RelationshipProfiles::Daughter
+  - RelationshipProfiles::DirectReport
+  - RelationshipProfiles::Doctor
+  - RelationshipProfiles::ExtendedFamily
+  - RelationshipProfiles::Friend
+  - RelationshipProfiles::Family
+  - RelationshipProfiles::Father
+  - RelationshipProfiles::Fiance
+  - RelationshipProfiles::Fiancee
+  - RelationshipProfiles::Grandchild
+  - RelationshipProfiles::Grandfather
+  - RelationshipProfiles::Grandmother
+  - RelationshipProfiles::Grandparent
+  - RelationshipProfiles::Guardian
+  - RelationshipProfiles::Housemate
+  - RelationshipProfiles::InLaw
+  - RelationshipProfiles::Manager
+  - RelationshipProfiles::Mentor
+  - RelationshipProfiles::Mentee
+  - RelationshipProfiles::Mother
+  - RelationshipProfiles::Colleague
+  - RelationshipProfiles::Neighbor
+  - RelationshipProfiles::Nephew
+  - RelationshipProfiles::Niece
+  - RelationshipProfiles::Other
+  - RelationshipProfiles::Parent
+  - RelationshipProfiles::Partner
+  - RelationshipProfiles::Roommate
+  - RelationshipProfiles::Sibling
+  - RelationshipProfiles::SignificantOther
+  - RelationshipProfiles::Sister
+  - RelationshipProfiles::Son
+  - RelationshipProfiles::Spouse
+  - RelationshipProfiles::Stepparent
+  - RelationshipProfiles::Student
+  - RelationshipProfiles::Teacher
+  - RelationshipProfiles::Teammate
+  - RelationshipProfiles::Therapist
+  - RelationshipProfiles::Uncle
+  - RelationshipProfiles::Vendor
+  - ContactMethod
+  - RelationshipNote
+  - RelationshipPreference
+  - RelationshipTag
+  - RelationshipProfile::SearchQuery
+  - RelationshipProfilesController
+  - RelationshipProfilePolicy
+routes:
+  - relationship_profiles
+  - relationship_profile
+  - archive_relationship_profile
+tags:
+  - relationship_profiles
+  - pundit
+  - ransack
+  - action_text
+  - lexxy
+  - privacy
+
+verification:
+  - bundle exec rspec spec/requests/relationship_profiles_spec.rb
+  - bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb
+  - bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb
+  - bundle exec rspec spec/system/relationship_profile_edit_spec.rb
+  - bundle exec rspec spec/system/relationship_profile_lexxy_spec.rb
+  - bundle exec rspec
+last_verified_commit: null
+---
+
+# Relationship profile CRUD is owner scoped
+
+## Claim
+
+Relationship profiles are authenticated, user-owned records for core details,
+localized and searchable namespaced Rails STI-backed relationship types across common
+family, romantic, work, school, community, care, and professional categories,
+nested add/edit/remove contact methods with in-memory duplicate kind checks,
+associated add/edit/remove Lexxy/Action Text-backed rich relationship notes,
+associated add/edit/remove structured preferences and tags with in-memory
+duplicate checks matching their normalized case-insensitive indexes, friendly
+slugs, and discard-backed archive status;
+`RelationshipProfilesController` sanitizes tampered STI and contact-kind
+discriminator params before assignment, index preloads tags and rich notes for
+profile cards, explicitly authorizes profiles after owner-scoped lookup, and
+`RelationshipProfilePolicy` and policy scopes restrict CRUD, archive, search,
+and filter access to the signed-in owner.
+
+## Why It Matters
+
+Relationship data is sensitive and foundational to Carecierge. Future reminders,
+automation, and sharing work should reference profiles through the owner-scoped
+relationship profile boundary rather than introducing parallel personal-context
+stores.
+
+## Evidence
+
+- `app/models/relationship_profile.rb`
+- `app/models/relationship_profiles/*.rb`
+- `app/models/relationship_profiles/friend.rb`
+- `app/models/relationship_profiles/family.rb`
+- `app/models/relationship_profiles/mentor.rb`
+- `app/models/relationship_profiles/colleague.rb`
+- `app/models/relationship_profiles/neighbor.rb`
+- `app/models/relationship_profiles/other.rb`
+- `app/models/user.rb`
+- `app/models/relationship_preference.rb`
+- `app/queries/relationship_profile/search_query.rb`
+- `app/controllers/relationship_profiles_controller.rb`
+- `app/policies/relationship_profile_policy.rb`
+- `app/views/relationship_profiles/show.html.erb`
+- `app/views/relationship_profiles/new.html.erb`
+- `app/views/relationship_profiles/edit.html.erb`
+- `app/views/relationship_profiles/_form.html.erb`
+- `spec/requests/relationship_profiles_spec.rb`
+- `spec/system/relationship_profile_edit_spec.rb`
+- `app/javascript/application.js`
+- `config/routes.rb`
+- `db/migrate/20260625120500_add_case_insensitive_relationship_indexes.rb`
+- `db/migrate/20260625121000_add_relationship_profile_integrity_constraints.rb`
+- `db/migrate/20260625121100_update_existing_relationship_profile_schema.rb`
+- `db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb`
+- `db/migrate/20260625121400_move_relationship_notes_to_action_text.rb`
+- `db/migrate/20260625120300_create_relationship_preferences.rb`
+
+## Verification
+
+- `bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb`
+- `bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb`
+- `bundle exec rspec spec/requests/relationship_profiles_spec.rb`
+- `bundle exec rspec spec/system/relationship_profile_edit_spec.rb`
+- `bundle exec rspec spec/system/relationship_profile_lexxy_spec.rb`
+- `bundle exec rspec`

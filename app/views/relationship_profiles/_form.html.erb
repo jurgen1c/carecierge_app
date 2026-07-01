@@ -1,0 +1,182 @@
+<% form_url = relationship_profile.persisted? ? relationship_profile_path(relationship_profile) : relationship_profiles_path %>
+
+<%= form_with model: relationship_profile, scope: :relationship_profile, url: form_url, class: "grid gap-6" do |form| %>
+  <% if relationship_profile.errors.any? %>
+    <section class="rounded-lg border border-red-200 bg-red-50 p-4" role="alert">
+      <h2 class="text-sm font-semibold text-red-950"><%= t(".errors_heading", count: relationship_profile.errors.count) %></h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-red-900">
+        <% relationship_profile.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <section class="rounded-xl border border-stone-200 bg-white p-5">
+    <h2 class="text-base font-semibold text-stone-950"><%= t(".core_details") %></h2>
+    <div class="mt-5 grid gap-4 md:grid-cols-2">
+      <div>
+        <%= form.label :first_name, t(".first_name"), class: "block text-sm font-medium text-stone-800" %>
+        <%= form.text_field :first_name, autocomplete: "given-name", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+      <div>
+        <%= form.label :last_name, t(".last_name"), class: "block text-sm font-medium text-stone-800" %>
+        <%= form.text_field :last_name, autocomplete: "family-name", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+      <div>
+        <%= form.label :preferred_name, t(".preferred_name"), class: "block text-sm font-medium text-stone-800" %>
+        <%= form.text_field :preferred_name, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+      <div>
+        <%= form.label :type, t(".relationship_type"), class: "block text-sm font-medium text-stone-800" %>
+        <%= form.select :type, RelationshipProfile.type_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+      <div>
+        <%= form.label :pronouns, t(".pronouns"), class: "block text-sm font-medium text-stone-800" %>
+        <%= form.text_field :pronouns, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+      <div>
+        <%= form.label :birthday, t(".birthday"), class: "block text-sm font-medium text-stone-800" %>
+        <%= form.date_field :birthday, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-stone-200 bg-white p-5">
+    <h2 class="text-base font-semibold text-stone-950"><%= t(".contact_details") %></h2>
+    <div class="mt-5 grid gap-4 md:grid-cols-2">
+      <%= form.fields_for :contact_methods, relationship_profile.contact_method_for("email"), child_index: 0 do |contact_fields| %>
+        <div>
+          <%= contact_fields.hidden_field :id if contact_fields.object.persisted? %>
+          <%= contact_fields.hidden_field :kind, value: "email" %>
+          <%= contact_fields.label :value, t(".email"), class: "block text-sm font-medium text-stone-800" %>
+          <%= contact_fields.email_field :value, autocomplete: "email", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if contact_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= form.fields_for :contact_methods, relationship_profile.contact_method_for("personal_phone"), child_index: 1 do |contact_fields| %>
+        <div>
+          <%= contact_fields.hidden_field :id if contact_fields.object.persisted? %>
+          <%= contact_fields.hidden_field :kind, value: "personal_phone" %>
+          <%= contact_fields.label :value, t(".personal_phone"), class: "block text-sm font-medium text-stone-800" %>
+          <%= contact_fields.telephone_field :value, autocomplete: "tel", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if contact_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= form.fields_for :contact_methods, relationship_profile.contact_method_for("business_phone"), child_index: 2 do |contact_fields| %>
+        <div>
+          <%= contact_fields.hidden_field :id if contact_fields.object.persisted? %>
+          <%= contact_fields.hidden_field :kind, value: "business_phone" %>
+          <%= contact_fields.label :value, t(".business_phone"), class: "block text-sm font-medium text-stone-800" %>
+          <%= contact_fields.telephone_field :value, autocomplete: "tel", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if contact_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-stone-200 bg-white p-5">
+    <h2 class="text-base font-semibold text-stone-950"><%= t(".context_title") %></h2>
+    <div class="mt-5 grid gap-4">
+      <%= form.fields_for :relationship_notes, relationship_profile.public_note, child_index: 0 do |note_fields| %>
+        <div>
+          <%= note_fields.hidden_field :id if note_fields.object.persisted? %>
+          <%= note_fields.hidden_field :private, value: "0" %>
+          <%= note_fields.hidden_field :category, value: "General" %>
+          <%= note_fields.label :body, t(".notes"), class: "block text-sm font-medium text-stone-800" %>
+          <%= note_fields.rich_text_area :body, class: "lexxy-content mt-2 min-h-32 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if note_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= note_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= note_fields.label :_destroy, t(".remove_note"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= form.fields_for :relationship_notes, relationship_profile.private_note, child_index: 1 do |note_fields| %>
+        <div>
+          <%= note_fields.hidden_field :id if note_fields.object.persisted? %>
+          <%= note_fields.hidden_field :private, value: "1" %>
+          <%= note_fields.hidden_field :category, value: "Private" %>
+          <%= note_fields.label :body, t(".private_notes"), class: "block text-sm font-medium text-stone-800" %>
+          <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".private_notes_hint") %></p>
+          <%= note_fields.rich_text_area :body, class: "lexxy-content mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if note_fields.object.persisted? %>
+            <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+              <%= note_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+              <%= note_fields.label :_destroy, t(".remove_private_note"), class: "font-medium text-stone-700" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div>
+        <h3 class="text-sm font-medium text-stone-800"><%= t(".structured_preferences") %></h3>
+        <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".structured_preferences_hint") %></p>
+        <div class="mt-3 grid gap-3 md:grid-cols-2">
+          <% relationship_profile.preference_slots.each_with_index do |preference, index| %>
+            <%= form.fields_for :relationship_preferences, preference, child_index: index do |preference_fields| %>
+              <div class="grid gap-2">
+                <%= preference_fields.hidden_field :id if preference_fields.object.persisted? %>
+                <%= preference_fields.label :key, t(".preference_key"), class: "text-sm font-medium text-stone-800" %>
+                <%= preference_fields.text_field :key, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <%= preference_fields.label :value, t(".preference_value"), class: "text-sm font-medium text-stone-800" %>
+                <%= preference_fields.text_field :value, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <% if preference_fields.object.persisted? %>
+                  <div class="flex items-center gap-2 text-sm text-stone-700">
+                    <%= preference_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+                    <%= preference_fields.label :_destroy, t(".remove_preference"), class: "font-medium text-stone-700" %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-medium text-stone-800"><%= t(".tags") %></h3>
+        <div class="mt-3 grid gap-3 md:grid-cols-3">
+          <% relationship_profile.tag_slots.each_with_index do |tag, index| %>
+            <%= form.fields_for :relationship_tags, tag, child_index: index do |tag_fields| %>
+              <div>
+                <%= tag_fields.hidden_field :id if tag_fields.object.persisted? %>
+                <%= tag_fields.label :name, t(".tag_name"), class: "sr-only" %>
+                <%= tag_fields.text_field :name, placeholder: t(".tag_name_placeholder"), class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 placeholder:text-stone-500 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <% if tag_fields.object.persisted? %>
+                  <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+                    <%= tag_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+                    <%= tag_fields.label :_destroy, t(".remove_tag"), class: "font-medium text-stone-700" %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <%= form.submit t(".submit"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <%= link_to t(".cancel"), relationship_profiles_path, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+  </div>
+<% end %>

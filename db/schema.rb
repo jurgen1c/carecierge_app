@@ -10,10 +10,60 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_210646) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "action_text_rich_texts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.uuid "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
+
+  create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.uuid "record_id", null: false
+    t.string "record_type", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.string "content_type"
+    t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "contact_methods", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "kind", null: false
+    t.string "label"
+    t.boolean "preferred", default: false, null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "value", null: false
+    t.index ["relationship_profile_id", "kind"], name: "index_contact_methods_on_relationship_profile_id_and_kind", unique: true
+    t.index ["relationship_profile_id"], name: "index_contact_methods_on_relationship_profile_id"
+  end
 
   create_table "feature_flag_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -88,6 +138,56 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_210646) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "relationship_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.boolean "private", default: false, null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "private"], name: "idx_on_relationship_profile_id_private_777e9fc47b"
+    t.index ["relationship_profile_id"], name: "index_relationship_notes_on_relationship_profile_id"
+  end
+
+  create_table "relationship_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "value", null: false
+    t.index "relationship_profile_id, lower((key)::text)", name: "idx_relationship_preferences_on_profile_and_lower_key", unique: true
+    t.index ["relationship_profile_id"], name: "index_relationship_preferences_on_relationship_profile_id"
+  end
+
+  create_table "relationship_profiles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.date "birthday"
+    t.datetime "created_at", null: false
+    t.datetime "discarded_at"
+    t.string "first_name", null: false
+    t.string "last_name"
+    t.string "preferred_name"
+    t.string "pronouns"
+    t.string "slug"
+    t.string "type", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["first_name"], name: "index_relationship_profiles_on_first_name"
+    t.index ["last_name"], name: "index_relationship_profiles_on_last_name"
+    t.index ["preferred_name"], name: "index_relationship_profiles_on_preferred_name"
+    t.index ["slug"], name: "index_relationship_profiles_on_slug", unique: true
+    t.index ["type"], name: "index_relationship_profiles_on_type"
+    t.index ["user_id", "discarded_at"], name: "index_relationship_profiles_on_user_id_and_discarded_at"
+    t.index ["user_id"], name: "index_relationship_profiles_on_user_id"
+  end
+
+  create_table "relationship_tags", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index "relationship_profile_id, lower((name)::text)", name: "index_relationship_tags_on_profile_id_and_lower_name", unique: true
+    t.index ["relationship_profile_id"], name: "index_relationship_tags_on_relationship_profile_id"
+  end
+
   create_table "rollout_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.jsonb "criteria", default: {}, null: false
@@ -130,7 +230,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_210646) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "contact_methods", "relationship_profiles"
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
+  add_foreign_key "relationship_notes", "relationship_profiles"
+  add_foreign_key "relationship_preferences", "relationship_profiles"
+  add_foreign_key "relationship_profiles", "users"
+  add_foreign_key "relationship_tags", "relationship_profiles"
 end

@@ -36,3 +36,8 @@ edges:
     relation: same_area
     reason: Both claims describe the admin feature flag control surface and future write behavior.
     strength: 55
+  - source: relationship_profiles.profile_crud_owner_scope
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Relationship profile CRUD is authenticated and scoped to the signed-in profile owner.
+    strength: 85

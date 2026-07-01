@@ -1,7 +1,5 @@
 module Admin
   class FeatureFlagsController < ApplicationController
-    before_action :authenticate_user!
-
     def index
       authorize FeatureFlag
 

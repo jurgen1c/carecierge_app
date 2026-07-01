@@ -149,14 +149,20 @@ Use `bin/memory templates list` and `bin/memory templates show <template>` befor
 - FactoryBot Rails: https://github.com/thoughtbot/factory_bot_rails
 - Lookbook (ViewComponent previews): https://lookbook.build/
 - Noticed
+- FriendlyId: https://github.com/norman/friendly_id
+- Discard: https://github.com/jhawthorn/discard
+- Action Text: https://guides.rubyonrails.org/action_text_overview.html
+- Active Storage: https://guides.rubyonrails.org/active_storage_overview.html
+- Lexxy: https://github.com/basecamp/lexxy
 
 ## Documentation & Developer Experience
 - DX Writer: maintains developer-facing docs, runbooks, setup instructions, and "how to test" notes.
   - DX Writer writes/updates non-memory documentation directly (e.g., README, runbooks) within scope.
 - Local CI is the source of truth for PR verification:
   - `bin/setup` must configure `core.hooksPath` to `.githooks`.
-  - Agents must use normal `git push`; do not use `--no-verify` or `TRAIL_CROWD_AFTER_PUSH_CI=false` unless the user explicitly approves bypassing the after-push local CI queue.
-  - After pushing, check the `local-ci-after-push.log` file in the actual git directory (normally `.git/local-ci-after-push.log`) or run `bin/ci` directly to verify that local CI passed and `gh signoff` reported the commit status.
+  - Agents must use normal `git push`; do not use `--no-verify` unless the user explicitly approves bypassing hooks.
+  - After pushing, run `bin/ci` so RuboCop, ESLint, Bun audit, Bundler Audit, Brakeman, RSpec, and `gh signoff` verify the pushed commit.
+  - Use `CI_SIGNOFF=false bin/ci` only when explicitly asked to run the gate without writing the GitHub signoff status.
   - GitHub Actions CI is intentionally disabled for pull requests, pushes, and manual dispatch. Do not add a manual fallback workflow.
   - `gh signoff` intentionally requires the `gh` CLI and the `basecamp/gh-signoff` extension.
 

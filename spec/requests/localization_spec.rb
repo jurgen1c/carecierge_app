@@ -13,9 +13,9 @@ RSpec.describe "Localization baseline", type: :request do
       user.valid?
 
       expect(user.errors.full_messages).to include(
-        "Correo electronico no puede estar en blanco",
-        "Contrasena es demasiado corta; minimo 6 caracteres",
-        "Confirmar contrasena no coincide con Contrasena"
+        "Correo electrónico no puede estar en blanco",
+        "Contraseña es demasiado corta; mínimo 6 caracteres",
+        "Confirmar contraseña no coincide con Contraseña"
       )
 
       create(:user, email: "taken@example.com")
@@ -25,8 +25,8 @@ RSpec.describe "Localization baseline", type: :request do
       invalid_user.valid?
       duplicate_user.valid?
 
-      expect(invalid_user.errors.full_messages).to include("Correo electronico no es valido")
-      expect(duplicate_user.errors.full_messages).to include("Correo electronico ya esta en uso")
+      expect(invalid_user.errors.full_messages).to include("Correo electrónico no es válido")
+      expect(duplicate_user.errors.full_messages).to include("Correo electrónico ya está en uso")
     end
   end
 end

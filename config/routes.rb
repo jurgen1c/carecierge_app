@@ -13,6 +13,10 @@ Rails.application.routes.draw do
 
   get "dashboard" => "dashboard#index", as: :dashboard
 
+  resources :relationship_profiles do
+    patch :archive, on: :member
+  end
+
   namespace :admin do
     resources :feature_flags, only: :index
   end

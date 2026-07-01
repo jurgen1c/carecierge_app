@@ -44,6 +44,7 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [ :google_oauth2 ]
 
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
+  has_many :relationship_profiles, dependent: :destroy
 
   def self.from_google_oauth(auth)
     email = auth.info.email.to_s.downcase

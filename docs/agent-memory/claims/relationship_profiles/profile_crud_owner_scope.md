@@ -19,8 +19,9 @@ claim: >
   slugs, and discard-backed archive status;
   RelationshipProfilesController sanitizes tampered STI and contact-kind
   discriminator params before assignment, index preloads tags and rich notes for
-  profile cards, and RelationshipProfilePolicy and policy scopes restrict CRUD,
-  archive, search, and filter access to the signed-in owner.
+  profile cards, explicitly authorizes profiles after owner-scoped lookup, and
+  RelationshipProfilePolicy and policy scopes restrict CRUD, archive, search,
+  and filter access to the signed-in owner.
 
 source_files:
   - app/models/user.rb
@@ -218,8 +219,9 @@ duplicate checks matching their normalized case-insensitive indexes, friendly
 slugs, and discard-backed archive status;
 `RelationshipProfilesController` sanitizes tampered STI and contact-kind
 discriminator params before assignment, index preloads tags and rich notes for
-profile cards, and `RelationshipProfilePolicy` and policy scopes restrict CRUD,
-archive, search, and filter access to the signed-in owner.
+profile cards, explicitly authorizes profiles after owner-scoped lookup, and
+`RelationshipProfilePolicy` and policy scopes restrict CRUD, archive, search,
+and filter access to the signed-in owner.
 
 ## Why It Matters
 

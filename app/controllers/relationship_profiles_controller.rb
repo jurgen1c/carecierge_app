@@ -69,11 +69,12 @@ class RelationshipProfilesController < ApplicationController
   private
 
   def set_relationship_profile
-    @relationship_profile = authorize current_user
+    @relationship_profile = current_user
       .relationship_profiles
       .includes(:contact_methods, :relationship_preferences, :relationship_tags, relationship_notes: :rich_text_body)
       .friendly
       .find(params[:id])
+    authorize @relationship_profile
   end
 
   def relationship_profile_params

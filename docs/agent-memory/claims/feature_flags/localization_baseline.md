@@ -10,7 +10,7 @@ title: Feature flag user-facing copy keeps English and Spanish locales
 
 claim: >
   User-facing feature flag copy must keep English as the default locale while preserving Spanish
-  translations for admin registry and flag-related interface text.
+  translations with standard diacritics for admin registry and flag-related interface text.
 
 source_files:
   - app/views/admin/feature_flags/index.html.erb
@@ -36,7 +36,7 @@ last_verified_commit: 59c16d37d66419852ab109e5f68ef29f0a746e53
 ## Claim
 
 User-facing feature flag copy must keep English as the default locale while preserving Spanish
-translations for admin registry and flag-related interface text.
+translations with standard diacritics for admin registry and flag-related interface text.
 
 ## Why It Matters
 

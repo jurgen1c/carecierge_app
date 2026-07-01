@@ -111,8 +111,8 @@ RSpec.describe "Relationship profiles", type: :request do
       end
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Correo electronico")
-      expect(response.body).to include("Telefono")
+      expect(response.body).to include("Correo electrónico")
+      expect(response.body).to include("Teléfono")
     end
 
     it "uses friendly profile slugs in user-facing routes" do

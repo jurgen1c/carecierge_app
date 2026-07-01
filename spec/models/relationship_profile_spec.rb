@@ -67,6 +67,15 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(profile.structured_preferences_text).to eq("Coffee: decaf\nTopics: books")
   end
 
+  it "validates duplicate nested contact kinds before hitting database constraints" do
+    profile = build(:relationship_profile)
+    profile.contact_methods.build(kind: "email", value: "maya@example.com")
+    profile.contact_methods.build(kind: "email", value: "maya.alt@example.com")
+
+    expect(profile).not_to be_valid
+    expect(profile.errors[:contact_methods]).to include("contains duplicate kinds")
+  end
+
   it "validates duplicate nested preference keys before hitting database constraints" do
     profile = build(:relationship_profile)
     profile.relationship_preferences.build(key: "Coffee", value: "decaf")

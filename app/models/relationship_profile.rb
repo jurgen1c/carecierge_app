@@ -117,6 +117,7 @@ class RelationshipProfile < ApplicationRecord
   validates :first_name, presence: true
   validates :type, inclusion: { in: TYPE_LABELS.keys }
   validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_tags
+  validate :unique_nested_contact_kinds
   validate :unique_nested_preference_keys
   validate :unique_nested_tag_names
 
@@ -255,6 +256,12 @@ class RelationshipProfile < ApplicationRecord
 
   def default_type
     self.type = DEFAULT_TYPE if type.blank?
+  end
+
+  def unique_nested_contact_kinds
+    return unless duplicate_nested_value?(contact_methods, :kind)
+
+    errors.add(:contact_methods, "contains duplicate kinds")
   end
 
   def unique_nested_preference_keys

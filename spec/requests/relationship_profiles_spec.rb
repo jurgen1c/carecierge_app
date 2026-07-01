@@ -254,6 +254,26 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).to include("Relationship preferences contains duplicate keys")
       expect(response.body).to include("Relationship tags contains duplicate names")
     end
+
+    it "renders validation errors for duplicate nested contact kinds" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            contact_methods_attributes: {
+              "0" => { kind: "email", value: "kai@example.com" },
+              "1" => { kind: "email", value: "kai.alt@example.com" }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Contact methods contains duplicate kinds")
+    end
   end
 
   describe "PATCH /relationship_profiles/:id" do

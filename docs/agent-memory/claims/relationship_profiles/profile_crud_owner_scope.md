@@ -12,10 +12,11 @@ claim: >
   Relationship profiles are authenticated, user-owned records for core details,
   localized and searchable namespaced Rails STI-backed relationship types across common
   family, romantic, work, school, community, care, and professional categories,
-  nested add/edit/remove contact methods, associated add/edit/remove Lexxy/Action
-  Text-backed rich relationship notes, associated add/edit/remove structured
-  preferences and tags with in-memory duplicate checks matching their normalized
-  case-insensitive indexes, friendly slugs, and discard-backed archive status;
+  nested add/edit/remove contact methods with in-memory duplicate kind checks,
+  associated add/edit/remove Lexxy/Action Text-backed rich relationship notes,
+  associated add/edit/remove structured preferences and tags with in-memory
+  duplicate checks matching their normalized case-insensitive indexes, friendly
+  slugs, and discard-backed archive status;
   RelationshipProfilesController sanitizes tampered STI and contact-kind
   discriminator params before assignment, index preloads tags and rich notes for
   profile cards, and RelationshipProfilePolicy and policy scopes restrict CRUD,
@@ -210,10 +211,11 @@ last_verified_commit: null
 Relationship profiles are authenticated, user-owned records for core details,
 localized and searchable namespaced Rails STI-backed relationship types across common
 family, romantic, work, school, community, care, and professional categories,
-nested add/edit/remove contact methods, associated add/edit/remove Lexxy/Action
-Text-backed rich relationship notes, associated add/edit/remove structured
-preferences and tags with in-memory duplicate checks matching their normalized
-case-insensitive indexes, friendly slugs, and discard-backed archive status;
+nested add/edit/remove contact methods with in-memory duplicate kind checks,
+associated add/edit/remove Lexxy/Action Text-backed rich relationship notes,
+associated add/edit/remove structured preferences and tags with in-memory
+duplicate checks matching their normalized case-insensitive indexes, friendly
+slugs, and discard-backed archive status;
 `RelationshipProfilesController` sanitizes tampered STI and contact-kind
 discriminator params before assignment, index preloads tags and rich notes for
 profile cards, and `RelationshipProfilePolicy` and policy scopes restrict CRUD,

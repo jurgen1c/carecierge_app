@@ -1,6 +1,6 @@
 <% form_url = relationship_profile.persisted? ? relationship_profile_path(relationship_profile) : relationship_profiles_path %>
 
-<%= form_with model: relationship_profile, scope: :relationship_profile, url: form_url, class: "grid gap-6" do |form| %>
+<%= form_with model: relationship_profile, scope: :relationship_profile, url: form_url, class: "grid gap-6", data: { controller: "relationship-template-fields" } do |form| %>
   <% if relationship_profile.errors.any? %>
     <section class="rounded-lg border border-red-200 bg-red-50 p-4" role="alert">
       <h2 class="text-sm font-semibold text-red-950"><%= t(".errors_heading", count: relationship_profile.errors.count) %></h2>
@@ -29,7 +29,7 @@
       </div>
       <div>
         <%= form.label :type, t(".relationship_type"), class: "block text-sm font-medium text-stone-800" %>
-        <%= form.select :type, RelationshipProfile.type_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+        <%= form.select :type, RelationshipProfile.type_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", data: { relationship_template_fields_target: "type", action: "change->relationship-template-fields#update" } %>
       </div>
       <div>
         <%= form.label :pronouns, t(".pronouns"), class: "block text-sm font-medium text-stone-800" %>
@@ -45,7 +45,7 @@
   <section class="rounded-xl border border-stone-200 bg-white p-5">
     <h2 class="text-base font-semibold text-stone-950"><%= t(".contact_details") %></h2>
     <div class="mt-5 grid gap-4 md:grid-cols-2">
-      <%= form.fields_for :contact_methods, relationship_profile.contact_method_for("email"), child_index: 0 do |contact_fields| %>
+      <%= form.fields_for :contact_methods, relationship_profile_form.contact_method_for("email"), child_index: 0 do |contact_fields| %>
         <div>
           <%= contact_fields.hidden_field :id if contact_fields.object.persisted? %>
           <%= contact_fields.hidden_field :kind, value: "email" %>
@@ -60,7 +60,7 @@
         </div>
       <% end %>
 
-      <%= form.fields_for :contact_methods, relationship_profile.contact_method_for("personal_phone"), child_index: 1 do |contact_fields| %>
+      <%= form.fields_for :contact_methods, relationship_profile_form.contact_method_for("personal_phone"), child_index: 1 do |contact_fields| %>
         <div>
           <%= contact_fields.hidden_field :id if contact_fields.object.persisted? %>
           <%= contact_fields.hidden_field :kind, value: "personal_phone" %>
@@ -75,7 +75,7 @@
         </div>
       <% end %>
 
-      <%= form.fields_for :contact_methods, relationship_profile.contact_method_for("business_phone"), child_index: 2 do |contact_fields| %>
+      <%= form.fields_for :contact_methods, relationship_profile_form.contact_method_for("business_phone"), child_index: 2 do |contact_fields| %>
         <div>
           <%= contact_fields.hidden_field :id if contact_fields.object.persisted? %>
           <%= contact_fields.hidden_field :kind, value: "business_phone" %>
@@ -95,7 +95,7 @@
   <section class="rounded-xl border border-stone-200 bg-white p-5">
     <h2 class="text-base font-semibold text-stone-950"><%= t(".context_title") %></h2>
     <div class="mt-5 grid gap-4">
-      <%= form.fields_for :relationship_notes, relationship_profile.public_note, child_index: 0 do |note_fields| %>
+      <%= form.fields_for :relationship_notes, relationship_profile_form.public_note, child_index: 0 do |note_fields| %>
         <div>
           <%= note_fields.hidden_field :id if note_fields.object.persisted? %>
           <%= note_fields.hidden_field :private, value: "0" %>
@@ -111,7 +111,7 @@
         </div>
       <% end %>
 
-      <%= form.fields_for :relationship_notes, relationship_profile.private_note, child_index: 1 do |note_fields| %>
+      <%= form.fields_for :relationship_notes, relationship_profile_form.private_note, child_index: 1 do |note_fields| %>
         <div>
           <%= note_fields.hidden_field :id if note_fields.object.persisted? %>
           <%= note_fields.hidden_field :private, value: "1" %>
@@ -132,7 +132,7 @@
         <h3 class="text-sm font-medium text-stone-800"><%= t(".structured_preferences") %></h3>
         <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".structured_preferences_hint") %></p>
         <div class="mt-3 grid gap-3 md:grid-cols-2">
-          <% relationship_profile.preference_slots.each_with_index do |preference, index| %>
+          <% relationship_profile_form.preference_slots.each_with_index do |preference, index| %>
             <%= form.fields_for :relationship_preferences, preference, child_index: index do |preference_fields| %>
               <div class="grid gap-2">
                 <%= preference_fields.hidden_field :id if preference_fields.object.persisted? %>
@@ -152,10 +152,86 @@
         </div>
       </div>
 
+      <% if relationship_profile_form.relationship_template_groups.any? %>
+        <div>
+          <h3 class="text-sm font-medium text-stone-800"><%= t(".suggested_fields") %></h3>
+          <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".suggested_fields_hint") %></p>
+          <div class="mt-3 grid gap-4">
+            <% relationship_profile_form.relationship_template_groups.each do |template, field_values| %>
+              <% inactive_template = template.relationship_type != relationship_profile.type %>
+              <fieldset class="grid gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4" data-relationship-template-fields-target="group" data-relationship-template-fields-type-value="<%= template.relationship_type %>" <%= "hidden disabled" if inactive_template %>>
+                <div>
+                  <h4 class="text-sm font-semibold text-stone-950"><%= t(".suggested_for", type: RelationshipProfile.type_label(template.relationship_type)) %></h4>
+                  <% if template.localized_description.present? %>
+                    <p class="mt-1 text-sm leading-6 text-stone-700"><%= template.localized_description %></p>
+                  <% end %>
+                </div>
+
+                <div class="grid gap-3 md:grid-cols-2">
+                  <% field_values.each do |field_value| %>
+                    <%= form.fields_for :relationship_field_values, field_value, child_index: "template_#{field_value.template_field_id}" do |field_value_fields| %>
+                      <div class="grid gap-2">
+                        <%= field_value_fields.hidden_field :id if field_value_fields.object.persisted? %>
+                        <%= field_value_fields.hidden_field :template_field_id %>
+                        <%= field_value_fields.hidden_field :key %>
+                        <%= field_value_fields.hidden_field :label %>
+                        <%= field_value_fields.hidden_field :custom, value: "0" %>
+                        <%= field_value_fields.hidden_field :position %>
+                        <%= field_value_fields.label :value, field_value.display_label, class: "text-sm font-medium text-stone-800" %>
+                        <% if field_value.template_field&.localized_prompt.present? %>
+                          <p class="text-sm leading-6 text-stone-700"><%= field_value.template_field.localized_prompt %></p>
+                        <% end %>
+                        <%= field_value_fields.text_field :value, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                        <div class="flex items-center gap-2 text-sm text-stone-700">
+                          <%= field_value_fields.check_box :hidden, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+                          <%= field_value_fields.label :hidden, t(".hide_suggested_field"), class: "font-medium text-stone-700" %>
+                        </div>
+                        <% if field_value_fields.object.persisted? %>
+                          <div class="flex items-center gap-2 text-sm text-stone-700">
+                            <%= field_value_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+                            <%= field_value_fields.label :_destroy, t(".remove_field_value"), class: "font-medium text-stone-700" %>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+              </fieldset>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <div>
+        <h3 class="text-sm font-medium text-stone-800"><%= t(".custom_fields") %></h3>
+        <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".custom_fields_hint") %></p>
+        <div class="mt-3 grid gap-3 md:grid-cols-2">
+          <% relationship_profile_form.custom_field_value_slots.each_with_index do |field_value, index| %>
+            <%= form.fields_for :relationship_field_values, field_value, child_index: "custom_#{index}" do |field_value_fields| %>
+              <div class="grid gap-2">
+                <%= field_value_fields.hidden_field :id if field_value_fields.object.persisted? %>
+                <%= field_value_fields.hidden_field :custom, value: "1" %>
+                <%= field_value_fields.hidden_field :position, value: index + 100 %>
+                <%= field_value_fields.label :label, t(".custom_field_label"), class: "text-sm font-medium text-stone-800" %>
+                <%= field_value_fields.text_field :label, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <%= field_value_fields.label :value, t(".custom_field_value"), class: "text-sm font-medium text-stone-800" %>
+                <%= field_value_fields.text_field :value, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <% if field_value_fields.object.persisted? %>
+                  <div class="flex items-center gap-2 text-sm text-stone-700">
+                    <%= field_value_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+                    <%= field_value_fields.label :_destroy, t(".remove_field_value"), class: "font-medium text-stone-700" %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
       <div>
         <h3 class="text-sm font-medium text-stone-800"><%= t(".tags") %></h3>
         <div class="mt-3 grid gap-3 md:grid-cols-3">
-          <% relationship_profile.tag_slots.each_with_index do |tag, index| %>
+          <% relationship_profile_form.tag_slots.each_with_index do |tag, index| %>
             <%= form.fields_for :relationship_tags, tag, child_index: index do |tag_fields| %>
               <div>
                 <%= tag_fields.hidden_field :id if tag_fields.object.persisted? %>

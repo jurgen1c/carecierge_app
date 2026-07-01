@@ -1,3 +1,4 @@
+require "cgi"
 require "rails_helper"
 
 RSpec.describe "Relationship profiles", type: :request do
@@ -94,6 +95,7 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(I18n.t("relationship_profiles.new.heading", locale: :es))
       expect(response.body).to include(I18n.t("relationship_profiles.form.private_notes", locale: :es))
+      expect(CGI.unescapeHTML(response.body)).to include('data-action="change->relationship-template-fields#update"')
       expect(response.body).to include("<lexxy-editor")
     end
   end
@@ -171,6 +173,63 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(profile.private_notes.first.body.to_plain_text).to include("Prefers low-key check-ins.")
       expect(profile.structured_preferences).to include("Coffee" => "decaf", "Topics" => "books")
       expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ], [ "personal_phone", "+506 8888 0000" ])
+      expect(response).to redirect_to(relationship_profile_path(profile))
+    end
+
+    it "creates suggested and custom relationship field values" do
+      user = create(:user)
+      template = create(:relationship_template, relationship_type: "RelationshipProfiles::Boss")
+      communication_style = create(
+        :template_field,
+        relationship_template: template,
+        key: "communication_style",
+        label: "Communication style"
+      )
+      current_priorities = create(
+        :template_field,
+        relationship_template: template,
+        key: "current_priorities",
+        label: "Current priorities"
+      )
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Rafa",
+            type: "RelationshipProfiles::Boss",
+            relationship_field_values_attributes: {
+              "0" => {
+                template_field_id: communication_style.id,
+                key: communication_style.key,
+                label: communication_style.label,
+                value: "Prefers a short written agenda",
+                position: 0
+              },
+              "1" => {
+                template_field_id: current_priorities.id,
+                key: current_priorities.key,
+                label: current_priorities.label,
+                hidden: "1",
+                position: 1
+              },
+              "2" => {
+                label: "One-on-one cadence",
+                value: "Every other Thursday",
+                custom: "1",
+                position: 2
+              }
+            }
+          }
+        }
+      end.to change(RelationshipProfile, :count).by(1)
+        .and change(RelationshipFieldValue, :count).by(3)
+
+      profile = user.relationship_profiles.find_by!(first_name: "Rafa")
+
+      expect(profile.relationship_field_values.find_by!(template_field: communication_style).value).to eq("Prefers a short written agenda")
+      expect(profile.relationship_field_values.find_by!(template_field: current_priorities)).to be_hidden
+      expect(profile.relationship_field_values.custom.find_by!(label: "One-on-one cadence").value).to eq("Every other Thursday")
       expect(response).to redirect_to(relationship_profile_path(profile))
     end
 
@@ -273,6 +332,145 @@ RSpec.describe "Relationship profiles", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("Contact methods contains duplicate kinds")
+    end
+
+    it "renders validation errors for duplicate custom field labels" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            relationship_field_values_attributes: {
+              "0" => { label: "Favorite snack", value: "mango", custom: "1" },
+              "1" => { label: " favorite snack ", value: "berries", custom: "1" }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship field values have duplicate labels")
+    end
+
+    it "renders validation errors for duplicate suggested template fields" do
+      user = create(:user)
+      template = create(:relationship_template, relationship_type: "RelationshipProfiles::Boss")
+      field = create(:template_field, relationship_template: template, key: "communication_style", label: "Communication style")
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            type: "RelationshipProfiles::Boss",
+            relationship_field_values_attributes: {
+              "0" => { template_field_id: field.id, label: field.label, value: "Email first" },
+              "1" => { template_field_id: field.id, label: field.label, value: "Weekly agenda" }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship field values have duplicate suggested fields")
+    end
+
+    it "renders validation errors for unknown suggested template field ids" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            type: "RelationshipProfiles::Boss",
+            relationship_field_values_attributes: {
+              "0" => {
+                template_field_id: SecureRandom.uuid,
+                label: "Communication style",
+                value: "Email first"
+              }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship field values template field is not a valid suggested field")
+    end
+
+    it "renders localized field-value validation errors in Spanish" do
+      user = create(:user)
+      template = create(:relationship_template, relationship_type: "RelationshipProfiles::Boss")
+      field = create(:template_field, relationship_template: template, key: "communication_style", label: "Communication style")
+      sign_in user
+
+      I18n.with_locale(:es) do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            type: "RelationshipProfiles::Boss",
+            relationship_field_values_attributes: {
+              "0" => { template_field_id: field.id, label: field.label, value: "Email first" },
+              "1" => { template_field_id: field.id, label: field.label, value: "Weekly agenda" }
+            }
+          }
+        }
+      end
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Campos de relación contienen campos sugeridos duplicados")
+      expect(response.body).not_to include("contains duplicate suggested fields")
+    end
+
+    it "ignores blank suggested field rows from inactive template groups" do
+      user = create(:user)
+      spouse_template = create(:relationship_template, relationship_type: "RelationshipProfiles::Spouse")
+      spouse_field = create(:template_field, relationship_template: spouse_template, key: "anniversary", label: "Anniversary")
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            type: "RelationshipProfiles::Boss",
+            relationship_field_values_attributes: {
+              "0" => {
+                template_field_id: spouse_field.id,
+                key: spouse_field.key,
+                label: spouse_field.label,
+                value: "",
+                hidden: "0"
+              }
+            }
+          }
+        }
+      end.to change(RelationshipProfile, :count).by(1)
+        .and change(RelationshipFieldValue, :count).by(0)
+
+      expect(response).to redirect_to(relationship_profile_path(RelationshipProfile.find_by!(first_name: "Kai")))
+    end
+
+    it "validates custom field rows that have a label but no value" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            relationship_field_values_attributes: {
+              "0" => { label: "Favorite snack", value: "", custom: "1" }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship field values value")
+      expect(response.body).to include("blank")
     end
   end
 
@@ -391,6 +589,7 @@ RSpec.describe "Relationship profiles", type: :request do
       note = create(:relationship_note, relationship_profile: profile, body: "Remember tea.")
       preference = create(:relationship_preference, relationship_profile: profile, key: "Coffee", value: "decaf")
       tag = create(:relationship_tag, relationship_profile: profile, name: "garden")
+      field_value = create(:relationship_field_value, relationship_profile: profile, label: "Favorite snack", value: "mango", custom: true, template_field: nil)
       sign_in user
 
       expect do
@@ -407,6 +606,9 @@ RSpec.describe "Relationship profiles", type: :request do
             },
             relationship_tags_attributes: {
               "0" => { id: tag.id, name: tag.name, _destroy: "1" }
+            },
+            relationship_field_values_attributes: {
+              "0" => { id: field_value.id, label: field_value.label, value: field_value.value, custom: "1", _destroy: "1" }
             }
           }
         }
@@ -414,6 +616,7 @@ RSpec.describe "Relationship profiles", type: :request do
         .and change(RelationshipNote, :count).by(-1)
         .and change(RelationshipPreference, :count).by(-1)
         .and change(RelationshipTag, :count).by(-1)
+        .and change(RelationshipFieldValue, :count).by(-1)
 
       expect(response).to redirect_to(relationship_profile_path(profile))
     end
@@ -513,6 +716,64 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response).to redirect_to(relationship_profiles_path)
       expect(profile.reload).to be_discarded
       expect(profile).to be_archived
+    end
+  end
+
+  describe "suggested relationship fields" do
+    it "renders localized template field copy on the form and saved values on the profile" do
+      user = create(:user)
+      template = create(
+        :relationship_template,
+        key: "child",
+        relationship_type: "RelationshipProfiles::Child",
+        name: "Child",
+        description: "Default care-context fields for a child."
+      )
+      field = create(
+        :template_field,
+        relationship_template: template,
+        key: "school_events",
+        label: "School events",
+        prompt: "Upcoming school moments to remember"
+      )
+      profile = create(:relationship_profile, user:, type: "RelationshipProfiles::Child")
+      create(:relationship_field_value, relationship_profile: profile, template_field: field, label: field.label, value: "Science fair", custom: false)
+      sign_in user
+
+      I18n.with_locale(:es) do
+        get edit_relationship_profile_path(profile)
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Campos sugeridos")
+      expect(response.body).to include("Campos de contexto de cuidado predeterminados para un hijo o hija.")
+      expect(response.body).to include("Eventos escolares")
+      expect(response.body).not_to include("Default care-context fields for a child.")
+
+      get relationship_profile_path(profile)
+
+      expect(response.body).to include("School events")
+      expect(response.body).to include("Science fair")
+    end
+
+    it "does not show suggested values from a previous relationship type after the type changes" do
+      user = create(:user)
+      spouse_template = create(:relationship_template, relationship_type: "RelationshipProfiles::Spouse")
+      spouse_field = create(:template_field, relationship_template: spouse_template, key: "anniversary", label: "Anniversary")
+      profile = create(:relationship_profile, user:, type: "RelationshipProfiles::Spouse")
+      create(:relationship_field_value, relationship_profile: profile, template_field: spouse_field, label: spouse_field.label, value: "June 1", custom: false)
+      sign_in user
+
+      patch relationship_profile_path(profile), params: {
+        relationship_profile: {
+          type: "RelationshipProfiles::Boss"
+        }
+      }
+
+      get relationship_profile_path(profile)
+
+      expect(response.body).not_to include("Anniversary")
+      expect(response.body).not_to include("June 1")
     end
   end
 

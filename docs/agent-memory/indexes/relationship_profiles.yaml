@@ -1,12 +1,13 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preferences, rich private notes, tags, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preferences, relationship-type template fields, custom field values, rich private notes, tags, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
   - relationship profile owner scoped CRUD
   - relationship profiles search filter archive
   - contact details rich private notes structured preferences
+  - relationship type template fields custom field values
   - Lexxy Action Text relationship notes
 watched_files:
   - app/models/user.rb
@@ -16,10 +17,15 @@ watched_files:
   - app/models/relationship_note.rb
   - app/models/relationship_preference.rb
   - app/models/relationship_tag.rb
+  - app/models/relationship_template.rb
+  - app/models/template_field.rb
+  - app/models/relationship_field_value.rb
+  - app/forms/relationship_profiles/**/*.rb
   - app/queries/relationship_profile/search_query.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/policies/relationship_profile_policy.rb
   - app/views/relationship_profiles/**/*.erb
+  - app/javascript/controllers/relationship_template_fields_controller.js
   - config/routes.rb
   - config/locales/en.yml
   - config/locales/es.yml

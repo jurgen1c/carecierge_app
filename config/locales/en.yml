@@ -54,6 +54,7 @@ en:
         preferred_name: "Preferred name"
         private_notes: "Private notes"
         pronouns: "Pronouns"
+        relationship_field_values: "Relationship field values"
         type: "Relationship type"
         relationship_type: "Relationship type"
         structured_preferences: "Structured preferences"
@@ -69,11 +70,34 @@ en:
         value: "Preference value"
       relationship_tag:
         name: "Tag"
+      relationship_template:
+        key: "Key"
+        name: "Name"
+        relationship_type: "Relationship type"
+      template_field:
+        key: "Field key"
+        label: "Field label"
+        prompt: "Prompt"
+      relationship_field_value:
+        label: "Field"
+        template_field: "Template field"
+        value: "Field value"
       user:
         admin: "Admin"
         email: "Email"
         password: "Password"
         password_confirmation: "Confirm password"
+    errors:
+      models:
+        relationship_profile:
+          attributes:
+            relationship_field_values:
+              duplicate_labels: "have duplicate labels"
+              duplicate_suggested_fields: "have duplicate suggested fields"
+        relationship_field_value:
+          attributes:
+            template_field:
+              unknown_template_field: "is not a valid suggested field"
   errors:
     messages:
       confirmation: "does not match %{attribute}"
@@ -145,6 +169,7 @@ en:
         personal_phone: "Personal phone"
         business_phone: "Business phone"
       preferences_title: "Structured preferences"
+      field_values_title: "Relationship fields"
       tags_title: "Tags"
       not_provided: "Not provided"
       back: "Back to relationships"
@@ -241,6 +266,15 @@ en:
       structured_preferences_hint: "Add one preference per row, like Coffee and decaf or Topics and books."
       preference_key: "Preference"
       preference_value: "Value"
+      suggested_fields: "Suggested fields"
+      suggested_fields_hint: "Use the fields that fit this relationship type. Hide suggestions that are not useful right now."
+      suggested_for: "Suggested for %{type}"
+      hide_suggested_field: "Hide this suggested field"
+      custom_fields: "Custom fields"
+      custom_fields_hint: "Add details that are specific to this relationship without changing the core profile."
+      custom_field_label: "Field"
+      custom_field_value: "Value"
+      remove_field_value: "Remove this field"
       remove_contact_method: "Remove this contact method"
       remove_note: "Remove this note"
       remove_private_note: "Remove private note"
@@ -259,6 +293,63 @@ en:
       notice: "Relationship profile was archived."
     destroy:
       notice: "Relationship profile was deleted."
+  relationship_templates:
+    descriptions:
+      spouse: "Default reminders and care context for a spouse."
+      boss: "Default work-context fields for a manager or boss."
+      child: "Default care-context fields for a child."
+    fields:
+      anniversary:
+        label: "Anniversary"
+        prompt: "Important anniversaries or shared dates"
+      date_ideas:
+        label: "Date ideas"
+        prompt: "Ideas that would feel thoughtful"
+      love_language:
+        label: "Love language"
+        prompt: "Ways they most appreciate care"
+      favorite_restaurants:
+        label: "Favorite restaurants"
+        prompt: "Places they like or want to try"
+      emotional_triggers:
+        label: "Emotional triggers"
+        prompt: "Sensitive topics or situations to handle carefully"
+      gift_preferences:
+        label: "Gift preferences"
+        prompt: "Useful gift ideas and preferences"
+      communication_style:
+        label: "Communication style"
+        prompt: "How they prefer updates or questions"
+      current_priorities:
+        label: "Current priorities"
+        prompt: "Work that matters most right now"
+      reporting_preferences:
+        label: "Reporting preferences"
+        prompt: "How to share status or outcomes"
+      meeting_style:
+        label: "Meeting style"
+        prompt: "Useful meeting preferences and norms"
+      feedback_preferences:
+        label: "Feedback preferences"
+        prompt: "How they tend to give or receive feedback"
+      school_events:
+        label: "School events"
+        prompt: "Upcoming school moments to remember"
+      favorite_activities:
+        label: "Favorite activities"
+        prompt: "Activities they enjoy most"
+      clothing_size:
+        label: "Clothing size"
+        prompt: "Current sizes or fit notes"
+      food_preferences:
+        label: "Food preferences"
+        prompt: "Foods they like or avoid"
+      allergies:
+        label: "Allergies"
+        prompt: "Allergies or sensitivities to keep visible"
+      milestones:
+        label: "Milestones"
+        prompt: "Recent or upcoming milestones"
   admin:
     feature_flags:
       index:

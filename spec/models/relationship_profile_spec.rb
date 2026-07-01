@@ -40,6 +40,7 @@ RSpec.describe RelationshipProfile, type: :model do
   it { is_expected.to have_many(:relationship_notes).dependent(:destroy) }
   it { is_expected.to have_many(:relationship_preferences).dependent(:destroy) }
   it { is_expected.to have_many(:relationship_tags).dependent(:destroy) }
+  it { is_expected.to have_many(:relationship_field_values).dependent(:destroy) }
   it { is_expected.to validate_presence_of(:first_name) }
 
   it "uses friendly profile names for user-facing routes" do
@@ -137,6 +138,25 @@ RSpec.describe RelationshipProfile, type: :model do
     described_class.type_options.each do |_label, class_name|
       expect(class_name.constantize).to be < described_class
     end
+  end
+
+  it "validates duplicate nested custom field labels before hitting database constraints" do
+    profile = build(:relationship_profile)
+    profile.relationship_field_values.build(label: "Favorite snack", value: "mango", custom: true)
+    profile.relationship_field_values.build(label: " favorite snack ", value: "berries", custom: true)
+
+    expect(profile).not_to be_valid
+    expect(profile.errors[:relationship_field_values]).to include("have duplicate labels")
+  end
+
+  it "validates duplicate nested template fields before hitting database constraints" do
+    field = create(:template_field)
+    profile = build(:relationship_profile)
+    profile.relationship_field_values.build(template_field: field, label: field.label, value: "mango")
+    profile.relationship_field_values.build(template_field: field, label: field.label, value: "berries")
+
+    expect(profile).not_to be_valid
+    expect(profile.errors[:relationship_field_values]).to include("have duplicate suggested fields")
   end
 
   it "allows Ransack to search profile and relationship type fields" do

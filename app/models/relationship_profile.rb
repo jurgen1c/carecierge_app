@@ -96,8 +96,6 @@ class RelationshipProfile < ApplicationRecord
   TYPE_LABELS = TYPE_OPTIONS.to_h { |label_key, class_name| [ class_name, label_key ] }.freeze
   DEFAULT_TYPE = "RelationshipProfiles::Friend"
   INVALID_TYPE = "__invalid_relationship_profile_type__"
-  CONTACT_FORM_KINDS = %w[email personal_phone business_phone].freeze
-  FORM_SLOT_COUNT = 3
 
   friendly_id :display_name, use: :slugged
 
@@ -106,20 +104,24 @@ class RelationshipProfile < ApplicationRecord
   has_many :relationship_notes, dependent: :destroy
   has_many :relationship_preferences, dependent: :destroy
   has_many :relationship_tags, dependent: :destroy
+  has_many :relationship_field_values, dependent: :destroy
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true
   accepts_nested_attributes_for :relationship_preferences, allow_destroy: true
   accepts_nested_attributes_for :relationship_tags, allow_destroy: true
+  accepts_nested_attributes_for :relationship_field_values, allow_destroy: true
 
   before_validation :default_type
 
   validates :first_name, presence: true
   validates :type, inclusion: { in: TYPE_LABELS.keys }
-  validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_tags
+  validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_tags, :relationship_field_values
   validate :unique_nested_contact_kinds
   validate :unique_nested_preference_keys
   validate :unique_nested_tag_names
+  validate :unique_nested_template_fields
+  validate :unique_nested_custom_field_labels
 
   scope :active, -> { kept }
   scope :archived, -> { discarded }
@@ -176,24 +178,20 @@ class RelationshipProfile < ApplicationRecord
     relationship_tags.map(&:name).join(", ")
   end
 
+  def visible_relationship_field_values
+    relationship_field_values.reject(&:marked_for_destruction?).reject(&:hidden?).select do |field_value|
+      field_value.value.present? && current_relationship_field_value?(field_value)
+    end.sort_by do |field_value|
+      [ field_value.position || 0, field_value.display_label.downcase ]
+    end
+  end
+
   def structured_preferences_text
     structured_preferences.map { |key, value| "#{key}: #{value}" }.join("\n")
   end
 
   def structured_preferences
     relationship_preferences.index_by(&:key).transform_values(&:value)
-  end
-
-  def contact_method_for(kind)
-    contact_methods.detect { |method| method.kind == kind } || contact_methods.build(kind:)
-  end
-
-  def public_note
-    relationship_notes.detect { |note| !note.private? } || relationship_notes.build(private: false, category: "General")
-  end
-
-  def private_note
-    relationship_notes.detect(&:private?) || relationship_notes.build(private: true, category: "Private")
   end
 
   def public_notes
@@ -206,22 +204,6 @@ class RelationshipProfile < ApplicationRecord
 
   def public_notes_preview
     public_notes.map { |note| note.body.to_plain_text }.compact_blank.join(" ")
-  end
-
-  def preference_slots
-    fill_slots(relationship_preferences.to_a) { relationship_preferences.build }
-  end
-
-  def tag_slots
-    fill_slots(relationship_tags.to_a) { relationship_tags.build }
-  end
-
-  def prepare_nested_form_associations
-    CONTACT_FORM_KINDS.each { |kind| contact_method_for(kind) }
-    public_note
-    private_note
-    preference_slots
-    tag_slots
   end
 
   def contact_methods_attributes=(attributes)
@@ -246,6 +228,18 @@ class RelationshipProfile < ApplicationRecord
 
   def relationship_tags_attributes=(attributes)
     super(reject_blank_new_nested_attributes(attributes) { |nested_attributes| nested_attributes["name"].blank? })
+  end
+
+  def relationship_field_values_attributes=(attributes)
+    super(
+      reject_blank_new_nested_attributes(attributes) do |nested_attributes|
+        if nested_attributes["template_field_id"].present?
+          nested_attributes["value"].blank? && nested_attributes["hidden"] != "1"
+        else
+          nested_attributes["label"].blank? && nested_attributes["value"].blank? && nested_attributes["hidden"] != "1"
+        end
+      end
+    )
   end
 
   def should_generate_new_friendly_id?
@@ -276,16 +270,30 @@ class RelationshipProfile < ApplicationRecord
     errors.add(:relationship_tags, "contains duplicate names")
   end
 
+  def unique_nested_template_fields
+    suggested_field_values = relationship_field_values.select { |field_value| field_value.template_field_id.present? }
+    return unless duplicate_nested_value?(suggested_field_values, :template_field_id)
+
+    errors.add(:relationship_field_values, :duplicate_suggested_fields)
+  end
+
+  def unique_nested_custom_field_labels
+    custom_field_values = relationship_field_values.select { |field_value| field_value.template_field_id.blank? }
+    return unless duplicate_nested_value?(custom_field_values, :label)
+
+    errors.add(:relationship_field_values, :duplicate_labels)
+  end
+
+  def current_relationship_field_value?(field_value)
+    return true if field_value.custom?
+
+    field_value.template_field&.relationship_template&.relationship_type == type
+  end
+
   def self.type_label_for_key(label_key)
     I18n.t("relationship_profiles.types.#{label_key}")
   end
   private_class_method :type_label_for_key
-
-  def fill_slots(records)
-    records.tap do |slots|
-      (FORM_SLOT_COUNT - slots.size).times { slots << yield }
-    end
-  end
 
   def reject_blank_new_nested_attributes(attributes)
     attributes.to_h.reject do |_index, nested_attributes|

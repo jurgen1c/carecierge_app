@@ -18,10 +18,11 @@ claim: >
   deletion, RelationshipProfiles::FormState prepares and memoizes form rows from
   preloaded template fields during a form render, the new form and Stimulus
   controller keep an available suggested-field group visible when the selected
-  relationship type has no template, the show view reuses its visible
-  relationship field values list during render, controller params sanitize
-  discriminator inputs, and policy scopes restrict CRUD, archive, search, and
-  filter access to the signed-in owner.
+  relationship type has no template, preferring the default type only when it has
+  a template, the show view reuses its visible relationship field values list
+  during render, controller params sanitize discriminator inputs, and policy
+  scopes restrict CRUD, archive, search, and filter access to the signed-in
+  owner.
 
 source_files:
   - app/models/user.rb

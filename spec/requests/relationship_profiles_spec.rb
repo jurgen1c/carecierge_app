@@ -113,10 +113,10 @@ RSpec.describe "Relationship profiles", type: :request do
 
       expect(form["data-relationship-template-fields-default-type-value"]).to eq(RelationshipProfile::DEFAULT_TYPE)
       expect(spouse_group).to be_present
-      expect(spouse_group).not_to have_attribute("hidden")
-      expect(spouse_group).not_to have_attribute("disabled")
-      expect(boss_group).to have_attribute("hidden")
-      expect(boss_group).to have_attribute("disabled")
+      expect(spouse_group["hidden"]).to be_nil
+      expect(spouse_group["disabled"]).to be_nil
+      expect(boss_group["hidden"]).to eq("")
+      expect(boss_group["disabled"]).to eq("")
     end
 
     it "prefers the default suggested field group when the default type has a template" do
@@ -131,10 +131,10 @@ RSpec.describe "Relationship profiles", type: :request do
       default_group = fragment.at_css("[data-relationship-template-fields-type-value='#{RelationshipProfile::DEFAULT_TYPE}']")
 
       expect(default_group).to be_present
-      expect(default_group).not_to have_attribute("hidden")
-      expect(default_group).not_to have_attribute("disabled")
-      expect(spouse_group).to have_attribute("hidden")
-      expect(spouse_group).to have_attribute("disabled")
+      expect(default_group["hidden"]).to be_nil
+      expect(default_group["disabled"]).to be_nil
+      expect(spouse_group["hidden"]).to eq("")
+      expect(spouse_group["disabled"]).to eq("")
     end
   end
 

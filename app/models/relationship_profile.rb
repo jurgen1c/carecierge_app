@@ -286,8 +286,15 @@ class RelationshipProfile < ApplicationRecord
 
   def current_relationship_field_value?(field_value)
     return true if field_value.custom?
+    return true unless relationship_type_template_available?
 
     field_value.template_field&.relationship_template&.relationship_type == type
+  end
+
+  def relationship_type_template_available?
+    return @relationship_type_template_available if defined?(@relationship_type_template_available)
+
+    @relationship_type_template_available = RelationshipTemplate.for_relationship_type(type).present?
   end
 
   def self.type_label_for_key(label_key)

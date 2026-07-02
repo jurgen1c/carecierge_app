@@ -778,6 +778,7 @@ RSpec.describe "Relationship profiles", type: :request do
       user = create(:user)
       spouse_template = create(:relationship_template, relationship_type: "RelationshipProfiles::Spouse")
       spouse_field = create(:template_field, relationship_template: spouse_template, key: "anniversary", label: "Anniversary")
+      create(:relationship_template, relationship_type: "RelationshipProfiles::Boss")
       profile = create(:relationship_profile, user:, type: "RelationshipProfiles::Spouse")
       create(:relationship_field_value, relationship_profile: profile, template_field: spouse_field, label: spouse_field.label, value: "June 1", custom: false)
       sign_in user
@@ -792,6 +793,37 @@ RSpec.describe "Relationship profiles", type: :request do
 
       expect(response.body).not_to include("Anniversary")
       expect(response.body).not_to include("June 1")
+    end
+
+    it "shows saved fallback suggested values when the profile type has no template" do
+      user = create(:user)
+      spouse_template = create(:relationship_template, relationship_type: "RelationshipProfiles::Spouse")
+      anniversary = create(:template_field, relationship_template: spouse_template, key: "anniversary", label: "Anniversary")
+      sign_in user
+
+      post relationship_profiles_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          relationship_field_values_attributes: {
+            "0" => {
+              template_field_id: anniversary.id,
+              key: anniversary.key,
+              label: anniversary.label,
+              value: "June 1",
+              position: 0
+            }
+          }
+        }
+      }
+
+      profile = user.relationship_profiles.find_by!(first_name: "Maya")
+
+      expect(profile.type).to eq(RelationshipProfile::DEFAULT_TYPE)
+
+      get relationship_profile_path(profile)
+
+      expect(response.body).to include("Anniversary")
+      expect(response.body).to include("June 1")
     end
   end
 

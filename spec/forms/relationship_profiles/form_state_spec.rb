@@ -51,6 +51,22 @@ RSpec.describe RelationshipProfiles::FormState do
     expect(boss_group.last.map(&:template_field)).to eq([ first_field, later_field ])
   end
 
+  it "memoizes template groups for the form render lifecycle" do
+    create(:template_field)
+
+    first_groups = nil
+    second_groups = nil
+
+    sql = capture_sql do
+      first_groups = form_state.relationship_template_groups
+      second_groups = form_state.relationship_template_groups
+    end
+
+    expect(second_groups).to equal(first_groups)
+    expect(sql.grep(/FROM "relationship_templates"/).size).to eq(1)
+    expect(sql.grep(/FROM "template_fields"/).size).to eq(1)
+  end
+
   it "prepares contact, note, preference, and tag slots for forms" do
     form_state.prepare!
 

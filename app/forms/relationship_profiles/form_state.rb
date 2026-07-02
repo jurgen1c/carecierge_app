@@ -51,7 +51,7 @@ class RelationshipProfiles::FormState
   end
 
   def relationship_template_groups
-    RelationshipTemplate.active.ordered.includes(:template_fields).map do |template|
+    @relationship_template_groups ||= RelationshipTemplate.active.ordered.includes(:template_fields).map do |template|
       [ template, active_template_fields_for(template).map { |field| template_field_value_for(field) } ]
     end
   end

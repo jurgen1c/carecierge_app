@@ -15,10 +15,10 @@ claim: >
   values. Suggested template IDs and custom labels are validated before
   persistence, template labels are stored canonically and localized only for
   display, template fields referenced by saved values are restricted from
-  deletion, RelationshipProfiles::FormState prepares form rows from preloaded
-  template fields, controller params sanitize discriminator inputs, and policy
-  scopes restrict CRUD, archive, search, and filter access to the signed-in
-  owner.
+  deletion, RelationshipProfiles::FormState prepares and memoizes form rows from
+  preloaded template fields during a form render, controller params sanitize
+  discriminator inputs, and policy scopes restrict CRUD, archive, search, and
+  filter access to the signed-in owner.
 
 source_files:
   - app/models/user.rb

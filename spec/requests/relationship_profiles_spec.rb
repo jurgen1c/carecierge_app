@@ -98,6 +98,24 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(CGI.unescapeHTML(response.body)).to include('data-action="change->relationship-template-fields#update"')
       expect(response.body).to include("<lexxy-editor")
     end
+
+    it "renders the default relationship type suggested fields without requiring JavaScript" do
+      create(:template_field, relationship_template: create(:relationship_template, relationship_type: RelationshipProfile::DEFAULT_TYPE))
+      create(:template_field, relationship_template: create(:relationship_template, relationship_type: "RelationshipProfiles::Boss"))
+      sign_in create(:user)
+
+      get new_relationship_profile_path
+
+      fragment = Nokogiri::HTML5.fragment(response.body)
+      default_group = fragment.at_css("[data-relationship-template-fields-type-value='#{RelationshipProfile::DEFAULT_TYPE}']")
+      boss_group = fragment.at_css("[data-relationship-template-fields-type-value='RelationshipProfiles::Boss']")
+
+      expect(default_group).to be_present
+      expect(default_group).not_to have_attribute("hidden")
+      expect(default_group).not_to have_attribute("disabled")
+      expect(boss_group).to have_attribute("hidden")
+      expect(boss_group).to have_attribute("disabled")
+    end
   end
 
   describe "GET /relationship_profiles/:id" do

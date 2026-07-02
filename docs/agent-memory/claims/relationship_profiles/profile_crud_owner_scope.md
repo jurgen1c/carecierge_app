@@ -16,9 +16,11 @@ claim: >
   persistence, template labels are stored canonically and localized only for
   display, template fields referenced by saved values are restricted from
   deletion, RelationshipProfiles::FormState prepares and memoizes form rows from
-  preloaded template fields during a form render, controller params sanitize
-  discriminator inputs, and policy scopes restrict CRUD, archive, search, and
-  filter access to the signed-in owner.
+  preloaded template fields during a form render, the new form server-renders
+  the default relationship type's suggested fields without requiring JavaScript,
+  the show view reuses its visible relationship field values list during render,
+  controller params sanitize discriminator inputs, and policy scopes restrict
+  CRUD, archive, search, and filter access to the signed-in owner.
 
 source_files:
   - app/models/user.rb

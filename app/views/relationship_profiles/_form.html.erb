@@ -152,13 +152,15 @@
         </div>
       </div>
 
-      <% if relationship_profile_form.relationship_template_groups.any? %>
+      <% relationship_template_groups = relationship_profile_form.relationship_template_groups %>
+      <% active_relationship_type = relationship_profile.type.presence || RelationshipProfile::DEFAULT_TYPE %>
+      <% if relationship_template_groups.any? %>
         <div>
           <h3 class="text-sm font-medium text-stone-800"><%= t(".suggested_fields") %></h3>
           <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".suggested_fields_hint") %></p>
           <div class="mt-3 grid gap-4">
-            <% relationship_profile_form.relationship_template_groups.each do |template, field_values| %>
-              <% inactive_template = template.relationship_type != relationship_profile.type %>
+            <% relationship_template_groups.each do |template, field_values| %>
+              <% inactive_template = template.relationship_type != active_relationship_type %>
               <fieldset class="grid gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4" data-relationship-template-fields-target="group" data-relationship-template-fields-type-value="<%= template.relationship_type %>" <%= "hidden disabled" if inactive_template %>>
                 <div>
                   <h4 class="text-sm font-semibold text-stone-950"><%= t(".suggested_for", type: RelationshipProfile.type_label(template.relationship_type)) %></h4>

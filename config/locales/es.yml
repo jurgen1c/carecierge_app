@@ -25,6 +25,7 @@ es:
         preferred_name: "Nombre preferido"
         private_notes: "Notas privadas"
         pronouns: "Pronombres"
+        relationship_field_values: "Campos de relación"
         type: "Tipo de relación"
         relationship_type: "Tipo de relación"
         structured_preferences: "Preferencias estructuradas"
@@ -40,11 +41,34 @@ es:
         value: "Valor de preferencia"
       relationship_tag:
         name: "Etiqueta"
+      relationship_template:
+        key: "Clave"
+        name: "Nombre"
+        relationship_type: "Tipo de relación"
+      template_field:
+        key: "Clave de campo"
+        label: "Etiqueta del campo"
+        prompt: "Guía"
+      relationship_field_value:
+        label: "Campo"
+        template_field: "Campo sugerido"
+        value: "Valor del campo"
       user:
         admin: "Administrador"
         email: "Correo electrónico"
         password: "Contraseña"
         password_confirmation: "Confirmar contraseña"
+    errors:
+      models:
+        relationship_profile:
+          attributes:
+            relationship_field_values:
+              duplicate_labels: "contienen etiquetas duplicadas"
+              duplicate_suggested_fields: "contienen campos sugeridos duplicados"
+        relationship_field_value:
+          attributes:
+            template_field:
+              unknown_template_field: "no es un campo sugerido válido"
   errors:
     messages:
       blank: "no puede estar en blanco"
@@ -155,6 +179,7 @@ es:
         personal_phone: "Teléfono personal"
         business_phone: "Teléfono de trabajo"
       preferences_title: "Preferencias estructuradas"
+      field_values_title: "Campos de relación"
       tags_title: "Etiquetas"
       not_provided: "Sin información"
       back: "Volver a relaciones"
@@ -251,6 +276,15 @@ es:
       structured_preferences_hint: "Agrega una preferencia por fila, como Café y descafeinado o Temas y libros."
       preference_key: "Preferencia"
       preference_value: "Valor"
+      suggested_fields: "Campos sugeridos"
+      suggested_fields_hint: "Usa los campos que encajen con este tipo de relación. Oculta sugerencias que no sean útiles ahora."
+      suggested_for: "Sugeridos para %{type}"
+      hide_suggested_field: "Ocultar este campo sugerido"
+      custom_fields: "Campos personalizados"
+      custom_fields_hint: "Agrega detalles específicos de esta relación sin cambiar el perfil principal."
+      custom_field_label: "Campo"
+      custom_field_value: "Valor"
+      remove_field_value: "Eliminar este campo"
       remove_contact_method: "Eliminar este método de contacto"
       remove_note: "Eliminar esta nota"
       remove_private_note: "Eliminar nota privada"
@@ -269,6 +303,63 @@ es:
       notice: "El perfil de relación fue archivado."
     destroy:
       notice: "El perfil de relación fue eliminado."
+  relationship_templates:
+    descriptions:
+      spouse: "Recordatorios y contexto de cuidado predeterminados para una pareja."
+      boss: "Campos laborales predeterminados para un gerente o jefe."
+      child: "Campos de contexto de cuidado predeterminados para un hijo o hija."
+    fields:
+      anniversary:
+        label: "Aniversario"
+        prompt: "Aniversarios importantes o fechas compartidas"
+      date_ideas:
+        label: "Ideas de citas"
+        prompt: "Ideas que podrían sentirse consideradas"
+      love_language:
+        label: "Lenguaje de amor"
+        prompt: "Formas en que más aprecia el cuidado"
+      favorite_restaurants:
+        label: "Restaurantes favoritos"
+        prompt: "Lugares que le gustan o quiere probar"
+      emotional_triggers:
+        label: "Detonantes emocionales"
+        prompt: "Temas o situaciones sensibles para tratar con cuidado"
+      gift_preferences:
+        label: "Preferencias de regalos"
+        prompt: "Ideas de regalos y preferencias útiles"
+      communication_style:
+        label: "Estilo de comunicación"
+        prompt: "Cómo prefiere recibir actualizaciones o preguntas"
+      current_priorities:
+        label: "Prioridades actuales"
+        prompt: "Trabajo que más importa ahora"
+      reporting_preferences:
+        label: "Preferencias de reporte"
+        prompt: "Cómo compartir estado o resultados"
+      meeting_style:
+        label: "Estilo de reunión"
+        prompt: "Preferencias y normas útiles para reuniones"
+      feedback_preferences:
+        label: "Preferencias de retroalimentación"
+        prompt: "Cómo suele dar o recibir retroalimentación"
+      school_events:
+        label: "Eventos escolares"
+        prompt: "Momentos escolares próximos para recordar"
+      favorite_activities:
+        label: "Actividades favoritas"
+        prompt: "Actividades que más disfruta"
+      clothing_size:
+        label: "Talla de ropa"
+        prompt: "Tallas actuales o notas de ajuste"
+      food_preferences:
+        label: "Preferencias de comida"
+        prompt: "Comidas que le gustan o evita"
+      allergies:
+        label: "Alergias"
+        prompt: "Alergias o sensibilidades para tener visibles"
+      milestones:
+        label: "Hitos"
+        prompt: "Hitos recientes o próximos"
   admin:
     feature_flags:
       index:

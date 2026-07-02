@@ -9,19 +9,22 @@ severity: important
 title: Relationship profile CRUD is owner scoped
 
 claim: >
-  Relationship profiles are authenticated, user-owned records for core details,
-  localized and searchable namespaced Rails STI-backed relationship types across common
-  family, romantic, work, school, community, care, and professional categories,
-  nested add/edit/remove contact methods with in-memory duplicate kind checks,
-  associated add/edit/remove Lexxy/Action Text-backed rich relationship notes,
-  associated add/edit/remove structured preferences and tags with in-memory
-  duplicate checks matching their normalized case-insensitive indexes, friendly
-  slugs, and discard-backed archive status;
-  RelationshipProfilesController sanitizes tampered STI and contact-kind
-  discriminator params before assignment, index preloads tags and rich notes for
-  profile cards, explicitly authorizes profiles after owner-scoped lookup, and
-  RelationshipProfilePolicy and policy scopes restrict CRUD, archive, search,
-  and filter access to the signed-in owner.
+  Relationship profiles are authenticated, user-owned records with localized
+  searchable namespaced STI relationship types, contact methods, rich notes,
+  preferences, tags, friendly slugs, archive state, and relationship field
+  values. Suggested template IDs and custom labels are validated before
+  persistence, template labels are stored canonically and localized only for
+  display, template fields referenced by saved values are restricted from
+  deletion, RelationshipProfiles::FormState prepares and memoizes form rows from
+  preloaded template fields during a form render, the new form and Stimulus
+  controller use the same selected/default/first fallback order to keep an
+  available suggested-field group visible when the selected relationship type has
+  no template, preferring the default type only when it has a template, saved
+  suggested values remain visible when the profile's
+  relationship type has no active template, the show view reuses its visible
+  relationship field values list during render, controller params sanitize
+  discriminator inputs, and policy scopes restrict CRUD, archive, search, and
+  filter access to the signed-in owner.
 
 source_files:
   - app/models/user.rb
@@ -87,6 +90,11 @@ source_files:
   - app/models/relationship_note.rb
   - app/models/relationship_preference.rb
   - app/models/relationship_tag.rb
+  - app/models/relationship_template.rb
+  - app/models/template_field.rb
+  - app/models/relationship_field_value.rb
+  - app/forms/relationship_profiles/form_state.rb
+  - app/javascript/controllers/relationship_template_fields_controller.js
   - app/queries/relationship_profile/search_query.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/policies/relationship_profile_policy.rb
@@ -103,6 +111,7 @@ source_files:
   - db/migrate/20260625121300_create_action_text_tables.action_text.rb
   - db/migrate/20260625121400_move_relationship_notes_to_action_text.rb
   - db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb
+  - db/migrate/20260701025353_create_relationship_templates.rb
 
 related_files:
   - app/javascript/application.js
@@ -112,6 +121,9 @@ related_files:
   - app/views/relationship_profiles/edit.html.erb
   - app/views/relationship_profiles/_form.html.erb
   - app/views/relationship_profiles/show.html.erb
+  - spec/forms/relationship_profiles/form_state_spec.rb
+  - spec/models/relationship_field_value_spec.rb
+  - spec/models/template_field_spec.rb
   - spec/requests/relationship_profiles_spec.rb
   - spec/system/relationship_profile_edit_spec.rb
   - config/locales/en.yml
@@ -180,6 +192,10 @@ symbols:
   - RelationshipNote
   - RelationshipPreference
   - RelationshipTag
+  - RelationshipTemplate
+  - TemplateField
+  - RelationshipFieldValue
+  - RelationshipProfiles::FormState
   - RelationshipProfile::SearchQuery
   - RelationshipProfilesController
   - RelationshipProfilePolicy
@@ -197,7 +213,7 @@ tags:
 
 verification:
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb
-  - bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb
+  - bundle exec rspec spec/forms/relationship_profiles/form_state_spec.rb spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb spec/models/relationship_template_spec.rb spec/models/template_field_spec.rb spec/models/relationship_field_value_spec.rb
   - bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb
   - bundle exec rspec spec/system/relationship_profile_edit_spec.rb
   - bundle exec rspec spec/system/relationship_profile_lexxy_spec.rb
@@ -209,19 +225,15 @@ last_verified_commit: null
 
 ## Claim
 
-Relationship profiles are authenticated, user-owned records for core details,
-localized and searchable namespaced Rails STI-backed relationship types across common
-family, romantic, work, school, community, care, and professional categories,
-nested add/edit/remove contact methods with in-memory duplicate kind checks,
-associated add/edit/remove Lexxy/Action Text-backed rich relationship notes,
-associated add/edit/remove structured preferences and tags with in-memory
-duplicate checks matching their normalized case-insensitive indexes, friendly
-slugs, and discard-backed archive status;
-`RelationshipProfilesController` sanitizes tampered STI and contact-kind
-discriminator params before assignment, index preloads tags and rich notes for
-profile cards, explicitly authorizes profiles after owner-scoped lookup, and
-`RelationshipProfilePolicy` and policy scopes restrict CRUD, archive, search,
-and filter access to the signed-in owner.
+Relationship profiles are authenticated, user-owned records with localized
+searchable namespaced STI relationship types, contact methods, rich notes,
+preferences, tags, friendly slugs, archive state, and relationship field
+values. Suggested template IDs and custom labels are validated before
+persistence, template labels are stored canonically and localized only for
+display, template fields referenced by saved values are restricted from
+deletion, `RelationshipProfiles::FormState` prepares form rows from preloaded
+template fields, controller params sanitize discriminator inputs, and policy
+scopes restrict CRUD, archive, search, and filter access to the signed-in owner.
 
 ## Why It Matters
 
@@ -242,6 +254,10 @@ stores.
 - `app/models/relationship_profiles/other.rb`
 - `app/models/user.rb`
 - `app/models/relationship_preference.rb`
+- `app/models/relationship_template.rb`
+- `app/models/template_field.rb`
+- `app/models/relationship_field_value.rb`
+- `app/forms/relationship_profiles/form_state.rb`
 - `app/queries/relationship_profile/search_query.rb`
 - `app/controllers/relationship_profiles_controller.rb`
 - `app/policies/relationship_profile_policy.rb`
@@ -250,19 +266,23 @@ stores.
 - `app/views/relationship_profiles/edit.html.erb`
 - `app/views/relationship_profiles/_form.html.erb`
 - `spec/requests/relationship_profiles_spec.rb`
+- `spec/models/relationship_template_spec.rb`
+- `spec/models/relationship_field_value_spec.rb`
 - `spec/system/relationship_profile_edit_spec.rb`
 - `app/javascript/application.js`
+- `app/javascript/controllers/relationship_template_fields_controller.js`
 - `config/routes.rb`
 - `db/migrate/20260625120500_add_case_insensitive_relationship_indexes.rb`
 - `db/migrate/20260625121000_add_relationship_profile_integrity_constraints.rb`
 - `db/migrate/20260625121100_update_existing_relationship_profile_schema.rb`
 - `db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb`
 - `db/migrate/20260625121400_move_relationship_notes_to_action_text.rb`
+- `db/migrate/20260701025353_create_relationship_templates.rb`
 - `db/migrate/20260625120300_create_relationship_preferences.rb`
 
 ## Verification
 
-- `bundle exec rspec spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb`
+- `bundle exec rspec spec/forms/relationship_profiles/form_state_spec.rb spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb spec/models/relationship_template_spec.rb spec/models/template_field_spec.rb spec/models/relationship_field_value_spec.rb`
 - `bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb`
 - `bundle exec rspec spec/requests/relationship_profiles_spec.rb`
 - `bundle exec rspec spec/system/relationship_profile_edit_spec.rb`

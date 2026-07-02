@@ -17,9 +17,10 @@ claim: >
   display, template fields referenced by saved values are restricted from
   deletion, RelationshipProfiles::FormState prepares and memoizes form rows from
   preloaded template fields during a form render, the new form and Stimulus
-  controller keep an available suggested-field group visible when the selected
-  relationship type has no template, preferring the default type only when it has
-  a template, saved suggested values remain visible when the profile's
+  controller use the same selected/default/first fallback order to keep an
+  available suggested-field group visible when the selected relationship type has
+  no template, preferring the default type only when it has a template, saved
+  suggested values remain visible when the profile's
   relationship type has no active template, the show view reuses its visible
   relationship field values list during render, controller params sanitize
   discriminator inputs, and policy scopes restrict CRUD, archive, search, and

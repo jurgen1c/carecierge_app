@@ -107,14 +107,34 @@ RSpec.describe "Relationship profiles", type: :request do
       get new_relationship_profile_path
 
       fragment = Nokogiri::HTML5.fragment(response.body)
+      form = fragment.at_css("form[data-controller='relationship-template-fields']")
       spouse_group = fragment.at_css("[data-relationship-template-fields-type-value='RelationshipProfiles::Spouse']")
       boss_group = fragment.at_css("[data-relationship-template-fields-type-value='RelationshipProfiles::Boss']")
 
+      expect(form["data-relationship-template-fields-default-type-value"]).to eq(RelationshipProfile::DEFAULT_TYPE)
       expect(spouse_group).to be_present
       expect(spouse_group).not_to have_attribute("hidden")
       expect(spouse_group).not_to have_attribute("disabled")
       expect(boss_group).to have_attribute("hidden")
       expect(boss_group).to have_attribute("disabled")
+    end
+
+    it "prefers the default suggested field group when the default type has a template" do
+      create(:template_field, relationship_template: create(:relationship_template, relationship_type: "RelationshipProfiles::Spouse", position: 0))
+      create(:template_field, relationship_template: create(:relationship_template, relationship_type: RelationshipProfile::DEFAULT_TYPE, position: 1))
+      sign_in create(:user)
+
+      get new_relationship_profile_path
+
+      fragment = Nokogiri::HTML5.fragment(response.body)
+      spouse_group = fragment.at_css("[data-relationship-template-fields-type-value='RelationshipProfiles::Spouse']")
+      default_group = fragment.at_css("[data-relationship-template-fields-type-value='#{RelationshipProfile::DEFAULT_TYPE}']")
+
+      expect(default_group).to be_present
+      expect(default_group).not_to have_attribute("hidden")
+      expect(default_group).not_to have_attribute("disabled")
+      expect(spouse_group).to have_attribute("hidden")
+      expect(spouse_group).to have_attribute("disabled")
     end
   end
 

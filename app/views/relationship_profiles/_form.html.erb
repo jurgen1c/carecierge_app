@@ -1,6 +1,6 @@
 <% form_url = relationship_profile.persisted? ? relationship_profile_path(relationship_profile) : relationship_profiles_path %>
 
-<%= form_with model: relationship_profile, scope: :relationship_profile, url: form_url, class: "grid gap-6", data: { controller: "relationship-template-fields" } do |form| %>
+<%= form_with model: relationship_profile, scope: :relationship_profile, url: form_url, class: "grid gap-6", data: { controller: "relationship-template-fields", relationship_template_fields_default_type_value: RelationshipProfile::DEFAULT_TYPE } do |form| %>
   <% if relationship_profile.errors.any? %>
     <section class="rounded-lg border border-red-200 bg-red-50 p-4" role="alert">
       <h2 class="text-sm font-semibold text-red-950"><%= t(".errors_heading", count: relationship_profile.errors.count) %></h2>

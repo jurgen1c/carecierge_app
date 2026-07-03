@@ -41,6 +41,13 @@ RSpec.describe RelationshipFieldValue, type: :model do
     expect(value).to be_valid
   end
 
+  it "requires hidden custom fields to include a value" do
+    value = build(:relationship_field_value, template_field: nil, label: "Favorite snack", value: nil, custom: true, hidden: true)
+
+    expect(value).not_to be_valid
+    expect(value.errors[:value]).to include("can't be blank")
+  end
+
   it "requires visible fields to include a value" do
     value = build(:relationship_field_value, value: nil, hidden: false)
 

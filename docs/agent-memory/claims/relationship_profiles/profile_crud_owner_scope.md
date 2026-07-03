@@ -13,7 +13,8 @@ claim: >
   searchable namespaced STI relationship types, contact methods, rich notes,
   preferences, tags, friendly slugs, archive state, and relationship field
   values. Suggested template IDs and custom labels are validated before
-  persistence, template labels are stored canonically and localized only for
+  persistence, custom field values remain required even when crafted params mark
+  them hidden, template labels are stored canonically and localized only for
   display, template fields referenced by saved values are restricted from
   deletion, RelationshipProfiles::FormState prepares and memoizes form rows from
   preloaded template fields during a form render, the new form and Stimulus

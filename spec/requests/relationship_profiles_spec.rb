@@ -491,7 +491,7 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response).to redirect_to(relationship_profile_path(RelationshipProfile.find_by!(first_name: "Kai")))
     end
 
-    it "validates custom field rows that have a label but no value" do
+    it "validates custom field rows that have a label but no value even when hidden" do
       user = create(:user)
       sign_in user
 
@@ -500,7 +500,7 @@ RSpec.describe "Relationship profiles", type: :request do
           relationship_profile: {
             first_name: "Kai",
             relationship_field_values_attributes: {
-              "0" => { label: "Favorite snack", value: "", custom: "1" }
+              "0" => { label: "Favorite snack", value: "", custom: "1", hidden: "1" }
             }
           }
         }

@@ -44,7 +44,7 @@ class RelationshipFieldValue < ApplicationRecord
       conditions: -> { where(custom: true) }
     },
     if: :custom?
-  validates :value, presence: true, unless: :hidden?
+  validates :value, presence: true, if: :value_required?
   validates :template_field_id, uniqueness: { scope: :relationship_profile_id, allow_nil: true }
   validate :template_field_exists, if: -> { template_field_id.present? }
 
@@ -81,5 +81,9 @@ class RelationshipFieldValue < ApplicationRecord
 
   def normalize_key
     self.key = key.to_s.strip.presence
+  end
+
+  def value_required?
+    custom? || !hidden?
   end
 end

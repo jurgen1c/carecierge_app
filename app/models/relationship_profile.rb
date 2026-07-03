@@ -390,9 +390,16 @@ class RelationshipProfile < ApplicationRecord
   def mark_named_relationship_for_destruction(join_records, join_association, id)
     return if id.blank?
 
-    foreign_key = "#{join_association}_id"
-    join_record = join_records.detect { |candidate| candidate.public_send(foreign_key) == id } ||
-      join_records.where(foreign_key => id).first
+    join_record = case join_association
+    when :relationship_tag
+      join_records.detect { |candidate| candidate.relationship_tag_id == id } ||
+        join_records.where(relationship_tag_id: id).first
+    when :relationship_group
+      join_records.detect { |candidate| candidate.relationship_group_id == id } ||
+        join_records.where(relationship_group_id: id).first
+    else
+      raise ArgumentError, "Unsupported relationship assignment: #{join_association}"
+    end
     return if join_record.blank?
 
     marked_relationship_assignment_ids[join_association] << join_record.id if join_record.persisted?

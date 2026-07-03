@@ -86,7 +86,9 @@ class RelationshipTemplate < ApplicationRecord
   def self.install_defaults!
     transaction do
       DEFAULT_DEFINITIONS.each_with_index do |(relationship_type, definition), template_position|
-        template = find_or_initialize_by(key: definition[:key])
+        template = find_by(relationship_type:) || find_or_initialize_by(key: definition[:key])
+        next if template.persisted? && !template.system?
+
         template.assign_attributes(
           relationship_type:,
           name: definition[:name],

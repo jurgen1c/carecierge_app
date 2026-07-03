@@ -15,8 +15,10 @@ claim: >
   values. Suggested template IDs and custom labels are validated before
   persistence, custom field values remain required even when crafted params mark
   them hidden, template labels are stored canonically and localized only for
-  display, template fields referenced by saved values are restricted from
-  deletion, RelationshipProfiles::FormState prepares and memoizes form rows from
+  display, default template installation preserves non-system templates that
+  already own a default relationship type, template fields referenced by saved
+  values are restricted from deletion, RelationshipProfiles::FormState prepares
+  and memoizes form rows from
   preloaded template fields during a form render, sorts custom field value slots
   by position and label while preserving stored positions, and owns the
   selected/default/first fallback type exposed to Stimulus so an available

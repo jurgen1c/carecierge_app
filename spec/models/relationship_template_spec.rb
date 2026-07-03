@@ -47,6 +47,27 @@ RSpec.describe RelationshipTemplate, type: :model do
     expect(boss_template.template_fields.pluck(:key)).to include("communication_style", "current_priorities")
   end
 
+  it "skips non-system templates that already own a default relationship type" do
+    template = create(
+      :relationship_template,
+      key: "admin_boss",
+      relationship_type: "RelationshipProfiles::Boss",
+      name: "Admin configured boss",
+      system: false
+    )
+
+    expect do
+      described_class.install_defaults!
+    end.to change(described_class, :count).by(described_class.default_definitions.size - 1)
+
+    expect(template.reload).to have_attributes(
+      key: "admin_boss",
+      name: "Admin configured boss",
+      system: false
+    )
+    expect(template.template_fields).to be_empty
+  end
+
   it "localizes default template descriptions" do
     template = build(:relationship_template, key: "child", description: "Default care-context fields for a child.")
 

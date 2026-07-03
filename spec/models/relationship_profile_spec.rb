@@ -39,7 +39,10 @@ RSpec.describe RelationshipProfile, type: :model do
   it { is_expected.to have_many(:contact_methods).dependent(:destroy) }
   it { is_expected.to have_many(:relationship_notes).dependent(:destroy) }
   it { is_expected.to have_many(:relationship_preferences).dependent(:destroy) }
-  it { is_expected.to have_many(:relationship_tags).dependent(:destroy) }
+  it { is_expected.to have_many(:relationship_taggings).dependent(:destroy) }
+  it { is_expected.to have_many(:relationship_tags).through(:relationship_taggings) }
+  it { is_expected.to have_many(:relationship_group_memberships).dependent(:destroy) }
+  it { is_expected.to have_many(:relationship_groups).through(:relationship_group_memberships) }
   it { is_expected.to have_many(:relationship_field_values).dependent(:destroy) }
   it { is_expected.to validate_presence_of(:first_name) }
 
@@ -88,11 +91,53 @@ RSpec.describe RelationshipProfile, type: :model do
 
   it "validates duplicate nested tag names before hitting database constraints" do
     profile = build(:relationship_profile)
-    profile.relationship_tags.build(name: "garden")
-    profile.relationship_tags.build(name: " Garden ")
+    profile.relationship_taggings.build(tag_name: "garden")
+    profile.relationship_taggings.build(tag_name: " Garden ")
 
     expect(profile).not_to be_valid
     expect(profile.errors[:relationship_tags]).to include("contains duplicate names")
+  end
+
+  it "validates duplicate nested group names before hitting database constraints" do
+    profile = build(:relationship_profile)
+    profile.relationship_group_memberships.build(group_name: "college friends")
+    profile.relationship_group_memberships.build(group_name: " College Friends ")
+
+    expect(profile).not_to be_valid
+    expect(profile.errors[:relationship_groups]).to include("contains duplicate names")
+  end
+
+  it "destroys tag and group memberships while preserving reusable catalog entries" do
+    profile = create(:relationship_profile)
+    tag = create(:relationship_tag, user: profile.user, name: "Garden")
+    group = create(:relationship_group, user: profile.user, name: "Family")
+    create(:relationship_tagging, relationship_profile: profile, relationship_tag: tag)
+    create(:relationship_group_membership, relationship_profile: profile, relationship_group: group)
+
+    expect do
+      profile.destroy!
+    end.to change(RelationshipTagging, :count).by(-1)
+      .and change(RelationshipGroupMembership, :count).by(-1)
+      .and change(RelationshipTag, :count).by(0)
+      .and change(RelationshipGroup, :count).by(0)
+  end
+
+  it "switches reusable tag and group assignments when submitted names change" do
+    profile = create(:relationship_profile)
+    tag = create(:relationship_tag, user: profile.user, name: "Family")
+    group = create(:relationship_group, user: profile.user, name: "Neighbors")
+    create(:relationship_tagging, relationship_profile: profile, relationship_tag: tag)
+    create(:relationship_group_membership, relationship_profile: profile, relationship_group: group)
+
+    profile.update!(
+      relationship_tags_attributes: { "0" => { id: tag.id, name: "VIP" } },
+      relationship_groups_attributes: { "0" => { id: group.id, name: "Work" } }
+    )
+
+    expect(profile.reload.relationship_tags.pluck(:name)).to contain_exactly("VIP")
+    expect(profile.relationship_groups.pluck(:name)).to contain_exactly("Work")
+    expect(profile.user.relationship_tags.pluck(:name)).to include("Family", "VIP")
+    expect(profile.user.relationship_groups.pluck(:name)).to include("Neighbors", "Work")
   end
 
   it "stores notes as associated rich text relationship notes" do

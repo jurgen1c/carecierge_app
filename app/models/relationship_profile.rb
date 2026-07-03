@@ -103,23 +103,27 @@ class RelationshipProfile < ApplicationRecord
   has_many :contact_methods, dependent: :destroy
   has_many :relationship_notes, dependent: :destroy
   has_many :relationship_preferences, dependent: :destroy
-  has_many :relationship_tags, dependent: :destroy
+  has_many :relationship_taggings, dependent: :destroy, autosave: true
+  has_many :relationship_tags, through: :relationship_taggings
+  has_many :relationship_group_memberships, dependent: :destroy, autosave: true
+  has_many :relationship_groups, through: :relationship_group_memberships
   has_many :relationship_field_values, dependent: :destroy
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true
   accepts_nested_attributes_for :relationship_preferences, allow_destroy: true
-  accepts_nested_attributes_for :relationship_tags, allow_destroy: true
   accepts_nested_attributes_for :relationship_field_values, allow_destroy: true
 
   before_validation :default_type
+  after_save :destroy_marked_relationship_assignments
 
   validates :first_name, presence: true
   validates :type, inclusion: { in: TYPE_LABELS.keys }
-  validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_tags, :relationship_field_values
+  validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_taggings, :relationship_group_memberships, :relationship_field_values
   validate :unique_nested_contact_kinds
   validate :unique_nested_preference_keys
   validate :unique_nested_tag_names
+  validate :unique_nested_group_names
   validate :unique_nested_template_fields
   validate :unique_nested_custom_field_labels
 
@@ -178,6 +182,10 @@ class RelationshipProfile < ApplicationRecord
     relationship_tags.map(&:name).join(", ")
   end
 
+  def group_names
+    relationship_groups.map(&:name).join(", ")
+  end
+
   def visible_relationship_field_values
     relationship_field_values.reject(&:marked_for_destruction?).reject(&:hidden?).select do |field_value|
       field_value.value.present? && current_relationship_field_value?(field_value)
@@ -227,7 +235,27 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def relationship_tags_attributes=(attributes)
-    super(reject_blank_new_nested_attributes(attributes) { |nested_attributes| nested_attributes["name"].blank? })
+    @relationship_tag_attribute_names = submitted_nested_names(attributes)
+    assign_named_relationship_collection(
+      attributes,
+      collection: relationship_tags,
+      join_records: relationship_taggings,
+      join_association: :relationship_tag,
+      name_attribute: :tag_name,
+      user_collection: :relationship_tags
+    )
+  end
+
+  def relationship_groups_attributes=(attributes)
+    @relationship_group_attribute_names = submitted_nested_names(attributes)
+    assign_named_relationship_collection(
+      attributes,
+      collection: relationship_groups,
+      join_records: relationship_group_memberships,
+      join_association: :relationship_group,
+      name_attribute: :group_name,
+      user_collection: :relationship_groups
+    )
   end
 
   def relationship_field_values_attributes=(attributes)
@@ -252,6 +280,12 @@ class RelationshipProfile < ApplicationRecord
     self.type = DEFAULT_TYPE if type.blank?
   end
 
+  def destroy_marked_relationship_assignments
+    RelationshipTagging.where(id: marked_relationship_assignment_ids[:relationship_tag]).destroy_all
+    RelationshipGroupMembership.where(id: marked_relationship_assignment_ids[:relationship_group]).destroy_all
+    marked_relationship_assignment_ids.clear
+  end
+
   def unique_nested_contact_kinds
     return unless duplicate_nested_value?(contact_methods, :kind)
 
@@ -265,9 +299,17 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def unique_nested_tag_names
-    return unless duplicate_nested_value?(relationship_tags, :name)
+    return unless duplicate_nested_names?(@relationship_tag_attribute_names) ||
+      duplicate_nested_names?(named_join_record_names(relationship_taggings, :relationship_tag, :tag_name))
 
     errors.add(:relationship_tags, "contains duplicate names")
+  end
+
+  def unique_nested_group_names
+    return unless duplicate_nested_names?(@relationship_group_attribute_names) ||
+      duplicate_nested_names?(named_join_record_names(relationship_group_memberships, :relationship_group, :group_name))
+
+    errors.add(:relationship_groups, "contains duplicate names")
   end
 
   def unique_nested_template_fields
@@ -306,6 +348,82 @@ class RelationshipProfile < ApplicationRecord
     attributes.to_h.reject do |_index, nested_attributes|
       nested_attributes["id"].blank? && yield(nested_attributes)
     end
+  end
+
+  def assign_named_relationship_collection(attributes, collection:, join_records:, join_association:, name_attribute:, user_collection:)
+    attributes.to_h.each_value do |nested_attributes|
+      id = nested_attribute_value(nested_attributes, :id).presence
+      name = nested_attribute_value(nested_attributes, :name).to_s.strip
+
+      if ActiveModel::Type::Boolean.new.cast(nested_attribute_value(nested_attributes, :_destroy)) || (id.present? && name.blank?)
+        mark_named_relationship_for_destruction(join_records, join_association, id)
+        next
+      end
+
+      next if id.blank? && name.blank?
+
+      record = named_relationship_record(id:, name:, collection:, user_collection:)
+
+      if id.present? && name.present? && !record.name.casecmp?(name)
+        mark_named_relationship_for_destruction(join_records, join_association, id)
+        record = named_relationship_record(id: nil, name:, collection:, user_collection:)
+      end
+
+      join_record = join_records.reject(&:marked_for_destruction?).detect { |candidate| candidate.public_send(join_association) == record } ||
+        join_records.build(join_association => record)
+      join_record.public_send("#{name_attribute}=", name)
+    end
+  end
+
+  def nested_attribute_value(nested_attributes, key)
+    nested_attributes[key.to_s] || nested_attributes[key]
+  end
+
+  def submitted_nested_names(attributes)
+    attributes.to_h.each_value.filter_map do |nested_attributes|
+      next if ActiveModel::Type::Boolean.new.cast(nested_attribute_value(nested_attributes, :_destroy))
+
+      nested_attribute_value(nested_attributes, :name).to_s.strip.presence
+    end
+  end
+
+  def mark_named_relationship_for_destruction(join_records, join_association, id)
+    return if id.blank?
+
+    foreign_key = "#{join_association}_id"
+    join_record = join_records.detect { |candidate| candidate.public_send(foreign_key) == id } ||
+      join_records.where(foreign_key => id).first
+    return if join_record.blank?
+
+    marked_relationship_assignment_ids[join_association] << join_record.id if join_record.persisted?
+    join_record.mark_for_destruction
+  end
+
+  def marked_relationship_assignment_ids
+    @marked_relationship_assignment_ids ||= Hash.new { |hash, key| hash[key] = [] }
+  end
+
+  def named_relationship_record(id:, name:, collection:, user_collection:)
+    if id.present?
+      collection.detect { |record| record.id == id } || user.public_send(user_collection).find(id)
+    else
+      user.public_send(user_collection).detect { |record| record.name.casecmp?(name) } ||
+        user.public_send(user_collection).build(name:)
+    end
+  end
+
+  def named_join_record_names(join_records, join_association, name_attribute)
+    join_records.reject(&:marked_for_destruction?).map do |join_record|
+      join_record.public_send(join_association)&.name || join_record.public_send(name_attribute)
+    end
+  end
+
+  def duplicate_nested_names?(names)
+    return false if names.blank?
+
+    normalized_values = names.filter_map { |name| name.to_s.strip.downcase.presence }
+
+    normalized_values.uniq.size != normalized_values.size
   end
 
   def duplicate_nested_value?(records, attribute)

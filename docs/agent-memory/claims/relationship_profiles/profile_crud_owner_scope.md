@@ -11,8 +11,9 @@ title: Relationship profile CRUD is owner scoped
 claim: >
   Relationship profiles are authenticated, user-owned records with localized
   searchable namespaced STI relationship types, contact methods, rich notes,
-  preferences, tags, friendly slugs, archive state, and relationship field
-  values. Suggested template IDs and custom labels are validated before
+  preferences, reusable user-owned tags, relationship taggings, reusable
+  user-owned relationship groups, group memberships, friendly slugs, archive
+  state, and relationship field values. Suggested template IDs and custom labels are validated before
   persistence, custom field values remain required even when crafted params mark
   them hidden, template labels are stored canonically and localized only for
   display, default template installation preserves non-system templates that
@@ -27,8 +28,9 @@ claim: >
   suggested values remain visible when the profile's
   relationship type has no active template, the show view reuses its visible
   relationship field values list during render, controller params sanitize
-  discriminator inputs, and policy scopes restrict CRUD, archive, search, and
-  filter access to the signed-in owner.
+  discriminator inputs, tag and group filters are constrained by the signed-in
+  owner's profile scope and catalog options, and policy scopes restrict CRUD,
+  archive, search, and filter access to the signed-in owner.
 
 source_files:
   - app/models/user.rb
@@ -94,6 +96,9 @@ source_files:
   - app/models/relationship_note.rb
   - app/models/relationship_preference.rb
   - app/models/relationship_tag.rb
+  - app/models/relationship_tagging.rb
+  - app/models/relationship_group.rb
+  - app/models/relationship_group_membership.rb
   - app/models/relationship_template.rb
   - app/models/template_field.rb
   - app/models/relationship_field_value.rb
@@ -116,6 +121,9 @@ source_files:
   - db/migrate/20260625121400_move_relationship_notes_to_action_text.rb
   - db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb
   - db/migrate/20260701025353_create_relationship_templates.rb
+  - db/migrate/20260703140000_add_relationship_taggings_and_groups.rb
+  - db/migrate/20260703141000_remove_relationship_tag_profile_reference.rb
+  - db/migrate/20260703142000_add_cascade_to_relationship_assignment_foreign_keys.rb
 
 related_files:
   - app/javascript/application.js
@@ -127,6 +135,9 @@ related_files:
   - app/views/relationship_profiles/show.html.erb
   - spec/forms/relationship_profiles/form_state_spec.rb
   - spec/models/relationship_field_value_spec.rb
+  - spec/models/relationship_group_spec.rb
+  - spec/models/relationship_group_membership_spec.rb
+  - spec/models/relationship_tagging_spec.rb
   - spec/models/template_field_spec.rb
   - spec/requests/relationship_profiles_spec.rb
   - spec/system/relationship_profile_edit_spec.rb
@@ -196,6 +207,9 @@ symbols:
   - RelationshipNote
   - RelationshipPreference
   - RelationshipTag
+  - RelationshipTagging
+  - RelationshipGroup
+  - RelationshipGroupMembership
   - RelationshipTemplate
   - TemplateField
   - RelationshipFieldValue
@@ -218,6 +232,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb
   - bundle exec rspec spec/forms/relationship_profiles/form_state_spec.rb spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb spec/models/relationship_template_spec.rb spec/models/template_field_spec.rb spec/models/relationship_field_value_spec.rb
+  - bundle exec rspec spec/models/relationship_group_spec.rb spec/models/relationship_group_membership_spec.rb spec/models/relationship_tagging_spec.rb
   - bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb
   - bundle exec rspec spec/system/relationship_profile_edit_spec.rb
   - bundle exec rspec spec/system/relationship_profile_lexxy_spec.rb
@@ -231,13 +246,14 @@ last_verified_commit: null
 
 Relationship profiles are authenticated, user-owned records with localized
 searchable namespaced STI relationship types, contact methods, rich notes,
-preferences, tags, friendly slugs, archive state, and relationship field
-values. Suggested template IDs and custom labels are validated before
+preferences, reusable user-owned tags and relationship groups, friendly slugs,
+archive state, and relationship field values. Suggested template IDs and custom labels are validated before
 persistence, template labels are stored canonically and localized only for
 display, template fields referenced by saved values are restricted from
 deletion, `RelationshipProfiles::FormState` prepares form rows from preloaded
-template fields, controller params sanitize discriminator inputs, and policy
-scopes restrict CRUD, archive, search, and filter access to the signed-in owner.
+template fields plus tag and group slots, controller params sanitize
+discriminator inputs, and policy scopes restrict CRUD, archive, search, tag
+filters, and group filters to the signed-in owner.
 
 ## Why It Matters
 
@@ -258,6 +274,10 @@ stores.
 - `app/models/relationship_profiles/other.rb`
 - `app/models/user.rb`
 - `app/models/relationship_preference.rb`
+- `app/models/relationship_tag.rb`
+- `app/models/relationship_tagging.rb`
+- `app/models/relationship_group.rb`
+- `app/models/relationship_group_membership.rb`
 - `app/models/relationship_template.rb`
 - `app/models/template_field.rb`
 - `app/models/relationship_field_value.rb`
@@ -272,6 +292,9 @@ stores.
 - `spec/requests/relationship_profiles_spec.rb`
 - `spec/models/relationship_template_spec.rb`
 - `spec/models/relationship_field_value_spec.rb`
+- `spec/models/relationship_group_spec.rb`
+- `spec/models/relationship_group_membership_spec.rb`
+- `spec/models/relationship_tagging_spec.rb`
 - `spec/system/relationship_profile_edit_spec.rb`
 - `app/javascript/application.js`
 - `app/javascript/controllers/relationship_template_fields_controller.js`
@@ -282,11 +305,15 @@ stores.
 - `db/migrate/20260628120000_use_sti_and_associated_relationship_notes.rb`
 - `db/migrate/20260625121400_move_relationship_notes_to_action_text.rb`
 - `db/migrate/20260701025353_create_relationship_templates.rb`
+- `db/migrate/20260703140000_add_relationship_taggings_and_groups.rb`
+- `db/migrate/20260703141000_remove_relationship_tag_profile_reference.rb`
+- `db/migrate/20260703142000_add_cascade_to_relationship_assignment_foreign_keys.rb`
 - `db/migrate/20260625120300_create_relationship_preferences.rb`
 
 ## Verification
 
 - `bundle exec rspec spec/forms/relationship_profiles/form_state_spec.rb spec/models/contact_method_spec.rb spec/models/relationship_profile_spec.rb spec/models/relationship_note_spec.rb spec/models/relationship_preference_spec.rb spec/models/relationship_template_spec.rb spec/models/template_field_spec.rb spec/models/relationship_field_value_spec.rb`
+- `bundle exec rspec spec/models/relationship_group_spec.rb spec/models/relationship_group_membership_spec.rb spec/models/relationship_tagging_spec.rb`
 - `bundle exec rspec spec/queries/relationship_profile/search_query_spec.rb`
 - `bundle exec rspec spec/requests/relationship_profiles_spec.rb`
 - `bundle exec rspec spec/system/relationship_profile_edit_spec.rb`

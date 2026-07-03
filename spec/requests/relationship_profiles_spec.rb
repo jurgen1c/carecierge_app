@@ -43,6 +43,29 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).not_to include("Rafa")
     end
 
+    it "filters profiles by tag and relationship group without leaking another user's catalog" do
+      user = create(:user)
+      hidden_user = create(:user)
+      tag = create(:relationship_tag, user:, name: "VIP")
+      group = create(:relationship_group, user:, name: "college friends")
+      visible = create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera")
+      hidden = create(:relationship_profile, user:, first_name: "Nora", last_name: "Lane")
+      create(:relationship_tagging, relationship_profile: visible, relationship_tag: tag)
+      create(:relationship_group_membership, relationship_profile: visible, relationship_group: group)
+      create(:relationship_tagging, relationship_profile: hidden, relationship_tag: tag)
+      create(:relationship_tag, user: hidden_user, name: "Hidden catalog tag")
+      sign_in user
+
+      get relationship_profiles_path, params: { tag_id: tag.id, group_id: group.id }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(visible.full_name)
+      expect(response.body).not_to include(hidden.full_name)
+      expect(response.body).to include("VIP")
+      expect(response.body).to include("college friends")
+      expect(response.body).not_to include("Hidden catalog tag")
+    end
+
     it "searches rich text profile notes" do
       user = create(:user)
       visible = create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera")
@@ -80,7 +103,7 @@ RSpec.describe "Relationship profiles", type: :request do
       get relationship_profiles_path, params: { q: "stale-bookmark" }
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include(profile.full_name)
+      expect(response.body).to include(ERB::Util.html_escape(profile.full_name))
     end
   end
 
@@ -184,7 +207,7 @@ RSpec.describe "Relationship profiles", type: :request do
   end
 
   describe "POST /relationship_profiles" do
-    it "creates a profile with core details, contact details, notes, preferences, and tags" do
+    it "creates a profile with core details, contact details, notes, preferences, tags, and groups" do
       user = create(:user)
       sign_in user
 
@@ -211,6 +234,9 @@ RSpec.describe "Relationship profiles", type: :request do
             relationship_tags_attributes: {
               "0" => { name: "gardening" },
               "1" => { name: "book club" }
+            },
+            relationship_groups_attributes: {
+              "0" => { name: "college friends" }
             }
           }
         }
@@ -219,6 +245,9 @@ RSpec.describe "Relationship profiles", type: :request do
         .and change(RelationshipNote, :count).by(2)
         .and change(RelationshipPreference, :count).by(2)
         .and change(RelationshipTag, :count).by(2)
+        .and change(RelationshipTagging, :count).by(2)
+        .and change(RelationshipGroup, :count).by(1)
+        .and change(RelationshipGroupMembership, :count).by(1)
 
       profile = user.relationship_profiles.find_by!(first_name: "Maya")
       expect(profile.user).to eq(user)
@@ -226,6 +255,8 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(profile.public_notes.first.body.to_plain_text).to include("Met through the neighborhood garden.")
       expect(profile.private_notes.first.body.to_plain_text).to include("Prefers low-key check-ins.")
       expect(profile.structured_preferences).to include("Coffee" => "decaf", "Topics" => "books")
+      expect(profile.relationship_tags.pluck(:name)).to contain_exactly("gardening", "book club")
+      expect(profile.relationship_groups.pluck(:name)).to contain_exactly("college friends")
       expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ], [ "personal_phone", "+506 8888 0000" ])
       expect(response).to redirect_to(relationship_profile_path(profile))
     end
@@ -366,6 +397,26 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("Relationship preferences contains duplicate keys")
       expect(response.body).to include("Relationship tags contains duplicate names")
+    end
+
+    it "renders validation errors for duplicate nested groups" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            relationship_groups_attributes: {
+              "0" => { name: "Neighbors" },
+              "1" => { name: " neighbors " }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship groups contains duplicate names")
     end
 
     it "renders validation errors for duplicate nested contact kinds" do
@@ -669,7 +720,7 @@ RSpec.describe "Relationship profiles", type: :request do
       end.to change(ContactMethod, :count).by(-1)
         .and change(RelationshipNote, :count).by(-1)
         .and change(RelationshipPreference, :count).by(-1)
-        .and change(RelationshipTag, :count).by(-1)
+        .and change(RelationshipTagging, :count).by(-1)
         .and change(RelationshipFieldValue, :count).by(-1)
 
       expect(response).to redirect_to(relationship_profile_path(profile))
@@ -700,6 +751,35 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(profile.reload.first_name).to eq("Maya")
       expect(profile.email).to eq("old@example.com")
       expect(profile.tag_names).to eq("garden")
+    end
+
+    it "preserves pending tag and group removals when an update is invalid" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:, first_name: "Maya")
+      tag = create(:relationship_tag, relationship_profile: profile, name: "garden")
+      group = create(:relationship_group, user:, name: "neighbors")
+      create(:relationship_group_membership, relationship_profile: profile, relationship_group: group)
+      sign_in user
+
+      patch relationship_profile_path(profile), params: {
+        relationship_profile: {
+          first_name: "",
+          relationship_tags_attributes: {
+            "0" => { id: tag.id, name: tag.name, _destroy: "1" }
+          },
+          relationship_groups_attributes: {
+            "0" => { id: group.id, name: group.name, _destroy: "1" }
+          }
+        }
+      }
+
+      fragment = Nokogiri::HTML5.fragment(response.body)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(fragment.at_css("input[name='relationship_profile[relationship_tags_attributes][remove_tag_#{tag.id}][id]'][value='#{tag.id}']")).to be_present
+      expect(fragment.at_css("input[name='relationship_profile[relationship_tags_attributes][remove_tag_#{tag.id}][_destroy]'][value='1']")).to be_present
+      expect(fragment.at_css("input[name='relationship_profile[relationship_groups_attributes][remove_group_#{group.id}][id]'][value='#{group.id}']")).to be_present
+      expect(fragment.at_css("input[name='relationship_profile[relationship_groups_attributes][remove_group_#{group.id}][_destroy]'][value='1']")).to be_present
     end
 
     it "preserves blank virtual form fields when an update is invalid" do
@@ -875,7 +955,7 @@ RSpec.describe "Relationship profiles", type: :request do
         delete relationship_profile_path(profile)
       end.to change(RelationshipProfile, :count).by(-1)
         .and change(ContactMethod, :count).by(-1)
-        .and change(RelationshipTag, :count).by(-1)
+        .and change(RelationshipTagging, :count).by(-1)
 
       expect(response).to redirect_to(relationship_profiles_path)
     end

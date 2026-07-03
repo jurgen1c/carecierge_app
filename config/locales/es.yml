@@ -41,6 +41,8 @@ es:
         value: "Valor de preferencia"
       relationship_tag:
         name: "Etiqueta"
+      relationship_group:
+        name: "Grupo"
       relationship_template:
         key: "Clave"
         name: "Nombre"
@@ -155,6 +157,10 @@ es:
         active: "Activas"
         archived: "Archivadas"
         all: "Todas"
+      tag_label: "Etiqueta"
+      all_tags: "Todas las etiquetas"
+      group_label: "Grupo"
+      all_groups: "Todos los grupos"
       apply_filters: "Aplicar filtros"
       profiles_label: "Perfiles de relación"
       unknown_type: "Tipo de relación sin definir"
@@ -181,10 +187,11 @@ es:
       preferences_title: "Preferencias estructuradas"
       field_values_title: "Campos de relación"
       tags_title: "Etiquetas"
+      groups_title: "Grupos"
       not_provided: "Sin información"
       back: "Volver a relaciones"
       delete: "Eliminar"
-      delete_confirm: "Eliminar este perfil de relación? Esto elimina sus detalles de contacto, notas y etiquetas."
+      delete_confirm: "Eliminar este perfil de relación? Esto elimina sus detalles de contacto, notas, asignaciones de etiquetas y asignaciones de grupos."
     types:
       friend: "Amigo"
       best_friend: "Mejor amigo"
@@ -290,9 +297,15 @@ es:
       remove_private_note: "Eliminar nota privada"
       remove_preference: "Eliminar esta preferencia"
       remove_tag: "Eliminar esta etiqueta"
+      remove_group: "Eliminar este grupo"
       tags: "Etiquetas"
+      tags_hint: "Reutiliza etiquetas que luego puedan apoyar recordatorios, sugerencias y filtros rápidos."
       tag_name: "Etiqueta"
       tag_name_placeholder: "familia"
+      groups: "Grupos"
+      groups_hint: "Usa grupos para círculos de relación como familia, escuela, trabajo o comunidad local."
+      group_name: "Grupo"
+      group_name_placeholder: "amistades de la universidad"
       submit: "Guardar perfil"
       cancel: "Cancelar"
     create:

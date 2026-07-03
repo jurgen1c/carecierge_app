@@ -14,6 +14,7 @@ class RelationshipProfiles::FormState
     private_note
     preference_slots
     tag_slots
+    group_slots
     relationship_template_groups
     custom_field_value_slots
     self
@@ -41,8 +42,16 @@ class RelationshipProfiles::FormState
   end
 
   def tag_slots
-    fill_slots(relationship_profile.relationship_tags.to_a) do
-      relationship_profile.relationship_tags.build
+    tags = relationship_profile.relationship_taggings.reject(&:marked_for_destruction?).map(&:relationship_tag)
+    fill_slots(tags) do
+      relationship_profile.user.relationship_tags.build
+    end
+  end
+
+  def group_slots
+    groups = relationship_profile.relationship_group_memberships.reject(&:marked_for_destruction?).map(&:relationship_group)
+    fill_slots(groups) do
+      relationship_profile.user.relationship_groups.build
     end
   end
 

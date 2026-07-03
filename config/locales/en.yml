@@ -70,6 +70,8 @@ en:
         value: "Preference value"
       relationship_tag:
         name: "Tag"
+      relationship_group:
+        name: "Group"
       relationship_template:
         key: "Key"
         name: "Name"
@@ -145,6 +147,10 @@ en:
         active: "Active"
         archived: "Archived"
         all: "All"
+      tag_label: "Tag"
+      all_tags: "All tags"
+      group_label: "Group"
+      all_groups: "All groups"
       apply_filters: "Apply filters"
       profiles_label: "Relationship profiles"
       unknown_type: "Relationship type not set"
@@ -171,10 +177,11 @@ en:
       preferences_title: "Structured preferences"
       field_values_title: "Relationship fields"
       tags_title: "Tags"
+      groups_title: "Groups"
       not_provided: "Not provided"
       back: "Back to relationships"
       delete: "Delete"
-      delete_confirm: "Delete this relationship profile? This removes its contact details, notes, and tags."
+      delete_confirm: "Delete this relationship profile? This removes its contact details, notes, tag assignments, and group assignments."
     types:
       friend: "Friend"
       best_friend: "Best friend"
@@ -280,9 +287,15 @@ en:
       remove_private_note: "Remove private note"
       remove_preference: "Remove this preference"
       remove_tag: "Remove this tag"
+      remove_group: "Remove this group"
       tags: "Tags"
+      tags_hint: "Reuse labels that should later support reminders, suggestions, and quick filtering."
       tag_name: "Tag"
       tag_name_placeholder: "family"
+      groups: "Groups"
+      groups_hint: "Use groups for relationship circles such as family, school, work, or local community."
+      group_name: "Group"
+      group_name_placeholder: "college friends"
       submit: "Save profile"
       cancel: "Cancel"
     create:

@@ -45,6 +45,8 @@ class User < ApplicationRecord
 
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
   has_many :relationship_profiles, dependent: :destroy
+  has_many :relationship_tags, dependent: :destroy
+  has_many :relationship_groups, dependent: :destroy
 
   def self.from_google_oauth(auth)
     email = auth.info.email.to_s.downcase

@@ -1,14 +1,17 @@
 class RelationshipProfile::SearchQuery < ApplicationQuery
   SEARCH_PREDICATE = "first_name_or_last_name_or_preferred_name_or_notes_or_type_cont"
+  ID_FORMAT = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
   STATUSES = %w[active archived all].freeze
 
-  attr_reader :ransack, :search_params, :status
+  attr_reader :ransack, :search_params, :status, :tag_id, :group_id
 
   def initialize(relation = RelationshipProfile.all, params:)
     super(relation)
     @params = params
     @search_params = build_search_params
     @status = build_status
+    @tag_id = sanitized_id(params[:tag_id])
+    @group_id = sanitized_id(params[:group_id])
   end
 
   def resolve
@@ -73,7 +76,7 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
   end
 
   def filtered_relation
-    case status
+    status_relation = case status
     when "archived"
       relation.archived
     when "all"
@@ -81,6 +84,8 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
     else
       relation.active
     end
+
+    filter_by_group(filter_by_tag(status_relation))
   end
 
   def build_status
@@ -91,5 +96,22 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
     return {} unless params[:q].respond_to?(:permit)
 
     params[:q].permit(SEARCH_PREDICATE).to_h
+  end
+
+  def sanitized_id(value)
+    value = value.to_s
+    value if value.match?(ID_FORMAT)
+  end
+
+  def filter_by_tag(filtered_relation)
+    return filtered_relation if tag_id.blank?
+
+    filtered_relation.where(id: RelationshipTagging.select(:relationship_profile_id).where(relationship_tag_id: tag_id))
+  end
+
+  def filter_by_group(filtered_relation)
+    return filtered_relation if group_id.blank?
+
+    filtered_relation.where(id: RelationshipGroupMembership.select(:relationship_profile_id).where(relationship_group_id: group_id))
   end
 end

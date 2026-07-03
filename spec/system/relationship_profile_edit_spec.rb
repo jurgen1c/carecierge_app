@@ -8,6 +8,8 @@ RSpec.describe "Relationship profile editing", type: :system do
     create(:relationship_note, relationship_profile: profile, body: "Remember tea.")
     create(:relationship_preference, relationship_profile: profile, key: "Coffee", value: "decaf")
     create(:relationship_tag, relationship_profile: profile, name: "garden")
+    group = create(:relationship_group, user:, name: "neighbors")
+    create(:relationship_group_membership, relationship_profile: profile, relationship_group: group)
     sign_in user
 
     visit edit_relationship_profile_path(profile)
@@ -16,6 +18,7 @@ RSpec.describe "Relationship profile editing", type: :system do
     check "Remove this note"
     check "Remove this preference"
     check "Remove this tag"
+    check "Remove this group"
     click_button "Save profile"
 
     expect(page).to have_current_path(relationship_profile_path(profile))
@@ -26,5 +29,6 @@ RSpec.describe "Relationship profile editing", type: :system do
     expect(profile.relationship_notes).to be_empty
     expect(profile.relationship_preferences).to be_empty
     expect(profile.relationship_tags).to be_empty
+    expect(profile.relationship_groups).to be_empty
   end
 end

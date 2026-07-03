@@ -22,12 +22,12 @@ class RelationshipProfilesController < ApplicationController
 
   def new
     @relationship_profile = current_user.relationship_profiles.new
-    @relationship_profile.prepare_nested_form_associations
     authorize @relationship_profile
+    prepare_relationship_profile_form
   end
 
   def edit
-    @relationship_profile.prepare_nested_form_associations
+    prepare_relationship_profile_form
   end
 
   def create
@@ -38,7 +38,7 @@ class RelationshipProfilesController < ApplicationController
     if @relationship_profile.save
       redirect_to relationship_profile_path(@relationship_profile), notice: t(".notice")
     else
-      @relationship_profile.prepare_nested_form_associations
+      prepare_relationship_profile_form
       render :new, status: :unprocessable_entity
     end
   end
@@ -49,7 +49,7 @@ class RelationshipProfilesController < ApplicationController
     if @relationship_profile.save
       redirect_to relationship_profile_path(@relationship_profile), notice: t(".notice")
     else
-      @relationship_profile.prepare_nested_form_associations
+      prepare_relationship_profile_form
       render :edit, status: :unprocessable_entity
     end
   end
@@ -71,7 +71,7 @@ class RelationshipProfilesController < ApplicationController
   def set_relationship_profile
     @relationship_profile = current_user
       .relationship_profiles
-      .includes(:contact_methods, :relationship_preferences, :relationship_tags, relationship_notes: :rich_text_body)
+      .includes(:contact_methods, :relationship_preferences, :relationship_tags, relationship_field_values: { template_field: :relationship_template }, relationship_notes: :rich_text_body)
       .friendly
       .find(params[:id])
     authorize @relationship_profile
@@ -88,9 +88,14 @@ class RelationshipProfilesController < ApplicationController
       contact_methods_attributes: %i[id kind value label preferred _destroy],
       relationship_notes_attributes: %i[id category private body _destroy],
       relationship_preferences_attributes: %i[id key value _destroy],
-      relationship_tags_attributes: %i[id name _destroy]
+      relationship_tags_attributes: %i[id name _destroy],
+      relationship_field_values_attributes: %i[id template_field_id key label value hidden custom position _destroy]
     )
     sanitize_discriminator_params(permitted_params)
+  end
+
+  def prepare_relationship_profile_form
+    @relationship_profile_form = RelationshipProfiles::FormState.new(@relationship_profile).prepare!
   end
 
   def sanitize_discriminator_params(permitted_params)

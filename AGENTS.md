@@ -161,6 +161,7 @@ Use `bin/memory templates list` and `bin/memory templates show <template>` befor
 - Local CI is the source of truth for PR verification:
   - `bin/setup` must configure `core.hooksPath` to `.githooks`.
   - Agents must use normal `git push`; do not use `--no-verify` unless the user explicitly approves bypassing hooks.
+  - Agents must never force push a branch. Do not use `git push --force`, `git push --force-with-lease`, or any equivalent forced update, even after amending or rebasing.
   - After pushing, run `bin/ci` so RuboCop, ESLint, Bun audit, Bundler Audit, Brakeman, RSpec, and `gh signoff` verify the pushed commit.
   - Use `CI_SIGNOFF=false bin/ci` only when explicitly asked to run the gate without writing the GitHub signoff status.
   - GitHub Actions CI is intentionally disabled for pull requests, pushes, and manual dispatch. Do not add a manual fallback workflow.

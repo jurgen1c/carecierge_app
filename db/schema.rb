@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_01_025353) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -138,6 +138,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "relationship_field_values", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "custom", default: false, null: false
+    t.boolean "hidden", default: false, null: false
+    t.string "key"
+    t.string "label", null: false
+    t.integer "position", default: 0, null: false
+    t.uuid "relationship_profile_id", null: false
+    t.uuid "template_field_id"
+    t.datetime "updated_at", null: false
+    t.text "value"
+    t.index "relationship_profile_id, lower((label)::text)", name: "index_relationship_field_values_on_profile_and_lower_label", unique: true, where: "(custom = true)"
+    t.index ["relationship_profile_id", "hidden", "position"], name: "index_relationship_field_values_on_profile_hidden_position"
+    t.index ["relationship_profile_id", "template_field_id"], name: "index_relationship_field_values_on_profile_and_template_field", unique: true, where: "(template_field_id IS NOT NULL)"
+    t.index ["relationship_profile_id"], name: "index_relationship_field_values_on_relationship_profile_id"
+    t.index ["template_field_id"], name: "index_relationship_field_values_on_template_field_id"
+  end
+
   create_table "relationship_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "category"
     t.datetime "created_at", null: false
@@ -188,6 +206,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
     t.index ["relationship_profile_id"], name: "index_relationship_tags_on_relationship_profile_id"
   end
 
+  create_table "relationship_templates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "key", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "relationship_type", null: false
+    t.boolean "system", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["active", "position"], name: "index_relationship_templates_on_active_and_position"
+    t.index ["key"], name: "index_relationship_templates_on_key", unique: true
+    t.index ["relationship_type"], name: "index_relationship_templates_on_relationship_type", unique: true
+  end
+
   create_table "rollout_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.jsonb "criteria", default: {}, null: false
@@ -198,6 +231,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_rollout_groups_on_key", unique: true
     t.index ["retired_at"], name: "index_rollout_groups_on_retired_at"
+  end
+
+  create_table "template_fields", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "field_type", default: "text", null: false
+    t.string "key", null: false
+    t.string "label", null: false
+    t.integer "position", default: 0, null: false
+    t.text "prompt"
+    t.uuid "relationship_template_id", null: false
+    t.boolean "required", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_template_id", "active", "position"], name: "idx_on_relationship_template_id_active_position_5de85f3010"
+    t.index ["relationship_template_id", "key"], name: "index_template_fields_on_relationship_template_id_and_key", unique: true
+    t.index ["relationship_template_id"], name: "index_template_fields_on_relationship_template_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -236,8 +285,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_28_120000) do
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
+  add_foreign_key "relationship_field_values", "relationship_profiles"
+  add_foreign_key "relationship_field_values", "template_fields"
   add_foreign_key "relationship_notes", "relationship_profiles"
   add_foreign_key "relationship_preferences", "relationship_profiles"
   add_foreign_key "relationship_profiles", "users"
   add_foreign_key "relationship_tags", "relationship_profiles"
+  add_foreign_key "template_fields", "relationship_templates"
 end

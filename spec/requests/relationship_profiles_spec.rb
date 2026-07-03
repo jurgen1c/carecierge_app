@@ -111,7 +111,7 @@ RSpec.describe "Relationship profiles", type: :request do
       spouse_group = fragment.at_css("[data-relationship-template-fields-type-value='RelationshipProfiles::Spouse']")
       boss_group = fragment.at_css("[data-relationship-template-fields-type-value='RelationshipProfiles::Boss']")
 
-      expect(form["data-relationship-template-fields-default-type-value"]).to eq(RelationshipProfile::DEFAULT_TYPE)
+      expect(form["data-relationship-template-fields-fallback-type-value"]).to eq("RelationshipProfiles::Spouse")
       expect(spouse_group).to be_present
       expect(spouse_group["hidden"]).to be_nil
       expect(spouse_group["disabled"]).to be_nil
@@ -135,6 +135,22 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(default_group["disabled"]).to be_nil
       expect(spouse_group["hidden"]).to eq("")
       expect(spouse_group["disabled"]).to eq("")
+    end
+  end
+
+  describe "GET /relationship_profiles/:id/edit" do
+    it "preserves existing custom field positions in the form" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      field_value = create(:relationship_field_value, relationship_profile: profile, template_field: nil, label: "Favorite snack", value: "Mango", custom: true, position: 250)
+      sign_in user
+
+      get edit_relationship_profile_path(profile)
+
+      fragment = Nokogiri::HTML5.fragment(response.body)
+      position_input = fragment.at_css("input[name='relationship_profile[relationship_field_values_attributes][custom_0][position]']")
+
+      expect(position_input["value"]).to eq(field_value.position.to_s)
     end
   end
 

@@ -56,6 +56,24 @@ class RelationshipProfiles::FormState
     end
   end
 
+  def available_relationship_template_types
+    @available_relationship_template_types ||= relationship_template_groups.map { |template, _field_values| template.relationship_type }
+  end
+
+  def fallback_relationship_template_type
+    @fallback_relationship_template_type ||= [
+      RelationshipProfile::DEFAULT_TYPE,
+      available_relationship_template_types.first
+    ].find { |relationship_type| available_relationship_template_types.include?(relationship_type) }
+  end
+
+  def active_relationship_template_type
+    [
+      relationship_profile.type.presence,
+      fallback_relationship_template_type
+    ].find { |relationship_type| available_relationship_template_types.include?(relationship_type) }
+  end
+
   def template_field_value_for(template_field)
     relationship_profile.relationship_field_values.detect { |field_value| field_value.template_field_id == template_field.id } ||
       relationship_profile.relationship_field_values.build(
@@ -68,9 +86,13 @@ class RelationshipProfiles::FormState
   end
 
   def custom_field_value_slots
-    custom_values = relationship_profile.relationship_field_values.select { |field_value| field_value.template_field_id.blank? }
+    custom_values = relationship_profile.relationship_field_values
+      .select { |field_value| field_value.template_field_id.blank? }
+      .sort_by { |field_value| [ field_value.position || 0, field_value.label.to_s.downcase ] }
 
-    fill_slots(custom_values) { relationship_profile.relationship_field_values.build(custom: true) }
+    fill_slots(custom_values) do
+      relationship_profile.relationship_field_values.build(custom: true, position: next_custom_field_position(custom_values))
+    end
   end
 
   private
@@ -83,5 +105,9 @@ class RelationshipProfiles::FormState
     records.tap do |slots|
       (SLOT_COUNT - slots.size).times { slots << yield }
     end
+  end
+
+  def next_custom_field_position(custom_values)
+    [ custom_values.filter_map(&:position).max.to_i + 1, 100 ].max
   end
 end

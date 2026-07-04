@@ -56,6 +56,7 @@ bin/memory context --git-diff
 - `sync`: Run before agent work or after checkout, merge, pull, or rebase.
 - `context`: Run before editing code so relevant claims, recipes, and verification steps are visible.
 - `coverage`: Run before finishing work, especially in CI or when watched files changed.
+- `audit`: Run before finishing when canonical memory files changed to catch stale-claim risks and required review decisions.
 - `query`: Use when you need memory about a behavior, subsystem, file, symbol, or route.
 - `show`: Use when you need exact claim metadata, linked files, tags, or graph context.
 - `system`: Use before editing a subsystem to inspect critical claims, recipes, watched files, and graph activity.
@@ -95,6 +96,7 @@ bin/memory validate
 bin/memory compile
 bin/memory doctor
 bin/memory coverage --git-diff
+bin/memory audit --git-diff
 ```
 
 ## When to Update Memory

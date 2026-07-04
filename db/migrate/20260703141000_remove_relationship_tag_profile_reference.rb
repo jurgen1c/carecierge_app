@@ -2,6 +2,12 @@ class RemoveRelationshipTagProfileReference < ActiveRecord::Migration[8.1]
   def up
     remove_index :relationship_tags, name: "index_relationship_tags_on_profile_id_and_lower_name", if_exists: true
     remove_reference :relationship_tags, :relationship_profile, foreign_key: true, type: :uuid if column_exists?(:relationship_tags, :relationship_profile_id)
+
+    add_index :relationship_tags,
+              "user_id, lower(name)",
+              unique: true,
+              name: "index_relationship_tags_on_user_id_and_lower_name",
+              if_not_exists: true
   end
 
   def down
@@ -47,7 +53,6 @@ class RemoveRelationshipTagProfileReference < ActiveRecord::Migration[8.1]
         FROM ranked_taggings
         WHERE relationship_tags.id = ranked_taggings.relationship_tag_id
           AND ranked_taggings.tag_position = 1
-        RETURNING ranked_taggings.tagging_id
       )
       INSERT INTO relationship_tags (id, relationship_profile_id, user_id, name, created_at, updated_at)
       SELECT gen_random_uuid(), relationship_profile_id, user_id, name, created_at, updated_at

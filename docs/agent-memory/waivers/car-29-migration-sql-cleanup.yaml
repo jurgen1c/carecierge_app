@@ -1,0 +1,9 @@
+id: car_29_migration_sql_cleanup
+status: active
+reason: >
+  Migration-only rollback and redo cleanup that removes an unused RETURNING
+  clause and restores the user/name index idempotently; no runtime behavior,
+  interface, or workflow changed.
+files:
+  - db/migrate/20260703141000_remove_relationship_tag_profile_reference.rb
+expires_at: 2026-08-04

@@ -281,6 +281,8 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def destroy_marked_relationship_assignments
+    return if marked_relationship_assignment_ids.values.all?(&:blank?)
+
     RelationshipTagging.where(id: marked_relationship_assignment_ids[:relationship_tag]).destroy_all
     RelationshipGroupMembership.where(id: marked_relationship_assignment_ids[:relationship_group]).destroy_all
     marked_relationship_assignment_ids.clear

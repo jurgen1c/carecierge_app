@@ -75,7 +75,16 @@ class RelationshipProfilesController < ApplicationController
   def set_relationship_profile
     @relationship_profile = current_user
       .relationship_profiles
-      .includes(:contact_methods, :relationship_preferences, :relationship_tags, :relationship_groups, relationship_field_values: { template_field: :relationship_template }, relationship_notes: :rich_text_body)
+      .includes(
+        :contact_methods,
+        :relationship_preferences,
+        :relationship_tags,
+        :relationship_groups,
+        relationship_taggings: :relationship_tag,
+        relationship_group_memberships: :relationship_group,
+        relationship_field_values: { template_field: :relationship_template },
+        relationship_notes: :rich_text_body
+      )
       .friendly
       .find(params[:id])
     authorize @relationship_profile

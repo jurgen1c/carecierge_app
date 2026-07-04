@@ -191,7 +191,7 @@ es:
       not_provided: "Sin información"
       back: "Volver a relaciones"
       delete: "Eliminar"
-      delete_confirm: "Eliminar este perfil de relación? Esto elimina sus detalles de contacto, notas, asignaciones de etiquetas y asignaciones de grupos."
+      delete_confirm: "¿Eliminar este perfil de relación? Esto elimina sus detalles de contacto, notas, asignaciones de etiquetas y asignaciones de grupos."
     types:
       friend: "Amigo"
       best_friend: "Mejor amigo"

@@ -155,6 +155,14 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(profile.relationship_groups.pluck(:name)).to contain_exactly("Work")
   end
 
+  it "does not query relationship assignments for no-op cleanup on ordinary saves" do
+    profile = create(:relationship_profile)
+
+    sql = capture_sql { profile.update!(preferred_name: "May") }
+
+    expect(sql.grep(/DELETE FROM "relationship_taggings"|DELETE FROM "relationship_group_memberships"/)).to be_empty
+  end
+
   it "stores notes as associated rich text relationship notes" do
     profile = create(:relationship_profile)
     note = create(:relationship_note, relationship_profile: profile, body: "<p>Bring <strong>tea</strong>.</p>")
@@ -221,5 +229,18 @@ RSpec.describe RelationshipProfile, type: :model do
 
   it "allows Ransack to search profile and relationship type fields" do
     expect(described_class.ransackable_attributes).to include("first_name", "preferred_name", "type")
+  end
+
+  def capture_sql
+    queries = []
+    subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == "SCHEMA"
+
+      queries << payload[:sql]
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { yield }
+
+    queries
   end
 end

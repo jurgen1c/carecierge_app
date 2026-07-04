@@ -175,6 +175,22 @@ RSpec.describe "Relationship profiles", type: :request do
 
       expect(position_input["value"]).to eq(field_value.position.to_s)
     end
+
+    it "preloads tag and group assignment joins for the form" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      tag = create(:relationship_tag, user:, name: "VIP")
+      group = create(:relationship_group, user:, name: "Friends")
+      create(:relationship_tagging, relationship_profile: profile, relationship_tag: tag)
+      create(:relationship_group_membership, relationship_profile: profile, relationship_group: group)
+      sign_in user
+
+      sql = capture_sql { get edit_relationship_profile_path(profile) }
+
+      expect(response).to have_http_status(:ok)
+      expect(sql.grep(/FROM "relationship_taggings"/).size).to eq(1)
+      expect(sql.grep(/FROM "relationship_group_memberships"/).size).to eq(1)
+    end
   end
 
   describe "GET /relationship_profiles/:id" do

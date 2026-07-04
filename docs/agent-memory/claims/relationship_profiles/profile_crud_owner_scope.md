@@ -34,7 +34,8 @@ claim: >
   cleanup skips delete queries when no assignments are marked for destruction
   and bulk-deletes marked join rows without destroy callbacks,
   tag and group filters are constrained by the signed-in owner's profile scope
-  and catalog options, and policy scopes restrict CRUD, archive, search, and
+  and catalog options, normalize accepted UUID params to lowercase for stable
+  filter form state, and policy scopes restrict CRUD, archive, search, and
   filter access to the signed-in owner.
 
 source_files:
@@ -261,7 +262,8 @@ discriminator inputs, tampered nested tag and group IDs fall back to name-based
 catalog assignment instead of raising, edit form loads preload tag and group
 assignment joins, tag and group assignment cleanup skips delete queries when no
 assignments are marked for destruction and bulk-deletes marked join rows without
-destroy callbacks, and policy scopes restrict CRUD,
+destroy callbacks, tag and group filters normalize accepted UUID params to
+lowercase for stable filter form state, and policy scopes restrict CRUD,
 archive, search, tag filters, and group filters to the signed-in owner.
 
 ## Why It Matters

@@ -100,7 +100,7 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
 
   def sanitized_id(value)
     value = value.to_s
-    value if value.match?(ID_FORMAT)
+    value.downcase if value.match?(ID_FORMAT)
   end
 
   def filter_by_tag(filtered_relation)

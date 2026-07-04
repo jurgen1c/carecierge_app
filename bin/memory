@@ -5,8 +5,16 @@ if [ -n "${AGENT_MEMORY_CLI:-}" ]; then
   exec "${AGENT_MEMORY_CLI}" "$@"
 fi
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+LOCAL_CLI="${REPO_ROOT}/node_modules/.bin/agent-memory"
+
+if [ -x "${LOCAL_CLI}" ]; then
+  exec "${LOCAL_CLI}" "$@"
+fi
+
 if command -v agent-memory >/dev/null 2>&1; then
   exec agent-memory "$@"
 fi
 
-exec bunx agent-memory "$@"
+exec bunx @jurgen1c/agent-memory-cli "$@"

@@ -14,7 +14,7 @@
       },
       "devDependencies": {
         "@eslint/js": "^10.0.1",
-        "@jurgen1c/agent-memory-cli": "0.1.3",
+        "@jurgen1c/agent-memory-cli": "0.1.9",
         "eslint": "^10.6.0",
       },
     },
@@ -64,7 +64,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@jurgen1c/agent-memory-cli": ["@jurgen1c/agent-memory-cli@0.1.3", "", { "dependencies": { "@xyflow/react": "^12.0.0", "react": "^19.0.0", "react-dom": "^19.0.0", "react-markdown": "^10.1.0", "remark-gfm": "^4.0.1" }, "bin": { "agent-memory": "dist/agent-memory.js" } }, "sha512-c16V4yVdKHvhizOzCkUJ7bJ6NTZ1/5F9+LoGEdiNpfJjANT2UQxtwV8hmpOYoucQcMxK3o4JGF5riHE8mZpyiQ=="],
+    "@jurgen1c/agent-memory-cli": ["@jurgen1c/agent-memory-cli@0.1.9", "", { "dependencies": { "@xyflow/react": "^12.0.0", "react": "^19.0.0", "react-dom": "^19.0.0", "react-markdown": "^10.1.0", "remark-gfm": "^4.0.1" }, "bin": { "agent-memory": "dist/agent-memory.js" } }, "sha512-deQPkqNvrlhN+3KMskB3/ZpM2VYzYeIao4+ZM2LAZi9SX/43EKcPDrf2Eq7rdFpet3QAQooZdBaAg3ZGofRYDA=="],
 
     "@lexical/clipboard": ["@lexical/clipboard@0.44.0", "", { "dependencies": { "@lexical/extension": "0.44.0", "@lexical/html": "0.44.0", "@lexical/list": "0.44.0", "@lexical/selection": "0.44.0", "@lexical/utils": "0.44.0", "@types/trusted-types": "^2.0.7", "lexical": "0.44.0" } }, "sha512-nfmNIs7uENqlDI7cm2E4I1Yp8mDJGMhEQIrIV2rNWnL1oeHVXQ7yuYdyoPdcY1zuj/9nvkYBQYUEh0QiGwpETA=="],
 

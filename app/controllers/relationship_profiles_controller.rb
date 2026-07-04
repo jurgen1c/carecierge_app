@@ -6,7 +6,7 @@ class RelationshipProfilesController < ApplicationController
   def index
     authorize RelationshipProfile
     query = RelationshipProfile::SearchQuery.new(
-      policy_scope(RelationshipProfile).includes(:relationship_tags, relationship_notes: :rich_text_body),
+      policy_scope(RelationshipProfile).includes(:relationship_tags, :relationship_groups, relationship_notes: :rich_text_body),
       params:
     )
 
@@ -15,6 +15,10 @@ class RelationshipProfilesController < ApplicationController
     @search_query = query.search_query
     @q = query.ransack
     @status = query.status
+    @tag_id = query.tag_id
+    @group_id = query.group_id
+    @relationship_tags = current_user.relationship_tags.ordered
+    @relationship_groups = current_user.relationship_groups.ordered
   end
 
   def show
@@ -71,7 +75,16 @@ class RelationshipProfilesController < ApplicationController
   def set_relationship_profile
     @relationship_profile = current_user
       .relationship_profiles
-      .includes(:contact_methods, :relationship_preferences, :relationship_tags, relationship_field_values: { template_field: :relationship_template }, relationship_notes: :rich_text_body)
+      .includes(
+        :contact_methods,
+        :relationship_preferences,
+        :relationship_tags,
+        :relationship_groups,
+        relationship_taggings: :relationship_tag,
+        relationship_group_memberships: :relationship_group,
+        relationship_field_values: { template_field: :relationship_template },
+        relationship_notes: :rich_text_body
+      )
       .friendly
       .find(params[:id])
     authorize @relationship_profile
@@ -89,6 +102,7 @@ class RelationshipProfilesController < ApplicationController
       relationship_notes_attributes: %i[id category private body _destroy],
       relationship_preferences_attributes: %i[id key value _destroy],
       relationship_tags_attributes: %i[id name _destroy],
+      relationship_groups_attributes: %i[id name _destroy],
       relationship_field_values_attributes: %i[id template_field_id key label value hidden custom position _destroy]
     )
     sanitize_discriminator_params(permitted_params)

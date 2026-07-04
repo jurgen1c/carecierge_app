@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_01_025353) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_03_142000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -156,6 +156,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_025353) do
     t.index ["template_field_id"], name: "index_relationship_field_values_on_template_field_id"
   end
 
+  create_table "relationship_group_memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "relationship_group_id", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_group_id"], name: "index_relationship_group_memberships_on_relationship_group_id"
+    t.index ["relationship_profile_id", "relationship_group_id"], name: "index_relationship_group_memberships_on_profile_and_group", unique: true
+    t.index ["relationship_profile_id"], name: "idx_on_relationship_profile_id_5e33b2c4bc"
+  end
+
+  create_table "relationship_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index "user_id, lower((name)::text)", name: "index_relationship_groups_on_user_id_and_lower_name", unique: true
+    t.index ["user_id"], name: "index_relationship_groups_on_user_id"
+  end
+
   create_table "relationship_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "category"
     t.datetime "created_at", null: false
@@ -197,13 +216,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_025353) do
     t.index ["user_id"], name: "index_relationship_profiles_on_user_id"
   end
 
+  create_table "relationship_taggings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.uuid "relationship_tag_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "relationship_tag_id"], name: "index_relationship_taggings_on_profile_and_tag", unique: true
+    t.index ["relationship_profile_id"], name: "index_relationship_taggings_on_relationship_profile_id"
+    t.index ["relationship_tag_id"], name: "index_relationship_taggings_on_relationship_tag_id"
+  end
+
   create_table "relationship_tags", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.uuid "relationship_profile_id", null: false
     t.datetime "updated_at", null: false
-    t.index "relationship_profile_id, lower((name)::text)", name: "index_relationship_tags_on_profile_id_and_lower_name", unique: true
-    t.index ["relationship_profile_id"], name: "index_relationship_tags_on_relationship_profile_id"
+    t.uuid "user_id", null: false
+    t.index "user_id, lower((name)::text)", name: "index_relationship_tags_on_user_id_and_lower_name", unique: true
+    t.index ["user_id"], name: "index_relationship_tags_on_user_id"
   end
 
   create_table "relationship_templates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -287,9 +316,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_025353) do
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
   add_foreign_key "relationship_field_values", "relationship_profiles"
   add_foreign_key "relationship_field_values", "template_fields"
+  add_foreign_key "relationship_group_memberships", "relationship_groups", on_delete: :cascade
+  add_foreign_key "relationship_group_memberships", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "relationship_groups", "users"
   add_foreign_key "relationship_notes", "relationship_profiles"
   add_foreign_key "relationship_preferences", "relationship_profiles"
   add_foreign_key "relationship_profiles", "users"
-  add_foreign_key "relationship_tags", "relationship_profiles"
+  add_foreign_key "relationship_taggings", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "relationship_taggings", "relationship_tags", on_delete: :cascade
+  add_foreign_key "relationship_tags", "users"
   add_foreign_key "template_fields", "relationship_templates"
 end

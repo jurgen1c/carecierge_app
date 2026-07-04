@@ -184,3 +184,46 @@ Agents must use standard Rails commands, such as:
 - bin/rails g model <Model Name> <attributes>
 - bin/rails g migration <Migration Name> <attributes>
 - bundle exec rspec
+
+<!-- agent-memory:start -->
+## Agent Memory Knowledge Base
+
+Use the repo-memory skill or instruction file whenever it is available. This section is the repo-level fallback and requirement.
+
+Durable repository knowledge lives in `docs/agent-memory/` and must stay versioned and reviewable. Generated memory lives in `.agent-memory/` and must not be committed.
+
+Memory artifacts:
+
+- `claims/`: atomic behavior, rules, constraints, workflows, risks, decisions, and deprecations.
+- `graph/`: relationships between claim IDs, including dependencies, constraints, conflicts, and replacements.
+- `indexes/`: watched files, default queries, tags, and claim globs for discoverability.
+- `recipes/`: repeatable implementation, debugging, release, or review workflows.
+- `waivers/`: reviewed exceptions for memory coverage checks.
+
+### Agent-Memory-First Workflow
+
+Before non-trivial work:
+
+1. Run `bin/memory sync`.
+2. Run `bin/memory context --task "<task>"`.
+3. If files are known, run `bin/memory context --changed-files <file1> <file2>`.
+4. If working from a diff, run `bin/memory context --git-diff`.
+5. Use `bin/memory query`, `bin/memory show`, or `bin/memory system` for precise claims, graph links, recipes, or watched-file context.
+
+For non-trivial work, cite the relevant claim IDs, system IDs, and verification commands in plans or PR notes.
+
+After non-trivial work:
+
+1. Update memory in the same change when durable repository knowledge changed.
+2. Use `bin/memory templates list` and `bin/memory templates show <template>` before creating artifacts.
+3. Run `bin/memory validate` and `bin/memory sync` before finishing changes that touch memory.
+4. Run `bin/memory audit --git-diff` before finishing when canonical memory files changed.
+
+Update targets:
+
+- Claims for changed behavior, interfaces, system boundaries, auth rules, dependencies, risks, or decisions.
+- Graphs for changed triggers, handoffs, constraints, replacements, conflicts, or causal links.
+- Indexes for changed route/job/model discoverability, watched files, default queries, or tags.
+- Recipes for new or changed repeatable workflows.
+- Waivers for intentional coverage exceptions with a reason and expiration.
+<!-- agent-memory:end -->

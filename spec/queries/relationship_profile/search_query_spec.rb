@@ -40,6 +40,45 @@ RSpec.describe RelationshipProfile::SearchQuery do
     end
   end
 
+  it "filters by reusable tag and relationship group assignments" do
+    user = create(:user)
+    tag = create(:relationship_tag, user:, name: "VIP")
+    group = create(:relationship_group, user:, name: "college friends")
+    visible = create(:relationship_profile, user:, first_name: "Maya")
+    tag_only = create(:relationship_profile, user:, first_name: "Rafa")
+    create(:relationship_tagging, relationship_profile: visible, relationship_tag: tag)
+    create(:relationship_group_membership, relationship_profile: visible, relationship_group: group)
+    create(:relationship_tagging, relationship_profile: tag_only, relationship_tag: tag)
+    create(:relationship_profile, user:, first_name: "Nora")
+
+    query = described_class.new(
+      RelationshipProfile.where(user:),
+      params: ActionController::Parameters.new(tag_id: tag.id, group_id: group.id)
+    )
+
+    expect(query.resolve.map(&:id)).to contain_exactly(visible.id)
+    expect(query.tag_id).to eq(tag.id)
+    expect(query.group_id).to eq(group.id)
+  end
+
+  it "normalizes accepted filter UUIDs to canonical lowercase values" do
+    user = create(:user)
+    tag = create(:relationship_tag, user:, name: "VIP")
+    group = create(:relationship_group, user:, name: "college friends")
+    visible = create(:relationship_profile, user:, first_name: "Maya")
+    create(:relationship_tagging, relationship_profile: visible, relationship_tag: tag)
+    create(:relationship_group_membership, relationship_profile: visible, relationship_group: group)
+
+    query = described_class.new(
+      RelationshipProfile.where(user:),
+      params: ActionController::Parameters.new(tag_id: tag.id.upcase, group_id: group.id.upcase)
+    )
+
+    expect(query.resolve.map(&:id)).to contain_exactly(visible.id)
+    expect(query.tag_id).to eq(tag.id)
+    expect(query.group_id).to eq(group.id)
+  end
+
   def resolve_ids(user:, query:)
     described_class.new(
       RelationshipProfile.where(user:),

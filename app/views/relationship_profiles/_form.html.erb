@@ -232,7 +232,16 @@
 
       <div>
         <h3 class="text-sm font-medium text-stone-800"><%= t(".tags") %></h3>
+        <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".tags_hint") %></p>
         <div class="mt-3 grid gap-3 md:grid-cols-3">
+          <% relationship_profile.relationship_taggings.select(&:marked_for_destruction?).each do |tagging| %>
+            <% tag = tagging.relationship_tag %>
+            <%= form.fields_for :relationship_tags, tag, child_index: "remove_tag_#{tag.id}" do |tag_fields| %>
+              <%= tag_fields.hidden_field :id %>
+              <%= tag_fields.hidden_field :_destroy, value: "1" %>
+            <% end %>
+          <% end %>
+
           <% relationship_profile_form.tag_slots.each_with_index do |tag, index| %>
             <%= form.fields_for :relationship_tags, tag, child_index: index do |tag_fields| %>
               <div>
@@ -243,6 +252,36 @@
                   <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
                     <%= tag_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
                     <%= tag_fields.label :_destroy, t(".remove_tag"), class: "font-medium text-stone-700" %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-medium text-stone-800"><%= t(".groups") %></h3>
+        <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".groups_hint") %></p>
+        <div class="mt-3 grid gap-3 md:grid-cols-3">
+          <% relationship_profile.relationship_group_memberships.select(&:marked_for_destruction?).each do |membership| %>
+            <% group = membership.relationship_group %>
+            <%= form.fields_for :relationship_groups, group, child_index: "remove_group_#{group.id}" do |group_fields| %>
+              <%= group_fields.hidden_field :id %>
+              <%= group_fields.hidden_field :_destroy, value: "1" %>
+            <% end %>
+          <% end %>
+
+          <% relationship_profile_form.group_slots.each_with_index do |group, index| %>
+            <%= form.fields_for :relationship_groups, group, child_index: index do |group_fields| %>
+              <div>
+                <%= group_fields.hidden_field :id if group_fields.object.persisted? %>
+                <%= group_fields.label :name, t(".group_name"), class: "sr-only" %>
+                <%= group_fields.text_field :name, placeholder: t(".group_name_placeholder"), class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 placeholder:text-stone-500 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <% if group_fields.object.persisted? %>
+                  <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
+                    <%= group_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+                    <%= group_fields.label :_destroy, t(".remove_group"), class: "font-medium text-stone-700" %>
                   </div>
                 <% end %>
               </div>

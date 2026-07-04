@@ -17,6 +17,8 @@ watched_files:
   - DESIGN.md
   - package.json
   - bun.lock
+  - bin/memory
+  - agent-memory.config.yaml
   - .tool-versions
   - app/helpers/style_variants_helper.rb
   - .impeccable/live/config.json

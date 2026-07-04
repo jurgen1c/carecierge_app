@@ -86,7 +86,7 @@ RSpec.describe RelationshipProfiles::FormState do
     expect(sql.grep(/FROM "template_fields"/).size).to eq(1)
   end
 
-  it "prepares contact, note, preference, and tag slots for forms" do
+  it "prepares contact, note, preference, tag, and group slots for forms" do
     form_state.prepare!
 
     expect(form_state.contact_method_for("email").kind).to eq("email")
@@ -94,6 +94,7 @@ RSpec.describe RelationshipProfiles::FormState do
     expect(form_state.private_note).to be_private
     expect(form_state.preference_slots.size).to eq(described_class::SLOT_COUNT)
     expect(form_state.tag_slots.size).to eq(described_class::SLOT_COUNT)
+    expect(form_state.group_slots.size).to eq(described_class::SLOT_COUNT)
   end
 
   def capture_sql

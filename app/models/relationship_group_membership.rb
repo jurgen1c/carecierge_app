@@ -44,9 +44,12 @@ class RelationshipGroupMembership < ApplicationRecord
 
   def group_for_name(name)
     normalized_name = name.to_s.strip
-    existing_group = relationship_profile.user.relationship_groups.detect { |group| group.name.casecmp?(normalized_name) }
 
-    existing_group || relationship_profile.user.relationship_groups.build(name: normalized_name)
+    relationship_profile
+      .user
+      .relationship_groups
+      .where("LOWER(name) = ?", normalized_name.downcase)
+      .first_or_initialize(name: normalized_name)
   end
 
   def relationship_group_belongs_to_profile_user

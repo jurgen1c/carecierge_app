@@ -34,4 +34,15 @@ RSpec.describe RelationshipGroupMembership, type: :model do
     expect(membership).to be_valid
     expect(membership.relationship_group).to have_attributes(user:, name: "Neighbors")
   end
+
+  it "uses a case-insensitive catalog lookup without scanning nil in-memory placeholders" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    user.relationship_groups.build(name: nil)
+    existing_group = create(:relationship_group, user:, name: "Neighbors")
+    membership = profile.relationship_group_memberships.build(group_name: "neighbors")
+
+    expect(membership).to be_valid
+    expect(membership.relationship_group).to eq(existing_group)
+  end
 end

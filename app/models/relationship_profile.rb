@@ -411,12 +411,16 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def named_relationship_record(id:, name:, collection:, user_collection:)
-    if id.present?
-      collection.detect { |record| record.id == id } || user.public_send(user_collection).find(id)
-    else
-      user.public_send(user_collection).detect { |record| record.name.casecmp?(name) } ||
-        user.public_send(user_collection).build(name:)
-    end
+    existing_record = collection.detect { |record| record.id == id } if id.present?
+    existing_record ||= user.public_send(user_collection).find_by(id:) if id.present?
+    existing_record || named_relationship_record_for_name(name:, user_collection:)
+  end
+
+  def named_relationship_record_for_name(name:, user_collection:)
+    user_catalog = user.public_send(user_collection)
+    normalized_name = name.to_s.strip
+
+    user_catalog.where("LOWER(name) = ?", normalized_name.downcase).first_or_initialize(name: normalized_name)
   end
 
   def named_join_record_names(join_records, join_association, name_attribute)

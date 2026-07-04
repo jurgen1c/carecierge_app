@@ -44,9 +44,12 @@ class RelationshipTagging < ApplicationRecord
 
   def tag_for_name(name)
     normalized_name = name.to_s.strip
-    existing_tag = relationship_profile.user.relationship_tags.detect { |tag| tag.name.casecmp?(normalized_name) }
 
-    existing_tag || relationship_profile.user.relationship_tags.build(name: normalized_name)
+    relationship_profile
+      .user
+      .relationship_tags
+      .where("LOWER(name) = ?", normalized_name.downcase)
+      .first_or_initialize(name: normalized_name)
   end
 
   def relationship_tag_belongs_to_profile_user

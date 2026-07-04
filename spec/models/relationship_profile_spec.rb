@@ -140,6 +140,21 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(profile.user.relationship_groups.pluck(:name)).to include("Neighbors", "Work")
   end
 
+  it "treats invalid nested tag and group ids as name-based assignments" do
+    profile = create(:relationship_profile)
+
+    expect do
+      profile.update!(
+        relationship_tags_attributes: { "0" => { id: SecureRandom.uuid, name: "VIP" } },
+        relationship_groups_attributes: { "0" => { id: SecureRandom.uuid, name: "Work" } }
+      )
+    end.to change(RelationshipTag, :count).by(1)
+      .and change(RelationshipGroup, :count).by(1)
+
+    expect(profile.reload.relationship_tags.pluck(:name)).to contain_exactly("VIP")
+    expect(profile.relationship_groups.pluck(:name)).to contain_exactly("Work")
+  end
+
   it "stores notes as associated rich text relationship notes" do
     profile = create(:relationship_profile)
     note = create(:relationship_note, relationship_profile: profile, body: "<p>Bring <strong>tea</strong>.</p>")

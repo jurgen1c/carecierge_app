@@ -28,9 +28,11 @@ claim: >
   suggested values remain visible when the profile's
   relationship type has no active template, the show view reuses its visible
   relationship field values list during render, controller params sanitize
-  discriminator inputs, tag and group filters are constrained by the signed-in
-  owner's profile scope and catalog options, and policy scopes restrict CRUD,
-  archive, search, and filter access to the signed-in owner.
+  discriminator inputs, tampered nested tag and group IDs fall back to
+  name-based catalog assignment instead of raising, tag and group filters are
+  constrained by the signed-in owner's profile scope and catalog options, and
+  policy scopes restrict CRUD, archive, search, and filter access to the
+  signed-in owner.
 
 source_files:
   - app/models/user.rb
@@ -252,8 +254,9 @@ persistence, template labels are stored canonically and localized only for
 display, template fields referenced by saved values are restricted from
 deletion, `RelationshipProfiles::FormState` prepares form rows from preloaded
 template fields plus tag and group slots, controller params sanitize
-discriminator inputs, and policy scopes restrict CRUD, archive, search, tag
-filters, and group filters to the signed-in owner.
+discriminator inputs, tampered nested tag and group IDs fall back to name-based
+catalog assignment instead of raising, and policy scopes restrict CRUD, archive,
+search, tag filters, and group filters to the signed-in owner.
 
 ## Why It Matters
 

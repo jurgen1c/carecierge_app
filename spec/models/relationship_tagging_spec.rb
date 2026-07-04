@@ -34,4 +34,15 @@ RSpec.describe RelationshipTagging, type: :model do
     expect(tagging).to be_valid
     expect(tagging.relationship_tag).to have_attributes(user:, name: "VIP")
   end
+
+  it "uses a case-insensitive catalog lookup without scanning nil in-memory placeholders" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    user.relationship_tags.build(name: nil)
+    existing_tag = create(:relationship_tag, user:, name: "VIP")
+    tagging = profile.relationship_taggings.build(tag_name: "vip")
+
+    expect(tagging).to be_valid
+    expect(tagging.relationship_tag).to eq(existing_tag)
+  end
 end

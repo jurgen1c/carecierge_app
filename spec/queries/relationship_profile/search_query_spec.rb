@@ -61,6 +61,47 @@ RSpec.describe RelationshipProfile::SearchQuery do
     expect(query.group_id).to eq(group.id)
   end
 
+  it "searches relationship preferences without leaking profiles outside the provided scope" do
+    user = create(:user)
+    visible = create(:relationship_profile, user:, first_name: "Maya")
+    hidden = create(:relationship_profile, first_name: "Nora")
+    create(
+      :relationship_preference,
+      relationship_profile: visible,
+      key: "Dinner setting",
+      value: "Quiet restaurants",
+      category: "social_settings",
+      source_notes: "Mentioned after a crowded team dinner"
+    )
+    create(
+      :relationship_preference,
+      relationship_profile: hidden,
+      key: "Dinner setting",
+      value: "Quiet restaurants",
+      category: "social_settings"
+    )
+
+    expect(resolve_ids(user:, query: "quiet restaurants")).to contain_exactly(visible.id)
+    expect(resolve_ids(user:, query: "crowded team dinner")).to contain_exactly(visible.id)
+    expect(resolve_ids(user:, query: "social settings")).to contain_exactly(visible.id)
+  end
+
+  it "searches relationship preferences by localized enum labels" do
+    user = create(:user)
+    visible = create(:relationship_profile, user:, first_name: "Maya")
+    create(
+      :relationship_preference,
+      relationship_profile: visible,
+      category: "social_settings",
+      key: "Dinner setting",
+      value: "Quiet restaurants"
+    )
+
+    I18n.with_locale(:es) do
+      expect(resolve_ids(user:, query: "Entornos sociales")).to contain_exactly(visible.id)
+    end
+  end
+
   it "normalizes accepted filter UUIDs to canonical lowercase values" do
     user = create(:user)
     tag = create(:relationship_tag, user:, name: "VIP")

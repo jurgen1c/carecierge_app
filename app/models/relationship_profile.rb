@@ -350,9 +350,17 @@ class RelationshipProfile < ApplicationRecord
   private_class_method :type_label_for_key
 
   def reject_blank_new_nested_attributes(attributes)
-    attributes.to_h.reject do |_index, nested_attributes|
-      nested_attributes["id"].blank? && yield(nested_attributes)
+    if attributes.is_a?(Array)
+      attributes.reject { |nested_attributes| blank_new_nested_attributes?(nested_attributes) { yield(nested_attributes) } }
+    else
+      attributes.to_h.reject do |_index, nested_attributes|
+        blank_new_nested_attributes?(nested_attributes) { yield(nested_attributes) }
+      end
     end
+  end
+
+  def blank_new_nested_attributes?(nested_attributes)
+    nested_attributes["id"].blank? && yield(nested_attributes)
   end
 
   def assign_named_relationship_collection(attributes, collection:, join_records:, join_association:, name_attribute:, user_collection:)

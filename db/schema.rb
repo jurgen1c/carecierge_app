@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_03_142000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_04_203217) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -186,12 +186,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_03_142000) do
   end
 
   create_table "relationship_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "category", default: "general", null: false
+    t.string "confidence", default: "inferred", null: false
     t.datetime "created_at", null: false
     t.string "key", null: false
+    t.date "learned_on"
+    t.string "preference_type", default: "neutral", null: false
     t.uuid "relationship_profile_id", null: false
+    t.text "source_notes"
     t.datetime "updated_at", null: false
     t.string "value", null: false
     t.index "relationship_profile_id, lower((key)::text)", name: "idx_relationship_preferences_on_profile_and_lower_key", unique: true
+    t.index ["relationship_profile_id", "category"], name: "idx_on_relationship_profile_id_category_de91ce2a16"
+    t.index ["relationship_profile_id", "confidence"], name: "idx_on_relationship_profile_id_confidence_1dd4e61f57"
+    t.index ["relationship_profile_id", "preference_type"], name: "idx_on_relationship_profile_id_preference_type_3701ad82f6"
     t.index ["relationship_profile_id"], name: "index_relationship_preferences_on_relationship_profile_id"
   end
 

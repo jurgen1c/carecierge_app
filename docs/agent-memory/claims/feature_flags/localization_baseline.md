@@ -13,18 +13,14 @@ claim: >
   translations with standard diacritics for admin registry and flag-related interface text.
 
 source_files:
-  - app/views/admin/feature_flags/index.html.erb
   - config/locales/en.yml
   - config/locales/es.yml
 
-related_files:
-  - spec/requests/admin_feature_flags_spec.rb
+related_files: []
 symbols: []
-routes:
-  - admin_feature_flags
+routes: []
 tags:
-  - feature_flags
-  - localization
+  - feature_flag_localization
 
 verification:
   - bundle exec rspec spec/requests/admin_feature_flags_spec.rb

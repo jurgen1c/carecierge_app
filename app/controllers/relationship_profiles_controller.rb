@@ -100,7 +100,7 @@ class RelationshipProfilesController < ApplicationController
       :type,
       contact_methods_attributes: %i[id kind value label preferred _destroy],
       relationship_notes_attributes: %i[id category private body _destroy],
-      relationship_preferences_attributes: %i[id key value _destroy],
+      relationship_preferences_attributes: %i[id preference_type category key value confidence learned_on source_notes _destroy],
       relationship_tags_attributes: %i[id name _destroy],
       relationship_groups_attributes: %i[id name _destroy],
       relationship_field_values_attributes: %i[id template_field_id key label value hidden custom position _destroy]
@@ -115,6 +115,7 @@ class RelationshipProfilesController < ApplicationController
   def sanitize_discriminator_params(permitted_params)
     sanitize_relationship_type_param(permitted_params)
     sanitize_contact_method_kind_params(permitted_params)
+    sanitize_relationship_preference_enum_params(permitted_params)
 
     permitted_params
   end
@@ -134,6 +135,28 @@ class RelationshipProfilesController < ApplicationController
 
       contact_method_params[:kind] = nil
     end
+  end
+
+  def sanitize_relationship_preference_enum_params(permitted_params)
+    each_nested_attribute(permitted_params.fetch(:relationship_preferences_attributes, {})) do |preference_params|
+      sanitize_relationship_preference_enum(preference_params, :preference_type, RelationshipPreference.preference_types)
+      sanitize_relationship_preference_enum(preference_params, :category, RelationshipPreference.categories)
+      sanitize_relationship_preference_enum(preference_params, :confidence, RelationshipPreference.confidences)
+    end
+  end
+
+  def each_nested_attribute(attributes, &)
+    records = attributes.respond_to?(:each_value) ? attributes.each_value : attributes
+
+    records.each(&)
+  end
+
+  def sanitize_relationship_preference_enum(preference_params, key, allowed_values)
+    return unless preference_params.key?(key)
+    return if preference_params[key].blank?
+    return if preference_params[key].in?(allowed_values.keys)
+
+    preference_params[key] = nil
   end
 
   def not_found

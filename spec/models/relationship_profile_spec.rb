@@ -163,6 +163,24 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(sql.grep(/DELETE FROM "relationship_taggings"|DELETE FROM "relationship_group_memberships"/)).to be_empty
   end
 
+  it "bulk deletes marked relationship assignments during post-save cleanup" do
+    profile = build(:relationship_profile)
+    tag_ids = [ SecureRandom.uuid ]
+    group_ids = [ SecureRandom.uuid ]
+    tag_scope = instance_double(ActiveRecord::Relation)
+    group_scope = instance_double(ActiveRecord::Relation)
+
+    profile.send(:marked_relationship_assignment_ids)[:relationship_tag].concat(tag_ids)
+    profile.send(:marked_relationship_assignment_ids)[:relationship_group].concat(group_ids)
+
+    expect(RelationshipTagging).to receive(:where).with(id: tag_ids).and_return(tag_scope)
+    expect(tag_scope).to receive(:delete_all)
+    expect(RelationshipGroupMembership).to receive(:where).with(id: group_ids).and_return(group_scope)
+    expect(group_scope).to receive(:delete_all)
+
+    profile.send(:destroy_marked_relationship_assignments)
+  end
+
   it "stores notes as associated rich text relationship notes" do
     profile = create(:relationship_profile)
     note = create(:relationship_note, relationship_profile: profile, body: "<p>Bring <strong>tea</strong>.</p>")

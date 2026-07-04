@@ -1,7 +1,7 @@
 class AddRelationshipTaggingsAndGroups < ActiveRecord::Migration[8.1]
   def up
     add_reference :relationship_tags, :user, type: :uuid, foreign_key: true unless column_exists?(:relationship_tags, :user_id)
-    change_column_null :relationship_tags, :relationship_profile_id, true
+    change_column_null :relationship_tags, :relationship_profile_id, true if column_exists?(:relationship_tags, :relationship_profile_id)
 
     execute <<~SQL.squish
       UPDATE relationship_tags
@@ -75,7 +75,7 @@ class AddRelationshipTaggingsAndGroups < ActiveRecord::Migration[8.1]
 
     remove_index :relationship_tags, name: "index_relationship_tags_on_user_id_and_lower_name", if_exists: true
     remove_reference :relationship_tags, :user, foreign_key: true if column_exists?(:relationship_tags, :user_id)
-    change_column_null :relationship_tags, :relationship_profile_id, false
+    change_column_null :relationship_tags, :relationship_profile_id, false if column_exists?(:relationship_tags, :relationship_profile_id)
   end
 
   private

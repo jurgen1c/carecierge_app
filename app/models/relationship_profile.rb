@@ -108,6 +108,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :relationship_group_memberships, dependent: :destroy, autosave: true
   has_many :relationship_groups, through: :relationship_group_memberships
   has_many :relationship_field_values, dependent: :destroy
+  has_many :important_dates, dependent: :destroy
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true
@@ -192,6 +193,21 @@ class RelationshipProfile < ApplicationRecord
     end.sort_by do |field_value|
       [ field_value.position || 0, field_value.display_label.downcase ]
     end
+  end
+
+  def upcoming_important_dates(as_of: Date.current, limit: nil)
+    dates = important_dates.reject(&:marked_for_destruction?).filter_map do |important_date|
+      occurrence = important_date.next_occurrence_on(as_of:)
+      [ occurrence, important_date ] if occurrence
+    end.sort_by { |occurrence, important_date| [ occurrence, important_date.display_title.downcase ] }.map(&:second)
+
+    limit ? dates.first(limit) : dates
+  end
+
+  def planning_important_dates(as_of: Date.current, limit: nil)
+    dates = upcoming_important_dates(as_of:).select { |important_date| important_date.planning_opportunity?(as_of:) }
+
+    limit ? dates.first(limit) : dates
   end
 
   def structured_preferences_text

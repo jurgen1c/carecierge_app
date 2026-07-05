@@ -41,3 +41,13 @@ edges:
     relation: requires
     reason: Relationship profile CRUD is authenticated and scoped to the signed-in profile owner.
     strength: 85
+  - source: relationship_profiles.important_dates
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Important dates are nested under owner-scoped relationship profiles and reuse that privacy boundary.
+    strength: 90
+  - source: relationship_profiles.important_dates
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Important-date CRUD is authenticated and cannot be reached outside the signed-in account boundary.
+    strength: 85

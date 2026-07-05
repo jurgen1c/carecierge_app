@@ -31,6 +31,7 @@ en:
   date:
     formats:
       relationship_preference_learned_on: "%b %-d, %Y"
+      important_date: "%b %-d, %Y"
   activerecord:
     attributes:
       feature_flag:
@@ -92,6 +93,14 @@ en:
         label: "Field"
         template_field: "Template field"
         value: "Field value"
+      important_date:
+        date_type: "Date type"
+        importance_level: "Importance"
+        notes: "Notes"
+        recurrence: "Recurrence"
+        reminder_schedule: "Reminder schedule"
+        starts_on: "Date"
+        title: "Title"
       user:
         admin: "Admin"
         email: "Email"
@@ -111,6 +120,7 @@ en:
   errors:
     messages:
       confirmation: "does not match %{attribute}"
+      inclusion: "is not included in the list"
   layouts:
     application:
       title: "Carecierge"
@@ -323,6 +333,93 @@ en:
       notice: "Relationship profile was archived."
     destroy:
       notice: "Relationship profile was deleted."
+  important_dates:
+    date_types:
+      birthday: "Birthday"
+      anniversary: "Anniversary"
+      milestone: "Milestone"
+      appointment: "Appointment"
+      holiday: "Holiday"
+      custom: "Custom"
+    recurrences:
+      none: "One-time"
+      yearly: "Yearly"
+      monthly: "Monthly"
+      weekly: "Weekly"
+    importance_levels:
+      low: "Low"
+      normal: "Normal"
+      high: "High"
+      essential: "Essential"
+    reminder_schedules:
+      none: "No reminder"
+      day_before: "1 day before"
+      week_before: "1 week before"
+      two_weeks_before: "2 weeks before"
+      month_before: "1 month before"
+      custom: "Custom schedule"
+    planning_prompts:
+      birthday: "Plan ahead for this birthday."
+      anniversary: "Plan ahead for this anniversary."
+      milestone: "Plan ahead for this milestone."
+      appointment: "Prepare before this appointment."
+      holiday: "Plan ahead for this holiday."
+      custom: "Plan ahead for this date."
+      default: "Plan ahead for this date."
+    section:
+      kicker: "Relationship memory"
+      title: "Important dates"
+      body: "Track birthdays, anniversaries, appointments, holidays, and custom moments with enough context to plan before they become urgent."
+      turbo_hint: "Updates inline"
+      timeline_title: "Date timeline"
+      date_count:
+        one: "1 date"
+        other: "%{count} dates"
+      empty_title: "No important dates yet"
+      empty_body: "Add the next birthday, appointment, holiday, or milestone that should help Carecierge suggest a timely plan."
+      suggestions_title: "Plan ahead"
+      plan_ahead: "Plan ahead"
+      days_until:
+        one: "1 day away"
+        other: "%{count} days away"
+      no_suggestions: "Add dates with upcoming moments to see gentle planning suggestions here."
+    item:
+      date: "Date"
+      reminder: "Reminder"
+      plan_ahead: "Plan ahead"
+      edit: "Edit"
+      delete: "Delete"
+      delete_confirm: "Delete this important date?"
+    form:
+      new_title: "Add important date"
+      edit_title: "Edit important date"
+      body: "Use the details that help you remember and prepare, not just get reminded."
+      errors_heading:
+        one: "Review this field"
+        other: "Review these %{count} fields"
+      date_type: "Date type"
+      starts_on: "Date"
+      title: "Title"
+      title_placeholder: "Birthday, dentist, school performance"
+      recurrence: "Recurrence"
+      importance_level: "Importance"
+      reminder_schedule: "Reminder"
+      notes: "Planning notes"
+      notes_placeholder: "Anything that would help you prepare thoughtfully"
+      create: "Add date"
+      update: "Update date"
+      cancel: "Cancel"
+    upcoming:
+      title: "Upcoming dates"
+      add: "Add"
+      plan_ahead: "Plan ahead"
+      empty: "No upcoming dates yet."
+    create:
+      notice: "Important date was added."
+    update:
+      notice: "Important date was updated."
+    destroy:
+      notice: "Important date was deleted."
   relationship_preferences:
     preference_types:
       positive: "Positive"

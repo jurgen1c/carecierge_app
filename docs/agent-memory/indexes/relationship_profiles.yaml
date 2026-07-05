@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preference metadata, relationship-type template fields, custom field values, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preference metadata, relationship-type template fields, custom field values, important dates and milestones, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -9,6 +9,7 @@ default_queries:
   - contact details rich private notes structured preferences preference metadata
   - preference type category confidence learned date source notes
   - relationship type template fields custom field values
+  - important dates milestones recurrence planning prompts
   - reusable relationship tags groups filtering
   - Lexxy Action Text relationship notes
 watched_files:
@@ -25,16 +26,21 @@ watched_files:
   - app/models/relationship_template.rb
   - app/models/template_field.rb
   - app/models/relationship_field_value.rb
+  - app/models/important_date.rb
   - app/forms/relationship_profiles/**/*.rb
   - app/queries/relationship_profile/search_query.rb
   - app/controllers/relationship_profiles_controller.rb
+  - app/controllers/important_dates_controller.rb
   - app/policies/relationship_profile_policy.rb
+  - app/policies/important_date_policy.rb
+  - app/views/important_dates/**/*.erb
   - app/views/relationship_profiles/**/*.erb
   - app/javascript/controllers/relationship_template_fields_controller.js
   - config/routes.rb
   - config/locales/en.yml
   - config/locales/es.yml
   - db/migrate/*relationship*.rb
+  - db/migrate/*important_date*.rb
   - db/migrate/*active_storage*.rb
   - db/migrate/*action_text*.rb
 tags:
@@ -44,3 +50,4 @@ tags:
   - ransack
   - action_text
   - lexxy
+  - important_dates

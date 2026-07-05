@@ -22,6 +22,7 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def show
+    @important_date = @relationship_profile.important_dates.new
   end
 
   def new
@@ -82,6 +83,7 @@ class RelationshipProfilesController < ApplicationController
         :relationship_groups,
         relationship_taggings: :relationship_tag,
         relationship_group_memberships: :relationship_group,
+        important_dates: [],
         relationship_field_values: { template_field: :relationship_template },
         relationship_notes: :rich_text_body
       )

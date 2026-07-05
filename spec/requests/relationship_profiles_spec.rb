@@ -518,6 +518,26 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).to include("blank")
     end
 
+    it "renders validation errors for array-shaped tampered nested contact kinds" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            contact_methods_attributes: [
+              { kind: "pager", value: "555-1111" }
+            ]
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Contact methods kind")
+      expect(response.body).to include("blank")
+    end
+
     it "ignores nil nested preference attributes without raising" do
       user = create(:user)
       sign_in user

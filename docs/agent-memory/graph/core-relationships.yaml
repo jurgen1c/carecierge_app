@@ -31,21 +31,6 @@ edges:
     relation: constrains
     reason: The admin registry surface must preserve English and Spanish user-facing copy.
     strength: 70
-  - source: feature_flags.localization_baseline
-    target: feature_flags.admin_registry_authorization
-    relation: replaces
-    reason: Reviewed overlap from the admin view and request spec; the localization claim owns copy traceability while the admin authorization claim remains the behavior boundary.
-    strength: 30
-  - source: feature_flags.localization_baseline
-    target: feature_flags.audit_event_placeholder
-    relation: replaces
-    reason: Reviewed overlap from shared admin feature flag specs; the localization claim owns copy coverage while the audit placeholder remains scoped to future write auditability.
-    strength: 30
-  - source: feature_flags.localization_baseline
-    target: relationship_profiles.preference_metadata
-    relation: replaces
-    reason: Reviewed overlap from shared locale files; each claim owns a separate translation keyspace and neither should be used as evidence for the other's behavior.
-    strength: 30
   - source: feature_flags.audit_event_placeholder
     target: feature_flags.admin_registry_authorization
     relation: same_area
@@ -56,8 +41,3 @@ edges:
     relation: requires
     reason: Relationship profile CRUD is authenticated and scoped to the signed-in profile owner.
     strength: 85
-  - source: relationship_profiles.preference_metadata
-    target: relationship_profiles.profile_crud_owner_scope
-    relation: replaces
-    reason: Reviewed overlap from relationship profile source files; the preference metadata claim owns the narrower structured-preference details while CRUD owner scope remains broader.
-    strength: 30

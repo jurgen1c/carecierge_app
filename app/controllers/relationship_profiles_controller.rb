@@ -129,7 +129,7 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def sanitize_contact_method_kind_params(permitted_params)
-    permitted_params.fetch(:contact_methods_attributes, {}).each_value do |contact_method_params|
+    each_nested_attribute(permitted_params.fetch(:contact_methods_attributes, {})) do |contact_method_params|
       next unless contact_method_params.key?(:kind)
       next if contact_method_params[:kind].in?(ContactMethod.kinds.keys)
 

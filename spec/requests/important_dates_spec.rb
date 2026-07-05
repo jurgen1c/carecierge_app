@@ -23,6 +23,8 @@ RSpec.describe "Important dates", type: :request do
       expect(response.body).to include("Upcoming dates")
       expect(response.body).to include("Add important date")
       expect(response.body).to include(%(href="#{new_relationship_profile_important_date_path(profile)}"))
+      expect(response.body).to include(%(<div id="flash" aria-live="polite">))
+      expect(response.body).not_to include(%(<div id="flash" class="mb-5))
     end
 
     it "renders localized important date copy in Spanish" do
@@ -68,6 +70,8 @@ RSpec.describe "Important dates", type: :request do
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       expect(response.body).to include(%(turbo-stream action="replace" target="important_dates_section"))
       expect(response.body).to include(%(turbo-stream action="replace" target="upcoming_important_dates"))
+      expect(response.body).to include(%(<div id="flash" aria-live="polite">))
+      expect(response.body).not_to include(%(<div id="flash" class="mb-5))
       expect(response.body).to include("Birthday")
       expect(response.body).to include("Plan ahead")
     end

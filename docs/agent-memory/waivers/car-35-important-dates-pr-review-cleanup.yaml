@@ -1,0 +1,14 @@
+id: car_35_important_dates_pr_review_cleanup
+status: active
+reason: >
+  Narrow PR review cleanup for the existing important-dates feature. The
+  committed claims already cover authenticated owner-scoped important dates and
+  Turbo-streamed create, update, and delete refresh behavior; this change removes
+  unused view locals/controller setup, prevents empty flash spacing, and makes
+  the existing policy scope fail closed when no user is present.
+files:
+  - app/controllers/relationship_profiles_controller.rb
+  - app/policies/important_date_policy.rb
+  - app/views/important_dates/refresh.turbo_stream.erb
+  - app/views/relationship_profiles/show.html.erb
+expires_at: 2026-08-05

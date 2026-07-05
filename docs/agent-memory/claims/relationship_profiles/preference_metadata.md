@@ -16,11 +16,19 @@ claim: >
   in profile forms and shows and participate in owner-scoped profile search.
 
 source_files:
+  - app/controllers/relationship_profiles_controller.rb
+  - app/models/relationship_preference.rb
+  - app/queries/relationship_profile/search_query.rb
+  - app/views/relationship_profiles/_form.html.erb
+  - app/views/relationship_profiles/show.html.erb
+  - config/locales/en.yml
+  - config/locales/es.yml
   - db/migrate/20260704203217_add_structured_fields_to_relationship_preferences.rb
 
 related_files:
   - spec/models/relationship_preference_spec.rb
   - spec/queries/relationship_profile/search_query_spec.rb
+  - spec/requests/relationship_profiles_spec.rb
 symbols: []
 routes: []
 tags:

@@ -62,7 +62,6 @@ class ImportantDatesController < ApplicationController
 
   def refresh_important_dates(notice)
     flash.now[:notice] = notice
-    @important_date = @relationship_profile.important_dates.new
     @relationship_profile.reload
 
     respond_to do |format|

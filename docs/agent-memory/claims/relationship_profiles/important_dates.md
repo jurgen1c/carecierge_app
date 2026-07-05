@@ -17,12 +17,14 @@ claim: >
   planning prompts for upcoming dates. The relationship profile show surface
   presents a richer important-dates work area plus a compact upcoming-dates
   right rail, and create, update, and delete actions refresh those surfaces with
-  Turbo streams when possible instead of requiring a full page reload.
+  Turbo streams when possible instead of requiring a full page reload. Planning
+  links only target suggestions rendered in the current profile surface.
 
 source_files:
   - app/models/important_date.rb
   - app/controllers/important_dates_controller.rb
   - app/policies/important_date_policy.rb
+  - app/views/important_dates/_important_date.html.erb
   - app/views/important_dates/_form_frame.html.erb
   - app/views/important_dates/_section.html.erb
   - app/views/important_dates/_upcoming.html.erb
@@ -63,7 +65,8 @@ last_verified_commit: null
 Important dates are relationship-profile-owned records used to store recurring
 and one-time moments with reminder intent and planning prompts. They are
 localized, scoped through the signed-in user's relationship profiles, and updated
-inline through Turbo streams where possible.
+inline through Turbo streams where possible. Timeline and upcoming-date planning
+links are shown only when the matching planning suggestion anchor is rendered.
 
 ## Why It Matters
 
@@ -77,6 +80,7 @@ store or leak dates across users.
 - `app/models/important_date.rb`
 - `app/controllers/important_dates_controller.rb`
 - `app/policies/important_date_policy.rb`
+- `app/views/important_dates/_important_date.html.erb`
 - `app/views/important_dates/_section.html.erb`
 - `app/views/important_dates/_upcoming.html.erb`
 - `db/migrate/20260704193000_create_important_dates.rb`

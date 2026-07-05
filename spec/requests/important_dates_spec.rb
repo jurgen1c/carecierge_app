@@ -43,6 +43,35 @@ RSpec.describe "Important dates", type: :request do
       expect(response.body).to include("Planear con tiempo")
       expect(response.body).not_to include("Important dates")
     end
+
+    it "only links planning controls to rendered planning suggestions" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      sign_in user
+
+      5.times do |index|
+        create(
+          :important_date,
+          relationship_profile: profile,
+          date_type: "milestone",
+          title: "Planning date #{index + 1}",
+          starts_on: Date.new(2026, 7, 10 + index),
+          recurrence: "none"
+        )
+      end
+
+      travel_to Time.zone.local(2026, 7, 4, 10, 0, 0) do
+        get relationship_profile_path(profile)
+      end
+
+      document = Nokogiri::HTML(response.body)
+      planning_hrefs = document.css("a[href^='#planning_important_date_']").map { |link| link["href"].delete_prefix("#") }
+      rendered_ids = document.css("[id]").map { |element| element["id"] }
+
+      expect(response).to have_http_status(:ok)
+      expect(planning_hrefs).to be_present
+      expect(planning_hrefs - rendered_ids).to be_empty
+    end
   end
 
   describe "POST /relationship_profiles/:relationship_profile_id/important_dates" do

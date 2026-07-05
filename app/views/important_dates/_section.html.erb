@@ -1,6 +1,7 @@
 <%= turbo_frame_tag "important_dates_section" do %>
   <% important_dates = relationship_profile.important_dates.reject(&:new_record?).sort_by { |date| [date.next_occurrence_on || date.starts_on, date.display_title.downcase] } %>
   <% planning_dates = relationship_profile.planning_important_dates(limit: 4) %>
+  <% planning_date_ids = planning_dates.map(&:id) %>
 
   <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm shadow-stone-200/40">
     <div class="flex flex-col gap-4 border-b border-stone-200 pb-5 lg:flex-row lg:items-start lg:justify-between">
@@ -22,7 +23,7 @@
         <% if important_dates.any? %>
           <div class="mt-4 grid gap-3">
             <% important_dates.each do |date| %>
-              <%= render "important_dates/important_date", relationship_profile:, important_date: date %>
+              <%= render "important_dates/important_date", relationship_profile:, important_date: date, planning_link_available: planning_date_ids.include?(date.id) %>
             <% end %>
           </div>
         <% else %>

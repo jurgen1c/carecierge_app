@@ -1,5 +1,6 @@
 <%= turbo_frame_tag "upcoming_important_dates" do %>
   <% upcoming_dates = relationship_profile.upcoming_important_dates(limit: 3) %>
+  <% planning_date_ids = relationship_profile.planning_important_dates(limit: 4).map(&:id) %>
   <section class="rounded-xl border border-stone-200 bg-white p-5">
     <div class="flex items-center justify-between gap-3">
       <h2 class="text-base font-semibold text-stone-950"><%= t("important_dates.upcoming.title") %></h2>
@@ -16,7 +17,7 @@
                 <p class="text-sm font-semibold text-stone-950"><%= date.display_title %></p>
                 <p class="mt-1 text-xs font-medium text-stone-600"><%= l(occurrence || date.starts_on, format: :important_date) %></p>
               </div>
-              <% if date.planning_opportunity? %>
+              <% if planning_date_ids.include?(date.id) %>
                 <%= link_to t("important_dates.upcoming.plan_ahead"), "##{dom_id(date, :planning)}", data: { turbo_frame: "_top" }, class: "rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-950 hover:bg-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" %>
               <% end %>
             </div>

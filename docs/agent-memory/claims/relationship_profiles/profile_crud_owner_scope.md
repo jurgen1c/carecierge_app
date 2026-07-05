@@ -138,6 +138,7 @@ related_files:
   - app/views/relationship_profiles/edit.html.erb
   - app/views/relationship_profiles/_form.html.erb
   - app/views/relationship_profiles/show.html.erb
+  - docs/agent-memory/claims/relationship_profiles/preference_metadata.md
   - config/routes.rb
   - spec/forms/relationship_profiles/form_state_spec.rb
   - spec/models/relationship_profile_spec.rb

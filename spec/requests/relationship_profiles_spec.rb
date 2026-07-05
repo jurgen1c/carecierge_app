@@ -220,6 +220,36 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(relationship_profile_path(profile)).to include("maya-rivera")
       expect(response).to have_http_status(:ok)
     end
+
+    it "renders structured preference metadata in Spanish" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      create(
+        :relationship_preference,
+        relationship_profile: profile,
+        preference_type: "constraint",
+        category: "cultural_constraints",
+        key: "Celebrations",
+        value: "Avoid surprise parties",
+        confidence: "confirmed",
+        learned_on: Date.new(2026, 7, 1),
+        source_notes: "Shared directly."
+      )
+      sign_in user
+
+      I18n.with_locale(:es) do
+        get relationship_profile_path(profile)
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Celebrations")
+      expect(response.body).to include("Avoid surprise parties")
+      expect(response.body).to include("Restricción")
+      expect(response.body).to include("Restricciones culturales")
+      expect(response.body).to include("Confirmada")
+      expect(response.body).to include("1/7/2026")
+      expect(response.body).to include("Shared directly.")
+    end
   end
 
   describe "POST /relationship_profiles" do
@@ -244,8 +274,24 @@ RSpec.describe "Relationship profiles", type: :request do
               "1" => { private: "1", category: "Private", body: "Prefers low-key check-ins." }
             },
             relationship_preferences_attributes: {
-              "0" => { key: "Coffee", value: "decaf" },
-              "1" => { key: "Topics", value: "books" }
+              "0" => {
+                preference_type: "positive",
+                category: "food",
+                key: "Coffee",
+                value: "decaf",
+                confidence: "confirmed",
+                learned_on: "2026-07-01",
+                source_notes: "Mentioned during breakfast."
+              },
+              "1" => {
+                preference_type: "constraint",
+                category: "allergies",
+                key: "Peanuts",
+                value: "cannot have",
+                confidence: "high",
+                learned_on: "2026-07-02",
+                source_notes: "Shared by their parent."
+              }
             },
             relationship_tags_attributes: {
               "0" => { name: "gardening" },
@@ -270,7 +316,12 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(profile.relationship_type_label).to eq("Friend")
       expect(profile.public_notes.first.body.to_plain_text).to include("Met through the neighborhood garden.")
       expect(profile.private_notes.first.body.to_plain_text).to include("Prefers low-key check-ins.")
-      expect(profile.structured_preferences).to include("Coffee" => "decaf", "Topics" => "books")
+      expect(profile.structured_preferences).to include("Coffee" => "decaf", "Peanuts" => "cannot have")
+      expect(profile.relationship_preferences.pluck(:preference_type, :category, :confidence, :learned_on)).to include(
+        [ "positive", "food", "confirmed", Date.new(2026, 7, 1) ],
+        [ "constraint", "allergies", "high", Date.new(2026, 7, 2) ]
+      )
+      expect(profile.relationship_preferences.find_by!(key: "Coffee").source_notes).to eq("Mentioned during breakfast.")
       expect(profile.relationship_tags.pluck(:name)).to contain_exactly("gardening", "book club")
       expect(profile.relationship_groups.pluck(:name)).to contain_exactly("college friends")
       expect(profile.contact_methods.pluck(:kind, :value)).to include([ "email", "maya@example.com" ], [ "personal_phone", "+506 8888 0000" ])
@@ -413,6 +464,95 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include("Relationship preferences contains duplicate keys")
       expect(response.body).to include("Relationship tags contains duplicate names")
+    end
+
+    it "renders validation errors for tampered nested preference enums" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            relationship_preferences_attributes: {
+              "0" => {
+                preference_type: "surveillance",
+                category: "food",
+                key: "Coffee",
+                value: "decaf",
+                confidence: "confirmed"
+              }
+            }
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship preferences preference type")
+      expect(response.body).to include("blank")
+    end
+
+    it "renders validation errors for array-shaped tampered nested preference enums" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            relationship_preferences_attributes: [
+              {
+                preference_type: "surveillance",
+                category: "food",
+                key: "Coffee",
+                value: "decaf",
+                confidence: "confirmed"
+              }
+            ]
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Relationship preferences preference type")
+      expect(response.body).to include("blank")
+    end
+
+    it "renders validation errors for array-shaped tampered nested contact kinds" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            contact_methods_attributes: [
+              { kind: "pager", value: "555-1111" }
+            ]
+          }
+        }
+      end.not_to change(RelationshipProfile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Contact methods kind")
+      expect(response.body).to include("blank")
+    end
+
+    it "ignores nil nested preference attributes without raising" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            relationship_preferences_attributes: nil
+          }
+        }
+      end.to change(RelationshipProfile, :count).by(1)
+        .and change(RelationshipPreference, :count).by(0)
+
+      expect(response).to redirect_to(relationship_profile_path(RelationshipProfile.find_by!(first_name: "Kai")))
     end
 
     it "renders validation errors for duplicate nested groups" do
@@ -613,6 +753,41 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(profile.reload.first_name).to eq("Amaya")
       expect(response).to redirect_to(relationship_profile_path(profile))
       expect(profile.private_notes.first.body.to_plain_text).to include("Updated sensitive context.")
+    end
+
+    it "updates structured preference metadata" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:, first_name: "Maya")
+      preference = create(:relationship_preference, relationship_profile: profile, key: "Coffee", value: "decaf")
+      sign_in user
+
+      patch relationship_profile_path(profile), params: {
+        relationship_profile: {
+          relationship_preferences_attributes: {
+            "0" => {
+              id: preference.id,
+              preference_type: "negative",
+              category: "communication",
+              key: "Phone calls",
+              value: "avoid surprise calls",
+              confidence: "medium",
+              learned_on: "2026-07-03",
+              source_notes: "Asked for text first."
+            }
+          }
+        }
+      }
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(preference.reload).to have_attributes(
+        preference_type: "negative",
+        category: "communication",
+        key: "Phone calls",
+        value: "avoid surprise calls",
+        confidence: "medium",
+        learned_on: Date.new(2026, 7, 3),
+        source_notes: "Asked for text first."
+      )
     end
 
     it "renders validation errors instead of raising when tampered update params include discriminators" do

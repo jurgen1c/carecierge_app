@@ -28,6 +28,9 @@
 #       enabled: "ON"
 
 en:
+  date:
+    formats:
+      relationship_preference_learned_on: "%b %-d, %Y"
   activerecord:
     attributes:
       feature_flag:
@@ -66,7 +69,12 @@ en:
         category: "Category"
         private: "Private"
       relationship_preference:
+        category: "Preference category"
+        confidence: "Confidence"
         key: "Preference"
+        learned_on: "Learned date"
+        preference_type: "Preference type"
+        source_notes: "Source notes"
         value: "Preference value"
       relationship_tag:
         name: "Tag"
@@ -141,7 +149,7 @@ en:
       new_profile: "Add relationship"
       filters_title: "Find a relationship"
       search_label: "Search"
-      search_placeholder: "Search names, notes, or relationship type"
+      search_placeholder: "Search names, notes, preferences, or relationship type"
       status_label: "Status"
       statuses:
         active: "Active"
@@ -175,6 +183,9 @@ en:
         personal_phone: "Personal phone"
         business_phone: "Business phone"
       preferences_title: "Structured preferences"
+      preference_confidence: "Confidence"
+      preference_learned_on: "Learned"
+      preference_source_notes: "Source notes"
       field_values_title: "Relationship fields"
       tags_title: "Tags"
       groups_title: "Groups"
@@ -270,9 +281,15 @@ en:
       private_notes: "Private or sensitive notes"
       private_notes_hint: "Keep sensitive context explicit and separate so future sharing or automation can avoid it by default."
       structured_preferences: "Structured preferences"
-      structured_preferences_hint: "Add one preference per row, like Coffee and decaf or Topics and books."
+      structured_preferences_hint: "Track what this person likes, avoids, prefers, or cannot have."
+      preference_row: "Preference %{number}"
+      preference_type: "Type"
+      preference_category: "Category"
       preference_key: "Preference"
       preference_value: "Value"
+      preference_confidence: "Confidence"
+      preference_learned_on: "Learned date"
+      preference_source_notes: "Source notes"
       suggested_fields: "Suggested fields"
       suggested_fields_hint: "Use the fields that fit this relationship type. Hide suggestions that are not useful right now."
       suggested_for: "Suggested for %{type}"
@@ -306,6 +323,27 @@ en:
       notice: "Relationship profile was archived."
     destroy:
       notice: "Relationship profile was deleted."
+  relationship_preferences:
+    preference_types:
+      positive: "Positive"
+      negative: "Negative"
+      neutral: "Neutral"
+      constraint: "Constraint"
+    categories:
+      general: "General"
+      food: "Food"
+      gifts: "Gifts"
+      communication: "Communication"
+      social_settings: "Social settings"
+      boundaries: "Boundaries"
+      allergies: "Allergies"
+      cultural_constraints: "Cultural constraints"
+    confidences:
+      confirmed: "Confirmed"
+      high: "High"
+      medium: "Medium"
+      low: "Low"
+      inferred: "Inferred"
   relationship_templates:
     descriptions:
       spouse: "Default reminders and care context for a spouse."

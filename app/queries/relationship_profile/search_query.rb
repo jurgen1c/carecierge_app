@@ -36,6 +36,7 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
   def search_condition
     profile_table = RelationshipProfile.arel_table
     notes_table = RelationshipNote.arel_table
+    preferences_table = RelationshipPreference.arel_table
     rich_text_table = ActionText::RichText.arel_table
     term = "%#{ActiveRecord::Base.sanitize_sql_like(search_query.downcase)}%"
 
@@ -44,7 +45,8 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
       lower(profile_table[:last_name]).matches(term),
       lower(profile_table[:preferred_name]).matches(term),
       relationship_type_condition(profile_table, term),
-      matching_rich_text_exists(profile_table, notes_table, rich_text_table, term)
+      matching_rich_text_exists(profile_table, notes_table, rich_text_table, term),
+      matching_preferences_exists(profile_table, preferences_table, term)
     ].reduce(&:or)
   end
 
@@ -73,6 +75,58 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
       .where(notes_table[:relationship_profile_id].eq(profile_table[:id]))
       .where(lower(rich_text_table[:body]).matches(term))
       .exists
+  end
+
+  def matching_preferences_exists(profile_table, preferences_table, term)
+    preferences_table
+      .project(Arel.sql("1"))
+      .where(preferences_table[:relationship_profile_id].eq(profile_table[:id]))
+      .where(preference_search_condition(preferences_table, term))
+      .exists
+  end
+
+  def preference_search_condition(preferences_table, term)
+    [
+      lower(preferences_table[:key]).matches(term),
+      lower(preferences_table[:value]).matches(term),
+      lower(preferences_table[:source_notes]).matches(term),
+      localized_enum_condition(
+        preferences_table[:preference_type],
+        RelationshipPreference.preference_types,
+        "relationship_preferences.preference_types",
+        term
+      ),
+      localized_enum_condition(
+        preferences_table[:category],
+        RelationshipPreference.categories,
+        "relationship_preferences.categories",
+        term
+      ),
+      localized_enum_condition(
+        preferences_table[:confidence],
+        RelationshipPreference.confidences,
+        "relationship_preferences.confidences",
+        term
+      )
+    ].reduce(&:or)
+  end
+
+  def localized_enum_condition(attribute, values, translation_scope, term)
+    condition = normalized_enum(attribute).matches(term)
+    matching_values = values.keys.select do |value|
+      I18n.t("#{translation_scope}.#{value}").downcase.include?(search_query.downcase)
+    end
+
+    return condition if matching_values.empty?
+
+    condition.or(attribute.in(matching_values))
+  end
+
+  def normalized_enum(attribute)
+    Arel::Nodes::NamedFunction.new(
+      "REPLACE",
+      [ lower(attribute), Arel::Nodes.build_quoted("_"), Arel::Nodes.build_quoted(" ") ]
+    )
   end
 
   def filtered_relation

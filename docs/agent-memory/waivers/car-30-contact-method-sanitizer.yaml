@@ -1,0 +1,11 @@
+id: car_30_contact_method_sanitizer
+status: active
+reason: >
+  Narrow defensive-input hardening for contact method kind sanitization. The
+  existing relationship profile claims already cover controller parameter
+  sanitization and owner-scoped CRUD behavior; this change only reuses the
+  existing nested-attribute iterator so array-shaped malformed contact method
+  params render validation errors instead of raising.
+files:
+  - app/controllers/relationship_profiles_controller.rb
+expires_at: 2026-08-05

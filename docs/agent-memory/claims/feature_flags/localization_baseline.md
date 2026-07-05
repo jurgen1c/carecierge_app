@@ -20,11 +20,9 @@ source_files:
 related_files:
   - spec/requests/admin_feature_flags_spec.rb
 symbols: []
-routes:
-  - admin_feature_flags
+routes: []
 tags:
-  - feature_flags
-  - localization
+  - feature_flag_localization
 
 verification:
   - bundle exec rspec spec/requests/admin_feature_flags_spec.rb

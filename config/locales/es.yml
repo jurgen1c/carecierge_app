@@ -1,4 +1,7 @@
 es:
+  date:
+    formats:
+      relationship_preference_learned_on: "%-d/%-m/%Y"
   activerecord:
     attributes:
       feature_flag:
@@ -37,7 +40,12 @@ es:
         category: "Categoría"
         private: "Privada"
       relationship_preference:
+        category: "Categoría de preferencia"
+        confidence: "Confianza"
         key: "Preferencia"
+        learned_on: "Fecha aprendida"
+        preference_type: "Tipo de preferencia"
+        source_notes: "Notas de origen"
         value: "Valor de preferencia"
       relationship_tag:
         name: "Etiqueta"
@@ -151,7 +159,7 @@ es:
       new_profile: "Agregar relación"
       filters_title: "Encontrar una relación"
       search_label: "Buscar"
-      search_placeholder: "Buscar nombres, notas o tipo de relación"
+      search_placeholder: "Buscar nombres, notas, preferencias o tipo de relación"
       status_label: "Estado"
       statuses:
         active: "Activas"
@@ -185,6 +193,9 @@ es:
         personal_phone: "Teléfono personal"
         business_phone: "Teléfono de trabajo"
       preferences_title: "Preferencias estructuradas"
+      preference_confidence: "Confianza"
+      preference_learned_on: "Aprendida"
+      preference_source_notes: "Notas de origen"
       field_values_title: "Campos de relación"
       tags_title: "Etiquetas"
       groups_title: "Grupos"
@@ -280,9 +291,15 @@ es:
       private_notes: "Notas privadas o sensibles"
       private_notes_hint: "Mantén el contexto sensible explícito y separado para que futuras funciones de compartir o automatización puedan evitarlo por defecto."
       structured_preferences: "Preferencias estructuradas"
-      structured_preferences_hint: "Agrega una preferencia por fila, como Café y descafeinado o Temas y libros."
+      structured_preferences_hint: "Registra lo que esta persona disfruta, evita, prefiere o no puede tener."
+      preference_row: "Preferencia %{number}"
+      preference_type: "Tipo"
+      preference_category: "Categoría"
       preference_key: "Preferencia"
       preference_value: "Valor"
+      preference_confidence: "Confianza"
+      preference_learned_on: "Fecha aprendida"
+      preference_source_notes: "Notas de origen"
       suggested_fields: "Campos sugeridos"
       suggested_fields_hint: "Usa los campos que encajen con este tipo de relación. Oculta sugerencias que no sean útiles ahora."
       suggested_for: "Sugeridos para %{type}"
@@ -316,6 +333,27 @@ es:
       notice: "El perfil de relación fue archivado."
     destroy:
       notice: "El perfil de relación fue eliminado."
+  relationship_preferences:
+    preference_types:
+      positive: "Positiva"
+      negative: "Negativa"
+      neutral: "Neutral"
+      constraint: "Restricción"
+    categories:
+      general: "General"
+      food: "Comida"
+      gifts: "Regalos"
+      communication: "Comunicación"
+      social_settings: "Entornos sociales"
+      boundaries: "Límites"
+      allergies: "Alergias"
+      cultural_constraints: "Restricciones culturales"
+    confidences:
+      confirmed: "Confirmada"
+      high: "Alta"
+      medium: "Media"
+      low: "Baja"
+      inferred: "Inferida"
   relationship_templates:
     descriptions:
       spouse: "Recordatorios y contexto de cuidado predeterminados para una pareja."

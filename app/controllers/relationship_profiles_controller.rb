@@ -146,6 +146,8 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def each_nested_attribute(attributes, &)
+    return if attributes.blank?
+
     records = attributes.respond_to?(:each_value) ? attributes.each_value : attributes
 
     records.each(&)

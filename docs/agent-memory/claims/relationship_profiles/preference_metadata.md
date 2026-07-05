@@ -11,9 +11,9 @@ title: Relationship preferences store structured metadata
 claim: >
   RelationshipPreference stores type, category, confidence, learned date, and
   source notes. Legacy/default metadata uses neutral, general, and inferred
-  labels; preference enum params are sanitized before assignment; localized
-  preference labels render in profile forms and shows and participate in
-  owner-scoped profile search.
+  labels; preference enum params are sanitized before assignment and nil nested
+  preference attribute containers are ignored; localized preference labels render
+  in profile forms and shows and participate in owner-scoped profile search.
 
 source_files:
   - db/migrate/20260704203217_add_structured_fields_to_relationship_preferences.rb
@@ -38,9 +38,9 @@ last_verified_commit: null
 
 RelationshipPreference stores type, category, confidence, learned date, and
 source notes. Legacy/default metadata uses neutral, general, and inferred labels;
-preference enum params are sanitized before assignment; localized preference
-labels render in profile forms and shows and participate in owner-scoped profile
-search.
+preference enum params are sanitized before assignment and nil nested preference
+attribute containers are ignored; localized preference labels render in profile
+forms and shows and participate in owner-scoped profile search.
 
 ## Why It Matters
 

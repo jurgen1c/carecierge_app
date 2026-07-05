@@ -96,7 +96,7 @@
                   <% if preference.learned_on.present? %>
                     <div>
                       <dt class="font-semibold text-stone-800"><%= t(".preference_learned_on") %></dt>
-                      <dd class="mt-1"><%= l(preference.learned_on) %></dd>
+                      <dd class="mt-1"><%= l(preference.learned_on, format: :relationship_preference_learned_on) %></dd>
                     </div>
                   <% end %>
                   <% if preference.source_notes.present? %>

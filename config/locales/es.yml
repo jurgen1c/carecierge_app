@@ -1,7 +1,7 @@
 es:
   date:
     formats:
-      default: "%-d/%-m/%Y"
+      relationship_preference_learned_on: "%-d/%-m/%Y"
   activerecord:
     attributes:
       feature_flag:

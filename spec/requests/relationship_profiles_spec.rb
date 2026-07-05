@@ -518,6 +518,23 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).to include("blank")
     end
 
+    it "ignores nil nested preference attributes without raising" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post relationship_profiles_path, params: {
+          relationship_profile: {
+            first_name: "Kai",
+            relationship_preferences_attributes: nil
+          }
+        }
+      end.to change(RelationshipProfile, :count).by(1)
+        .and change(RelationshipPreference, :count).by(0)
+
+      expect(response).to redirect_to(relationship_profile_path(RelationshipProfile.find_by!(first_name: "Kai")))
+    end
+
     it "renders validation errors for duplicate nested groups" do
       user = create(:user)
       sign_in user

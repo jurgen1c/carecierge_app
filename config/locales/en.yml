@@ -30,7 +30,7 @@
 en:
   date:
     formats:
-      default: "%b %-d, %Y"
+      relationship_preference_learned_on: "%b %-d, %Y"
   activerecord:
     attributes:
       feature_flag:

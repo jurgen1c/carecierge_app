@@ -74,12 +74,12 @@ class RelationshipProfilesController < ApplicationController
       .relationship_profiles
       .includes(
         :contact_methods,
+        :important_dates,
         :relationship_preferences,
         :relationship_tags,
         :relationship_groups,
         relationship_taggings: :relationship_tag,
         relationship_group_memberships: :relationship_group,
-        important_dates: [],
         relationship_field_values: { template_field: :relationship_template },
         relationship_notes: :rich_text_body
       )

@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 
   resources :relationship_profiles do
     patch :archive, on: :member
+    resources :important_dates, except: %i[index show]
   end
 
   namespace :admin do

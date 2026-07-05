@@ -114,6 +114,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_203217) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "important_dates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "date_type", null: false
+    t.string "importance_level", default: "normal", null: false
+    t.text "notes"
+    t.string "recurrence", default: "none", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.string "reminder_schedule", default: "none", null: false
+    t.date "starts_on", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "date_type"], name: "index_important_dates_on_relationship_profile_id_and_date_type"
+    t.index ["relationship_profile_id", "importance_level"], name: "idx_on_relationship_profile_id_importance_level_a07d6afa11"
+    t.index ["relationship_profile_id", "starts_on"], name: "index_important_dates_on_relationship_profile_id_and_starts_on"
+    t.index ["relationship_profile_id"], name: "index_important_dates_on_relationship_profile_id"
+  end
+
   create_table "noticed_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "notifications_count"
@@ -322,6 +339,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_203217) do
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
+  add_foreign_key "important_dates", "relationship_profiles"
   add_foreign_key "relationship_field_values", "relationship_profiles"
   add_foreign_key "relationship_field_values", "template_fields"
   add_foreign_key "relationship_group_memberships", "relationship_groups", on_delete: :cascade

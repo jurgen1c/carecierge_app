@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "important_dates_section" do %>
+  <%= render "important_dates/section", relationship_profile: @relationship_profile %>
+<% end %>
+
+<%= turbo_stream.replace "upcoming_important_dates" do %>
+  <%= render "important_dates/upcoming", relationship_profile: @relationship_profile %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "layouts/flash", notice: notice, alert: alert %>
+<% end %>

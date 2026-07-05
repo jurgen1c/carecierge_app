@@ -2,6 +2,7 @@ es:
   date:
     formats:
       relationship_preference_learned_on: "%-d/%-m/%Y"
+      important_date: "%-d/%-m/%Y"
   activerecord:
     attributes:
       feature_flag:
@@ -63,6 +64,14 @@ es:
         label: "Campo"
         template_field: "Campo sugerido"
         value: "Valor del campo"
+      important_date:
+        date_type: "Tipo de fecha"
+        importance_level: "Importancia"
+        notes: "Notas"
+        recurrence: "Recurrencia"
+        reminder_schedule: "Calendario de recordatorio"
+        starts_on: "Fecha"
+        title: "Título"
       user:
         admin: "Administrador"
         email: "Correo electrónico"
@@ -83,6 +92,7 @@ es:
     messages:
       blank: "no puede estar en blanco"
       confirmation: "no coincide con %{attribute}"
+      inclusion: "no está incluido en la lista"
       invalid: "no es válido"
       taken: "ya está en uso"
       too_short: "es demasiado corta; mínimo %{count} caracteres"
@@ -333,6 +343,93 @@ es:
       notice: "El perfil de relación fue archivado."
     destroy:
       notice: "El perfil de relación fue eliminado."
+  important_dates:
+    date_types:
+      birthday: "Cumpleaños"
+      anniversary: "Aniversario"
+      milestone: "Hito"
+      appointment: "Cita"
+      holiday: "Feriado"
+      custom: "Personalizada"
+    recurrences:
+      none: "Una vez"
+      yearly: "Anual"
+      monthly: "Mensual"
+      weekly: "Semanal"
+    importance_levels:
+      low: "Baja"
+      normal: "Normal"
+      high: "Alta"
+      essential: "Esencial"
+    reminder_schedules:
+      none: "Sin recordatorio"
+      day_before: "1 día antes"
+      week_before: "1 semana antes"
+      two_weeks_before: "2 semanas antes"
+      month_before: "1 mes antes"
+      custom: "Calendario personalizado"
+    planning_prompts:
+      birthday: "Planear con tiempo para este cumpleaños."
+      anniversary: "Planear con tiempo para este aniversario."
+      milestone: "Planear con tiempo para este hito."
+      appointment: "Prepararte antes de esta cita."
+      holiday: "Planear con tiempo para este feriado."
+      custom: "Planear con tiempo para esta fecha."
+      default: "Planear con tiempo para esta fecha."
+    section:
+      kicker: "Memoria de relación"
+      title: "Fechas importantes"
+      body: "Registra cumpleaños, aniversarios, citas, feriados y momentos personalizados con suficiente contexto para planear antes de que se vuelvan urgentes."
+      turbo_hint: "Se actualiza en línea"
+      timeline_title: "Línea de fechas"
+      date_count:
+        one: "1 fecha"
+        other: "%{count} fechas"
+      empty_title: "Aún no hay fechas importantes"
+      empty_body: "Agrega el próximo cumpleaños, cita, feriado o hito que debería ayudar a Carecierge a sugerir un plan oportuno."
+      suggestions_title: "Planear con tiempo"
+      plan_ahead: "Planear con tiempo"
+      days_until:
+        one: "Falta 1 día"
+        other: "Faltan %{count} días"
+      no_suggestions: "Agrega fechas con momentos próximos para ver sugerencias cuidadosas de planificación aquí."
+    item:
+      date: "Fecha"
+      reminder: "Recordatorio"
+      plan_ahead: "Planear con tiempo"
+      edit: "Editar"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar esta fecha importante?"
+    form:
+      new_title: "Agregar fecha importante"
+      edit_title: "Editar fecha importante"
+      body: "Usa los detalles que te ayudan a recordar y prepararte, no solo a recibir un recordatorio."
+      errors_heading:
+        one: "Revisa este campo"
+        other: "Revisa estos %{count} campos"
+      date_type: "Tipo de fecha"
+      starts_on: "Fecha"
+      title: "Título"
+      title_placeholder: "Cumpleaños, dentista, presentación escolar"
+      recurrence: "Recurrencia"
+      importance_level: "Importancia"
+      reminder_schedule: "Recordatorio"
+      notes: "Notas de planificación"
+      notes_placeholder: "Algo que te ayude a prepararte con cuidado"
+      create: "Agregar fecha"
+      update: "Actualizar fecha"
+      cancel: "Cancelar"
+    upcoming:
+      title: "Próximas fechas"
+      add: "Agregar"
+      plan_ahead: "Planear con tiempo"
+      empty: "Aún no hay próximas fechas."
+    create:
+      notice: "La fecha importante fue agregada."
+    update:
+      notice: "La fecha importante fue actualizada."
+    destroy:
+      notice: "La fecha importante fue eliminada."
   relationship_preferences:
     preference_types:
       positive: "Positiva"

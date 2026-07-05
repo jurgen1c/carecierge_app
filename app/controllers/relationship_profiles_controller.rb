@@ -21,9 +21,6 @@ class RelationshipProfilesController < ApplicationController
     @relationship_groups = current_user.relationship_groups.ordered
   end
 
-  def show
-  end
-
   def new
     @relationship_profile = current_user.relationship_profiles.new
     authorize @relationship_profile
@@ -77,6 +74,7 @@ class RelationshipProfilesController < ApplicationController
       .relationship_profiles
       .includes(
         :contact_methods,
+        :important_dates,
         :relationship_preferences,
         :relationship_tags,
         :relationship_groups,

@@ -3,29 +3,31 @@
 # Table name: users
 # Database name: primary
 #
-#  id                     :uuid             not null, primary key
-#  admin                  :boolean          default(FALSE), not null
-#  confirmation_sent_at   :datetime
-#  confirmation_token     :string
-#  confirmed_at           :datetime
-#  current_sign_in_at     :datetime
-#  current_sign_in_ip     :string
-#  email                  :string           default(""), not null
-#  encrypted_password     :string           default(""), not null
-#  failed_attempts        :integer          default(0), not null
-#  last_sign_in_at        :datetime
-#  last_sign_in_ip        :string
-#  locked_at              :datetime
-#  provider               :string
-#  remember_created_at    :datetime
-#  reset_password_sent_at :datetime
-#  reset_password_token   :string
-#  sign_in_count          :integer          default(0), not null
-#  uid                    :string
-#  unconfirmed_email      :string
-#  unlock_token           :string
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
+#  id                      :uuid             not null, primary key
+#  admin                   :boolean          default(FALSE), not null
+#  confirmation_sent_at    :datetime
+#  confirmation_token      :string
+#  confirmed_at            :datetime
+#  current_sign_in_at      :datetime
+#  current_sign_in_ip      :string
+#  email                   :string           default(""), not null
+#  encrypted_password      :string           default(""), not null
+#  failed_attempts         :integer          default(0), not null
+#  last_sign_in_at         :datetime
+#  last_sign_in_ip         :string
+#  locked_at               :datetime
+#  onboarding_completed_at :datetime
+#  onboarding_skipped_at   :datetime
+#  provider                :string
+#  remember_created_at     :datetime
+#  reset_password_sent_at  :datetime
+#  reset_password_token    :string
+#  sign_in_count           :integer          default(0), not null
+#  uid                     :string
+#  unconfirmed_email       :string
+#  unlock_token            :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
 #
 # Indexes
 #
@@ -47,6 +49,26 @@ class User < ApplicationRecord
   has_many :relationship_profiles, dependent: :destroy
   has_many :relationship_tags, dependent: :destroy
   has_many :relationship_groups, dependent: :destroy
+
+  def onboarding_completed?
+    onboarding_completed_at.present? || relationship_profiles.exists?
+  end
+
+  def onboarding_pending?
+    !onboarding_completed? && onboarding_skipped_at.blank?
+  end
+
+  def onboarding_available?
+    !onboarding_completed?
+  end
+
+  def skip_onboarding!
+    update!(onboarding_skipped_at: Time.current)
+  end
+
+  def complete_onboarding!
+    update!(onboarding_completed_at: Time.current)
+  end
 
   def self.from_google_oauth(auth)
     email = auth.info.email.to_s.downcase

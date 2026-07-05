@@ -18,14 +18,14 @@ RSpec.describe Users::OmniauthCallbacksController, type: :controller do
 
       user = User.find_by!(email: "user@example.com")
       expect(controller.current_user).to eq(user)
-      expect(response).to redirect_to(dashboard_path)
+      expect(response).to redirect_to(onboarding_path)
     end
 
     it "handles non-navigational requests without setting a flash" do
       get :google_oauth2, format: :json
 
       expect(flash).to be_empty
-      expect(response).to redirect_to(dashboard_path)
+      expect(response).to redirect_to(onboarding_path)
     end
   end
 end

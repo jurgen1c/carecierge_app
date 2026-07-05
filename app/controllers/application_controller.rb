@@ -11,7 +11,9 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  def after_sign_in_path_for(_resource)
+  def after_sign_in_path_for(resource)
+    return onboarding_path if resource.respond_to?(:onboarding_pending?) && resource.onboarding_pending?
+
     dashboard_path
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_04_203217) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_05_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -317,6 +317,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_203217) do
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip"
     t.datetime "locked_at"
+    t.datetime "onboarding_completed_at"
+    t.datetime "onboarding_skipped_at"
     t.string "provider"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"

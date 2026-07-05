@@ -22,8 +22,11 @@ source_files:
   - app/controllers/application_controller.rb
   - app/controllers/dashboard_controller.rb
   - app/controllers/onboarding_controller.rb
+  - app/controllers/welcome_controller.rb
   - app/models/user.rb
   - app/views/onboarding/show.html.erb
+  - app/views/devise/registrations/new.html.erb
+  - app/views/devise/sessions/new.html.erb
   - config/routes.rb
 
 related_files:
@@ -34,10 +37,14 @@ related_files:
 symbols:
   - DashboardController
   - OnboardingController
+  - WelcomeController
 routes:
+  - root
   - onboarding
   - skip_onboarding
   - dashboard
+  - new_user_registration
+  - new_user_session
 tags:
   - user-access-flow
 

@@ -68,7 +68,9 @@ class OnboardingController < ApplicationController
   def each_nested_attribute(attributes, &)
     return if attributes.blank?
 
-    attributes.respond_to?(:each_value) ? attributes.each_value(&) : attributes.each(&)
+    records = attributes.respond_to?(:each_value) ? attributes.each_value : attributes
+
+    records.each(&)
   end
 
   def sanitize_relationship_preference_enum(preference_params, key, allowed_values)

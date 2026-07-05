@@ -18,7 +18,9 @@ claim: >
   presents a richer important-dates work area plus a compact upcoming-dates
   right rail, and create, update, and delete actions refresh those surfaces with
   Turbo streams when possible instead of requiring a full page reload. Planning
-  links only target suggestions rendered in the current profile surface.
+  links only target suggestions rendered in the current profile surface, and
+  planning prompts resolve through date-specific locale keys with a default
+  locale-key fallback.
 
 source_files:
   - app/models/important_date.rb
@@ -67,6 +69,8 @@ and one-time moments with reminder intent and planning prompts. They are
 localized, scoped through the signed-in user's relationship profiles, and updated
 inline through Turbo streams where possible. Timeline and upcoming-date planning
 links are shown only when the matching planning suggestion anchor is rendered.
+Planning prompts use date-type-specific translations with a shared default
+fallback key.
 
 ## Why It Matters
 

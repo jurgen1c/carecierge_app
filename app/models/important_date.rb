@@ -99,7 +99,7 @@ class ImportantDate < ApplicationRecord
   def planning_prompt(as_of: Date.current)
     return unless planning_opportunity?(as_of:)
 
-    I18n.t("important_dates.planning_prompts.#{date_type}", default: I18n.t("important_dates.planning_prompts.default"))
+    I18n.t("important_dates.planning_prompts.#{date_type}", default: :"important_dates.planning_prompts.default")
   end
 
   def self.date_type_options

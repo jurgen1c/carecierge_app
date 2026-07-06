@@ -1,4 +1,6 @@
 class OnboardingController < ApplicationController
+  ONBOARDING_IMPORTANT_DATES_LIMIT = 3
+
   def show
     @relationship_profile = current_user.relationship_profiles.new
     prepare_onboarding_relationship_profile
@@ -40,10 +42,10 @@ class OnboardingController < ApplicationController
       :first_name,
       :type,
       :custom_type_label,
-      :birthday,
       relationship_preferences_attributes: %i[preference_type category key value confidence],
       important_dates_attributes: %i[date_type title starts_on recurrence importance_level reminder_schedule notes]
     )
+    limit_onboarding_important_date_params(permitted_params)
     sanitize_relationship_type_param(permitted_params)
     sanitize_relationship_preference_enum_params(permitted_params)
     sanitize_important_date_enum_params(permitted_params)
@@ -52,7 +54,17 @@ class OnboardingController < ApplicationController
 
   def prepare_onboarding_relationship_profile
     @relationship_profile.relationship_preferences.build if @relationship_profile.relationship_preferences.empty?
-    (3 - @relationship_profile.important_dates.size).times { @relationship_profile.important_dates.build }
+    (ONBOARDING_IMPORTANT_DATES_LIMIT - @relationship_profile.important_dates.size).times do
+      @relationship_profile.important_dates.build
+    end
+  end
+
+  def limit_onboarding_important_date_params(permitted_params)
+    important_date_params = permitted_params[:important_dates_attributes]
+    return if important_date_params.blank?
+
+    permitted_params[:important_dates_attributes] =
+      important_date_params.to_h.first(ONBOARDING_IMPORTANT_DATES_LIMIT).to_h
   end
 
   def sanitize_relationship_type_param(permitted_params)

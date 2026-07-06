@@ -1,0 +1,13 @@
+id: car_25_onboarding_important_dates_pr_comments
+status: active
+reason: >
+  Narrow PR review cleanup for onboarding important-date input hardening. The
+  existing relationship_profiles.important_dates claim already covers optional
+  onboarding important-date capture, validation, and owner-scoped persistence;
+  this change only removes the obsolete birthday permit from onboarding and
+  caps crafted initial important-date params to the three rendered onboarding
+  rows.
+files:
+  - app/controllers/onboarding_controller.rb
+  - spec/requests/onboarding_spec.rb
+expires_at: 2026-08-05

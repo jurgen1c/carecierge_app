@@ -9,10 +9,15 @@ default_queries:
   - style variants helper
   - project dependency list
   - local CI signoff gate
+  - data backfills data_migrate
 watched_files:
   - AGENTS.md
+  - bin/setup
   - config/ci.rb
   - eslint.config.mjs
+  - db/data/**/*.rb
+  - db/data_schema.rb
+  - db/migrate/**/*.rb
   - PRODUCT.md
   - DESIGN.md
   - package.json
@@ -28,3 +33,5 @@ tags:
   - design-system
   - ci
   - signoff
+  - data_migrate
+  - migrations

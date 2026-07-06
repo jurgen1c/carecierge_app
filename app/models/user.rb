@@ -58,7 +58,9 @@ class User < ApplicationRecord
   end
 
   def onboarding_pending?
-    !onboarding_completed? && onboarding_skipped_at.blank?
+    return false if onboarding_skipped_at.present?
+
+    !onboarding_completed?
   end
 
   def onboarding_available?

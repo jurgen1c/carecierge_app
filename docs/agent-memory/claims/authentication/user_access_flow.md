@@ -14,6 +14,7 @@ claim: >
   can skip onboarding and return from dashboard#index until completion, onboarding completion
   creates the first owner-scoped relationship profile, and users with existing relationship
   profiles are treated as completed onboarding so established accounts continue to dashboard#index.
+  Skipped users are not pending and short-circuit that check before relationship profile lookup.
   Logout redirects to welcome#index, and invalid access attempts keep localized recovery paths
   available. Authenticated application access is enforced from ApplicationController, with
   welcome#index explicitly opted out and Devise controllers left public for sign-in and registration.
@@ -65,6 +66,7 @@ login redirects users with pending onboarding to `onboarding#show` before `dashb
 can skip onboarding and return from `dashboard#index` until completion, onboarding completion
 creates the first owner-scoped relationship profile, and users with existing relationship
 profiles are treated as completed onboarding so established accounts continue to `dashboard#index`.
+Skipped users are not pending and short-circuit that check before relationship profile lookup.
 Logout redirects to `welcome#index`, and invalid access attempts keep localized recovery paths
 available. Authenticated application access is enforced from `ApplicationController`, with
 `welcome#index` explicitly opted out and Devise controllers left public for sign-in and
@@ -92,4 +94,5 @@ when changing routes, controllers, or Devise views.
 ## Verification
 
 - `bundle exec rspec spec/requests/onboarding_spec.rb spec/system/user_access_flow_spec.rb spec/requests/localization_spec.rb`
+- `bundle exec rspec spec/models/user_spec.rb`
 - `bundle exec rspec spec/requests/authentication_gate_spec.rb`

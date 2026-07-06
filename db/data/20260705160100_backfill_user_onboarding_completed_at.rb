@@ -13,7 +13,8 @@ class BackfillUserOnboardingCompletedAt < ActiveRecord::Migration[8.1]
       execute <<~SQL.squish
         UPDATE users
         SET onboarding_completed_at = CURRENT_TIMESTAMP
-        WHERE id IN (#{quoted_ids})
+        WHERE onboarding_completed_at IS NULL
+          AND id IN (#{quoted_ids})
       SQL
     end
   end

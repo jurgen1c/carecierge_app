@@ -32,7 +32,6 @@ source_files:
 related_files:
   - db/migrate/20260705160000_add_onboarding_state_to_users.rb
   - db/data/20260705160100_backfill_user_onboarding_completed_at.rb
-  - db/data_schema.rb
   - spec/requests/onboarding_spec.rb
   - spec/models/user_spec.rb
   - spec/system/user_access_flow_spec.rb
@@ -89,7 +88,6 @@ when changing routes, controllers, or Devise views.
 - `config/routes.rb`
 - `db/migrate/20260705160000_add_onboarding_state_to_users.rb`
 - `db/data/20260705160100_backfill_user_onboarding_completed_at.rb`
-- `db/data_schema.rb`
 
 ## Verification
 

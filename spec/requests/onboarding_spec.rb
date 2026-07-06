@@ -66,24 +66,26 @@ RSpec.describe "Onboarding", type: :request do
       user = create(:user)
       sign_in user
 
-      post onboarding_path, params: {
-        relationship_profile: {
-          first_name: "Maya",
-          type: "RelationshipProfiles::Friend",
-          birthday: "1990-05-12",
-          relationship_preferences_attributes: {
-            "0" => {
-              preference_type: "positive",
-              category: "food",
-              key: "Comfort meal",
-              value: "Vegetable ramen",
-              confidence: "medium"
+      expect do
+        post onboarding_path, params: {
+          relationship_profile: {
+            first_name: "Maya",
+            type: "RelationshipProfiles::Friend",
+            birthday: "1990-05-12",
+            relationship_preferences_attributes: {
+              "0" => {
+                preference_type: "positive",
+                category: "food",
+                key: "Comfort meal",
+                value: "Vegetable ramen",
+                confidence: "medium"
+              }
             }
           }
         }
-      }
+      end.to change(user.relationship_profiles, :count).by(1)
 
-      profile = user.relationship_profiles.last
+      profile = user.relationship_profiles.sole
 
       expect(response).to redirect_to(relationship_profile_path(profile))
       expect(profile.birthday).to eq(Date.new(1990, 5, 12))

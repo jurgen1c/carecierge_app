@@ -79,6 +79,11 @@ registration.
 This preserves the expected post-authentication landing behavior and recoverable failure modes
 when changing routes, controllers, or Devise views.
 
+## Review Notes
+
+CAR-25 reviewed this claim while adding optional important-date capture to onboarding. The
+redirect, skip, completion, and public/private route boundaries remain unchanged.
+
 ## Evidence
 
 - `app/controllers/application_controller.rb`

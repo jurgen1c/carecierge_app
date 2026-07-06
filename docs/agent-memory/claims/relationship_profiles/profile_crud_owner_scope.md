@@ -274,6 +274,12 @@ automation, and sharing work should reference profiles through the owner-scoped
 relationship profile boundary rather than introducing parallel personal-context
 stores.
 
+## Review Notes
+
+CAR-25 reviewed this claim while adding nested important-date onboarding capture. The
+owner-scoped profile boundary remains current; date-specific behavior is owned by
+`relationship_profiles.important_dates`.
+
 ## Evidence
 
 - `app/models/relationship_profile.rb`

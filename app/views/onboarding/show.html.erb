@@ -71,11 +71,49 @@
           <%= form.text_field :custom_type_label, maxlength: 80, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
         </div>
 
-        <div>
-          <%= form.label :birthday, t(".birthday"), class: "block text-sm font-medium text-stone-800" %>
-          <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".birthday_hint") %></p>
-          <%= form.date_field :birthday, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
-        </div>
+        <fieldset class="grid gap-4 rounded-lg border border-stone-200 bg-stone-50 p-4">
+          <legend class="text-sm font-semibold text-stone-950"><%= t(".important_dates_title") %></legend>
+          <p class="text-sm leading-6 text-stone-700"><%= t(".important_dates_body") %></p>
+          <div class="grid gap-4">
+            <%= form.fields_for :important_dates do |date_fields| %>
+              <div class="grid gap-4 rounded-lg border border-stone-200 bg-white p-4">
+                <h3 class="text-sm font-semibold text-stone-950"><%= t(".important_date_row", number: date_fields.index + 1) %></h3>
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <%= date_fields.label :date_type, t(".important_date_type"), class: "block text-sm font-medium text-stone-800" %>
+                    <%= date_fields.select :date_type, ImportantDate.date_type_options, { include_blank: t(".important_date_type_blank") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  </div>
+                  <div>
+                    <%= date_fields.label :starts_on, t(".important_date_starts_on"), class: "block text-sm font-medium text-stone-800" %>
+                    <%= date_fields.date_field :starts_on, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  </div>
+                </div>
+                <div>
+                  <%= date_fields.label :title, t(".important_date_title_label"), class: "block text-sm font-medium text-stone-800" %>
+                  <%= date_fields.text_field :title, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <%= date_fields.label :recurrence, t(".important_date_recurrence"), class: "block text-sm font-medium text-stone-800" %>
+                    <%= date_fields.select :recurrence, ImportantDate.recurrence_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  </div>
+                  <div>
+                    <%= date_fields.label :importance_level, t(".important_date_importance"), class: "block text-sm font-medium text-stone-800" %>
+                    <%= date_fields.select :importance_level, ImportantDate.importance_level_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  </div>
+                  <div>
+                    <%= date_fields.label :reminder_schedule, t(".important_date_reminder"), class: "block text-sm font-medium text-stone-800" %>
+                    <%= date_fields.select :reminder_schedule, ImportantDate.reminder_schedule_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  </div>
+                </div>
+                <div>
+                  <%= date_fields.label :notes, t(".important_date_notes"), class: "block text-sm font-medium text-stone-800" %>
+                  <%= date_fields.text_area :notes, rows: 2, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </fieldset>
 
         <fieldset class="grid gap-4 rounded-lg border border-stone-200 bg-stone-50 p-4">
           <legend class="text-sm font-semibold text-stone-950"><%= t(".preference_title") %></legend>

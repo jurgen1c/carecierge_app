@@ -33,6 +33,8 @@ tags:
 
 verification:
   - bin/setup --skip-server
+  - bundle exec rspec spec/data_migrations/backfill_user_onboarding_completed_at_spec.rb
+  - bin/rubocop
 last_verified_commit: null
 ---
 
@@ -64,7 +66,6 @@ backfills in `db/data` preserves a clear operational boundary and lets
 
 ## Verification
 
-- `bin/rails -T data`
-- `bin/rails data:migrate`
+- `bin/setup --skip-server`
 - `bundle exec rspec spec/data_migrations/backfill_user_onboarding_completed_at_spec.rb`
 - `bin/rubocop`

@@ -68,11 +68,13 @@ class User < ApplicationRecord
   end
 
   def skip_onboarding!
+    return true if onboarding_completed?
+
     update!(onboarding_skipped_at: Time.current)
   end
 
   def complete_onboarding!
-    update!(onboarding_completed_at: Time.current)
+    update!(onboarding_completed_at: Time.current, onboarding_skipped_at: nil)
   end
 
   def self.from_google_oauth(auth)

@@ -115,6 +115,14 @@ RSpec.describe User, type: :model do
       expect(user.onboarding_skipped_at).to be_present
     end
 
+    it "does not mark completed users as skipped" do
+      user = create(:user, onboarding_completed_at: Time.current)
+
+      user.skip_onboarding!
+
+      expect(user.reload.onboarding_skipped_at).to be_nil
+    end
+
     it "can be completed" do
       user = create(:user)
 
@@ -123,6 +131,14 @@ RSpec.describe User, type: :model do
       expect(user).to be_onboarding_completed
       expect(user).not_to be_onboarding_pending
       expect(user).not_to be_onboarding_available
+    end
+
+    it "clears a skipped timestamp when onboarding is completed" do
+      user = create(:user, onboarding_skipped_at: Time.current)
+
+      user.complete_onboarding!
+
+      expect(user.reload.onboarding_skipped_at).to be_nil
     end
   end
 

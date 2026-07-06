@@ -15,6 +15,7 @@ claim: >
   creates the first owner-scoped relationship profile, and users with existing relationship
   profiles are treated as completed onboarding so established accounts continue to dashboard#index.
   Skipped users are not pending and short-circuit that check before relationship profile lookup.
+  Completed users cannot be marked skipped, and completing onboarding clears prior skipped state.
   Logout redirects to welcome#index, and invalid access attempts keep localized recovery paths
   available. Authenticated application access is enforced from ApplicationController, with
   welcome#index explicitly opted out and Devise controllers left public for sign-in and registration.
@@ -67,6 +68,7 @@ can skip onboarding and return from `dashboard#index` until completion, onboardi
 creates the first owner-scoped relationship profile, and users with existing relationship
 profiles are treated as completed onboarding so established accounts continue to `dashboard#index`.
 Skipped users are not pending and short-circuit that check before relationship profile lookup.
+Completed users cannot be marked skipped, and completing onboarding clears prior skipped state.
 Logout redirects to `welcome#index`, and invalid access attempts keep localized recovery paths
 available. Authenticated application access is enforced from `ApplicationController`, with
 `welcome#index` explicitly opted out and Devise controllers left public for sign-in and

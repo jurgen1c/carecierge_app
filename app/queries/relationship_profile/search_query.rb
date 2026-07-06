@@ -51,12 +51,35 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
   end
 
   def relationship_type_condition(profile_table, term)
-    condition = lower(profile_table[:type]).matches(term)
+    custom_type_label = custom_type_label_expression(profile_table)
+    condition = lower(profile_table[:type])
+      .matches(term)
+      .and(generic_type_searchable_condition(profile_table, custom_type_label))
+      .or(lower(custom_type_label).matches(term))
     matching_type_classes = RelationshipProfile.type_classes_matching_label(search_query)
 
     return condition if matching_type_classes.empty?
 
-    condition.or(profile_table[:type].in(matching_type_classes))
+    condition.or(
+      profile_table[:type]
+        .in(matching_type_classes)
+        .and(generic_type_searchable_condition(profile_table, custom_type_label))
+    )
+  end
+
+  def custom_type_label_expression(profile_table)
+    Arel::Nodes::InfixOperation.new(
+      "->>",
+      profile_table[:profile_attributes],
+      Arel::Nodes.build_quoted("custom_type_label")
+    )
+  end
+
+  def generic_type_searchable_condition(profile_table, custom_type_label)
+    profile_table[:type]
+      .not_eq("RelationshipProfiles::Other")
+      .or(custom_type_label.eq(nil))
+      .or(custom_type_label.eq(""))
   end
 
   def lower(attribute)

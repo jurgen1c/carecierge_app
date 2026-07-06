@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_05_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -63,6 +63,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_160000) do
     t.string "value", null: false
     t.index ["relationship_profile_id", "kind"], name: "index_contact_methods_on_relationship_profile_id_and_kind", unique: true
     t.index ["relationship_profile_id"], name: "index_contact_methods_on_relationship_profile_id"
+  end
+
+  create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
   end
 
   create_table "feature_flag_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -227,6 +230,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_160000) do
     t.string "first_name", null: false
     t.string "last_name"
     t.string "preferred_name"
+    t.jsonb "profile_attributes", default: {}, null: false
     t.string "pronouns"
     t.string "slug"
     t.string "type", null: false

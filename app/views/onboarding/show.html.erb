@@ -66,6 +66,12 @@
         </div>
 
         <div>
+          <%= form.label :custom_type_label, t(".custom_type_label"), class: "block text-sm font-medium text-stone-800" %>
+          <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".custom_type_hint") %></p>
+          <%= form.text_field :custom_type_label, maxlength: 80, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+        </div>
+
+        <div>
           <%= form.label :birthday, t(".birthday"), class: "block text-sm font-medium text-stone-800" %>
           <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".birthday_hint") %></p>
           <%= form.date_field :birthday, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>

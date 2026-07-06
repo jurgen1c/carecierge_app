@@ -30,6 +30,22 @@ RSpec.describe RelationshipProfile::SearchQuery do
     expect(resolve_ids(user:, query: "In-law")).to contain_exactly(in_law.id)
   end
 
+  it "searches custom relationship type labels" do
+    user = create(:user)
+    custom = create(:relationship_profile, user:, first_name: "Maya", type: "RelationshipProfiles::Other", custom_type_label: "College roommate")
+    create(:relationship_profile, user:, first_name: "Rafa", type: "RelationshipProfiles::Roommate")
+
+    expect(resolve_ids(user:, query: "college")).to contain_exactly(custom.id)
+  end
+
+  it "does not match custom relationship labels through the hidden generic other type" do
+    user = create(:user)
+    unlabeled_other = create(:relationship_profile, user:, first_name: "Nora", type: "RelationshipProfiles::Other")
+    create(:relationship_profile, user:, first_name: "Maya", type: "RelationshipProfiles::Other", custom_type_label: "College roommate")
+
+    expect(resolve_ids(user:, query: "other")).to contain_exactly(unlabeled_other.id)
+  end
+
   it "searches relationship types by displayed Spanish labels" do
     user = create(:user)
     partner = create(:relationship_profile, user:, first_name: "Maya", type: "RelationshipProfiles::Partner")

@@ -36,6 +36,7 @@ class OnboardingController < ApplicationController
     permitted_params = params.require(:relationship_profile).permit(
       :first_name,
       :type,
+      :custom_type_label,
       :birthday,
       relationship_preferences_attributes: %i[preference_type category key value confidence]
     )

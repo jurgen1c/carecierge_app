@@ -3,18 +3,19 @@
 # Table name: relationship_profiles
 # Database name: primary
 #
-#  id             :uuid             not null, primary key
-#  birthday       :date
-#  discarded_at   :datetime
-#  first_name     :string           not null
-#  last_name      :string
-#  preferred_name :string
-#  pronouns       :string
-#  slug           :string
-#  type           :string           not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  user_id        :uuid             not null
+#  id                 :uuid             not null, primary key
+#  birthday           :date
+#  discarded_at       :datetime
+#  first_name         :string           not null
+#  last_name          :string
+#  preferred_name     :string
+#  profile_attributes :jsonb            not null
+#  pronouns           :string
+#  slug               :string
+#  type               :string           not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  user_id            :uuid             not null
 #
 # Indexes
 #

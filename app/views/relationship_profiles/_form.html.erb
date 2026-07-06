@@ -33,6 +33,11 @@
         <%= form.select :type, RelationshipProfile.type_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", data: { relationship_template_fields_target: "type", action: "change->relationship-template-fields#update" } %>
       </div>
       <div>
+        <%= form.label :custom_type_label, t(".custom_type_label"), class: "block text-sm font-medium text-stone-800" %>
+        <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".custom_type_hint") %></p>
+        <%= form.text_field :custom_type_label, maxlength: 80, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+      <div>
         <%= form.label :pronouns, t(".pronouns"), class: "block text-sm font-medium text-stone-800" %>
         <%= form.text_field :pronouns, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
       </div>

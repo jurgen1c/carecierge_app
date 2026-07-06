@@ -3,18 +3,19 @@
 # Table name: relationship_profiles
 # Database name: primary
 #
-#  id             :uuid             not null, primary key
-#  birthday       :date
-#  discarded_at   :datetime
-#  first_name     :string           not null
-#  last_name      :string
-#  preferred_name :string
-#  pronouns       :string
-#  slug           :string
-#  type           :string           not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  user_id        :uuid             not null
+#  id                 :uuid             not null, primary key
+#  birthday           :date
+#  discarded_at       :datetime
+#  first_name         :string           not null
+#  last_name          :string
+#  preferred_name     :string
+#  profile_attributes :jsonb            not null
+#  pronouns           :string
+#  slug               :string
+#  type               :string           not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  user_id            :uuid             not null
 #
 # Indexes
 #
@@ -207,6 +208,21 @@ RSpec.describe RelationshipProfile, type: :model do
       expect(profile.relationship_type_label).to eq("Mejor amigo")
       expect(described_class.type_options).to include([ "Mejor amigo", "RelationshipProfiles::BestFriend" ])
     end
+  end
+
+  it "uses jsonb-backed custom labels for other relationship types" do
+    profile = create(:relationship_profile, type: "RelationshipProfiles::Other", custom_type_label: "College roommate")
+
+    expect(profile.reload.profile_attributes).to eq("custom_type_label" => "College roommate")
+    expect(profile.relationship_type_label).to eq("College roommate")
+  end
+
+  it "clears custom relationship labels for concrete STI types" do
+    profile = create(:relationship_profile, type: "RelationshipProfiles::Friend", custom_type_label: "College roommate")
+
+    expect(profile.reload.custom_type_label).to be_nil
+    expect(profile.profile_attributes).to eq({})
+    expect(profile.relationship_type_label).to eq("Friend")
   end
 
   it "offers common family, romantic, work, and social STI relationship types" do

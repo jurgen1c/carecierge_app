@@ -13,6 +13,10 @@ Rails.application.routes.draw do
 
   get "dashboard" => "dashboard#index", as: :dashboard
 
+  resource :onboarding, only: %i[show create], controller: "onboarding" do
+    post :skip
+  end
+
   resources :relationship_profiles do
     patch :archive, on: :member
     resources :important_dates, except: %i[index show]

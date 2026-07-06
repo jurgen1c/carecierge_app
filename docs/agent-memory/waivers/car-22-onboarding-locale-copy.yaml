@@ -1,0 +1,12 @@
+id: car_22_onboarding_locale_copy
+status: active
+reason: >
+  CAR-22 adds English and Spanish onboarding copy plus a dashboard return link.
+  The locale files are broadly watched by feature flag and relationship profile
+  indexes, but this change does not alter feature flag behavior or relationship
+  profile CRUD/search semantics; authentication onboarding claims cover the
+  durable behavior change.
+files:
+  - config/locales/en.yml
+  - config/locales/es.yml
+expires_at: 2026-08-05

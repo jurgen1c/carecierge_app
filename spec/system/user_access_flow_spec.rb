@@ -36,7 +36,11 @@ RSpec.describe "User access flow", type: :system do
     fill_in "Password", with: "password123"
     click_button "Sign in"
 
-    expect(page).to have_content("Ready to start")
+    expect(page).to have_content("Tell us who to remember first")
+    expect(page).to have_current_path(onboarding_path)
+
+    click_button "Skip for now"
+
     expect(page).to have_current_path(dashboard_path)
 
     click_button "Sign out"

@@ -3,29 +3,31 @@
 # Table name: users
 # Database name: primary
 #
-#  id                     :uuid             not null, primary key
-#  admin                  :boolean          default(FALSE), not null
-#  confirmation_sent_at   :datetime
-#  confirmation_token     :string
-#  confirmed_at           :datetime
-#  current_sign_in_at     :datetime
-#  current_sign_in_ip     :string
-#  email                  :string           default(""), not null
-#  encrypted_password     :string           default(""), not null
-#  failed_attempts        :integer          default(0), not null
-#  last_sign_in_at        :datetime
-#  last_sign_in_ip        :string
-#  locked_at              :datetime
-#  provider               :string
-#  remember_created_at    :datetime
-#  reset_password_sent_at :datetime
-#  reset_password_token   :string
-#  sign_in_count          :integer          default(0), not null
-#  uid                    :string
-#  unconfirmed_email      :string
-#  unlock_token           :string
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
+#  id                      :uuid             not null, primary key
+#  admin                   :boolean          default(FALSE), not null
+#  confirmation_sent_at    :datetime
+#  confirmation_token      :string
+#  confirmed_at            :datetime
+#  current_sign_in_at      :datetime
+#  current_sign_in_ip      :string
+#  email                   :string           default(""), not null
+#  encrypted_password      :string           default(""), not null
+#  failed_attempts         :integer          default(0), not null
+#  last_sign_in_at         :datetime
+#  last_sign_in_ip         :string
+#  locked_at               :datetime
+#  onboarding_completed_at :datetime
+#  onboarding_skipped_at   :datetime
+#  provider                :string
+#  remember_created_at     :datetime
+#  reset_password_sent_at  :datetime
+#  reset_password_token    :string
+#  sign_in_count           :integer          default(0), not null
+#  uid                     :string
+#  unconfirmed_email       :string
+#  unlock_token            :string
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
 #
 # Indexes
 #
@@ -68,6 +70,75 @@ RSpec.describe User, type: :model do
       expect(user).to eq(existing_user)
       expect(user.provider).to eq("google_oauth2")
       expect(user.uid).to eq("google-123")
+    end
+  end
+
+  describe "onboarding state" do
+    it "starts pending until skipped or completed" do
+      user = build(:user)
+
+      expect(user).to be_onboarding_pending
+      expect(user).to be_onboarding_available
+      expect(user).not_to be_onboarding_completed
+    end
+
+    it "does not query relationship profiles for unsaved users" do
+      user = build(:user)
+
+      expect(user).not_to receive(:relationship_profiles)
+      expect(user).not_to be_onboarding_completed
+    end
+
+    it "does not query relationship profiles for skipped users when checking pending state" do
+      user = create(:user, onboarding_skipped_at: Time.current)
+
+      expect(user).not_to receive(:relationship_profiles)
+      expect(user).not_to be_onboarding_pending
+    end
+
+    it "treats users with existing relationship profiles as completed" do
+      user = create(:user)
+      create(:relationship_profile, user:)
+
+      expect(user).to be_onboarding_completed
+      expect(user).not_to be_onboarding_pending
+      expect(user).not_to be_onboarding_available
+    end
+
+    it "can be skipped and returned to later" do
+      user = create(:user)
+
+      user.skip_onboarding!
+
+      expect(user).not_to be_onboarding_pending
+      expect(user).to be_onboarding_available
+      expect(user.onboarding_skipped_at).to be_present
+    end
+
+    it "does not mark completed users as skipped" do
+      user = create(:user, onboarding_completed_at: Time.current)
+
+      user.skip_onboarding!
+
+      expect(user.reload.onboarding_skipped_at).to be_nil
+    end
+
+    it "can be completed" do
+      user = create(:user)
+
+      user.complete_onboarding!
+
+      expect(user).to be_onboarding_completed
+      expect(user).not_to be_onboarding_pending
+      expect(user).not_to be_onboarding_available
+    end
+
+    it "clears a skipped timestamp when onboarding is completed" do
+      user = create(:user, onboarding_skipped_at: Time.current)
+
+      user.complete_onboarding!
+
+      expect(user.reload.onboarding_skipped_at).to be_nil
     end
   end
 

@@ -43,6 +43,18 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).not_to include("Rafa")
     end
 
+    it "searches by custom relationship type labels" do
+      user = create(:user)
+      visible = create(:relationship_profile, user:, first_name: "Maya", type: "RelationshipProfiles::Other", custom_type_label: "College roommate")
+      hidden = create(:relationship_profile, user:, first_name: "Rafa", type: "RelationshipProfiles::Roommate")
+      sign_in user
+
+      get relationship_profiles_path, params: { q: { RelationshipProfile::SearchQuery::SEARCH_PREDICATE => "college" } }
+
+      expect(response.body).to include(visible.full_name)
+      expect(response.body).not_to include(hidden.full_name)
+    end
+
     it "filters profiles by tag and relationship group without leaking another user's catalog" do
       user = create(:user)
       hidden_user = create(:user)

@@ -62,6 +62,26 @@ RSpec.describe "Onboarding", type: :request do
       expect(profile.relationship_preferences.first.value).to eq("Vegetable ramen")
     end
 
+    it "carries a custom relationship type label into the first profile" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Other",
+          custom_type_label: "College roommate"
+        }
+      }
+
+      profile = user.relationship_profiles.last
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(profile).to be_a(RelationshipProfiles::Other)
+      expect(profile.custom_type_label).to eq("College roommate")
+      expect(profile.relationship_type_label).to eq("College roommate")
+    end
+
     it "renders validation errors without completing onboarding" do
       user = create(:user)
       sign_in user

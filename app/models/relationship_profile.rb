@@ -3,18 +3,19 @@
 # Table name: relationship_profiles
 # Database name: primary
 #
-#  id             :uuid             not null, primary key
-#  birthday       :date
-#  discarded_at   :datetime
-#  first_name     :string           not null
-#  last_name      :string
-#  preferred_name :string
-#  pronouns       :string
-#  slug           :string
-#  type           :string           not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  user_id        :uuid             not null
+#  id                 :uuid             not null, primary key
+#  birthday           :date
+#  discarded_at       :datetime
+#  first_name         :string           not null
+#  last_name          :string
+#  preferred_name     :string
+#  profile_attributes :jsonb            not null
+#  pronouns           :string
+#  slug               :string
+#  type               :string           not null
+#  created_at         :datetime         not null
+#  updated_at         :datetime         not null
+#  user_id            :uuid             not null
 #
 # Indexes
 #
@@ -98,6 +99,7 @@ class RelationshipProfile < ApplicationRecord
   INVALID_TYPE = "__invalid_relationship_profile_type__"
 
   friendly_id :display_name, use: :slugged
+  store_accessor :profile_attributes, :custom_type_label
 
   belongs_to :user
   has_many :contact_methods, dependent: :destroy
@@ -116,10 +118,12 @@ class RelationshipProfile < ApplicationRecord
   accepts_nested_attributes_for :relationship_field_values, allow_destroy: true
 
   before_validation :default_type
+  before_validation :normalize_profile_attributes
   after_save :destroy_marked_relationship_assignments
 
   validates :first_name, presence: true
   validates :type, inclusion: { in: TYPE_LABELS.keys }
+  validates :custom_type_label, length: { maximum: 80 }
   validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_taggings, :relationship_group_memberships, :relationship_field_values
   validate :unique_nested_contact_kinds
   validate :unique_nested_preference_keys
@@ -145,7 +149,13 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def relationship_type_label
+    return custom_type_label if custom_relationship_type?
+
     self.class.type_label(type.presence || DEFAULT_TYPE)
+  end
+
+  def custom_relationship_type?
+    type == "RelationshipProfiles::Other" && custom_type_label.present?
   end
 
   def self.type_options
@@ -294,6 +304,19 @@ class RelationshipProfile < ApplicationRecord
 
   def default_type
     self.type = DEFAULT_TYPE if type.blank?
+  end
+
+  def normalize_profile_attributes
+    normalized_attributes = profile_attributes.to_h
+    label = custom_type_label.to_s.squish.presence
+
+    if type == "RelationshipProfiles::Other" && label.present?
+      normalized_attributes["custom_type_label"] = label
+    else
+      normalized_attributes.delete("custom_type_label")
+    end
+
+    self.profile_attributes = normalized_attributes
   end
 
   def destroy_marked_relationship_assignments

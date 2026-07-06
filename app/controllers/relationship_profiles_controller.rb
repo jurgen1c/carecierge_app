@@ -96,6 +96,7 @@ class RelationshipProfilesController < ApplicationController
       :pronouns,
       :birthday,
       :type,
+      :custom_type_label,
       contact_methods_attributes: %i[id kind value label preferred _destroy],
       relationship_notes_attributes: %i[id category private body _destroy],
       relationship_preferences_attributes: %i[id preference_type category key value confidence learned_on source_notes _destroy],

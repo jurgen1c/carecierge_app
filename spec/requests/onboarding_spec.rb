@@ -62,6 +62,43 @@ RSpec.describe "Onboarding", type: :request do
       expect(profile.relationship_preferences.first.value).to eq("Vegetable ramen")
     end
 
+    it "makes the created profile available from the detail and list surfaces" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          birthday: "1990-05-12",
+          relationship_preferences_attributes: {
+            "0" => {
+              preference_type: "positive",
+              category: "food",
+              key: "Comfort meal",
+              value: "Vegetable ramen",
+              confidence: "medium"
+            }
+          }
+        }
+      }
+
+      profile = user.relationship_profiles.last
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(profile.birthday).to eq(Date.new(1990, 5, 12))
+      expect(profile.relationship_preferences.first.value).to eq("Vegetable ramen")
+
+      follow_redirect!
+
+      expect(response.body).to include("Maya")
+      expect(response.body).to include("Vegetable ramen")
+
+      get relationship_profiles_path
+
+      expect(response.body).to include("Maya")
+    end
+
     it "carries a custom relationship type label into the first profile" do
       user = create(:user)
       sign_in user

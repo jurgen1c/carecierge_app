@@ -51,7 +51,10 @@ class User < ApplicationRecord
   has_many :relationship_groups, dependent: :destroy
 
   def onboarding_completed?
-    onboarding_completed_at.present? || relationship_profiles.exists?
+    return true if onboarding_completed_at.present?
+    return false unless persisted?
+
+    relationship_profiles.exists?
   end
 
   def onboarding_pending?

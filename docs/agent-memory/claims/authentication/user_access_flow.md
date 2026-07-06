@@ -3,7 +3,7 @@ id: authentication.user_access_flow
 type: workflow
 system: authentication
 status: current
-confidence: verified
+confidence: high
 severity: normal
 
 title: User access flow redirects through welcome, onboarding, and dashboard surfaces
@@ -46,6 +46,7 @@ routes:
   - new_user_registration
   - new_user_session
 tags:
+  - authentication
   - user-access-flow
 
 verification:

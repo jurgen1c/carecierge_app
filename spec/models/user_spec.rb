@@ -82,6 +82,13 @@ RSpec.describe User, type: :model do
       expect(user).not_to be_onboarding_completed
     end
 
+    it "does not query relationship profiles for unsaved users" do
+      user = build(:user)
+
+      expect(user).not_to receive(:relationship_profiles)
+      expect(user).not_to be_onboarding_completed
+    end
+
     it "treats users with existing relationship profiles as completed" do
       user = create(:user)
       create(:relationship_profile, user:)

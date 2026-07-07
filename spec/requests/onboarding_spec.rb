@@ -10,6 +10,10 @@ RSpec.describe "Onboarding", type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Tell us who to remember first")
       expect(response.body).to include("Initial important dates")
+      expect(response.body).to include("Initial preferences")
+      expect(response.body).to include("Like")
+      expect(response.body).to include("Dislike")
+      expect(response.body).to include("Constraint")
       expect(response.body).to include("One-time")
       expect(response.body).to include("Yearly")
       expect(response.body).to include("Reminder intent")
@@ -87,6 +91,58 @@ RSpec.describe "Onboarding", type: :request do
         recurrence: "yearly",
         importance_level: "high",
         reminder_schedule: "two_weeks_before"
+      )
+    end
+
+    it "captures initial likes, dislikes, and constraints with onboarding defaults" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post onboarding_path, params: {
+          relationship_profile: {
+            first_name: "Maya",
+            type: "RelationshipProfiles::Friend",
+            relationship_preferences_attributes: {
+              "0" => {
+                preference_type: "positive",
+                category: "food",
+                key: "Comfort meal",
+                value: "Vegetable ramen",
+                confidence: "medium",
+                source_notes: "Added during onboarding."
+              },
+              "1" => {
+                preference_type: "negative",
+                category: "gifts",
+                key: "Flowers",
+                value: "Avoid lilies",
+                confidence: "medium",
+                source_notes: "Added during onboarding."
+              },
+              "2" => {
+                preference_type: "constraint",
+                category: "allergies",
+                key: "Peanuts",
+                value: "Allergic",
+                confidence: "medium",
+                source_notes: "Added during onboarding."
+              }
+            }
+          }
+        }
+      end.to change(RelationshipPreference, :count).by(3)
+
+      profile = user.relationship_profiles.sole
+      preferences = profile.relationship_preferences.order(:created_at)
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(preferences.pluck(:preference_type, :category, :key, :value, :confidence, :source_notes)).to eq(
+        [
+          [ "positive", "food", "Comfort meal", "Vegetable ramen", "medium", "Added during onboarding." ],
+          [ "negative", "gifts", "Flowers", "Avoid lilies", "medium", "Added during onboarding." ],
+          [ "constraint", "allergies", "Peanuts", "Allergic", "medium", "Added during onboarding." ]
+        ]
       )
     end
 
@@ -198,6 +254,96 @@ RSpec.describe "Onboarding", type: :request do
       expect(important_date_titles).not_to include("Crafted fourth row")
     end
 
+    it "caps crafted preference rows to the three onboarding slots" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          relationship_preferences_attributes: {
+            "0" => {
+              preference_type: "positive",
+              category: "food",
+              key: "Comfort meal",
+              value: "Vegetable ramen",
+              confidence: "medium"
+            },
+            "1" => {
+              preference_type: "negative",
+              category: "gifts",
+              key: "Flowers",
+              value: "Avoid lilies",
+              confidence: "medium"
+            },
+            "2" => {
+              preference_type: "constraint",
+              category: "allergies",
+              key: "Peanuts",
+              value: "Allergic",
+              confidence: "medium"
+            },
+            "3" => {
+              preference_type: "positive",
+              category: "general",
+              key: "Crafted fourth row",
+              value: "Should not save",
+              confidence: "medium"
+            }
+          }
+        }
+      }
+
+      profile = user.relationship_profiles.last
+      preference_keys = profile.relationship_preferences.order(:created_at).pluck(:key)
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(preference_keys).to eq([ "Comfort meal", "Flowers", "Peanuts" ])
+      expect(preference_keys).not_to include("Crafted fourth row")
+    end
+
+    it "derives onboarding preference type and confidence from the rendered slots" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          relationship_preferences_attributes: {
+            "0" => {
+              preference_type: "neutral",
+              category: "food",
+              key: "Comfort meal",
+              value: "Vegetable ramen",
+              confidence: "confirmed",
+              source_notes: "Tampered source"
+            },
+            "1" => {
+              preference_type: "positive",
+              category: "gifts",
+              key: "Flowers",
+              value: "Avoid lilies",
+              confidence: "low",
+              source_notes: "Tampered source"
+            }
+          }
+        }
+      }
+
+      profile = user.relationship_profiles.last
+      preferences = profile.relationship_preferences.order(:created_at)
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(preferences.pluck(:preference_type, :confidence, :source_notes)).to eq(
+        [
+          [ "positive", "medium", "Added during onboarding." ],
+          [ "negative", "medium", "Added during onboarding." ]
+        ]
+      )
+    end
+
     it "caps array-shaped important date params to the three onboarding slots" do
       user = create(:user)
       sign_in user
@@ -289,6 +435,41 @@ RSpec.describe "Onboarding", type: :request do
       expect(user.reload.onboarding_completed_at).to be_nil
     end
 
+    it "preserves preference slot identity when validation errors re-render onboarding" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "",
+          type: "RelationshipProfiles::Friend",
+          relationship_preferences_attributes: {
+            "0" => {
+              preference_type: "positive",
+              category: "general",
+              key: "",
+              value: "",
+              confidence: "medium"
+            },
+            "1" => {
+              preference_type: "negative",
+              category: "gifts",
+              key: "Flowers",
+              value: "Avoid lilies",
+              confidence: "medium"
+            }
+          }
+        }
+      }
+
+      document = Nokogiri::HTML(response.body)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(document.at_css('input[name="relationship_profile[relationship_preferences_attributes][0][preference_type]"]')["value"]).to eq("positive")
+      expect(document.at_css('input[name="relationship_profile[relationship_preferences_attributes][1][preference_type]"]')["value"]).to eq("negative")
+      expect(document.at_css('input[name="relationship_profile[relationship_preferences_attributes][1][key]"]')["value"]).to eq("Flowers")
+    end
+
     it "accepts a missing relationship type and lets the profile default it" do
       user = create(:user)
       sign_in user
@@ -337,7 +518,7 @@ RSpec.describe "Onboarding", type: :request do
       expect(user.reload.onboarding_completed_at).to be_nil
     end
 
-    it "rejects tampered preference enum values" do
+    it "rejects tampered preference category values" do
       user = create(:user)
       sign_in user
 
@@ -347,8 +528,8 @@ RSpec.describe "Onboarding", type: :request do
           type: "RelationshipProfiles::Friend",
           relationship_preferences_attributes: {
             "0" => {
-              preference_type: "admin_only",
-              category: "general",
+              preference_type: "positive",
+              category: "admin_only",
               key: "Comfort meal",
               value: "Vegetable ramen",
               confidence: "medium"

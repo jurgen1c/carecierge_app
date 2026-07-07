@@ -190,10 +190,23 @@ en:
       important_date_importance: "Importance"
       important_date_reminder: "Reminder intent"
       important_date_notes: "Notes"
-      preference_title: "One useful preference"
-      preference_body: "Optional. Capture one detail that could make a future check-in, gift, or reminder more personal."
-      preference_key: "What should Carecierge remember?"
+      preferences_title: "Initial preferences"
+      preferences_body: "Optional. Seed a few likes, dislikes, or constraints now so future recommendations, plans, and briefings start with usable context. Leave these blank to add details later."
+      preference_rows:
+        positive:
+          title: "Like"
+          body: "Something they enjoy, choose often, or would appreciate in a plan or gift."
+        negative:
+          title: "Dislike"
+          body: "Something to avoid when suggesting gifts, meals, places, or follow-ups."
+        constraint:
+          title: "Constraint"
+          body: "A boundary, allergy, cultural need, or practical rule Carecierge should respect."
+      preference_category: "Category"
+      preference_key: "What to remember"
       preference_value: "Detail"
+      preference_default_note: "Saved with medium confidence from onboarding so you can confirm or refine it later."
+      preference_source_notes_default: "Added during onboarding."
       submit: "Save first relationship"
       save_later: "Save for later"
       preview_title: "What this unlocks"

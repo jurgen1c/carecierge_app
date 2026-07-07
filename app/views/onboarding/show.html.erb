@@ -116,23 +116,37 @@
         </fieldset>
 
         <fieldset class="grid gap-4 rounded-lg border border-stone-200 bg-stone-50 p-4">
-          <legend class="text-sm font-semibold text-stone-950"><%= t(".preference_title") %></legend>
-          <p class="text-sm leading-6 text-stone-700"><%= t(".preference_body") %></p>
-          <%= form.fields_for :relationship_preferences, @relationship_profile.relationship_preferences.first || @relationship_profile.relationship_preferences.build do |preference_fields| %>
-            <%= preference_fields.hidden_field :preference_type, value: "positive" %>
-            <%= preference_fields.hidden_field :category, value: "general" %>
-            <%= preference_fields.hidden_field :confidence, value: "medium" %>
-            <div class="grid gap-4 sm:grid-cols-2">
-              <div>
-                <%= preference_fields.label :key, t(".preference_key"), class: "block text-sm font-medium text-stone-800" %>
-                <%= preference_fields.text_field :key, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <legend class="text-sm font-semibold text-stone-950"><%= t(".preferences_title") %></legend>
+          <p class="text-sm leading-6 text-stone-700"><%= t(".preferences_body") %></p>
+          <div class="grid gap-4">
+            <%= form.fields_for :relationship_preferences do |preference_fields| %>
+              <% preference_type = preference_fields.object.preference_type.presence || "positive" %>
+              <div class="grid gap-4 rounded-lg border border-stone-200 bg-white p-4">
+                <div>
+                  <h3 class="text-sm font-semibold text-stone-950"><%= t(".preference_rows.#{preference_type}.title") %></h3>
+                  <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".preference_rows.#{preference_type}.body") %></p>
+                </div>
+                <%= preference_fields.hidden_field :preference_type, value: preference_type %>
+                <%= preference_fields.hidden_field :confidence, value: "medium" %>
+                <%= preference_fields.hidden_field :source_notes, value: t(".preference_source_notes_default") %>
+                <div class="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <%= preference_fields.label :category, t(".preference_category"), class: "block text-sm font-medium text-stone-800" %>
+                    <%= preference_fields.select :category, RelationshipPreference.category_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  </div>
+                  <div>
+                    <%= preference_fields.label :key, t(".preference_key"), class: "block text-sm font-medium text-stone-800" %>
+                    <%= preference_fields.text_field :key, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  </div>
+                  <div>
+                    <%= preference_fields.label :value, t(".preference_value"), class: "block text-sm font-medium text-stone-800" %>
+                    <%= preference_fields.text_field :value, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  </div>
+                </div>
+                <p class="text-xs leading-5 text-stone-600"><%= t(".preference_default_note") %></p>
               </div>
-              <div>
-                <%= preference_fields.label :value, t(".preference_value"), class: "block text-sm font-medium text-stone-800" %>
-                <%= preference_fields.text_field :value, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
-              </div>
-            </div>
-          <% end %>
+            <% end %>
+          </div>
         </fieldset>
 
         <div class="flex flex-wrap items-center gap-3">

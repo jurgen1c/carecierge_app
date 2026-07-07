@@ -25,7 +25,7 @@
           </div>
           <div>
             <dt class="font-medium text-stone-800"><%= t("gifts.item.price") %></dt>
-            <dd class="mt-1"><%= gift.price_cents.present? ? number_to_currency(gift.price_cents / 100.0) : t("gifts.item.not_provided") %></dd>
+            <dd class="mt-1"><%= gift.price_amount.present? ? number_to_currency(gift.price_amount) : t("gifts.item.not_provided") %></dd>
           </div>
           <div>
             <dt class="font-medium text-stone-800"><%= t("gifts.item.vendor") %></dt>
@@ -51,7 +51,7 @@
     </div>
 
     <% unless gift.given? %>
-      <%= form_with url: mark_given_relationship_profile_gift_path(relationship_profile, gift), scope: :gift_result, method: :patch, class: "mt-4 rounded-lg border border-emerald-100 bg-emerald-50/60 p-4" do |form| %>
+      <%= form_with url: mark_given_relationship_profile_gift_path(relationship_profile, gift), scope: :gift_result, namespace: dom_id(gift, :result), method: :patch, class: "mt-4 rounded-lg border border-emerald-100 bg-emerald-50/60 p-4" do |form| %>
         <p class="text-sm font-semibold text-stone-950"><%= t("gifts.item.result_title") %></p>
         <div class="mt-3 grid gap-3 sm:grid-cols-2">
           <div>

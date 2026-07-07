@@ -50,9 +50,16 @@ class Gift < ApplicationRecord
   scope :ordered, -> { order(Arel.sql("CASE status WHEN 'idea' THEN 0 WHEN 'planned' THEN 1 WHEN 'given' THEN 2 ELSE 3 END"), Arel.sql("given_on DESC NULLS LAST"), :name) }
 
   def price
+    return if price_amount.blank?
+
+    whole, cents = price_cents.divmod(100)
+    format("%d.%02d", whole, cents)
+  end
+
+  def price_amount
     return if price_cents.blank?
 
-    format("%.2f", price_cents / 100.0)
+    BigDecimal(price_cents.to_s) / 100
   end
 
   def price=(value)
@@ -82,7 +89,7 @@ class Gift < ApplicationRecord
     return false if relationship_profile.blank? || normalized_name.blank?
 
     gifts = relationship_profile.gifts
-    if gifts.loaded? && gifts.any? { |gift| gift == self }
+    if gifts.loaded? && gifts.any? { |gift| gift != self }
       gifts.any? { |gift| gift != self && gift.name.to_s.squish.downcase == normalized_name }
     else
       gifts.where.not(id:).where("lower(name) = ?", normalized_name).exists?

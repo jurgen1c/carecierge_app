@@ -8,6 +8,7 @@ RSpec.describe "Gifts", type: :request do
       user = create(:user)
       profile = create(:relationship_profile, user:, first_name: "Ana")
       create(:gift, relationship_profile: profile, name: "Ceramic mug", status: "idea", occasion: "Birthday")
+      create(:gift, relationship_profile: profile, name: "Coffee subscription", status: "planned", occasion: "Anniversary")
       create(:gift, relationship_profile: profile, name: "Concert tickets", status: "given", occasion: "Holiday", price_cents: 12500, vendor: "City Hall", reaction: "Loved the aisle seats.", outcome: "successful", given_on: Date.new(2026, 7, 1))
       sign_in user
 
@@ -25,8 +26,11 @@ RSpec.describe "Gifts", type: :request do
       expect(response.body).to include("Use prior gifts to avoid repeating the same idea")
       expect(response.body).to include("gift_result[reaction]")
       expect(response.body).to include("gift_result[outcome]")
-      selected_outcome = Nokogiri::HTML(response.body).at_css(%(select[name="gift_result[outcome]"] option[selected]))
+      html = Nokogiri::HTML(response.body)
+      selected_outcome = html.at_css(%(select[name="gift_result[outcome]"] option[selected]))
       expect(selected_outcome["value"]).to eq("unknown")
+      result_field_ids = html.css(%(form[action*="/mark_given"] [id])).filter_map { |element| element["id"] }
+      expect(result_field_ids).to eq(result_field_ids.uniq)
       expect(response.body).to include(%(href="#{new_relationship_profile_gift_path(profile)}"))
     end
 

@@ -66,9 +66,20 @@ RSpec.describe Gift, type: :model do
       profile = create(:relationship_profile)
       create(:gift, relationship_profile: profile, name: "Noise-canceling headphones", status: "given")
       gift = create(:gift, relationship_profile: profile, name: "noise-canceling HEADPHONES")
+      profile.reload
       profile.gifts.load
 
       expect(profile.gifts).to be_loaded
+      expect(gift).to be_duplicate_candidate
+    end
+
+    it "uses the loaded relationship gift collection for unsaved gifts" do
+      profile = create(:relationship_profile)
+      create(:gift, relationship_profile: profile, name: "Noise-canceling headphones", status: "given")
+      gifts = profile.reload.gifts.load
+      gift = build(:gift, relationship_profile: profile, name: "noise-canceling HEADPHONES")
+
+      expect(gifts).not_to receive(:where)
       expect(gift).to be_duplicate_candidate
     end
   end
@@ -83,6 +94,13 @@ RSpec.describe Gift, type: :model do
   end
 
   describe "#price=" do
+    it "formats cents without floating-point conversion" do
+      gift = build(:gift, price_cents: 8999)
+
+      expect(gift.price).to eq("89.99")
+      expect(gift.price_amount).to eq(BigDecimal("89.99"))
+    end
+
     it "treats non-finite values as validation errors" do
       gift = build(:gift, price: "NaN")
 

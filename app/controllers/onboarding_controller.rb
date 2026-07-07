@@ -67,7 +67,7 @@ class OnboardingController < ApplicationController
       if important_date_params.is_a?(Array)
         important_date_params.first(ONBOARDING_IMPORTANT_DATES_LIMIT)
       else
-        important_date_params.to_h.first(ONBOARDING_IMPORTANT_DATES_LIMIT).to_h
+        important_date_params.each_pair.first(ONBOARDING_IMPORTANT_DATES_LIMIT).to_h
       end
   end
 
@@ -114,10 +114,11 @@ class OnboardingController < ApplicationController
   end
 
   def sanitize_nested_enum(nested_params, key, allowed_values)
-    return unless nested_params.key?(key)
-    return if nested_params[key].blank?
-    return if nested_params[key].in?(allowed_values)
+    nested_key = nested_params.key?(key) ? key : key.to_s
+    return unless nested_params.key?(nested_key)
+    return if nested_params[nested_key].blank?
+    return if nested_params[nested_key].in?(allowed_values)
 
-    nested_params[key] = nil
+    nested_params[nested_key] = nil
   end
 end

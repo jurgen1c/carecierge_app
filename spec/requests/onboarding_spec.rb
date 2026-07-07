@@ -434,6 +434,7 @@ RSpec.describe "Onboarding", type: :request do
       end.not_to change(ImportantDate, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Important dates date type can&#39;t be blank")
       expect(user.reload.onboarding_completed_at).to be_nil
     end
 

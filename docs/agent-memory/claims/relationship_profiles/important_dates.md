@@ -14,7 +14,10 @@ claim: >
   anniversary, milestone, appointment, holiday, and custom date types; one-time,
   yearly, monthly, and weekly recurrence; importance levels; reminder schedule
   intent; notes; deterministic next-occurrence calculations; and soft localized
-  planning prompts for upcoming dates. The relationship profile show surface
+  planning prompts for upcoming dates. Onboarding can capture optional initial
+  important dates while creating the first relationship profile, rejects blank
+  date rows, and validates supported date, recurrence, importance, and reminder
+  options before completing onboarding. The relationship profile show surface
   presents a richer important-dates work area plus a compact upcoming-dates
   right rail, and create, update, and delete actions refresh those surfaces with
   Turbo streams when possible instead of requiring a full page reload. Planning
@@ -24,8 +27,11 @@ claim: >
 
 source_files:
   - app/models/important_date.rb
+  - app/models/relationship_profile.rb
+  - app/controllers/onboarding_controller.rb
   - app/controllers/important_dates_controller.rb
   - app/policies/important_date_policy.rb
+  - app/views/onboarding/show.html.erb
   - app/views/important_dates/_important_date.html.erb
   - app/views/important_dates/_form_frame.html.erb
   - app/views/important_dates/_section.html.erb
@@ -37,9 +43,12 @@ source_files:
 related_files:
   - spec/models/important_date_spec.rb
   - spec/requests/important_dates_spec.rb
+  - spec/requests/onboarding_spec.rb
 symbols:
   - ImportantDate
   - ImportantDatesController
+  - OnboardingController
+  - RelationshipProfile#important_dates_attributes=
   - ImportantDatePolicy
   - RelationshipProfile#upcoming_important_dates
   - RelationshipProfile#planning_important_dates
@@ -55,6 +64,7 @@ tags:
 
 verification:
   - bundle exec rspec spec/models/important_date_spec.rb spec/requests/important_dates_spec.rb
+  - bundle exec rspec spec/requests/onboarding_spec.rb
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb spec/models/relationship_profile_spec.rb spec/models/important_date_spec.rb spec/requests/important_dates_spec.rb
   - bundle exec rspec
 last_verified_commit: null
@@ -66,7 +76,8 @@ last_verified_commit: null
 
 Important dates are relationship-profile-owned records used to store recurring
 and one-time moments with reminder intent and planning prompts. They are
-localized, scoped through the signed-in user's relationship profiles, and updated
+localized, scoped through the signed-in user's relationship profiles, can be
+captured during onboarding as optional nested profile details, and are updated
 inline through Turbo streams where possible. Timeline and upcoming-date planning
 links are shown only when the matching planning suggestion anchor is rendered.
 Planning prompts use date-type-specific translations with a shared default
@@ -82,17 +93,22 @@ store or leak dates across users.
 ## Evidence
 
 - `app/models/important_date.rb`
+- `app/models/relationship_profile.rb`
+- `app/controllers/onboarding_controller.rb`
 - `app/controllers/important_dates_controller.rb`
 - `app/policies/important_date_policy.rb`
+- `app/views/onboarding/show.html.erb`
 - `app/views/important_dates/_important_date.html.erb`
 - `app/views/important_dates/_section.html.erb`
 - `app/views/important_dates/_upcoming.html.erb`
 - `db/migrate/20260704193000_create_important_dates.rb`
 - `spec/models/important_date_spec.rb`
 - `spec/requests/important_dates_spec.rb`
+- `spec/requests/onboarding_spec.rb`
 
 ## Verification
 
 - `bundle exec rspec spec/models/important_date_spec.rb spec/requests/important_dates_spec.rb`
+- `bundle exec rspec spec/requests/onboarding_spec.rb`
 - `bundle exec rspec spec/requests/relationship_profiles_spec.rb spec/models/relationship_profile_spec.rb spec/models/important_date_spec.rb spec/requests/important_dates_spec.rb`
 - `bundle exec rspec`

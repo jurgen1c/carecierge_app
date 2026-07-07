@@ -6,11 +6,21 @@ edges:
     relation: explains
     reason: Authentication ownership explains why registration, login, logout, and dashboard redirects belong to the same access flow.
     strength: 80
+  - source: authentication.user_access_flow
+    target: authentication.account_access_boundary
+    relation: same_area
+    reason: The user access flow claim owns route-specific onboarding, dashboard, and redirect behavior; the account access boundary claim remains current for broad Devise authentication boundaries.
+    strength: 55
   - source: authentication.localization_baseline
     target: authentication.user_access_flow
     relation: constrains
     reason: The access flow must preserve localized recovery and error behavior.
     strength: 70
+  - source: authentication.user_access_flow
+    target: authentication.localization_baseline
+    relation: same_area
+    reason: The user access flow claim owns onboarding route copy and recovery-path behavior; the localization baseline remains current for English-default and Spanish-available constraints.
+    strength: 55
   - source: feature_flags.decision_precedence
     target: feature_flags.disabled_fallbacks
     relation: same_area
@@ -26,16 +36,31 @@ edges:
     relation: requires
     reason: The admin registry relies on authenticated account access before feature flag authorization runs.
     strength: 80
+  - source: authentication.user_access_flow
+    target: feature_flags.admin_registry_authorization
+    relation: same_area
+    reason: The user access flow claim owns shared authenticated routing behavior; the feature flag admin claim remains current for admin registry authorization.
+    strength: 50
   - source: feature_flags.localization_baseline
     target: feature_flags.admin_registry_authorization
     relation: constrains
     reason: The admin registry surface must preserve English and Spanish user-facing copy.
     strength: 70
+  - source: feature_flags.localization_baseline
+    target: feature_flags.admin_registry_authorization
+    relation: same_area
+    reason: The feature flag localization claim owns admin registry locale-copy requirements; the admin registry claim remains current for authorization and visibility.
+    strength: 55
   - source: feature_flags.audit_event_placeholder
     target: feature_flags.admin_registry_authorization
     relation: same_area
     reason: Both claims describe the admin feature flag control surface and future write behavior.
     strength: 55
+  - source: feature_flags.localization_baseline
+    target: feature_flags.audit_event_placeholder
+    relation: same_area
+    reason: The feature flag localization claim owns locale-copy requirements; the audit event placeholder remains current for future write/audit storage.
+    strength: 50
   - source: relationship_profiles.profile_crud_owner_scope
     target: authentication.account_access_boundary
     relation: requires
@@ -46,8 +71,28 @@ edges:
     relation: requires
     reason: Important dates are nested under owner-scoped relationship profiles and reuse that privacy boundary.
     strength: 90
+  - source: relationship_profiles.preference_metadata
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: same_area
+    reason: The preference metadata claim owns preference-specific nested data details; the profile CRUD claim remains current for general owner-scoped profile behavior.
+    strength: 55
+  - source: relationship_profiles.preference_metadata
+    target: feature_flags.localization_baseline
+    relation: same_area
+    reason: The preference metadata claim owns relationship preference locale labels; the feature flag localization claim remains current for admin registry locale copy.
+    strength: 50
   - source: relationship_profiles.important_dates
     target: authentication.account_access_boundary
     relation: requires
     reason: Important-date CRUD is authenticated and cannot be reached outside the signed-in account boundary.
     strength: 85
+  - source: relationship_profiles.important_dates
+    target: authentication.user_access_flow
+    relation: same_area
+    reason: The important-dates claim owns date-specific onboarding capture details; the authentication workflow claim remains current for redirect, session, skip, and completion behavior.
+    strength: 60
+  - source: relationship_profiles.important_dates
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: same_area
+    reason: The important-dates claim owns important-date nested data and planning behavior; the profile CRUD claim remains current for general owner-scoped profile behavior.
+    strength: 60

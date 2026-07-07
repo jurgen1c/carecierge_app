@@ -56,6 +56,11 @@ Preference data can include allergies, boundaries, cultural constraints, and
 other sensitive relationship context. The metadata must be explicit, localized,
 and scoped to the signed-in owner's profiles.
 
+## Review Notes
+
+CAR-25 reviewed this claim while adding onboarding important-date copy to English and Spanish
+locales. Preference metadata behavior and localized preference labels remain unchanged.
+
 ## Evidence
 
 - `db/migrate/20260704203217_add_structured_fields_to_relationship_preferences.rb`

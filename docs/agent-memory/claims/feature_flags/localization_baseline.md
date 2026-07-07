@@ -40,6 +40,11 @@ translations with standard diacritics for admin registry and flag-related interf
 
 Admin-facing feature flag changes can introduce copy without matching localization coverage.
 
+## Review Notes
+
+CAR-25 reviewed this claim while adding onboarding important-date copy to English and Spanish
+locales. Feature flag copy and localization behavior remain unchanged.
+
 ## Evidence
 
 - `app/views/admin/feature_flags/index.html.erb`

@@ -9,6 +9,10 @@ RSpec.describe "Onboarding", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("Tell us who to remember first")
+      expect(response.body).to include("Initial important dates")
+      expect(response.body).to include("One-time")
+      expect(response.body).to include("Yearly")
+      expect(response.body).to include("Reminder intent")
       expect(response.body).to include("Save first relationship")
     end
   end
@@ -40,7 +44,6 @@ RSpec.describe "Onboarding", type: :request do
           relationship_profile: {
             first_name: "Maya",
             type: "RelationshipProfiles::Friend",
-            birthday: "1990-05-12",
             relationship_preferences_attributes: {
               "0" => {
                 preference_type: "positive",
@@ -48,6 +51,24 @@ RSpec.describe "Onboarding", type: :request do
                 key: "Comfort meal",
                 value: "Vegetable ramen",
                 confidence: "medium"
+              }
+            },
+            important_dates_attributes: {
+              "0" => {
+                date_type: "birthday",
+                title: "Maya's birthday",
+                starts_on: "1990-05-12",
+                recurrence: "yearly",
+                importance_level: "high",
+                reminder_schedule: "two_weeks_before"
+              },
+              "1" => {
+                date_type: "anniversary",
+                title: "Work anniversary",
+                starts_on: "2021-09-01",
+                recurrence: "yearly",
+                importance_level: "normal",
+                reminder_schedule: "month_before"
               }
             }
           }
@@ -60,6 +81,13 @@ RSpec.describe "Onboarding", type: :request do
       expect(user.reload.onboarding_completed_at).to be_present
       expect(profile.first_name).to eq("Maya")
       expect(profile.relationship_preferences.first.value).to eq("Vegetable ramen")
+      expect(profile.important_dates.order(:starts_on).map(&:date_type)).to eq(%w[birthday anniversary])
+      expect(profile.important_dates.order(:starts_on).first).to have_attributes(
+        title: "Maya's birthday",
+        recurrence: "yearly",
+        importance_level: "high",
+        reminder_schedule: "two_weeks_before"
+      )
     end
 
     it "makes the created profile available from the detail and list surfaces" do
@@ -71,7 +99,6 @@ RSpec.describe "Onboarding", type: :request do
           relationship_profile: {
             first_name: "Maya",
             type: "RelationshipProfiles::Friend",
-            birthday: "1990-05-12",
             relationship_preferences_attributes: {
               "0" => {
                 preference_type: "positive",
@@ -88,7 +115,6 @@ RSpec.describe "Onboarding", type: :request do
       profile = user.relationship_profiles.sole
 
       expect(response).to redirect_to(relationship_profile_path(profile))
-      expect(profile.birthday).to eq(Date.new(1990, 5, 12))
       expect(profile.relationship_preferences.first.value).to eq("Vegetable ramen")
 
       follow_redirect!
@@ -99,6 +125,130 @@ RSpec.describe "Onboarding", type: :request do
       get relationship_profiles_path
 
       expect(response.body).to include("Maya")
+    end
+
+    it "ignores a crafted birthday value submitted outside the onboarding form contract" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          birthday: "1990-05-12"
+        }
+      }
+
+      profile = user.relationship_profiles.last
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(profile.birthday).to be_nil
+    end
+
+    it "caps crafted important date rows to the three onboarding slots" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          important_dates_attributes: {
+            "0" => {
+              date_type: "birthday",
+              title: "Birthday",
+              starts_on: "1990-05-12",
+              recurrence: "yearly",
+              importance_level: "high",
+              reminder_schedule: "two_weeks_before"
+            },
+            "1" => {
+              date_type: "anniversary",
+              title: "Work anniversary",
+              starts_on: "2021-09-01",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "month_before"
+            },
+            "2" => {
+              date_type: "appointment",
+              title: "Annual checkup",
+              starts_on: "2026-08-15",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "week_before"
+            },
+            "3" => {
+              date_type: "holiday",
+              title: "Crafted fourth row",
+              starts_on: "2026-12-24",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "week_before"
+            }
+          }
+        }
+      }
+
+      profile = user.relationship_profiles.last
+      important_date_titles = profile.important_dates.order(:starts_on).pluck(:title)
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(important_date_titles).to contain_exactly("Birthday", "Work anniversary", "Annual checkup")
+      expect(important_date_titles).not_to include("Crafted fourth row")
+    end
+
+    it "caps array-shaped important date params to the three onboarding slots" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          important_dates_attributes: [
+            {
+              date_type: "birthday",
+              title: "Birthday",
+              starts_on: "1990-05-12",
+              recurrence: "yearly",
+              importance_level: "high",
+              reminder_schedule: "two_weeks_before"
+            },
+            {
+              date_type: "anniversary",
+              title: "Work anniversary",
+              starts_on: "2021-09-01",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "month_before"
+            },
+            {
+              date_type: "appointment",
+              title: "Annual checkup",
+              starts_on: "2026-08-15",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "week_before"
+            },
+            {
+              date_type: "holiday",
+              title: "Crafted fourth row",
+              starts_on: "2026-12-24",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "week_before"
+            }
+          ]
+        }
+      }
+
+      profile = user.relationship_profiles.last
+      important_date_titles = profile.important_dates.order(:starts_on).pluck(:title)
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(important_date_titles).to contain_exactly("Birthday", "Work anniversary", "Annual checkup")
+      expect(important_date_titles).not_to include("Crafted fourth row")
     end
 
     it "carries a custom relationship type label into the first profile" do
@@ -232,6 +382,88 @@ RSpec.describe "Onboarding", type: :request do
 
       expect(response).to redirect_to(relationship_profile_path(profile))
       expect(profile.relationship_preferences).to be_empty
+    end
+
+    it "allows optional important dates to be omitted" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          important_dates_attributes: {
+            "0" => {
+              date_type: "",
+              title: "",
+              starts_on: "",
+              recurrence: "",
+              importance_level: "",
+              reminder_schedule: ""
+            }
+          }
+        }
+      }
+
+      profile = user.relationship_profiles.last
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(profile.important_dates).to be_empty
+    end
+
+    it "rejects tampered important date enum values" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post onboarding_path, params: {
+          relationship_profile: {
+            first_name: "Maya",
+            type: "RelationshipProfiles::Friend",
+            important_dates_attributes: {
+              "0" => {
+                date_type: "admin_only",
+                starts_on: "2026-07-25",
+                recurrence: "yearly",
+                importance_level: "high",
+                reminder_schedule: "two_weeks_before"
+              }
+            }
+          }
+        }
+      end.not_to change(ImportantDate, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Important dates date type can&#39;t be blank")
+      expect(user.reload.onboarding_completed_at).to be_nil
+    end
+
+    it "validates partially entered important dates" do
+      user = create(:user)
+      sign_in user
+
+      expect do
+        post onboarding_path, params: {
+          relationship_profile: {
+            first_name: "Maya",
+            type: "RelationshipProfiles::Friend",
+            important_dates_attributes: {
+              "0" => {
+                date_type: "birthday",
+                title: "",
+                starts_on: "",
+                recurrence: "yearly",
+                importance_level: "normal",
+                reminder_schedule: "none"
+              }
+            }
+          }
+        }
+      end.not_to change(ImportantDate, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Important dates starts on can&#39;t be blank")
+      expect(user.reload.onboarding_completed_at).to be_nil
     end
   end
 end

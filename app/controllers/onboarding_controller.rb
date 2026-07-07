@@ -1,6 +1,9 @@
 class OnboardingController < ApplicationController
+  ONBOARDING_IMPORTANT_DATES_LIMIT = 3
+
   def show
     @relationship_profile = current_user.relationship_profiles.new
+    prepare_onboarding_relationship_profile
     authorize @relationship_profile, :create?
   end
 
@@ -10,6 +13,7 @@ class OnboardingController < ApplicationController
 
     if invalid_relationship_type?
       @relationship_profile.errors.add(:type, :inclusion)
+      prepare_onboarding_relationship_profile
       render :show, status: :unprocessable_entity
       return
     end
@@ -21,6 +25,7 @@ class OnboardingController < ApplicationController
 
     redirect_to relationship_profile_path(@relationship_profile), notice: t(".notice")
   rescue ActiveRecord::RecordInvalid
+    prepare_onboarding_relationship_profile
     render :show, status: :unprocessable_entity
   end
 
@@ -37,12 +42,33 @@ class OnboardingController < ApplicationController
       :first_name,
       :type,
       :custom_type_label,
-      :birthday,
-      relationship_preferences_attributes: %i[preference_type category key value confidence]
+      relationship_preferences_attributes: %i[preference_type category key value confidence],
+      important_dates_attributes: %i[date_type title starts_on recurrence importance_level reminder_schedule notes]
     )
+    limit_onboarding_important_date_params(permitted_params)
     sanitize_relationship_type_param(permitted_params)
     sanitize_relationship_preference_enum_params(permitted_params)
+    sanitize_important_date_enum_params(permitted_params)
     permitted_params
+  end
+
+  def prepare_onboarding_relationship_profile
+    @relationship_profile.relationship_preferences.build if @relationship_profile.relationship_preferences.empty?
+    (ONBOARDING_IMPORTANT_DATES_LIMIT - @relationship_profile.important_dates.size).times do
+      @relationship_profile.important_dates.build
+    end
+  end
+
+  def limit_onboarding_important_date_params(permitted_params)
+    important_date_params = permitted_params[:important_dates_attributes]
+    return if important_date_params.blank?
+
+    permitted_params[:important_dates_attributes] =
+      if important_date_params.is_a?(Array)
+        important_date_params.first(ONBOARDING_IMPORTANT_DATES_LIMIT)
+      else
+        important_date_params.each_pair.first(ONBOARDING_IMPORTANT_DATES_LIMIT).to_h
+      end
   end
 
   def sanitize_relationship_type_param(permitted_params)
@@ -66,6 +92,15 @@ class OnboardingController < ApplicationController
     end
   end
 
+  def sanitize_important_date_enum_params(permitted_params)
+    each_nested_attribute(permitted_params.fetch(:important_dates_attributes, {})) do |important_date_params|
+      sanitize_nested_enum(important_date_params, :date_type, ImportantDate::DATE_TYPES)
+      sanitize_nested_enum(important_date_params, :recurrence, ImportantDate::RECURRENCES)
+      sanitize_nested_enum(important_date_params, :importance_level, ImportantDate::IMPORTANCE_LEVELS)
+      sanitize_nested_enum(important_date_params, :reminder_schedule, ImportantDate::REMINDER_SCHEDULES)
+    end
+  end
+
   def each_nested_attribute(attributes, &)
     return if attributes.blank?
 
@@ -75,10 +110,15 @@ class OnboardingController < ApplicationController
   end
 
   def sanitize_relationship_preference_enum(preference_params, key, allowed_values)
-    return unless preference_params.key?(key)
-    return if preference_params[key].blank?
-    return if preference_params[key].in?(allowed_values.keys)
+    sanitize_nested_enum(preference_params, key, allowed_values.keys)
+  end
 
-    preference_params[key] = nil
+  def sanitize_nested_enum(nested_params, key, allowed_values)
+    nested_key = nested_params.key?(key) ? key : key.to_s
+    return unless nested_params.key?(nested_key)
+    return if nested_params[nested_key].blank?
+    return if nested_params[nested_key].in?(allowed_values)
+
+    nested_params[nested_key] = nil
   end
 end

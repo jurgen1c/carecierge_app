@@ -116,6 +116,7 @@ class RelationshipProfile < ApplicationRecord
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true
   accepts_nested_attributes_for :relationship_preferences, allow_destroy: true
   accepts_nested_attributes_for :relationship_field_values, allow_destroy: true
+  accepts_nested_attributes_for :important_dates, allow_destroy: true
 
   before_validation :default_type
   before_validation :normalize_profile_attributes
@@ -124,7 +125,13 @@ class RelationshipProfile < ApplicationRecord
   validates :first_name, presence: true
   validates :type, inclusion: { in: TYPE_LABELS.keys }
   validates :custom_type_label, length: { maximum: 80 }
-  validates_associated :contact_methods, :relationship_notes, :relationship_preferences, :relationship_taggings, :relationship_group_memberships, :relationship_field_values
+  validates_associated :contact_methods,
+    :relationship_notes,
+    :relationship_preferences,
+    :relationship_taggings,
+    :relationship_group_memberships,
+    :relationship_field_values,
+    :important_dates
   validate :unique_nested_contact_kinds
   validate :unique_nested_preference_keys
   validate :unique_nested_tag_names
@@ -256,6 +263,17 @@ class RelationshipProfile < ApplicationRecord
     super(
       reject_blank_new_nested_attributes(attributes) do |nested_attributes|
         nested_attributes["key"].blank? && nested_attributes["value"].blank?
+      end
+    )
+  end
+
+  def important_dates_attributes=(attributes)
+    super(
+      reject_blank_new_nested_attributes(attributes) do |nested_attributes|
+        nested_attributes["date_type"].blank? &&
+          nested_attributes["title"].blank? &&
+          nested_attributes["starts_on"].blank? &&
+          nested_attributes["notes"].blank?
       end
     )
   end

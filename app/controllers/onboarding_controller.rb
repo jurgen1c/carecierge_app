@@ -4,7 +4,7 @@ class OnboardingController < ApplicationController
     { preference_type: "negative", category: "general", confidence: "medium" },
     { preference_type: "constraint", category: "boundaries", confidence: "medium" }
   ].freeze
-  ONBOARDING_PREFERENCES_LIMIT = 3
+  ONBOARDING_PREFERENCES_LIMIT = ONBOARDING_PREFERENCE_DEFAULTS.size
   ONBOARDING_IMPORTANT_DATES_LIMIT = 3
 
   def show
@@ -131,7 +131,7 @@ class OnboardingController < ApplicationController
       assign_nested_value(preference_params, :preference_type, defaults.fetch(:preference_type))
       apply_nested_default(preference_params, :category, defaults.fetch(:category))
       assign_nested_value(preference_params, :confidence, defaults.fetch(:confidence))
-      preference_params[:source_notes] = t("onboarding.show.preference_source_notes_default") if onboarding_preference_present?(preference_params)
+      assign_nested_value(preference_params, :source_notes, t("onboarding.show.preference_source_notes_default")) if onboarding_preference_present?(preference_params)
     end
   end
 

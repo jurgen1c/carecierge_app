@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_07_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -66,6 +66,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
   end
 
   create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
+  end
+
+  create_table "desire_fulfillments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "desire_id", null: false
+    t.date "fulfilled_on", null: false
+    t.text "notes"
+    t.datetime "updated_at", null: false
+    t.index ["desire_id", "fulfilled_on"], name: "index_desire_fulfillments_on_desire_id_and_fulfilled_on"
+    t.index ["desire_id"], name: "index_desire_fulfillments_on_desire_id"
+  end
+
+  create_table "desires", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.date "captured_on"
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.text "notes"
+    t.uuid "relationship_profile_id", null: false
+    t.string "source", default: "manual", null: false
+    t.string "status", default: "active", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "captured_on"], name: "index_desires_on_relationship_profile_id_and_captured_on"
+    t.index ["relationship_profile_id", "category"], name: "index_desires_on_relationship_profile_id_and_category"
+    t.index ["relationship_profile_id", "status"], name: "index_desires_on_relationship_profile_id_and_status"
+    t.index ["relationship_profile_id"], name: "index_desires_on_relationship_profile_id"
   end
 
   create_table "feature_flag_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -342,6 +368,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "contact_methods", "relationship_profiles"
+  add_foreign_key "desire_fulfillments", "desires"
+  add_foreign_key "desires", "relationship_profiles"
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"

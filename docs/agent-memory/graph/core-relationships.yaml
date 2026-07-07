@@ -96,3 +96,13 @@ edges:
     relation: same_area
     reason: The important-dates claim owns important-date nested data and planning behavior; the profile CRUD claim remains current for general owner-scoped profile behavior.
     strength: 60
+  - source: relationship_profiles.desires
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Desires are nested under owner-scoped relationship profiles and reuse that privacy boundary.
+    strength: 90
+  - source: relationship_profiles.desires
+    target: relationship_profiles.important_dates
+    relation: same_area
+    reason: Desires and important dates are relationship-memory inputs that can feed future planning and suggestion workflows.
+    strength: 65

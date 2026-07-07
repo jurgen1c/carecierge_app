@@ -28,10 +28,16 @@
 #       enabled: "ON"
 
 en:
+  support:
+    array:
+      words_connector: ", "
+      two_words_connector: " and "
+      last_word_connector: ", and "
   date:
     formats:
       relationship_preference_learned_on: "%b %-d, %Y"
       important_date: "%b %-d, %Y"
+      desire_captured_on: "%b %-d, %Y"
   activerecord:
     attributes:
       feature_flag:
@@ -101,6 +107,16 @@ en:
         reminder_schedule: "Reminder schedule"
         starts_on: "Date"
         title: "Title"
+      desire:
+        captured_on: "Captured date"
+        category: "Category"
+        notes: "Notes"
+        source: "Source"
+        status: "Status"
+        title: "Title"
+      desire_fulfillment:
+        fulfilled_on: "Fulfilled date"
+        notes: "Fulfillment notes"
       user:
         admin: "Admin"
         email: "Email"
@@ -494,6 +510,79 @@ en:
       notice: "Important date was updated."
     destroy:
       notice: "Important date was deleted."
+  desires:
+    categories:
+      gift: "Gift"
+      activity: "Activity"
+      experience: "Experience"
+      help: "Help"
+      travel: "Travel"
+      food: "Food"
+      wellness: "Wellness"
+      other: "Other"
+    statuses:
+      active: "Active"
+      planned: "Planned"
+      fulfilled: "Fulfilled"
+      archived: "Archived"
+    sources:
+      manual: "Manual"
+      note_extraction: "From note"
+      imported: "Imported"
+    suggestion_contexts:
+      gift: "Gift idea"
+      birthday: "Birthday"
+      gesture: "Gesture"
+      date: "Date idea"
+      plan: "Plan"
+    section:
+      kicker: "Relationship memory"
+      title: "Desires and ideas"
+      body: "Capture wants, needs, and ideas while they are still easy to act on, then turn them into gifts, plans, birthday ideas, or thoughtful gestures."
+      turbo_hint: "Updates inline"
+      list_title: "Tracked desires"
+      desire_count:
+        one: "1 desire"
+        other: "%{count} desires"
+      empty_title: "No desires yet"
+      empty_body: "Add something they mentioned wanting, needing, or hoping to do so Carecierge can keep it ready for the right moment."
+      suggestions_title: "Feeds suggestions"
+      suggestions_body: "Active desires expose planning contexts that future recommendation workflows can use without rereading private notes."
+      no_suggestions: "Add an active desire to see where it can feed gift, date, birthday, or gesture suggestions."
+    item:
+      captured_on: "Captured"
+      feeds: "Feeds"
+      fulfillment_history: "Fulfillment history"
+      edit: "Edit"
+      fulfill: "Mark fulfilled"
+      delete: "Delete"
+      delete_confirm: "Delete this desire?"
+    form:
+      new_title: "Add desire"
+      edit_title: "Edit desire"
+      body: "Use the detail that would help you act later, not just the short label."
+      errors_heading:
+        one: "Review this field"
+        other: "Review these %{count} fields"
+      title: "Desire"
+      title_placeholder: "New headphones, try pottery, visit Japan"
+      category: "Category"
+      status: "Status"
+      captured_on: "Captured date"
+      notes: "Context"
+      notes_placeholder: "Where this came from or what would make follow-through thoughtful"
+      create: "Add desire"
+      update: "Update desire"
+      cancel: "Cancel"
+    create:
+      notice: "Desire was added."
+    update:
+      notice: "Desire was updated."
+    fulfill:
+      notice: "Desire was marked fulfilled."
+      error: "Desire could not be marked fulfilled."
+    destroy:
+      notice: "Desire was deleted."
   relationship_preferences:
     preference_types:
       positive: "Positive"

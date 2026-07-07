@@ -177,7 +177,7 @@ class OnboardingController < ApplicationController
 
   def numeric_nested_attribute_pair(key, value)
     index = Integer(key, exception: false)
-    return if index.nil? || index.negative?
+    return if index.nil? || index.negative? || index >= ONBOARDING_PREFERENCES_LIMIT
 
     [ index, key, value ]
   end

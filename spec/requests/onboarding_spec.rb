@@ -352,6 +352,39 @@ RSpec.describe "Onboarding", type: :request do
       expect(preference_keys).not_to include("Crafted fourth row")
     end
 
+    it "rejects hash-shaped preference rows outside the onboarding slot keys" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          relationship_preferences_attributes: {
+            "3" => {
+              preference_type: "positive",
+              category: "general",
+              key: "Crafted fourth row",
+              value: "Should not save",
+              confidence: "medium"
+            },
+            "99" => {
+              preference_type: "negative",
+              category: "general",
+              key: "Crafted high row",
+              value: "Should not save",
+              confidence: "medium"
+            }
+          }
+        }
+      }
+
+      profile = user.relationship_profiles.last
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(profile.relationship_preferences).to be_empty
+    end
+
     it "derives onboarding preference type and confidence from the rendered slots" do
       user = create(:user)
       sign_in user

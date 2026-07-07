@@ -130,7 +130,7 @@ class OnboardingController < ApplicationController
   end
 
   def apply_onboarding_preference_defaults(permitted_params)
-    each_nested_attribute(permitted_params.fetch(:relationship_preferences_attributes, {})).with_index do |preference_params, index|
+    each_onboarding_preference_attribute(permitted_params.fetch(:relationship_preferences_attributes, {})) do |preference_params, index|
       defaults = onboarding_preference_defaults(index)
       assign_nested_value(preference_params, :preference_type, defaults.fetch(:preference_type))
       apply_nested_default(preference_params, :category, defaults.fetch(:category))
@@ -173,6 +173,23 @@ class OnboardingController < ApplicationController
     return records.each unless block_given?
 
     records.each(&)
+  end
+
+  def each_onboarding_preference_attribute(attributes)
+    return [].each if attributes.blank?
+
+    records =
+      if attributes.respond_to?(:each_pair)
+        attributes.each_pair.filter_map do |key, value|
+          numeric_nested_attribute_pair(key, value)&.values_at(2, 0)
+        end
+      else
+        attributes.each.with_index
+      end
+
+    return records.each unless block_given?
+
+    records.each { |preference_params, index| yield preference_params, index }
   end
 
   def numeric_nested_attribute_pair(key, value)

@@ -426,6 +426,41 @@ RSpec.describe "Onboarding", type: :request do
       )
     end
 
+    it "derives hash-shaped onboarding preference defaults from numeric slot keys" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          relationship_preferences_attributes: {
+            "2" => {
+              preference_type: "positive",
+              category: "allergies",
+              key: "Peanuts",
+              value: "Allergic",
+              confidence: "confirmed",
+              source_notes: "Tampered source"
+            }
+          }
+        }
+      }
+
+      profile = user.relationship_profiles.last
+      preference = profile.relationship_preferences.sole
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(preference).to have_attributes(
+        preference_type: "constraint",
+        category: "allergies",
+        key: "Peanuts",
+        value: "Allergic",
+        confidence: "medium",
+        source_notes: "Added during onboarding."
+      )
+    end
+
     it "caps array-shaped important date params to the three onboarding slots" do
       user = create(:user)
       sign_in user

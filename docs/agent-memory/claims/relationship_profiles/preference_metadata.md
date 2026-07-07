@@ -12,13 +12,20 @@ claim: >
   RelationshipPreference stores type, category, confidence, learned date, and
   source notes. Legacy/default metadata uses neutral, general, and inferred
   labels; preference enum params are sanitized before assignment and nil nested
-  preference attribute containers are ignored; localized preference labels render
-  in profile forms and shows and participate in owner-scoped profile search.
+  preference attribute containers are ignored; onboarding can capture up to
+  three optional initial preferences for likes, dislikes, and constraints with
+  medium confidence and localized onboarding source notes while rejecting blank
+  rows and capping hash-shaped crafted rows to numeric onboarding slot keys 0
+  through 2, with onboarding defaults derived from those numeric slot keys;
+  localized preference labels render in profile forms and shows and participate
+  in owner-scoped profile search.
 
 source_files:
+  - app/controllers/onboarding_controller.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/models/relationship_preference.rb
   - app/queries/relationship_profile/search_query.rb
+  - app/views/onboarding/show.html.erb
   - app/views/relationship_profiles/_form.html.erb
   - app/views/relationship_profiles/show.html.erb
   - config/locales/en.yml
@@ -28,6 +35,7 @@ source_files:
 related_files:
   - spec/models/relationship_preference_spec.rb
   - spec/queries/relationship_profile/search_query_spec.rb
+  - spec/requests/onboarding_spec.rb
   - spec/requests/relationship_profiles_spec.rb
 symbols: []
 routes: []
@@ -35,6 +43,7 @@ tags:
   - preference_metadata
 
 verification:
+  - bundle exec rspec spec/requests/onboarding_spec.rb
   - bundle exec rspec spec/models/relationship_preference_spec.rb spec/queries/relationship_profile/search_query_spec.rb spec/requests/relationship_profiles_spec.rb
 
 last_verified_commit: null
@@ -47,8 +56,12 @@ last_verified_commit: null
 RelationshipPreference stores type, category, confidence, learned date, and
 source notes. Legacy/default metadata uses neutral, general, and inferred labels;
 preference enum params are sanitized before assignment and nil nested preference
-attribute containers are ignored; localized preference labels render in profile
-forms and shows and participate in owner-scoped profile search.
+attribute containers are ignored; onboarding can capture up to three optional
+initial preferences for likes, dislikes, and constraints with medium confidence
+and localized onboarding source notes while rejecting blank rows and capping
+hash-shaped crafted rows to numeric onboarding slot keys 0 through 2; localized
+onboarding defaults are derived from those numeric slot keys; preference labels
+render in profile forms and shows and participate in owner-scoped profile search.
 
 ## Why It Matters
 
@@ -60,13 +73,18 @@ and scoped to the signed-in owner's profiles.
 
 CAR-25 reviewed this claim while adding onboarding important-date copy to English and Spanish
 locales. Preference metadata behavior and localized preference labels remain unchanged.
+CAR-26 updated onboarding to capture bounded initial preference rows with onboarding-safe
+confidence and source defaults, then tightened hash-shaped preference row limits to numeric
+onboarding slot keys 0 through 2 and aligned hash-shaped defaults with those slot keys.
 
 ## Evidence
 
 - `db/migrate/20260704203217_add_structured_fields_to_relationship_preferences.rb`
 - `app/models/relationship_preference.rb`
+- `app/controllers/onboarding_controller.rb`
 - `app/controllers/relationship_profiles_controller.rb`
 - `app/queries/relationship_profile/search_query.rb`
+- `app/views/onboarding/show.html.erb`
 - `app/views/relationship_profiles/_form.html.erb`
 - `app/views/relationship_profiles/show.html.erb`
 - `config/locales/en.yml`
@@ -74,4 +92,5 @@ locales. Preference metadata behavior and localized preference labels remain unc
 
 ## Verification
 
+- `bundle exec rspec spec/requests/onboarding_spec.rb`
 - `bundle exec rspec spec/models/relationship_preference_spec.rb spec/queries/relationship_profile/search_query_spec.rb spec/requests/relationship_profiles_spec.rb`

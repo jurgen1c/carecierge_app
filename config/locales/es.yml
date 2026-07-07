@@ -200,10 +200,23 @@ es:
       important_date_importance: "Importancia"
       important_date_reminder: "Intención de recordatorio"
       important_date_notes: "Notas"
-      preference_title: "Una preferencia útil"
-      preference_body: "Opcional. Captura un detalle que pueda hacer más personal un futuro seguimiento, regalo o recordatorio."
-      preference_key: "¿Qué debería recordar Carecierge?"
+      preferences_title: "Preferencias iniciales"
+      preferences_body: "Opcional. Registra algunos gustos, disgustos o restricciones ahora para que futuras recomendaciones, planes y briefings empiecen con contexto útil. Deja estos campos en blanco para agregar detalles después."
+      preference_rows:
+        positive:
+          title: "Gusto"
+          body: "Algo que disfruta, elige seguido o apreciaría en un plan o regalo."
+        negative:
+          title: "Disgusto"
+          body: "Algo que conviene evitar al sugerir regalos, comidas, lugares o seguimientos."
+        constraint:
+          title: "Restricción"
+          body: "Un límite, alergia, necesidad cultural o regla práctica que Carecierge debería respetar."
+      preference_category: "Categoría"
+      preference_key: "Qué recordar"
       preference_value: "Detalle"
+      preference_default_note: "Se guarda con confianza media desde onboarding para que puedas confirmarlo o ajustarlo después."
+      preference_source_notes_default: "Agregado durante onboarding."
       submit: "Guardar primera relación"
       save_later: "Guardar para después"
       preview_title: "Qué habilita esto"

@@ -64,7 +64,11 @@ class OnboardingController < ApplicationController
     return if important_date_params.blank?
 
     permitted_params[:important_dates_attributes] =
-      important_date_params.to_h.first(ONBOARDING_IMPORTANT_DATES_LIMIT).to_h
+      if important_date_params.is_a?(Array)
+        important_date_params.first(ONBOARDING_IMPORTANT_DATES_LIMIT)
+      else
+        important_date_params.to_h.first(ONBOARDING_IMPORTANT_DATES_LIMIT).to_h
+      end
   end
 
   def sanitize_relationship_type_param(permitted_params)

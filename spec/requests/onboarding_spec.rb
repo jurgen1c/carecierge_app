@@ -198,6 +198,59 @@ RSpec.describe "Onboarding", type: :request do
       expect(important_date_titles).not_to include("Crafted fourth row")
     end
 
+    it "caps array-shaped important date params to the three onboarding slots" do
+      user = create(:user)
+      sign_in user
+
+      post onboarding_path, params: {
+        relationship_profile: {
+          first_name: "Maya",
+          type: "RelationshipProfiles::Friend",
+          important_dates_attributes: [
+            {
+              date_type: "birthday",
+              title: "Birthday",
+              starts_on: "1990-05-12",
+              recurrence: "yearly",
+              importance_level: "high",
+              reminder_schedule: "two_weeks_before"
+            },
+            {
+              date_type: "anniversary",
+              title: "Work anniversary",
+              starts_on: "2021-09-01",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "month_before"
+            },
+            {
+              date_type: "appointment",
+              title: "Annual checkup",
+              starts_on: "2026-08-15",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "week_before"
+            },
+            {
+              date_type: "holiday",
+              title: "Crafted fourth row",
+              starts_on: "2026-12-24",
+              recurrence: "yearly",
+              importance_level: "normal",
+              reminder_schedule: "week_before"
+            }
+          ]
+        }
+      }
+
+      profile = user.relationship_profiles.last
+      important_date_titles = profile.important_dates.order(:starts_on).pluck(:title)
+
+      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(important_date_titles).to contain_exactly("Birthday", "Work anniversary", "Annual checkup")
+      expect(important_date_titles).not_to include("Crafted fourth row")
+    end
+
     it "carries a custom relationship type label into the first profile" do
       user = create(:user)
       sign_in user

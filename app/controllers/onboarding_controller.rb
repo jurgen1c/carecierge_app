@@ -88,7 +88,11 @@ class OnboardingController < ApplicationController
       if preference_params.is_a?(Array)
         preference_params.first(ONBOARDING_PREFERENCES_LIMIT)
       else
-        preference_params.each_pair.first(ONBOARDING_PREFERENCES_LIMIT).to_h
+        preference_params.each_pair
+                         .filter_map { |key, value| numeric_nested_attribute_pair(key, value) }
+                         .sort_by(&:first)
+                         .first(ONBOARDING_PREFERENCES_LIMIT)
+                         .to_h { |_index, key, value| [ key, value ] }
       end
   end
 
@@ -169,6 +173,13 @@ class OnboardingController < ApplicationController
     return records.each unless block_given?
 
     records.each(&)
+  end
+
+  def numeric_nested_attribute_pair(key, value)
+    index = Integer(key, exception: false)
+    return if index.nil? || index.negative?
+
+    [ index, key, value ]
   end
 
   def sanitize_relationship_preference_enum(preference_params, key, allowed_values)

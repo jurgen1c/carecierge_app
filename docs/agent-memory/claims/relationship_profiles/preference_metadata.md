@@ -15,8 +15,9 @@ claim: >
   preference attribute containers are ignored; onboarding can capture up to
   three optional initial preferences for likes, dislikes, and constraints with
   medium confidence and localized onboarding source notes while rejecting blank
-  rows and capping crafted rows; localized preference labels render in profile
-  forms and shows and participate in owner-scoped profile search.
+  rows and capping hash-shaped crafted rows by numeric onboarding slot keys;
+  localized preference labels render in profile forms and shows and participate
+  in owner-scoped profile search.
 
 source_files:
   - app/controllers/onboarding_controller.rb
@@ -57,8 +58,9 @@ preference enum params are sanitized before assignment and nil nested preference
 attribute containers are ignored; onboarding can capture up to three optional
 initial preferences for likes, dislikes, and constraints with medium confidence
 and localized onboarding source notes while rejecting blank rows and capping
-crafted rows; localized preference labels render in profile forms and shows and
-participate in owner-scoped profile search.
+hash-shaped crafted rows by numeric onboarding slot keys; localized preference
+labels render in profile forms and shows and participate in owner-scoped profile
+search.
 
 ## Why It Matters
 
@@ -71,7 +73,8 @@ and scoped to the signed-in owner's profiles.
 CAR-25 reviewed this claim while adding onboarding important-date copy to English and Spanish
 locales. Preference metadata behavior and localized preference labels remain unchanged.
 CAR-26 updated onboarding to capture bounded initial preference rows with onboarding-safe
-confidence and source defaults.
+confidence and source defaults, then tightened hash-shaped preference row limits to numeric
+onboarding slot keys.
 
 ## Evidence
 

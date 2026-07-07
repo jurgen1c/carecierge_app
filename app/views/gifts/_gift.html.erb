@@ -1,0 +1,74 @@
+<%= turbo_frame_tag dom_id(gift) do %>
+  <% given_on_label = gift.given_on.present? ? l(gift.given_on, format: :gift_given_on) : t("gifts.item.not_given") %>
+
+  <article id="<%= dom_id(gift, :row) %>" class="rounded-lg border border-stone-200 bg-white p-4">
+    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900"><%= gift.status_label %></span>
+          <% if gift.outcome_label.present? %>
+            <span class="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700"><%= gift.outcome_label %></span>
+          <% end %>
+          <% if gift.duplicate_candidate? %>
+            <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-900"><%= t("gifts.item.duplicate_candidate") %></span>
+          <% end %>
+        </div>
+
+        <h4 class="mt-3 text-base font-semibold text-stone-950"><%= gift.name %></h4>
+        <% if gift.notes.present? %>
+          <p class="mt-2 text-sm leading-6 text-stone-700"><%= gift.notes %></p>
+        <% end %>
+        <dl class="mt-3 grid gap-2 text-sm text-stone-700 sm:grid-cols-2">
+          <div>
+            <dt class="font-medium text-stone-800"><%= t("gifts.item.occasion") %></dt>
+            <dd class="mt-1"><%= gift.occasion.presence || t("gifts.item.not_provided") %></dd>
+          </div>
+          <div>
+            <dt class="font-medium text-stone-800"><%= t("gifts.item.price") %></dt>
+            <dd class="mt-1"><%= gift.price_cents.present? ? number_to_currency(gift.price_cents / 100.0) : t("gifts.item.not_provided") %></dd>
+          </div>
+          <div>
+            <dt class="font-medium text-stone-800"><%= t("gifts.item.vendor") %></dt>
+            <dd class="mt-1"><%= gift.vendor.presence || t("gifts.item.not_provided") %></dd>
+          </div>
+          <div>
+            <dt class="font-medium text-stone-800"><%= t("gifts.item.given_on") %></dt>
+            <dd class="mt-1"><%= given_on_label %></dd>
+          </div>
+        </dl>
+        <% if gift.reaction.present? %>
+          <div class="mt-4 rounded-lg border border-stone-200 bg-stone-50 px-4 py-3">
+            <p class="text-sm font-semibold text-stone-950"><%= t("gifts.item.reaction") %></p>
+            <p class="mt-1 text-sm leading-6 text-stone-700"><%= gift.reaction %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="flex shrink-0 flex-wrap gap-2">
+        <%= link_to t("gifts.item.edit"), edit_relationship_profile_gift_path(relationship_profile, gift), class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+        <%= button_to t("gifts.item.delete"), relationship_profile_gift_path(relationship_profile, gift), method: :delete, form: { data: { turbo_confirm: t("gifts.item.delete_confirm") } }, class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700" %>
+      </div>
+    </div>
+
+    <% unless gift.given? %>
+      <%= form_with url: mark_given_relationship_profile_gift_path(relationship_profile, gift), scope: :gift_result, method: :patch, class: "mt-4 rounded-lg border border-emerald-100 bg-emerald-50/60 p-4" do |form| %>
+        <p class="text-sm font-semibold text-stone-950"><%= t("gifts.item.result_title") %></p>
+        <div class="mt-3 grid gap-3 sm:grid-cols-2">
+          <div>
+            <%= form.label :given_on, t("gifts.item.result_given_on"), class: "block text-sm font-medium text-stone-800" %>
+            <%= form.date_field :given_on, class: "mt-2 min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          </div>
+          <div>
+            <%= form.label :outcome, t("gifts.item.result_outcome"), class: "block text-sm font-medium text-stone-800" %>
+            <%= form.select :outcome, Gift.outcome_options, { selected: gift.outcome.presence || "unknown" }, class: "mt-2 min-h-10 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          </div>
+          <div class="sm:col-span-2">
+            <%= form.label :reaction, t("gifts.item.result_reaction"), class: "block text-sm font-medium text-stone-800" %>
+            <%= form.text_area :reaction, rows: 2, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("gifts.item.result_reaction_placeholder") %>
+          </div>
+        </div>
+        <%= form.submit t("gifts.item.mark_given"), class: "mt-3 inline-flex min-h-10 items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+      <% end %>
+    <% end %>
+  </article>
+<% end %>

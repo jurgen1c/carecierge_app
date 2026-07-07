@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_07_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_07_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -141,6 +141,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_120100) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "gifts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "given_on"
+    t.string "name", null: false
+    t.text "notes"
+    t.string "occasion"
+    t.string "outcome"
+    t.integer "price_cents"
+    t.text "reaction"
+    t.uuid "relationship_profile_id", null: false
+    t.string "status", default: "idea", null: false
+    t.datetime "updated_at", null: false
+    t.string "vendor"
+    t.index ["relationship_profile_id", "given_on"], name: "index_gifts_on_relationship_profile_id_and_given_on"
+    t.index ["relationship_profile_id", "name"], name: "index_gifts_on_relationship_profile_id_and_name"
+    t.index ["relationship_profile_id", "outcome"], name: "index_gifts_on_relationship_profile_id_and_outcome"
+    t.index ["relationship_profile_id", "status"], name: "index_gifts_on_relationship_profile_id_and_status"
+    t.index ["relationship_profile_id"], name: "index_gifts_on_relationship_profile_id"
   end
 
   create_table "important_dates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -373,6 +393,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_120100) do
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
+  add_foreign_key "gifts", "relationship_profiles"
   add_foreign_key "important_dates", "relationship_profiles"
   add_foreign_key "relationship_field_values", "relationship_profiles"
   add_foreign_key "relationship_field_values", "template_fields"

@@ -38,6 +38,7 @@ en:
       relationship_preference_learned_on: "%b %-d, %Y"
       important_date: "%b %-d, %Y"
       desire_captured_on: "%b %-d, %Y"
+      gift_given_on: "%b %-d, %Y"
   activerecord:
     attributes:
       feature_flag:
@@ -87,6 +88,15 @@ en:
         name: "Tag"
       relationship_group:
         name: "Group"
+      gift:
+        given_on: "Given date"
+        name: "Name"
+        occasion: "Occasion"
+        outcome: "Outcome"
+        price: "Price"
+        reaction: "Reaction"
+        status: "Status"
+        vendor: "Vendor"
       relationship_template:
         key: "Key"
         name: "Name"
@@ -584,6 +594,79 @@ en:
       error: "Desire could not be marked fulfilled."
     destroy:
       notice: "Desire was deleted."
+  gifts:
+    statuses:
+      idea: "Idea"
+      planned: "Planned"
+      given: "Given"
+      archived: "Archived"
+    outcomes:
+      successful: "Successful"
+      unsuccessful: "Unsuccessful"
+      mixed: "Mixed"
+      unknown: "Unknown"
+    section:
+      kicker: "Gift memory"
+      title: "Gift history"
+      body: "Track ideas, gifts given, occasions, vendors, reactions, and outcomes so future recommendations can stay thoughtful without repeating what already happened."
+      turbo_hint: "Updates inline"
+      list_title: "Tracked gifts"
+      gift_count:
+        one: "1 gift"
+        other: "%{count} gifts"
+      empty_title: "No gifts yet"
+      empty_body: "Add a gift idea or a gift already given so Carecierge can remember what worked and what to avoid next time."
+      recommendations_title: "Recommendation guardrail"
+      recommendations_body: "Use prior gifts to avoid repeating the same idea for birthdays, anniversaries, holidays, and professional gifting."
+      no_history: "Mark a gift as given to build the history future recommendations should avoid duplicating."
+    item:
+      duplicate_candidate: "Potential repeat"
+      edit: "Edit"
+      delete: "Delete"
+      delete_confirm: "Delete this gift?"
+      given_on: "Given"
+      mark_given: "Mark given"
+      not_given: "Not given yet"
+      not_provided: "Not provided"
+      occasion: "Occasion"
+      price: "Price"
+      reaction: "Reaction"
+      vendor: "Vendor"
+      result_title: "Record gift result"
+      result_given_on: "Given date"
+      result_outcome: "Outcome"
+      result_reaction: "Reaction"
+      result_reaction_placeholder: "How they responded, what worked, or what to avoid next time"
+    form:
+      new_title: "Add gift"
+      edit_title: "Edit gift"
+      body: "Capture the context that will help future gift recommendations avoid repeats and remember what landed well."
+      errors_heading:
+        one: "Review this field"
+        other: "Review these %{count} fields"
+      name: "Gift"
+      name_placeholder: "Concert tickets, ceramic mug, coffee subscription"
+      status: "Status"
+      occasion: "Occasion"
+      occasion_placeholder: "Birthday, holiday, promotion"
+      price: "Price"
+      price_placeholder: "89.99"
+      vendor: "Vendor"
+      vendor_placeholder: "Local shop, Etsy seller, bookstore"
+      notes: "Context"
+      notes_placeholder: "Why this idea fits, where it came from, or what to avoid"
+      create: "Add gift"
+      update: "Update gift"
+      cancel: "Cancel"
+    create:
+      notice: "Gift was added."
+    update:
+      notice: "Gift was updated."
+    mark_given:
+      notice: "Gift was marked given."
+      error: "Gift could not be marked given."
+    destroy:
+      notice: "Gift was deleted."
   relationship_preferences:
     preference_types:
       positive: "Positive"

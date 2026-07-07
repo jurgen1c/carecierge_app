@@ -74,6 +74,7 @@ class RelationshipProfilesController < ApplicationController
       .relationship_profiles
       .includes(
         :contact_methods,
+        :gifts,
         :important_dates,
         :relationship_preferences,
         :relationship_tags,

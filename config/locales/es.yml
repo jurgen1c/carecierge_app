@@ -9,6 +9,7 @@ es:
       relationship_preference_learned_on: "%-d/%-m/%Y"
       important_date: "%-d/%-m/%Y"
       desire_captured_on: "%-d/%-m/%Y"
+      gift_given_on: "%-d/%-m/%Y"
   activerecord:
     attributes:
       feature_flag:
@@ -58,6 +59,15 @@ es:
         name: "Etiqueta"
       relationship_group:
         name: "Grupo"
+      gift:
+        given_on: "Fecha de entrega"
+        name: "Nombre"
+        occasion: "Ocasión"
+        outcome: "Resultado"
+        price: "Precio"
+        reaction: "Reacción"
+        status: "Estado"
+        vendor: "Proveedor"
       relationship_template:
         key: "Clave"
         name: "Nombre"
@@ -594,6 +604,79 @@ es:
       error: "No se pudo marcar el deseo como cumplido."
     destroy:
       notice: "El deseo fue eliminado."
+  gifts:
+    statuses:
+      idea: "Idea"
+      planned: "Planeado"
+      given: "Entregado"
+      archived: "Archivado"
+    outcomes:
+      successful: "Exitoso"
+      unsuccessful: "No exitoso"
+      mixed: "Mixto"
+      unknown: "Desconocido"
+    section:
+      kicker: "Memoria de regalos"
+      title: "Historial de regalos"
+      body: "Registra ideas, regalos entregados, ocasiones, proveedores, reacciones y resultados para que futuras recomendaciones sigan siendo consideradas sin repetir lo que ya pasó."
+      turbo_hint: "Se actualiza en línea"
+      list_title: "Regalos registrados"
+      gift_count:
+        one: "1 regalo"
+        other: "%{count} regalos"
+      empty_title: "Aún no hay regalos"
+      empty_body: "Agrega una idea de regalo o un regalo ya entregado para que Carecierge recuerde qué funcionó y qué evitar la próxima vez."
+      recommendations_title: "Guía de recomendaciones"
+      recommendations_body: "Usa regalos previos para evitar repetir la misma idea en cumpleaños, aniversarios, feriados y regalos profesionales."
+      no_history: "Marca un regalo como entregado para construir el historial que futuras recomendaciones deben evitar duplicar."
+    item:
+      duplicate_candidate: "Posible repetido"
+      edit: "Editar"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar este regalo?"
+      given_on: "Entregado"
+      mark_given: "Marcar entregado"
+      not_given: "Aún no entregado"
+      not_provided: "No provisto"
+      occasion: "Ocasión"
+      price: "Precio"
+      reaction: "Reacción"
+      vendor: "Proveedor"
+      result_title: "Registrar resultado del regalo"
+      result_given_on: "Fecha de entrega"
+      result_outcome: "Resultado"
+      result_reaction: "Reacción"
+      result_reaction_placeholder: "Cómo respondió, qué funcionó o qué evitar la próxima vez"
+    form:
+      new_title: "Agregar regalo"
+      edit_title: "Editar regalo"
+      body: "Captura el contexto que ayudará a futuras recomendaciones de regalos a evitar repeticiones y recordar qué funcionó bien."
+      errors_heading:
+        one: "Revisa este campo"
+        other: "Revisa estos %{count} campos"
+      name: "Regalo"
+      name_placeholder: "Entradas de concierto, taza de cerámica, suscripción de café"
+      status: "Estado"
+      occasion: "Ocasión"
+      occasion_placeholder: "Cumpleaños, feriado, ascenso"
+      price: "Precio"
+      price_placeholder: "89.99"
+      vendor: "Proveedor"
+      vendor_placeholder: "Tienda local, vendedor de Etsy, librería"
+      notes: "Contexto"
+      notes_placeholder: "Por qué esta idea encaja, de dónde salió o qué evitar"
+      create: "Agregar regalo"
+      update: "Actualizar regalo"
+      cancel: "Cancelar"
+    create:
+      notice: "El regalo fue agregado."
+    update:
+      notice: "El regalo fue actualizado."
+    mark_given:
+      notice: "El regalo fue marcado como entregado."
+      error: "No se pudo marcar el regalo como entregado."
+    destroy:
+      notice: "El regalo fue eliminado."
   relationship_preferences:
     preference_types:
       positive: "Positiva"

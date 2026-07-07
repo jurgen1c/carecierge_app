@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "desires_section" do %>
+  <%= render "desires/section", relationship_profile: @relationship_profile %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "layouts/flash", notice: notice, alert: alert %>
+<% end %>

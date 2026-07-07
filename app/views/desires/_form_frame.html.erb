@@ -1,0 +1,3 @@
+<%= turbo_frame_tag(desire.persisted? ? dom_id(desire) : "new_desire") do %>
+  <%= render "desires/form", relationship_profile:, desire: %>
+<% end %>

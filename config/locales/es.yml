@@ -1,8 +1,14 @@
 es:
+  support:
+    array:
+      words_connector: ", "
+      two_words_connector: " y "
+      last_word_connector: " y "
   date:
     formats:
       relationship_preference_learned_on: "%-d/%-m/%Y"
       important_date: "%-d/%-m/%Y"
+      desire_captured_on: "%-d/%-m/%Y"
   activerecord:
     attributes:
       feature_flag:
@@ -72,6 +78,16 @@ es:
         reminder_schedule: "Calendario de recordatorio"
         starts_on: "Fecha"
         title: "Título"
+      desire:
+        captured_on: "Fecha capturada"
+        category: "Categoría"
+        notes: "Notas"
+        source: "Origen"
+        status: "Estado"
+        title: "Título"
+      desire_fulfillment:
+        fulfilled_on: "Fecha cumplida"
+        notes: "Notas de cumplimiento"
       user:
         admin: "Administrador"
         email: "Correo electrónico"
@@ -504,6 +520,79 @@ es:
       notice: "La fecha importante fue actualizada."
     destroy:
       notice: "La fecha importante fue eliminada."
+  desires:
+    categories:
+      gift: "Regalo"
+      activity: "Actividad"
+      experience: "Experiencia"
+      help: "Ayuda"
+      travel: "Viaje"
+      food: "Comida"
+      wellness: "Bienestar"
+      other: "Otro"
+    statuses:
+      active: "Activo"
+      planned: "Planeado"
+      fulfilled: "Cumplido"
+      archived: "Archivado"
+    sources:
+      manual: "Manual"
+      note_extraction: "Desde nota"
+      imported: "Importado"
+    suggestion_contexts:
+      gift: "Idea de regalo"
+      birthday: "Cumpleaños"
+      gesture: "Gesto"
+      date: "Idea de cita"
+      plan: "Plan"
+    section:
+      kicker: "Memoria de relación"
+      title: "Deseos e ideas"
+      body: "Captura deseos, necesidades e ideas mientras aún es fácil actuar, y conviértelos en regalos, planes, ideas de cumpleaños o gestos atentos."
+      turbo_hint: "Se actualiza en línea"
+      list_title: "Deseos registrados"
+      desire_count:
+        one: "1 deseo"
+        other: "%{count} deseos"
+      empty_title: "Aún no hay deseos"
+      empty_body: "Agrega algo que mencionó querer, necesitar o esperar hacer para que Carecierge lo tenga listo en el momento adecuado."
+      suggestions_title: "Alimenta sugerencias"
+      suggestions_body: "Los deseos activos exponen contextos de planificación que futuros flujos de recomendación pueden usar sin releer notas privadas."
+      no_suggestions: "Agrega un deseo activo para ver dónde puede alimentar sugerencias de regalos, citas, cumpleaños o gestos."
+    item:
+      captured_on: "Capturado"
+      feeds: "Alimenta"
+      fulfillment_history: "Historial de cumplimiento"
+      edit: "Editar"
+      fulfill: "Marcar cumplido"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar este deseo?"
+    form:
+      new_title: "Agregar deseo"
+      edit_title: "Editar deseo"
+      body: "Usa el detalle que te ayudaría a actuar después, no solo la etiqueta corta."
+      errors_heading:
+        one: "Revisa este campo"
+        other: "Revisa estos %{count} campos"
+      title: "Deseo"
+      title_placeholder: "Audífonos nuevos, probar cerámica, visitar Japón"
+      category: "Categoría"
+      status: "Estado"
+      captured_on: "Fecha capturada"
+      notes: "Contexto"
+      notes_placeholder: "De dónde viene o qué haría considerado el seguimiento"
+      create: "Agregar deseo"
+      update: "Actualizar deseo"
+      cancel: "Cancelar"
+    create:
+      notice: "El deseo fue agregado."
+    update:
+      notice: "El deseo fue actualizado."
+    fulfill:
+      notice: "El deseo fue marcado como cumplido."
+      error: "No se pudo marcar el deseo como cumplido."
+    destroy:
+      notice: "El deseo fue eliminado."
   relationship_preferences:
     preference_types:
       positive: "Positiva"

@@ -111,6 +111,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :relationship_groups, through: :relationship_group_memberships
   has_many :relationship_field_values, dependent: :destroy
   has_many :important_dates, dependent: :destroy
+  has_many :desires, dependent: :destroy
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true
@@ -225,6 +226,18 @@ class RelationshipProfile < ApplicationRecord
     dates = upcoming_important_dates(as_of:).select { |important_date| important_date.planning_opportunity?(as_of:) }
 
     limit ? dates.first(limit) : dates
+  end
+
+  def active_desires
+    desires.reject(&:marked_for_destruction?).select { |desire| desire.status.in?(%w[active planned]) }.sort_by do |desire|
+      [ Desire::STATUSES.index(desire.status) || 99, desire.title.downcase ]
+    end
+  end
+
+  def fulfilled_desires
+    desires.reject(&:marked_for_destruction?).select(&:fulfilled?).sort_by do |desire|
+      [ desire.fulfillments.map(&:fulfilled_on).compact.max || desire.captured_on || Date.new(0), desire.title.downcase ]
+    end.reverse
   end
 
   def structured_preferences_text

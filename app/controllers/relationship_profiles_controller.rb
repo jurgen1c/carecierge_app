@@ -78,6 +78,7 @@ class RelationshipProfilesController < ApplicationController
         :relationship_preferences,
         :relationship_tags,
         :relationship_groups,
+        desires: :fulfillments,
         relationship_taggings: :relationship_tag,
         relationship_group_memberships: :relationship_group,
         relationship_field_values: { template_field: :relationship_template },

@@ -1,5 +1,7 @@
 # Audit all gems listed in the Gemfile for known security problems by running bin/bundler-audit.
-# CVEs that are not relevant to the application can be enumerated on the ignore list below.
+# CVEs with a documented temporary exception can be enumerated on the ignore list below.
 
 ignore:
-  - CVE-THAT-DOES-NOT-APPLY
+  # WEBrick 1.9.2 request smuggling advisory. No patched version is published yet;
+  # re-check and remove this ignore once a patched version is available.
+  - CVE-2026-38969

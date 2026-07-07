@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preference metadata, relationship-type template fields, custom field values, important dates and milestones, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preference metadata, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -11,6 +11,7 @@ default_queries:
   - relationship type template fields custom field values
   - custom relationship type label profile attributes store accessor
   - important dates milestones recurrence planning prompts
+  - desires wants future ideas fulfillment history suggestion contexts
   - reusable relationship tags groups filtering
   - Lexxy Action Text relationship notes
 watched_files:
@@ -28,14 +29,19 @@ watched_files:
   - app/models/template_field.rb
   - app/models/relationship_field_value.rb
   - app/models/important_date.rb
+  - app/models/desire.rb
+  - app/models/desire_fulfillment.rb
   - app/forms/relationship_profiles/**/*.rb
   - app/queries/relationship_profile/search_query.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/controllers/onboarding_controller.rb
   - app/controllers/important_dates_controller.rb
+  - app/controllers/desires_controller.rb
   - app/policies/relationship_profile_policy.rb
   - app/policies/important_date_policy.rb
+  - app/policies/desire_policy.rb
   - app/views/important_dates/**/*.erb
+  - app/views/desires/**/*.erb
   - app/views/relationship_profiles/**/*.erb
   - app/views/onboarding/**/*.erb
   - app/javascript/controllers/relationship_template_fields_controller.js
@@ -44,6 +50,7 @@ watched_files:
   - config/locales/es.yml
   - db/migrate/*relationship*.rb
   - db/migrate/*important_date*.rb
+  - db/migrate/*desire*.rb
   - db/migrate/*active_storage*.rb
   - db/migrate/*action_text*.rb
 tags:
@@ -54,3 +61,4 @@ tags:
   - action_text
   - lexxy
   - important_dates
+  - desires

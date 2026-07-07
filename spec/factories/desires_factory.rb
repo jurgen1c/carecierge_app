@@ -32,7 +32,7 @@ FactoryBot.define do
     category { "activity" }
     status { "active" }
     source { "manual" }
-    captured_on { Date.new(2026, 7, 7) }
+    captured_on { Date.current }
     notes { nil }
   end
 end

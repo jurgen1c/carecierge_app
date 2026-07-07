@@ -13,10 +13,12 @@ claim: >
   authenticated, owner-scoped nested routes. Desires store a title, category,
   status, source, captured date, notes, suggestion contexts for downstream gift,
   date, birthday, plan, and gesture workflows, and fulfillment history through
-  DesireFulfillment records. Manual create, edit, fulfill, and delete actions
-  refresh the relationship profile desire section with Turbo streams when
-  possible, preserve English and Spanish localized labels and validation copy,
-  and cannot access another user's relationship profile.
+  DesireFulfillment records. Captured dates default on validation, while the
+  profile view renders localized fallback text if imported or legacy data leaves
+  the date blank. Manual create, edit, fulfill, and delete actions refresh the
+  relationship profile desire section with Turbo streams when possible, preserve
+  English and Spanish localized labels and validation copy, and cannot access
+  another user's relationship profile.
 
 source_files:
   - app/models/desire.rb
@@ -63,7 +65,9 @@ last_verified_commit: null
 
 Desires are relationship-profile-owned records used to store wants, needs, and
 future ideas with localized categories, status, source metadata, captured date,
-notes, downstream suggestion contexts, and fulfillment history. Manual
+notes, downstream suggestion contexts, and fulfillment history. Captured dates
+default during validation, and the relationship profile view renders localized
+fallback text if stored/imported data has no captured date. Manual
 create/edit/fulfill/delete actions are owner-scoped through the signed-in user's
 relationship profiles and update inline through Turbo streams where possible.
 

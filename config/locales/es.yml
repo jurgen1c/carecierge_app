@@ -561,6 +561,7 @@ es:
       no_suggestions: "Agrega un deseo activo para ver dónde puede alimentar sugerencias de regalos, citas, cumpleaños o gestos."
     item:
       captured_on: "Capturado"
+      captured_on_unknown: "Sin fecha capturada"
       feeds: "Alimenta"
       fulfillment_history: "Historial de cumplimiento"
       edit: "Editar"

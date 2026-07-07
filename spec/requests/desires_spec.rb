@@ -23,6 +23,20 @@ RSpec.describe "Desires", type: :request do
       expect(response.body).to include(%(href="#{new_relationship_profile_desire_path(profile)}"))
     end
 
+    it "renders a safe fallback when a stored desire has no captured date" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      desire = create(:desire, relationship_profile: profile, title: "Find a concert")
+      desire.update_columns(captured_on: nil)
+      sign_in user
+
+      get relationship_profile_path(profile)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Find a concert")
+      expect(response.body).to include("Not captured")
+    end
+
     it "renders localized desire copy in Spanish" do
       user = create(:user)
       profile = create(:relationship_profile, user:)

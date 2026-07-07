@@ -551,6 +551,7 @@ en:
       no_suggestions: "Add an active desire to see where it can feed gift, date, birthday, or gesture suggestions."
     item:
       captured_on: "Captured"
+      captured_on_unknown: "Not captured"
       feeds: "Feeds"
       fulfillment_history: "Fulfillment history"
       edit: "Edit"

@@ -22,7 +22,7 @@
 FactoryBot.define do
   factory :desire_fulfillment do
     desire
-    fulfilled_on { Date.new(2026, 7, 7) }
+    fulfilled_on { Date.current }
     notes { nil }
   end
 end

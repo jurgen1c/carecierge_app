@@ -734,7 +734,7 @@ es:
     record:
       edit: "Editar"
       delete: "Eliminar"
-      delete_confirm: "Eliminar esta memoria? Esta acción no se puede deshacer."
+      delete_confirm: "¿Eliminar esta memoria? Esta acción no se puede deshacer."
       mark_reviewed: "Marcar revisada"
       stale_after: "Revisar después"
       no_stale_after: "Sin fecha de revisión"
@@ -757,13 +757,13 @@ es:
       title: "Título"
       title_placeholder: "Prefiere cenas de cumpleaños tranquilas"
       memory: "Memoria"
-      memory_placeholder: "Qué debería recordar Carecierge y cómo debería usar ese contexto?"
+      memory_placeholder: "¿Qué debería recordar Carecierge y cómo debería usar ese contexto?"
       source: "Origen"
       confidence: "Confianza"
       status: "Estado"
       stale_after: "Revisar después"
       correction_note: "Nota de corrección"
-      correction_note_placeholder: "Qué cambió o quién aclaró esto?"
+      correction_note_placeholder: "¿Qué cambió o quién aclaró esto?"
       create: "Agregar memoria"
       update: "Actualizar memoria"
       cancel: "Cancelar"
@@ -771,6 +771,7 @@ es:
       notice: "La memoria fue agregada."
     update:
       notice: "La memoria fue actualizada."
+      revision_error: "No se pudo actualizar la memoria porque no se pudo guardar el historial de corrección."
     review:
       notice: "La memoria fue marcada como revisada."
     approve_high_impact_automation:

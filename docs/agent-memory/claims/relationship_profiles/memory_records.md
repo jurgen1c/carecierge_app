@@ -15,8 +15,9 @@ claim: >
   high-impact automation approval state. Users can add, edit, review, delete,
   correct, and approve records inline from the relationship profile through
   Turbo streams; corrections create MemoryRevision rows with previous body,
-  revised body, note, and correcting user. Low-confidence or AI-inferred records
-  are blocked from high-impact automation until explicitly approved.
+  revised body, note, and correcting user in the same database transaction as
+  the body update. Low-confidence or AI-inferred records are blocked from
+  high-impact automation until explicitly approved.
 
 source_files:
   - app/models/memory_record.rb
@@ -70,9 +71,10 @@ They are managed through authenticated nested routes under the signed-in user's
 relationship profiles and update the relationship profile memory section inline
 through Turbo streams. Editing a memory body marks the record corrected and
 creates a MemoryRevision with the previous body, revised body, correction note,
-and correcting user. Records that are stale or queued for review surface review
-actions, and low-confidence or AI-inferred records are blocked from high-impact
-automation until the user explicitly approves that use.
+and correcting user in the same database transaction as the body update, so a
+failed revision rolls the correction back. Records that are stale or queued for
+review surface review actions, and low-confidence or AI-inferred records are
+blocked from high-impact automation until the user explicitly approves that use.
 
 ## Why It Matters
 

@@ -34,12 +34,18 @@ class MemoryRecordsController < ApplicationController
     attrs[:reviewed_at] = nil if trust_relevant_change
     attrs[:high_impact_automation_approved_at] = nil if trust_relevant_change
 
-    if @memory_record.update(attrs)
-      create_revision(previous_body, note) if mark_corrected
-      refresh_memory_records(t(".notice"))
-    else
+    @memory_record.assign_attributes(attrs)
+
+    if @memory_record.invalid?
       render_form(:edit, status: :unprocessable_entity)
+    else
+      update_record_with_revision!(previous_body, note, mark_corrected)
+      refresh_memory_records(t(".notice"))
     end
+  rescue ActiveRecord::RecordInvalid
+    @memory_record.reload
+    @memory_record.errors.add(:base, t(".revision_error"))
+    render_form(:edit, status: :unprocessable_entity)
   end
 
   def review
@@ -96,6 +102,13 @@ class MemoryRecordsController < ApplicationController
       revised_body: @memory_record.body,
       note:
     )
+  end
+
+  def update_record_with_revision!(previous_body, note, mark_corrected)
+    MemoryRecord.transaction do
+      @memory_record.save!
+      create_revision(previous_body, note) if mark_corrected
+    end
   end
 
   def refresh_memory_records(message, alert: false, status: :ok)

@@ -760,6 +760,7 @@ en:
       notice: "Memory was added."
     update:
       notice: "Memory was updated."
+      revision_error: "Memory could not be updated because the correction history could not be saved."
     review:
       notice: "Memory was marked reviewed."
     approve_high_impact_automation:

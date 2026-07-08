@@ -205,6 +205,25 @@ RSpec.describe "Memory records", type: :request do
       expect(record.reload).to have_attributes(body: "Original memory", confidence: "high", status: "active")
     end
 
+    it "rolls back the record update when revision creation fails" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, body: "Original memory", source: "user_confirmed", status: "active")
+      revision_error = ActiveRecord::RecordInvalid.new(MemoryRevision.new)
+      sign_in user
+
+      allow_any_instance_of(MemoryRevision).to receive(:save!).and_raise(revision_error)
+
+      expect do
+        patch relationship_profile_memory_record_path(profile, record),
+          params: { memory_record: { title: record.title, body: "Corrected memory", correction_note: "User clarified it." } },
+          as: :turbo_stream
+      end.not_to change(MemoryRevision, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(record.reload).to have_attributes(body: "Original memory", source: "user_confirmed", status: "active")
+    end
+
     it "renders validation errors in the edit frame" do
       user = create(:user)
       profile = create(:relationship_profile, user:)

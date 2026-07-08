@@ -51,7 +51,7 @@
     <% if memory_record.persisted? %>
       <div class="sm:col-span-2">
         <%= label_tag "memory_record_correction_note", t("memory_records.form.correction_note"), class: "block text-sm font-medium text-stone-800" %>
-        <%= text_area_tag "memory_record[correction_note]", nil, id: "memory_record_correction_note", rows: 3, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("memory_records.form.correction_note_placeholder") %>
+        <%= text_area_tag "memory_record[correction_note]", params.dig(:memory_record, :correction_note), id: "memory_record_correction_note", rows: 3, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("memory_records.form.correction_note_placeholder") %>
       </div>
     <% end %>
   </div>

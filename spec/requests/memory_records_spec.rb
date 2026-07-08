@@ -222,6 +222,7 @@ RSpec.describe "Memory records", type: :request do
       end.not_to change(MemoryRevision, :count)
 
       expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("User clarified it.")
       expect(record.reload).to have_attributes(body: "Original memory", source: "user_confirmed", status: "active")
     end
 

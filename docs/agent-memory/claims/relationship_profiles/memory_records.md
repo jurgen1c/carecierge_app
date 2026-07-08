@@ -13,8 +13,8 @@ claim: >
   review, correction, and high-impact automation approval metadata. Corrections
   create MemoryRevision rows transactionally, archived records are not
   reviewable, failed review transitions report errors, risky records require
-  explicit automation approval, and memory-record rendering uses direct ordered
-  queries or targeted nested lookups instead of broad profile preloads.
+  explicit automation approval, edit re-renders preserve submitted correction
+  notes, and rendering avoids broad profile preloads.
 
 source_files:
   - app/models/memory_record.rb
@@ -67,8 +67,8 @@ Turbo streams with source, confidence, lifecycle, review, correction, and
 high-impact automation metadata. Body corrections create MemoryRevision rows in
 the same transaction as the record update. Archived records are not reviewable,
 failed review transitions report errors, risky records require explicit
-automation approval, and memory-record rendering uses direct ordered queries or
-targeted nested lookups instead of broad profile preloads.
+automation approval, edit re-renders preserve submitted correction notes, and
+rendering avoids broad profile preloads.
 
 ## Why It Matters
 

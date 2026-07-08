@@ -76,7 +76,6 @@ class RelationshipProfilesController < ApplicationController
         :contact_methods,
         :gifts,
         :important_dates,
-        :memory_records,
         :relationship_preferences,
         :relationship_tags,
         :relationship_groups,

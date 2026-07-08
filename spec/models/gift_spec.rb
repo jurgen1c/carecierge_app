@@ -116,6 +116,22 @@ RSpec.describe Gift, type: :model do
     end
   end
 
+  describe "localized validation labels" do
+    it "labels price_cents errors like the visible price field" do
+      gift = build(:gift, price_cents: -1)
+
+      expect(gift).not_to be_valid
+
+      I18n.with_locale(:en) do
+        expect(gift.errors.full_messages).to include("Price must be greater than or equal to 0")
+      end
+
+      I18n.with_locale(:es) do
+        expect(gift.errors.full_messages).to include("Precio debe ser mayor que o igual a 0")
+      end
+    end
+  end
+
   describe "#mark_given!" do
     it "marks the gift given with reaction and outcome metadata" do
       gift = create(:gift, status: "planned")

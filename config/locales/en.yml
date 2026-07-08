@@ -94,6 +94,7 @@ en:
         occasion: "Occasion"
         outcome: "Outcome"
         price: "Price"
+        price_cents: "Price"
         reaction: "Reaction"
         status: "Status"
         vendor: "Vendor"

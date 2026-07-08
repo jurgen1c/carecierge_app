@@ -254,6 +254,30 @@ class RelationshipProfile < ApplicationRecord
     end
   end
 
+  def loaded_gift_duplicate_name_cache
+    @loaded_gift_duplicate_name_cache ||= begin
+      cache = { total_count: 0, names: {}, persisted_ids: {}, object_ids: {} }
+
+      gifts.target.each do |gift|
+        normalized_name = Gift.normalized_duplicate_name(gift.name)
+        next if normalized_name.blank?
+
+        cache[:total_count] += 1
+        entry = cache[:names][normalized_name] ||= { count: 0, persisted_ids: {}, object_ids: {} }
+        entry[:count] += 1
+        if gift.persisted?
+          cache[:persisted_ids][gift.id] = true
+          entry[:persisted_ids][gift.id] = true
+        else
+          cache[:object_ids][gift.object_id] = true
+          entry[:object_ids][gift.object_id] = true
+        end
+      end
+
+      cache
+    end
+  end
+
   def structured_preferences_text
     structured_preferences.map { |key, value| "#{key}: #{value}" }.join("\n")
   end

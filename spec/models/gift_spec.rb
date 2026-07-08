@@ -92,6 +92,19 @@ RSpec.describe Gift, type: :model do
       expect(gifts).not_to receive(:where)
       expect(gift).to be_duplicate_candidate
     end
+
+    it "uses cached loaded gift names instead of scanning the collection for each check" do
+      profile = create(:relationship_profile)
+      create(:gift, relationship_profile: profile, name: "Noise-canceling headphones", status: "given")
+      create(:gift, relationship_profile: profile, name: "noise-canceling HEADPHONES", status: "planned")
+      gifts = profile.reload.gifts.load
+      gift = gifts.second
+      gift.relationship_profile = profile
+
+      expect(gifts).not_to receive(:any?)
+      expect(gifts).not_to receive(:where)
+      expect(gift).to be_duplicate_candidate
+    end
   end
 
   describe ".editable_status_options" do

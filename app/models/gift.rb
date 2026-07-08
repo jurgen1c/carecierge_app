@@ -85,12 +85,14 @@ class Gift < ApplicationRecord
   end
 
   def duplicate_candidate?
-    normalized_name = name.to_s.squish.downcase
+    normalized_name = self.class.normalized_duplicate_name(name)
     return false if relationship_profile.blank? || normalized_name.blank?
 
     gifts = relationship_profile.gifts
-    if gifts.loaded? && gifts.any? { |gift| gift != self }
-      gifts.any? { |gift| gift != self && gift.name.to_s.squish.downcase == normalized_name }
+    if gifts.loaded?
+      loaded_duplicate_candidate?(normalized_name) do
+        gifts.where.not(id:).where("lower(name) = ?", normalized_name).exists?
+      end
     else
       gifts.where.not(id:).where("lower(name) = ?", normalized_name).exists?
     end
@@ -125,7 +127,35 @@ class Gift < ApplicationRecord
     I18n.t("gifts.outcomes.#{value}")
   end
 
+  def self.normalized_duplicate_name(value)
+    value.to_s.squish.downcase
+  end
+
   private
+
+  def loaded_duplicate_candidate?(normalized_name)
+    cache = relationship_profile.loaded_gift_duplicate_name_cache
+    return yield unless loaded_cache_has_peer?(cache)
+
+    entry = cache.fetch(:names)[normalized_name]
+    return false if entry.blank?
+
+    matching_count = entry.fetch(:count)
+    matching_count -= 1 if persisted? && entry.fetch(:persisted_ids).key?(id)
+    matching_count -= 1 if new_record? && entry.fetch(:object_ids).key?(object_id)
+
+    matching_count.positive?
+  end
+
+  def loaded_cache_has_peer?(cache)
+    cache.fetch(:total_count) > (loaded_cache_includes_self?(cache) ? 1 : 0)
+  end
+
+  def loaded_cache_includes_self?(cache)
+    return cache.fetch(:persisted_ids).key?(id) if persisted?
+
+    cache.fetch(:object_ids).key?(object_id)
+  end
 
   def normalize_text_fields
     self.name = name.to_s.squish

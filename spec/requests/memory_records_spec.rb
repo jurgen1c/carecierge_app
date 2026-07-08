@@ -1,3 +1,4 @@
+require "cgi"
 require "rails_helper"
 
 RSpec.describe "Memory records", type: :request do

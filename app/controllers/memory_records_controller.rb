@@ -76,7 +76,6 @@ class MemoryRecordsController < ApplicationController
   def set_relationship_profile
     @relationship_profile = current_user
       .relationship_profiles
-      .includes(:memory_records)
       .friendly
       .find(params[:relationship_profile_id])
   end

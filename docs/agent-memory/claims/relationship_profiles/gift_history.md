@@ -17,8 +17,9 @@ claim: >
   preserve English and Spanish localized labels and validation copy, protect
   terminal given/outcome metadata from generic form forging, surface duplicate
   candidates from prior same-profile gifts with an index aligned to the
-  normalized-name lookup, require a given date on given gifts, and cannot access
-  another user's relationship profile.
+  normalized-name lookup, require a given date on given gifts, order gift
+  history by newest given date with names ascending for same-day ties, and
+  cannot access another user's relationship profile.
 
 source_files:
   - app/models/gift.rb
@@ -71,7 +72,8 @@ input cannot persist a gift as given without history ordering metadata.
 Same-profile prior gifts with the same normalized name are surfaced as duplicate
 candidates so future gift recommendations can avoid repeating what already
 happened. The gifts table indexes relationship profile plus lowercased name to
-match the duplicate-candidate lookup.
+match the duplicate-candidate lookup. Gift history sorts newest given gifts
+first while keeping same-day gifts in ascending name order.
 
 ## Why It Matters
 

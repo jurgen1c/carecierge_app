@@ -250,8 +250,8 @@ class RelationshipProfile < ApplicationRecord
 
   def gift_history
     gifts.reject(&:marked_for_destruction?).select(&:given?).sort_by do |gift|
-      [ gift.given_on || Date.new(0), gift.name.downcase ]
-    end.reverse
+      [ -(gift.given_on || Date.new(0)).jd, gift.name.downcase ]
+    end
   end
 
   def structured_preferences_text

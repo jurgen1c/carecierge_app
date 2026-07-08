@@ -43,6 +43,16 @@ RSpec.describe Gift, type: :model do
       expect(profile.gift_ideas).to contain_exactly(idea, planned)
       expect(profile.gift_history).to contain_exactly(given)
     end
+
+    it "orders gift history by newest given date while keeping names ascending for date ties" do
+      profile = create(:relationship_profile)
+      older = create(:gift, relationship_profile: profile, status: "given", name: "Notebook", given_on: Date.new(2026, 6, 1))
+      same_date_b = create(:gift, relationship_profile: profile, status: "given", name: "Zoo pass", given_on: Date.new(2026, 7, 7))
+      same_date_a = create(:gift, relationship_profile: profile, status: "given", name: "Art print", given_on: Date.new(2026, 7, 7))
+      newer = create(:gift, relationship_profile: profile, status: "given", name: "Coffee class", given_on: Date.new(2026, 8, 1))
+
+      expect(profile.reload.gift_history).to eq([ newer, same_date_a, same_date_b, older ])
+    end
   end
 
   describe "#duplicate_candidate?" do

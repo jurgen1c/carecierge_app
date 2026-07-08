@@ -39,6 +39,7 @@ en:
       important_date: "%b %-d, %Y"
       desire_captured_on: "%b %-d, %Y"
       gift_given_on: "%b %-d, %Y"
+      memory_stale_after: "%b %-d, %Y"
   activerecord:
     attributes:
       feature_flag:
@@ -98,6 +99,13 @@ en:
         reaction: "Reaction"
         status: "Status"
         vendor: "Vendor"
+      memory_record:
+        body: "Memory"
+        confidence: "Confidence"
+        source: "Source"
+        stale_after: "Review after"
+        status: "Status"
+        title: "Title"
       relationship_template:
         key: "Key"
         name: "Name"
@@ -668,6 +676,96 @@ en:
       error: "Gift could not be marked given."
     destroy:
       notice: "Gift was deleted."
+  memory_records:
+    sources:
+      user_confirmed: "User confirmed"
+      ai_inferred: "AI inferred"
+      imported: "Imported"
+      user_corrected: "User corrected"
+    confidences:
+      confirmed: "Confirmed"
+      high: "High"
+      medium: "Medium"
+      low: "Low"
+      inferred: "Inferred"
+    statuses:
+      active: "Active"
+      needs_review: "Needs review"
+      stale: "Stale"
+      corrected: "Corrected"
+      archived: "Archived"
+    section:
+      kicker: "Trust and review"
+      title: "Memory records"
+      body: "Track what Carecierge knows, where it came from, how confident it is, and whether it needs review before automation relies on it."
+      review_count:
+        one: "1 needs review"
+        other: "%{count} need review"
+      blocked_count:
+        one: "1 automation blocked"
+        other: "%{count} automations blocked"
+      list_title: "Known context"
+      record_count:
+        one: "1 memory"
+        other: "%{count} memories"
+      empty_title: "No memories yet"
+      empty_body: "Add confirmed or imported context that future reminders and suggestions can use with clear source and confidence."
+      trust_title: "Automation guardrails"
+      trust_body: "Low-confidence or inferred memories stay out of high-impact automation until you explicitly approve them."
+      review_label: "Review queue"
+      review_value:
+        one: "1 memory needs your review."
+        other: "%{count} memories need your review."
+      automation_label: "High-impact automation"
+      automation_value:
+        one: "1 memory needs approval before high-impact automation."
+        other: "%{count} memories need approval before high-impact automation."
+    record:
+      edit: "Edit"
+      delete: "Delete"
+      delete_confirm: "Delete this memory record? This cannot be undone."
+      mark_reviewed: "Mark reviewed"
+      stale_after: "Review after"
+      no_stale_after: "No review date"
+      review_status: "Review"
+      needs_review: "Needs review"
+      review_current: "Current"
+      automation_status: "Automation"
+      automation_allowed: "Allowed for high-impact automation"
+      automation_blocked: "High-impact automation needs approval"
+      approval_title: "High-impact automation needs approval"
+      approval_body: "Review this memory before Carecierge uses it for sensitive actions like purchases, bookings, or outreach."
+      approve_automation: "Approve automation"
+    form:
+      new_title: "Add memory"
+      edit_title: "Edit memory"
+      body: "Capture the fact, its source, and the confidence level so future assistance stays explainable and reviewable."
+      errors_heading:
+        one: "Review this field"
+        other: "Review these %{count} fields"
+      title: "Title"
+      title_placeholder: "Prefers quiet birthday dinners"
+      memory: "Memory"
+      memory_placeholder: "What should Carecierge remember, and how should it use that context?"
+      source: "Source"
+      confidence: "Confidence"
+      status: "Status"
+      stale_after: "Review after"
+      correction_note: "Correction note"
+      correction_note_placeholder: "What changed or who clarified this?"
+      create: "Add memory"
+      update: "Update memory"
+      cancel: "Cancel"
+    create:
+      notice: "Memory was added."
+    update:
+      notice: "Memory was updated."
+    review:
+      notice: "Memory was marked reviewed."
+    approve_high_impact_automation:
+      notice: "Memory was approved for high-impact automation."
+    destroy:
+      notice: "Memory was deleted."
   relationship_preferences:
     preference_types:
       positive: "Positive"

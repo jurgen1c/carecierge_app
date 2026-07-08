@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_07_123000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_08_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -178,6 +178,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_123000) do
     t.index ["relationship_profile_id", "importance_level"], name: "idx_on_relationship_profile_id_importance_level_a07d6afa11"
     t.index ["relationship_profile_id", "starts_on"], name: "index_important_dates_on_relationship_profile_id_and_starts_on"
     t.index ["relationship_profile_id"], name: "index_important_dates_on_relationship_profile_id"
+  end
+
+  create_table "memory_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body", null: false
+    t.string "confidence", default: "confirmed", null: false
+    t.datetime "created_at", null: false
+    t.datetime "high_impact_automation_approved_at"
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "review_queued_at"
+    t.datetime "reviewed_at"
+    t.string "source", default: "user_confirmed", null: false
+    t.date "stale_after"
+    t.string "status", default: "active", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "confidence"], name: "index_memory_records_on_relationship_profile_id_and_confidence"
+    t.index ["relationship_profile_id", "source"], name: "index_memory_records_on_relationship_profile_id_and_source"
+    t.index ["relationship_profile_id", "stale_after"], name: "idx_on_relationship_profile_id_stale_after_ff6eff736b"
+    t.index ["relationship_profile_id", "status"], name: "index_memory_records_on_relationship_profile_id_and_status"
+    t.index ["relationship_profile_id"], name: "index_memory_records_on_relationship_profile_id"
+  end
+
+  create_table "memory_revisions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "memory_record_id", null: false
+    t.text "note"
+    t.text "previous_body", null: false
+    t.text "revised_body", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id"
+    t.index ["memory_record_id", "created_at"], name: "index_memory_revisions_on_memory_record_id_and_created_at"
+    t.index ["memory_record_id"], name: "index_memory_revisions_on_memory_record_id"
+    t.index ["user_id"], name: "index_memory_revisions_on_user_id"
   end
 
   create_table "noticed_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -395,6 +428,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_123000) do
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
   add_foreign_key "gifts", "relationship_profiles"
   add_foreign_key "important_dates", "relationship_profiles"
+  add_foreign_key "memory_records", "relationship_profiles"
+  add_foreign_key "memory_revisions", "memory_records"
+  add_foreign_key "memory_revisions", "users"
   add_foreign_key "relationship_field_values", "relationship_profiles"
   add_foreign_key "relationship_field_values", "template_fields"
   add_foreign_key "relationship_group_memberships", "relationship_groups", on_delete: :cascade

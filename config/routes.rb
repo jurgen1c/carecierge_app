@@ -23,6 +23,10 @@ Rails.application.routes.draw do
     resources :gifts, except: %i[index show] do
       patch :mark_given, on: :member
     end
+    resources :memory_records, except: %i[index show] do
+      patch :review, on: :member
+      patch :approve_high_impact_automation, on: :member
+    end
     resources :desires, except: %i[index show] do
       patch :fulfill, on: :member
     end

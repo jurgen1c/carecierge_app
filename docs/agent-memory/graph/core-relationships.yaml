@@ -121,3 +121,23 @@ edges:
     relation: same_area
     reason: Gift history and important dates both feed recurring occasion planning and recommendation workflows.
     strength: 65
+  - source: relationship_profiles.memory_records
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Memory records are nested under owner-scoped relationship profiles and reuse that privacy boundary.
+    strength: 90
+  - source: relationship_profiles.memory_records
+    target: relationship_profiles.preference_metadata
+    relation: same_area
+    reason: Memory records and relationship preferences both track source and confidence metadata for remembered relationship facts.
+    strength: 75
+  - source: relationship_profiles.memory_records
+    target: relationship_profiles.gift_history
+    relation: same_area
+    reason: Memory records and gift history are relationship-memory inputs that can feed future high-impact recommendation workflows.
+    strength: 70
+  - source: relationship_profiles.memory_records
+    target: relationship_profiles.desires
+    relation: same_area
+    reason: Memory records and desires are reviewable relationship-memory inputs for future suggestions and planning.
+    strength: 65

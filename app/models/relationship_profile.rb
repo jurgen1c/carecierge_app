@@ -133,7 +133,6 @@ class RelationshipProfile < ApplicationRecord
     :relationship_taggings,
     :relationship_group_memberships,
     :relationship_field_values,
-    :gifts,
     :important_dates
   validate :unique_nested_contact_kinds
   validate :unique_nested_preference_keys

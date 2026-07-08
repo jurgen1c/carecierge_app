@@ -164,6 +164,16 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(sql.grep(/DELETE FROM "relationship_taggings"|DELETE FROM "relationship_group_memberships"/)).to be_empty
   end
 
+  it "does not validate independently managed gifts when saving the profile" do
+    profile = create(:relationship_profile)
+    legacy_gift = build(:gift, relationship_profile: profile, status: "given", given_on: nil, name: "Legacy gift")
+    legacy_gift.save!(validate: false)
+
+    profile.reload.gifts.load
+
+    expect(profile.update(preferred_name: "May")).to be(true)
+  end
+
   it "bulk deletes marked relationship assignments during post-save cleanup" do
     profile = build(:relationship_profile)
     tag_ids = [ SecureRandom.uuid ]

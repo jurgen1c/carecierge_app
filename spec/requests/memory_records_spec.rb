@@ -169,7 +169,7 @@ RSpec.describe "Memory records", type: :request do
         high_impact_automation_approved_at: nil,
         reviewed_at: nil
       )
-      expect(record).not_to be_high_impact_automation_allowed
+      expect(record).to be_high_impact_automation_allowed
     end
 
     it "clears prior high-impact approval when trust metadata changes" do

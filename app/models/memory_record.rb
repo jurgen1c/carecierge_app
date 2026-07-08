@@ -64,13 +64,15 @@ class MemoryRecord < ApplicationRecord
   end
 
   def review_required?
+    return false if status == "archived"
+
     status.in?(%w[needs_review stale]) || stale?
   end
 
   def high_impact_automation_allowed?
     return true if high_impact_automation_approved_at.present?
 
-    source == "user_confirmed" && confidence.in?(%w[confirmed high medium])
+    source != "ai_inferred" && !confidence.in?(%w[low inferred])
   end
 
   def high_impact_automation_blocked?
@@ -85,6 +87,8 @@ class MemoryRecord < ApplicationRecord
   end
 
   def mark_reviewed!
+    return false if status == "archived"
+
     update!(status: "active", confidence: "confirmed", reviewed_at: Time.current, review_queued_at: nil, stale_after: nil)
   end
 

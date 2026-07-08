@@ -53,6 +53,14 @@ RSpec.describe MemoryRecord, type: :model do
         expect(build(:memory_record, stale_after: Date.tomorrow)).not_to be_review_required
       end
     end
+
+    it "is false for archived records even when they are stale" do
+      travel_to Time.zone.local(2026, 7, 8, 10, 0, 0) do
+        record = build(:memory_record, status: "archived", stale_after: Date.yesterday)
+
+        expect(record).not_to be_review_required
+      end
+    end
   end
 
   describe "#high_impact_automation_allowed?" do
@@ -66,10 +74,16 @@ RSpec.describe MemoryRecord, type: :model do
       expect(record).to be_high_impact_automation_allowed
     end
 
-    it "allows confirmed records without separate high-impact approval" do
-      record = build(:memory_record, source: "user_confirmed", confidence: "confirmed")
+    it "allows trusted non-inferred records without separate high-impact approval" do
+      expect(build(:memory_record, source: "user_confirmed", confidence: "confirmed")).to be_high_impact_automation_allowed
+      expect(build(:memory_record, source: "imported", confidence: "high")).to be_high_impact_automation_allowed
+      expect(build(:memory_record, source: "user_corrected", confidence: "medium")).to be_high_impact_automation_allowed
+    end
 
-      expect(record).to be_high_impact_automation_allowed
+    it "blocks low-confidence or inferred memories without approval" do
+      expect(build(:memory_record, source: "user_confirmed", confidence: "low")).not_to be_high_impact_automation_allowed
+      expect(build(:memory_record, source: "imported", confidence: "inferred")).not_to be_high_impact_automation_allowed
+      expect(build(:memory_record, source: "ai_inferred", confidence: "high")).not_to be_high_impact_automation_allowed
     end
   end
 
@@ -112,6 +126,15 @@ RSpec.describe MemoryRecord, type: :model do
           reviewed_at: Time.current
         )
         expect(record).not_to be_review_required
+      end
+    end
+
+    it "does not reactivate archived records" do
+      travel_to Time.zone.local(2026, 7, 8, 10, 0, 0) do
+        record = create(:memory_record, status: "archived", confidence: "low", stale_after: Date.yesterday, review_queued_at: 1.day.ago)
+
+        expect(record.mark_reviewed!).to be(false)
+        expect(record.reload).to have_attributes(status: "archived", confidence: "low", stale_after: Date.yesterday, review_queued_at: 1.day.ago)
       end
     end
   end

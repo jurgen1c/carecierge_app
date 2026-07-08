@@ -156,8 +156,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_07_123000) do
     t.string "status", default: "idea", null: false
     t.datetime "updated_at", null: false
     t.string "vendor"
+    t.index "relationship_profile_id, lower((name)::text)", name: "index_gifts_on_profile_and_lower_name"
     t.index ["relationship_profile_id", "given_on"], name: "index_gifts_on_relationship_profile_id_and_given_on"
-    t.index ["relationship_profile_id", "name"], name: "index_gifts_on_relationship_profile_id_and_name"
     t.index ["relationship_profile_id", "outcome"], name: "index_gifts_on_relationship_profile_id_and_outcome"
     t.index ["relationship_profile_id", "status"], name: "index_gifts_on_relationship_profile_id_and_status"
     t.index ["relationship_profile_id"], name: "index_gifts_on_relationship_profile_id"

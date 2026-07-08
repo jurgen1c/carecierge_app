@@ -21,9 +21,9 @@
 #
 #  index_gifts_on_relationship_profile_id               (relationship_profile_id)
 #  index_gifts_on_relationship_profile_id_and_given_on  (relationship_profile_id,given_on)
-#  index_gifts_on_relationship_profile_id_and_name      (relationship_profile_id,name)
 #  index_gifts_on_relationship_profile_id_and_outcome   (relationship_profile_id,outcome)
 #  index_gifts_on_relationship_profile_id_and_status    (relationship_profile_id,status)
+#  index_gifts_on_profile_and_lower_name                (relationship_profile_id, lower((name)::text))
 #
 # Foreign Keys
 #

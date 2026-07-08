@@ -16,8 +16,9 @@ claim: >
   relationship profile gift-history section with Turbo streams when possible,
   preserve English and Spanish localized labels and validation copy, protect
   terminal given/outcome metadata from generic form forging, surface duplicate
-  candidates from prior same-profile gifts, require a given date on given gifts,
-  and cannot access another user's relationship profile.
+  candidates from prior same-profile gifts with an index aligned to the
+  normalized-name lookup, require a given date on given gifts, and cannot access
+  another user's relationship profile.
 
 source_files:
   - app/models/gift.rb
@@ -69,7 +70,8 @@ metadata changes. Given gifts must have a given date so malformed mark-given
 input cannot persist a gift as given without history ordering metadata.
 Same-profile prior gifts with the same normalized name are surfaced as duplicate
 candidates so future gift recommendations can avoid repeating what already
-happened.
+happened. The gifts table indexes relationship profile plus lowercased name to
+match the duplicate-candidate lookup.
 
 ## Why It Matters
 

@@ -106,3 +106,18 @@ edges:
     relation: same_area
     reason: Desires and important dates are relationship-memory inputs that can feed future planning and suggestion workflows.
     strength: 65
+  - source: relationship_profiles.gift_history
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Gift history is nested under owner-scoped relationship profiles and reuses that privacy boundary.
+    strength: 90
+  - source: relationship_profiles.gift_history
+    target: relationship_profiles.desires
+    relation: same_area
+    reason: Gift history and desires are relationship-memory inputs for future gift recommendations.
+    strength: 70
+  - source: relationship_profiles.gift_history
+    target: relationship_profiles.important_dates
+    relation: same_area
+    reason: Gift history and important dates both feed recurring occasion planning and recommendation workflows.
+    strength: 65

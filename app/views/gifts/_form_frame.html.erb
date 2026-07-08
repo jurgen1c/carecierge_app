@@ -1,0 +1,3 @@
+<%= turbo_frame_tag(gift.persisted? ? dom_id(gift) : "new_gift") do %>
+  <%= render "gifts/form", relationship_profile:, gift: %>
+<% end %>

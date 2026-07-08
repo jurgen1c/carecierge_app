@@ -14,7 +14,7 @@ CI.run do
   step "Style: JavaScript", "bun run lint:js"
 
   step "Security: Bun audit", "bun audit"
-  step "Security: Gem audit", "bin/bundler-audit"
+  step "Security: Gem audit", "bin/bundler-audit check --update"
   step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
 
   step "Tests: RSpec", "bundle exec rspec"

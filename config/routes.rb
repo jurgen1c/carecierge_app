@@ -20,6 +20,9 @@ Rails.application.routes.draw do
   resources :relationship_profiles do
     patch :archive, on: :member
     resources :important_dates, except: %i[index show]
+    resources :gifts, except: %i[index show] do
+      patch :mark_given, on: :member
+    end
     resources :desires, except: %i[index show] do
       patch :fulfill, on: :member
     end

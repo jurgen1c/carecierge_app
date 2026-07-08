@@ -1,0 +1,65 @@
+<% form_url = gift.persisted? ? relationship_profile_gift_path(relationship_profile, gift) : relationship_profile_gifts_path(relationship_profile) %>
+
+<%= form_with model: gift, url: form_url, method: gift.persisted? ? :patch : :post, class: "rounded-xl border border-stone-200 bg-white p-4" do |form| %>
+  <div>
+    <h3 class="text-base font-semibold text-stone-950"><%= gift.persisted? ? t("gifts.form.edit_title") : t("gifts.form.new_title") %></h3>
+    <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("gifts.form.body") %></p>
+  </div>
+
+  <% if gift.errors.any? %>
+    <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950">
+      <p class="font-semibold"><%= t("gifts.form.errors_heading", count: gift.errors.count) %></p>
+      <ul class="mt-2 list-disc space-y-1 pl-5">
+        <% gift.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <%= form.label :name, t("gifts.form.name"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_field :name, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("gifts.form.name_placeholder") %>
+    </div>
+
+    <% if gift.status.in?(Gift::EDITABLE_STATUSES) %>
+      <div>
+        <%= form.label :status, t("gifts.form.status"), class: "block text-sm font-medium text-stone-800" %>
+        <%= form.select :status, Gift.editable_status_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+    <% else %>
+      <div>
+        <p class="block text-sm font-medium text-stone-800"><%= t("gifts.form.status") %></p>
+        <p class="mt-2 min-h-11 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-base text-stone-700"><%= gift.status_label %></p>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :occasion, t("gifts.form.occasion"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_field :occasion, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("gifts.form.occasion_placeholder") %>
+    </div>
+
+    <div>
+      <%= form.label :price, t("gifts.form.price"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_field :price, inputmode: "decimal", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("gifts.form.price_placeholder") %>
+    </div>
+
+    <div>
+      <%= form.label :vendor, t("gifts.form.vendor"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_field :vendor, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("gifts.form.vendor_placeholder") %>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <%= form.label :notes, t("gifts.form.notes"), class: "block text-sm font-medium text-stone-800" %>
+    <%= form.text_area :notes, rows: 3, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("gifts.form.notes_placeholder") %>
+  </div>
+
+  <div class="mt-4 flex flex-wrap items-center gap-3">
+    <%= form.submit gift.persisted? ? t("gifts.form.update") : t("gifts.form.create"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <% if gift.persisted? %>
+      <%= link_to t("gifts.form.cancel"), relationship_profile_path(relationship_profile, anchor: dom_id(gift, :row)), data: { turbo_frame: "_top" }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <% end %>
+  </div>
+<% end %>

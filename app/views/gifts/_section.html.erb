@@ -1,0 +1,62 @@
+<%= turbo_frame_tag "gifts_section" do %>
+  <% gift_ideas = relationship_profile.gift_ideas %>
+  <% gift_history = relationship_profile.gift_history %>
+  <% gifts = gift_ideas + gift_history %>
+
+  <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm shadow-stone-200/40">
+    <div class="flex flex-col gap-4 border-b border-stone-200 pb-5 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold text-emerald-800"><%= t("gifts.section.kicker") %></p>
+        <h2 class="mt-2 text-xl font-semibold text-stone-950"><%= t("gifts.section.title") %></h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("gifts.section.body") %></p>
+      </div>
+      <span class="inline-flex w-fit items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900"><%= t("gifts.section.turbo_hint") %></span>
+    </div>
+
+    <div class="mt-5 grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+      <div class="rounded-xl border border-stone-200 bg-stone-50/70 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h3 class="text-base font-semibold text-stone-950"><%= t("gifts.section.list_title") %></h3>
+          <span class="text-xs font-medium text-stone-600"><%= t("gifts.section.gift_count", count: gifts.size) %></span>
+        </div>
+
+        <% if gifts.any? %>
+          <div class="mt-4 grid gap-3">
+            <% gifts.each do |gift| %>
+              <%= render "gifts/gift", relationship_profile:, gift: %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="mt-4 rounded-lg border border-dashed border-stone-300 bg-white px-4 py-5">
+            <p class="text-sm font-semibold text-stone-950"><%= t("gifts.section.empty_title") %></p>
+            <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("gifts.section.empty_body") %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="grid gap-4">
+        <section class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
+          <h3 class="text-base font-semibold text-stone-950"><%= t("gifts.section.recommendations_title") %></h3>
+          <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("gifts.section.recommendations_body") %></p>
+          <% if gift_history.any? %>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <% gift_history.first(4).each do |gift| %>
+                <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-emerald-900"><%= gift.name %></span>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="mt-4 text-sm leading-6 text-stone-700"><%= t("gifts.section.no_history") %></p>
+          <% end %>
+        </section>
+
+        <%= turbo_frame_tag "new_gift", src: new_relationship_profile_gift_path(relationship_profile), loading: :lazy do %>
+          <div class="rounded-xl border border-stone-200 bg-white p-4">
+            <h3 class="text-base font-semibold text-stone-950"><%= t("gifts.form.new_title") %></h3>
+            <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("gifts.form.body") %></p>
+            <%= link_to t("gifts.form.create"), new_relationship_profile_gift_path(relationship_profile), class: "mt-4 inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+<% end %>

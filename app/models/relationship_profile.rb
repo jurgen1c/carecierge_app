@@ -111,6 +111,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :relationship_groups, through: :relationship_group_memberships
   has_many :relationship_field_values, dependent: :destroy
   has_many :important_dates, dependent: :destroy
+  has_many :gifts, dependent: :destroy
   has_many :desires, dependent: :destroy
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
@@ -238,6 +239,42 @@ class RelationshipProfile < ApplicationRecord
     desires.reject(&:marked_for_destruction?).select(&:fulfilled?).sort_by do |desire|
       [ desire.fulfillments.map(&:fulfilled_on).compact.max || desire.captured_on || Date.new(0), desire.title.downcase ]
     end.reverse
+  end
+
+  def gift_ideas
+    gifts.reject(&:marked_for_destruction?).select { |gift| gift.status.in?(%w[idea planned]) }.sort_by do |gift|
+      [ Gift::STATUSES.index(gift.status) || 99, gift.name.downcase ]
+    end
+  end
+
+  def gift_history
+    gifts.reject(&:marked_for_destruction?).select(&:given?).sort_by do |gift|
+      [ -(gift.given_on || Date.new(0)).jd, gift.name.downcase ]
+    end
+  end
+
+  def loaded_gift_duplicate_name_cache
+    @loaded_gift_duplicate_name_cache ||= begin
+      cache = { total_count: 0, names: {}, persisted_ids: {}, object_ids: {} }
+
+      gifts.target.each do |gift|
+        normalized_name = Gift.normalized_duplicate_name(gift.name)
+        next if normalized_name.blank?
+
+        cache[:total_count] += 1
+        entry = cache[:names][normalized_name] ||= { count: 0, persisted_ids: {}, object_ids: {} }
+        entry[:count] += 1
+        if gift.persisted?
+          cache[:persisted_ids][gift.id] = true
+          entry[:persisted_ids][gift.id] = true
+        else
+          cache[:object_ids][gift.object_id] = true
+          entry[:object_ids][gift.object_id] = true
+        end
+      end
+
+      cache
+    end
   end
 
   def structured_preferences_text

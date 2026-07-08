@@ -774,6 +774,7 @@ es:
       revision_error: "No se pudo actualizar la memoria porque no se pudo guardar el historial de corrección."
     review:
       notice: "La memoria fue marcada como revisada."
+      error: "No se pudo marcar la memoria como revisada."
     approve_high_impact_automation:
       notice: "La memoria fue aprobada para automatización de alto impacto."
     destroy:

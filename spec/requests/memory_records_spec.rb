@@ -254,6 +254,35 @@ RSpec.describe "Memory records", type: :request do
       expect(record.reviewed_at).to be_present
       expect(record).not_to be_review_required
     end
+
+    it "does not report success when the record cannot be reviewed" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, status: "archived", confidence: "low", stale_after: Date.yesterday)
+      sign_in user
+
+      patch review_relationship_profile_memory_record_path(profile, record), as: :turbo_stream
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Memory could not be marked reviewed.")
+      expect(record.reload).to have_attributes(status: "archived", confidence: "low", stale_after: Date.yesterday)
+    end
+
+    it "handles review validation failures without reporting success" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, status: "needs_review", confidence: "low")
+      review_error = ActiveRecord::RecordInvalid.new(record)
+      sign_in user
+
+      allow_any_instance_of(MemoryRecord).to receive(:mark_reviewed!).and_raise(review_error)
+
+      patch review_relationship_profile_memory_record_path(profile, record), as: :turbo_stream
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Memory could not be marked reviewed.")
+      expect(record.reload).to have_attributes(status: "needs_review", confidence: "low")
+    end
   end
 
   describe "PATCH /relationship_profiles/:relationship_profile_id/memory_records/:id/approve_high_impact_automation" do

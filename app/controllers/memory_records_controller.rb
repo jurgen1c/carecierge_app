@@ -49,9 +49,14 @@ class MemoryRecordsController < ApplicationController
   end
 
   def review
-    @memory_record.mark_reviewed!
-
-    refresh_memory_records(t(".notice"))
+    if @memory_record.mark_reviewed!
+      refresh_memory_records(t(".notice"))
+    else
+      refresh_memory_records(t(".error"), alert: true, status: :unprocessable_entity)
+    end
+  rescue ActiveRecord::RecordInvalid
+    @memory_record.reload
+    refresh_memory_records(t(".error"), alert: true, status: :unprocessable_entity)
   end
 
   def approve_high_impact_automation

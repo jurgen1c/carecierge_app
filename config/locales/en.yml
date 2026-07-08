@@ -763,6 +763,7 @@ en:
       revision_error: "Memory could not be updated because the correction history could not be saved."
     review:
       notice: "Memory was marked reviewed."
+      error: "Memory could not be marked reviewed."
     approve_high_impact_automation:
       notice: "Memory was approved for high-impact automation."
     destroy:

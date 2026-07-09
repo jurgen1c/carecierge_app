@@ -2,7 +2,7 @@ require "cgi"
 require "rails_helper"
 
 RSpec.describe "Timeline entries", type: :request do
-  describe "GET /relationship_profiles/:relationship_profile_id" do
+  describe "GET /relationship_profiles/:id" do
     it "renders a filtered relationship timeline with unboxed feed rows and context summary" do
       user = create(:user)
       profile = create(:relationship_profile, user:, first_name: "Ana")
@@ -141,7 +141,7 @@ RSpec.describe "Timeline entries", type: :request do
   end
 
   describe "PATCH /relationship_profiles/:relationship_profile_id/timeline_entries/:id" do
-    it "updates a manual timeline entry through Turbo while preserving system fields" do
+    it "updates a system timeline entry through Turbo while preserving system fields" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
       entry = create(:timeline_entry, relationship_profile: profile, origin: "system", title: "Original")

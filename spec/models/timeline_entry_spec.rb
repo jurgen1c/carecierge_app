@@ -95,5 +95,16 @@ RSpec.describe TimelineEntry, type: :model do
       expect(entry).not_to be_valid
       expect(entry.errors[:source_record]).to include("must belong to the same relationship profile")
     end
+
+    it "rejects partial source object references" do
+      profile = create(:relationship_profile)
+      id_only = build(:timeline_entry, relationship_profile: profile, source_record_id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+      type_only = build(:timeline_entry, relationship_profile: profile, source_record_type: "Gift")
+
+      expect(id_only).not_to be_valid
+      expect(type_only).not_to be_valid
+      expect(id_only.errors[:source_record]).to include("must include both source record type and source record id")
+      expect(type_only.errors[:source_record]).to include("must include both source record type and source record id")
+    end
   end
 end

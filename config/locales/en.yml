@@ -166,6 +166,7 @@ en:
         timeline_entry:
           attributes:
             source_record:
+              complete_reference: "must include both source record type and source record id"
               same_relationship_profile: "must belong to the same relationship profile"
   errors:
     messages:

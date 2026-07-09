@@ -54,6 +54,7 @@ class TimelineEntry < ApplicationRecord
   validates :origin, presence: true, inclusion: { in: ORIGINS }
   validates :title, presence: true
   validates :occurred_at, presence: true
+  validate :source_record_reference_complete
   validate :source_record_matches_relationship_profile
 
   scope :ordered, -> { order(occurred_at: :desc, title: :asc, id: :asc) }
@@ -102,12 +103,24 @@ class TimelineEntry < ApplicationRecord
     self.body = body.to_s.strip.presence
   end
 
+  def source_record_reference_complete
+    return if source_record_type.blank? && source_record_id.blank?
+    return if source_record_reference_complete?
+
+    errors.add(:source_record, :complete_reference)
+  end
+
   def source_record_matches_relationship_profile
+    return unless source_record_reference_complete?
     return if source_record.blank?
     return unless source_record.respond_to?(:relationship_profile_id)
     return if source_record.relationship_profile_id.to_s == relationship_profile_id.to_s
 
     errors.add(:source_record, :same_relationship_profile)
+  end
+
+  def source_record_reference_complete?
+    source_record_type.present? && source_record_id.present?
   end
 
   def source_record_title

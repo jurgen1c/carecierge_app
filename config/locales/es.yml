@@ -137,6 +137,7 @@ es:
         timeline_entry:
           attributes:
             source_record:
+              complete_reference: "debe incluir el tipo y el id del registro de origen"
               same_relationship_profile: "debe pertenecer al mismo perfil de relación"
   errors:
     messages:

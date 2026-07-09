@@ -169,10 +169,10 @@ RSpec.describe "Conversation recaps", type: :request do
       profile = create(:relationship_profile, user:)
       sign_in user
 
-      post relationship_profile_conversation_recaps_path(profile),
+      post relationship_profile_conversation_recaps_path(profile, timeline_type: "gift"),
         params: { conversation_recap: { title: "Lunch", body: "Talked about work.", occurred_at: "2026-07-08T12:30" } }
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(relationship_profile_path(profile, timeline_type: "gift"))
       expect(response).to have_http_status(:found)
     end
 
@@ -199,6 +199,18 @@ RSpec.describe "Conversation recaps", type: :request do
   end
 
   describe "PATCH /relationship_profiles/:relationship_profile_id/conversation_recaps/:id" do
+    it "renders an edit form cancel link that preserves the active timeline filter" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      recap = create(:conversation_recap, relationship_profile: profile)
+      sign_in user
+
+      get edit_relationship_profile_conversation_recap_path(profile, recap, timeline_type: "gift")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(%(href="#{relationship_profile_path(profile, timeline_type: "gift", anchor: ActionView::RecordIdentifier.dom_id(recap, :row))}"))
+    end
+
     it "updates the recap and keeps the linked timeline entry in sync" do
       user = create(:user)
       profile = create(:relationship_profile, user:)

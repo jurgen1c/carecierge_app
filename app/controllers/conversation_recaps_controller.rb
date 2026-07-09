@@ -90,7 +90,7 @@ class ConversationRecapsController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream { render :refresh, status: }
-      format.html { redirect_to relationship_profile_path(@relationship_profile), notice: alert ? nil : message, alert: alert ? message : nil }
+      format.html { redirect_to relationship_profile_path(@relationship_profile, timeline_type: @timeline_type), notice: alert ? nil : message, alert: alert ? message : nil }
     end
   end
 

@@ -1,0 +1,14 @@
+id: car_42_conversation_recaps_pr_review_cleanup
+status: active
+reason: >
+  Follow-up PR review cleanup after CAR-42 introduced the durable
+  relationship_profiles.conversation_recaps claim. The claim already covers the
+  conversation recap form behavior and English/Spanish localized labels. This
+  cleanup only rewrites the extraction checkbox guard into an equivalent
+  positive condition and adjusts list heading copy so it no longer implies
+  pagination or limiting.
+files:
+  - app/views/conversation_recaps/_form.html.erb
+  - config/locales/en.yml
+  - config/locales/es.yml
+expires_at: 2026-08-09

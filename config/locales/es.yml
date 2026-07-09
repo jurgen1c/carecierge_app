@@ -823,7 +823,7 @@ es:
       requested_count:
         one: "1 extracción solicitada"
         other: "%{count} extracciones solicitadas"
-      list_title: "Resúmenes recientes"
+      list_title: "Resúmenes de conversaciones"
       shown_count:
         one: "1 visible"
         other: "%{count} visibles"

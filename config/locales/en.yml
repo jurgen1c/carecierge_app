@@ -812,7 +812,7 @@ en:
       requested_count:
         one: "1 extraction requested"
         other: "%{count} extractions requested"
-      list_title: "Recent recaps"
+      list_title: "Conversation recaps"
       shown_count:
         one: "1 shown"
         other: "%{count} shown"

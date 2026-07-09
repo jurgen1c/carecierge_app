@@ -11,6 +11,10 @@ es:
       desire_captured_on: "%-d/%-m/%Y"
       gift_given_on: "%-d/%-m/%Y"
       memory_stale_after: "%-d/%-m/%Y"
+  time:
+    formats:
+      timeline_entry_day: "%-d/%-m/%Y"
+      timeline_entry_time: "%H:%M"
   activerecord:
     attributes:
       feature_flag:
@@ -77,6 +81,13 @@ es:
         stale_after: "Revisar después"
         status: "Estado"
         title: "Título"
+      timeline_entry:
+        body: "Contexto"
+        entry_type: "Tipo de entrada"
+        occurred_at: "Cuándo pasó"
+        origin: "Origen"
+        source_record: "Registro de origen"
+        title: "Título"
       relationship_template:
         key: "Clave"
         name: "Nombre"
@@ -123,6 +134,10 @@ es:
           attributes:
             template_field:
               unknown_template_field: "no es un campo sugerido válido"
+        timeline_entry:
+          attributes:
+            source_record:
+              same_relationship_profile: "debe pertenecer al mismo perfil de relación"
   errors:
     messages:
       blank: "no puede estar en blanco"
@@ -779,6 +794,74 @@ es:
       notice: "La memoria fue aprobada para automatización de alto impacto."
     destroy:
       notice: "La memoria fue eliminada."
+  timeline_entries:
+    entry_types:
+      note: "Nota"
+      conversation_recap: "Resumen de conversación"
+      gift: "Regalo"
+      event: "Evento"
+      promise: "Promesa"
+      reminder: "Recordatorio"
+      conflict: "Conflicto"
+      apology: "Disculpa"
+      important_date: "Fecha importante"
+      plan: "Plan"
+      booking: "Reserva"
+      ai_extraction: "Extracción de IA"
+      user_correction: "Corrección de usuario"
+    origins:
+      manual: "Manual"
+      system: "Sistema"
+    filters:
+      all: "Todo"
+    source_record: "%{type}: %{title}"
+    section:
+      kicker: "Historial de relación"
+      title: "Cronologia de la relacion"
+      body: "Mantén un registro cronológico de notas, promesas, regalos, planes, correcciones y momentos importantes para que la historia completa sea fácil de revisar."
+      filter_label: "Filtros de cronología"
+      feed_title: "Cronología"
+      shown_count:
+        one: "1 visible"
+        other: "%{count} visibles"
+      empty_title: "No hay entradas de cronología para esta vista"
+      empty_body: "Agrega una nota manual o limpia el filtro para ver todo el historial de la relación."
+      summary_title: "Lista para entradas del sistema"
+      summary_body: "Las entradas manuales funcionan ahora. Los enlaces a origen y las entradas creadas por el sistema ya están representados en el modelo para que tickets posteriores escriban en esta misma cronología."
+      manual_label: "Entradas manuales"
+      manual_count:
+        one: "1 entrada manual"
+        other: "%{count} entradas manuales"
+      system_label: "Entradas del sistema"
+      system_count:
+        one: "1 entrada del sistema"
+        other: "%{count} entradas del sistema"
+    item:
+      edit: "Editar"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar esta entrada de cronología?"
+    form:
+      new_title: "Agregar entrada de cronología"
+      edit_title: "Editar entrada de cronología"
+      body: "Captura qué pasó, cuándo pasó y el contexto que debe mantenerse visible en el historial de la relación."
+      errors_heading:
+        one: "Revisa este campo"
+        other: "Revisa estos %{count} campos"
+      title: "Título"
+      title_placeholder: "Prometió enviar fotos, resumen de cumpleaños, disculpa enviada"
+      entry_type: "Tipo"
+      occurred_at: "Cuándo pasó"
+      body_label: "Contexto"
+      body_placeholder: "Qué pasó, por qué importó y qué debería recordarse la próxima vez"
+      create: "Agregar entrada"
+      update: "Actualizar entrada"
+      cancel: "Cancelar"
+    create:
+      notice: "La entrada de cronología fue agregada."
+    update:
+      notice: "La entrada de cronología fue actualizada."
+    destroy:
+      notice: "La entrada de cronología fue eliminada."
   relationship_preferences:
     preference_types:
       positive: "Positiva"

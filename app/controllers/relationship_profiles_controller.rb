@@ -21,6 +21,10 @@ class RelationshipProfilesController < ApplicationController
     @relationship_groups = current_user.relationship_groups.ordered
   end
 
+  def show
+    @timeline_type = params[:timeline_type].to_s.in?(TimelineEntry::ENTRY_TYPES) ? params[:timeline_type].to_s : nil
+  end
+
   def new
     @relationship_profile = current_user.relationship_profiles.new
     authorize @relationship_profile
@@ -78,6 +82,7 @@ class RelationshipProfilesController < ApplicationController
         :important_dates,
         :relationship_preferences,
         :relationship_tags,
+        :timeline_entries,
         :relationship_groups,
         desires: :fulfillments,
         relationship_taggings: :relationship_tag,

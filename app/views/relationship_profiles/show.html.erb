@@ -21,6 +21,7 @@
   <%= render "important_dates/section", relationship_profile: @relationship_profile %>
   <%= render "gifts/section", relationship_profile: @relationship_profile %>
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>
+  <%= render "timeline_entries/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>
   <%= render "desires/section", relationship_profile: @relationship_profile %>
 
   <section class="grid gap-5 lg:grid-cols-[1.3fr_0.7fr]">

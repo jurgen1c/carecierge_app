@@ -40,6 +40,10 @@ en:
       desire_captured_on: "%b %-d, %Y"
       gift_given_on: "%b %-d, %Y"
       memory_stale_after: "%b %-d, %Y"
+  time:
+    formats:
+      timeline_entry_day: "%b %-d, %Y"
+      timeline_entry_time: "%-l:%M %p"
   activerecord:
     attributes:
       feature_flag:
@@ -106,6 +110,13 @@ en:
         stale_after: "Review after"
         status: "Status"
         title: "Title"
+      timeline_entry:
+        body: "Context"
+        entry_type: "Entry type"
+        occurred_at: "When it happened"
+        origin: "Origin"
+        source_record: "Source record"
+        title: "Title"
       relationship_template:
         key: "Key"
         name: "Name"
@@ -152,6 +163,10 @@ en:
           attributes:
             template_field:
               unknown_template_field: "is not a valid suggested field"
+        timeline_entry:
+          attributes:
+            source_record:
+              same_relationship_profile: "must belong to the same relationship profile"
   errors:
     messages:
       confirmation: "does not match %{attribute}"
@@ -768,6 +783,74 @@ en:
       notice: "Memory was approved for high-impact automation."
     destroy:
       notice: "Memory was deleted."
+  timeline_entries:
+    entry_types:
+      note: "Note"
+      conversation_recap: "Conversation recap"
+      gift: "Gift"
+      event: "Event"
+      promise: "Promise"
+      reminder: "Reminder"
+      conflict: "Conflict"
+      apology: "Apology"
+      important_date: "Important date"
+      plan: "Plan"
+      booking: "Booking"
+      ai_extraction: "AI extraction"
+      user_correction: "User correction"
+    origins:
+      manual: "Manual"
+      system: "System"
+    filters:
+      all: "All"
+    source_record: "%{type}: %{title}"
+    section:
+      kicker: "Relationship history"
+      title: "Relationship timeline"
+      body: "Keep a chronological record of notes, promises, gifts, plans, corrections, and meaningful moments so the full relationship history stays easy to scan."
+      filter_label: "Timeline filters"
+      feed_title: "Chronology"
+      shown_count:
+        one: "1 shown"
+        other: "%{count} shown"
+      empty_title: "No timeline entries match this view"
+      empty_body: "Add a manual note or clear the filter to see the full relationship history."
+      summary_title: "Ready for system entries"
+      summary_body: "Manual entries work now. Source links and system-created entries are represented in the model so later automation tickets can write into this same timeline."
+      manual_label: "Manual entries"
+      manual_count:
+        one: "1 manual entry"
+        other: "%{count} manual entries"
+      system_label: "System entries"
+      system_count:
+        one: "1 system entry"
+        other: "%{count} system entries"
+    item:
+      edit: "Edit"
+      delete: "Delete"
+      delete_confirm: "Delete this timeline entry?"
+    form:
+      new_title: "Add timeline entry"
+      edit_title: "Edit timeline entry"
+      body: "Capture what happened, when it happened, and the context that should remain visible in the relationship history."
+      errors_heading:
+        one: "Review this field"
+        other: "Review these %{count} fields"
+      title: "Title"
+      title_placeholder: "Promised to send photos, birthday dinner recap, apology sent"
+      entry_type: "Type"
+      occurred_at: "When it happened"
+      body_label: "Context"
+      body_placeholder: "What happened, why it mattered, and what should be remembered next time"
+      create: "Add entry"
+      update: "Update entry"
+      cancel: "Cancel"
+    create:
+      notice: "Timeline entry was added."
+    update:
+      notice: "Timeline entry was updated."
+    destroy:
+      notice: "Timeline entry was deleted."
   relationship_preferences:
     preference_types:
       positive: "Positive"

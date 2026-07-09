@@ -82,7 +82,6 @@ class RelationshipProfilesController < ApplicationController
         :important_dates,
         :relationship_preferences,
         :relationship_tags,
-        :timeline_entries,
         :relationship_groups,
         desires: :fulfillments,
         relationship_taggings: :relationship_tag,

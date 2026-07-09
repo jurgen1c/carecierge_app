@@ -50,14 +50,16 @@ RSpec.describe TimelineEntry, type: :model do
   end
 
   describe ".ordered" do
-    it "orders newest events first while keeping titles stable for ties" do
+    it "orders newest events first while keeping titles and IDs stable for ties" do
       profile = create(:relationship_profile)
       older = create(:timeline_entry, relationship_profile: profile, title: "Older", occurred_at: Time.zone.local(2026, 7, 1, 10, 0, 0))
       same_time_b = create(:timeline_entry, relationship_profile: profile, title: "Zoo plan", occurred_at: Time.zone.local(2026, 7, 8, 10, 0, 0))
       same_time_a = create(:timeline_entry, relationship_profile: profile, title: "Apology sent", occurred_at: Time.zone.local(2026, 7, 8, 10, 0, 0))
+      same_title_b = create(:timeline_entry, id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", relationship_profile: profile, title: "Same title", occurred_at: same_time_a.occurred_at)
+      same_title_a = create(:timeline_entry, id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", relationship_profile: profile, title: "Same title", occurred_at: same_time_a.occurred_at)
       newer = create(:timeline_entry, relationship_profile: profile, title: "Newest", occurred_at: Time.zone.local(2026, 7, 9, 10, 0, 0))
 
-      expect(profile.timeline_entries.ordered).to eq([ newer, same_time_a, same_time_b, older ])
+      expect(profile.timeline_entries.ordered).to eq([ newer, same_time_a, same_title_a, same_title_b, same_time_b, older ])
     end
   end
 

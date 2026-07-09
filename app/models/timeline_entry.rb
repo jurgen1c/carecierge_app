@@ -56,7 +56,7 @@ class TimelineEntry < ApplicationRecord
   validates :occurred_at, presence: true
   validate :source_record_matches_relationship_profile
 
-  scope :ordered, -> { order(occurred_at: :desc, title: :asc) }
+  scope :ordered, -> { order(occurred_at: :desc, title: :asc, id: :asc) }
   scope :of_type, ->(entry_type) {
     ENTRY_TYPES.include?(entry_type.to_s) ? where(entry_type:) : all
   }

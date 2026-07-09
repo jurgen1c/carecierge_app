@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "timeline_entries_section" do %>
   <% timeline_entries = relationship_profile.timeline_entries %>
-  <% filtered_entries = timeline_entries.ordered.of_type(selected_type).to_a %>
+  <% filtered_entries = timeline_entries.ordered.of_type(selected_type).includes(:source_record).to_a %>
   <% manual_count = timeline_entries.where(origin: "manual").count %>
   <% system_count = timeline_entries.where(origin: "system").count %>
 

@@ -4,11 +4,16 @@ reason: >
   Follow-up PR review cleanup after CAR-41 introduced the timeline entries
   feature and durable memory claim. The committed timeline claim already covers
   owner-scoped manual create, edit, delete, type filtering, Turbo refreshes, and
-  English/Spanish localization; this follow-up only routes the existing view
-  filtering through the already-covered model scopes and corrects Spanish accent
-  marks plus the matching request spec expectation.
+  English/Spanish localization; these follow-ups only route the existing view
+  filtering through the already-covered model scopes, eager-load source labels,
+  remove an unused profile-show preload, make timeline ordering deterministic
+  within the existing order contract, and correct Spanish accent marks plus the
+  matching request spec expectation.
 files:
+  - app/controllers/relationship_profiles_controller.rb
+  - app/models/timeline_entry.rb
   - app/views/timeline_entries/_section.html.erb
   - config/locales/es.yml
+  - spec/models/timeline_entry_spec.rb
   - spec/requests/timeline_entries_spec.rb
 expires_at: 2026-08-06

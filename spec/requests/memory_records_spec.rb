@@ -191,6 +191,25 @@ RSpec.describe "Memory records", type: :request do
       expect(record).not_to be_high_impact_automation_allowed
     end
 
+    it "keeps trust metadata when the title only changes by squishable whitespace" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      reviewed_at = Time.current
+      approved_at = Time.current
+      record = create(:memory_record, relationship_profile: profile, title: "Quiet birthday dinner", high_impact_automation_approved_at: approved_at, reviewed_at:)
+      sign_in user
+
+      patch relationship_profile_memory_record_path(profile, record),
+        params: { memory_record: { title: "Quiet   birthday   dinner", body: record.body } },
+        as: :turbo_stream
+
+      expect(record.reload).to have_attributes(
+        title: "Quiet birthday dinner",
+        high_impact_automation_approved_at: be_within(1.second).of(approved_at),
+        reviewed_at: be_within(1.second).of(reviewed_at)
+      )
+    end
+
     it "updates metadata without storing a revision when the body is unchanged" do
       user = create(:user)
       profile = create(:relationship_profile, user:)

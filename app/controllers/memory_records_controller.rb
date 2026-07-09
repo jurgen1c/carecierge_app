@@ -95,7 +95,18 @@ class MemoryRecordsController < ApplicationController
 
   def trust_relevant_change?(attrs)
     %i[title body source confidence status].any? do |key|
-      attrs.key?(key) && attrs[key].to_s.strip != @memory_record.public_send(key).to_s
+      attrs.key?(key) && normalized_memory_record_value(key, attrs[key]) != normalized_memory_record_value(key, @memory_record.public_send(key))
+    end
+  end
+
+  def normalized_memory_record_value(key, value)
+    case key
+    when :title
+      value.to_s.squish
+    when :body
+      value.to_s.strip
+    else
+      value.to_s
     end
   end
 

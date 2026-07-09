@@ -33,6 +33,7 @@ class MemoryRecord < ApplicationRecord
   SOURCES = %w[user_confirmed ai_inferred imported user_corrected].freeze
   CONFIDENCES = %w[confirmed high medium low inferred].freeze
   STATUSES = %w[active needs_review stale corrected archived].freeze
+  EDITABLE_STATUSES = %w[active needs_review archived].freeze
 
   belongs_to :relationship_profile
   has_many :memory_revisions, dependent: :destroy
@@ -106,6 +107,10 @@ class MemoryRecord < ApplicationRecord
 
   def self.status_options
     STATUSES.map { |value| [ status_label(value), value ] }
+  end
+
+  def self.editable_status_options
+    EDITABLE_STATUSES.map { |value| [ status_label(value), value ] }
   end
 
   def self.source_label(value)

@@ -88,6 +88,26 @@ RSpec.describe "Memory records", type: :request do
       expect(response.body).to include("Likes jasmine tea")
     end
 
+    it "ignores system-managed statuses submitted through params" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      sign_in user
+
+      post relationship_profile_memory_records_path(profile),
+        params: {
+          memory_record: {
+            title: "Likes jasmine tea",
+            body: "Said jasmine tea helps her unwind.",
+            source: "user_confirmed",
+            confidence: "confirmed",
+            status: "corrected"
+          }
+        },
+        as: :turbo_stream
+
+      expect(profile.memory_records.reload.sole).to have_attributes(status: "active")
+    end
+
     it "does not create a memory record for another user's profile" do
       sign_in create(:user)
       profile = create(:relationship_profile)
@@ -133,6 +153,32 @@ RSpec.describe "Memory records", type: :request do
   end
 
   describe "PATCH /relationship_profiles/:relationship_profile_id/memory_records/:id" do
+    it "renders editable statuses for user-managed records" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, status: "active")
+      sign_in user
+
+      get edit_relationship_profile_memory_record_path(profile, record)
+
+      expect(response).to have_http_status(:ok)
+      status_options = Nokogiri::HTML(response.body).css("select#memory_record_status option").map { |option| option["value"] }
+      expect(status_options).to eq(%w[active needs_review archived])
+    end
+
+    it "renders system-managed statuses as read-only" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, status: "corrected")
+      sign_in user
+
+      get edit_relationship_profile_memory_record_path(profile, record)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Corrected")
+      expect(Nokogiri::HTML(response.body).css("select#memory_record_status")).to be_empty
+    end
+
     it "updates the record and stores a revision when the memory body changes" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
@@ -223,6 +269,21 @@ RSpec.describe "Memory records", type: :request do
       end.not_to change(MemoryRevision, :count)
 
       expect(record.reload).to have_attributes(body: "Original memory", confidence: "high", status: "active")
+    end
+
+    it "ignores system-managed status changes submitted through params" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, body: "Original memory", status: "active")
+      sign_in user
+
+      expect do
+        patch relationship_profile_memory_record_path(profile, record),
+          params: { memory_record: { title: record.title, body: "Original memory", status: "corrected" } },
+          as: :turbo_stream
+      end.not_to change(MemoryRevision, :count)
+
+      expect(record.reload).to have_attributes(body: "Original memory", status: "active")
     end
 
     it "rolls back the record update when revision creation fails" do

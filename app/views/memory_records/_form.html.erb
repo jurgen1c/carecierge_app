@@ -38,10 +38,17 @@
       <%= form.select :confidence, MemoryRecord.confidence_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
     </div>
 
-    <div>
-      <%= form.label :status, t("memory_records.form.status"), class: "block text-sm font-medium text-stone-800" %>
-      <%= form.select :status, MemoryRecord.status_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
-    </div>
+    <% if memory_record.status.in?(MemoryRecord::EDITABLE_STATUSES) %>
+      <div>
+        <%= form.label :status, t("memory_records.form.status"), class: "block text-sm font-medium text-stone-800" %>
+        <%= form.select :status, MemoryRecord.editable_status_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+    <% else %>
+      <div>
+        <p class="block text-sm font-medium text-stone-800"><%= t("memory_records.form.status") %></p>
+        <p class="mt-2 min-h-11 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-base text-stone-700"><%= memory_record.status_label %></p>
+      </div>
+    <% end %>
 
     <div>
       <%= form.label :stale_after, t("memory_records.form.stale_after"), class: "block text-sm font-medium text-stone-800" %>

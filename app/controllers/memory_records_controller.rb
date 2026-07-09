@@ -86,11 +86,17 @@ class MemoryRecordsController < ApplicationController
   end
 
   def memory_record_params
-    params.require(:memory_record).permit(:title, :body, :source, :confidence, :status, :stale_after)
+    permitted_params = params.require(:memory_record).permit(:title, :body, :source, :confidence, :status, :stale_after)
+    permitted_params.delete(:status) if permitted_params[:status].present? && !editable_status_param?(permitted_params[:status])
+    permitted_params
   end
 
   def memory_record_correction_note
     params.require(:memory_record).permit(:correction_note)[:correction_note]
+  end
+
+  def editable_status_param?(status)
+    status.in?(MemoryRecord::EDITABLE_STATUSES) && (@memory_record.blank? || @memory_record.status.in?(MemoryRecord::EDITABLE_STATUSES))
   end
 
   def trust_relevant_change?(attrs)

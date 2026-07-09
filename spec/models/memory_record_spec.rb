@@ -87,6 +87,14 @@ RSpec.describe MemoryRecord, type: :model do
     end
   end
 
+  describe ".editable_status_options" do
+    it "excludes system-managed statuses from form options" do
+      option_values = described_class.editable_status_options.map(&:second)
+
+      expect(option_values).to eq(%w[active needs_review archived])
+    end
+  end
+
   describe "#queue_review_if_stale!" do
     it "marks stale active records as needing review" do
       travel_to Time.zone.local(2026, 7, 8, 10, 0, 0) do

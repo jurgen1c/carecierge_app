@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preference metadata, memory records with confidence/source/review metadata and automation guardrails, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preference metadata, memory records with confidence/source/review metadata and automation guardrails, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -9,6 +9,7 @@ default_queries:
   - contact details rich private notes structured preferences preference metadata
   - preference type category confidence learned date source notes
   - memory records source confidence status stale review automation approval revisions
+  - timeline entries relationship history manual system source record filtering
   - relationship type template fields custom field values
   - custom relationship type label profile attributes store accessor
   - important dates milestones recurrence planning prompts
@@ -26,6 +27,7 @@ watched_files:
   - app/models/relationship_preference.rb
   - app/models/memory_record.rb
   - app/models/memory_revision.rb
+  - app/models/timeline_entry.rb
   - app/models/relationship_tag.rb
   - app/models/relationship_tagging.rb
   - app/models/relationship_group.rb
@@ -44,15 +46,18 @@ watched_files:
   - app/controllers/important_dates_controller.rb
   - app/controllers/gifts_controller.rb
   - app/controllers/memory_records_controller.rb
+  - app/controllers/timeline_entries_controller.rb
   - app/controllers/desires_controller.rb
   - app/policies/relationship_profile_policy.rb
   - app/policies/important_date_policy.rb
   - app/policies/gift_policy.rb
   - app/policies/memory_record_policy.rb
+  - app/policies/timeline_entry_policy.rb
   - app/policies/desire_policy.rb
   - app/views/important_dates/**/*.erb
   - app/views/gifts/**/*.erb
   - app/views/memory_records/**/*.erb
+  - app/views/timeline_entries/**/*.erb
   - app/views/desires/**/*.erb
   - app/views/relationship_profiles/**/*.erb
   - app/views/onboarding/**/*.erb
@@ -64,6 +69,7 @@ watched_files:
   - db/migrate/*important_date*.rb
   - db/migrate/*gift*.rb
   - db/migrate/*memory*.rb
+  - db/migrate/*timeline*.rb
   - db/migrate/*desire*.rb
   - db/migrate/*active_storage*.rb
   - db/migrate/*action_text*.rb
@@ -77,4 +83,5 @@ tags:
   - important_dates
   - gifts
   - memory_records
+  - timeline_entries
   - desires

@@ -1,0 +1,3 @@
+<%= turbo_frame_tag(timeline_entry.persisted? ? dom_id(timeline_entry) : "new_timeline_entry") do %>
+  <%= render "timeline_entries/form", relationship_profile:, timeline_entry:, timeline_type: %>
+<% end %>

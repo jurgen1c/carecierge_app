@@ -141,3 +141,23 @@ edges:
     relation: same_area
     reason: Memory records and desires are reviewable relationship-memory inputs for future suggestions and planning.
     strength: 65
+  - source: relationship_profiles.timeline_entries
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Timeline entries are nested under owner-scoped relationship profiles and reuse that privacy boundary.
+    strength: 90
+  - source: relationship_profiles.timeline_entries
+    target: relationship_profiles.memory_records
+    relation: same_area
+    reason: Timeline entries and memory records are relationship-history inputs with manual and future system-created sources.
+    strength: 70
+  - source: relationship_profiles.timeline_entries
+    target: relationship_profiles.gift_history
+    relation: same_area
+    reason: Timeline entries can reference gifts as source objects in later system-entry workflows.
+    strength: 65
+  - source: relationship_profiles.timeline_entries
+    target: relationship_profiles.important_dates
+    relation: same_area
+    reason: Timeline entries can reference important dates and other relationship milestones in later system-entry workflows.
+    strength: 65

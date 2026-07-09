@@ -113,6 +113,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :important_dates, dependent: :destroy
   has_many :gifts, dependent: :destroy
   has_many :memory_records, dependent: :destroy
+  has_many :timeline_entries, dependent: :destroy
   has_many :desires, dependent: :destroy
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true

@@ -1,0 +1,77 @@
+<%= turbo_frame_tag "timeline_entries_section" do %>
+  <% timeline_entries = relationship_profile.timeline_entries %>
+  <% filtered_entries = timeline_entries.ordered.of_type(selected_type).includes(:source_record).to_a %>
+  <% origin_counts = timeline_entries.group(:origin).count %>
+  <% manual_count = origin_counts.fetch("manual", 0) %>
+  <% system_count = origin_counts.fetch("system", 0) %>
+
+  <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm shadow-stone-200/40">
+    <div class="flex flex-col gap-4 border-b border-stone-200 pb-5 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold text-emerald-800"><%= t("timeline_entries.section.kicker") %></p>
+        <h2 class="mt-2 text-xl font-semibold text-stone-950"><%= t("timeline_entries.section.title") %></h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("timeline_entries.section.body") %></p>
+      </div>
+      <%= link_to t("timeline_entries.form.create"), new_relationship_profile_timeline_entry_path(relationship_profile, timeline_type: selected_type), data: { turbo_frame: "new_timeline_entry" }, class: "inline-flex min-h-11 w-fit items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    </div>
+
+    <div class="mt-5 flex flex-wrap gap-2" aria-label="<%= t("timeline_entries.section.filter_label") %>">
+      <% TimelineEntry.filter_options.each do |label, value| %>
+        <% active = value == selected_type %>
+        <% active_classes = "border-emerald-700 bg-emerald-800 text-white hover:bg-emerald-900" %>
+        <% inactive_classes = "border-stone-200 bg-white text-stone-800 hover:bg-stone-100" %>
+        <%= link_to label,
+          relationship_profile_path(relationship_profile, timeline_type: value.presence, anchor: "timeline_entries_section"),
+          class: [
+            "inline-flex min-h-10 items-center rounded-full border px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700",
+            active ? active_classes : inactive_classes
+          ] %>
+      <% end %>
+    </div>
+
+    <div class="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_18rem]">
+      <div class="rounded-xl border border-stone-200 bg-stone-50/70 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h3 class="text-base font-semibold text-stone-950"><%= t("timeline_entries.section.feed_title") %></h3>
+          <span class="text-xs font-medium text-stone-600"><%= t("timeline_entries.section.shown_count", count: filtered_entries.size) %></span>
+        </div>
+
+        <%= turbo_frame_tag "new_timeline_entry", src: new_relationship_profile_timeline_entry_path(relationship_profile, timeline_type: selected_type), loading: :lazy do %>
+          <div class="mt-4 rounded-lg border border-dashed border-emerald-200 bg-white px-4 py-5">
+            <p class="text-sm font-semibold text-stone-950"><%= t("timeline_entries.form.new_title") %></p>
+            <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("timeline_entries.form.body") %></p>
+            <%= link_to t("timeline_entries.form.create"), new_relationship_profile_timeline_entry_path(relationship_profile, timeline_type: selected_type), class: "mt-4 inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          </div>
+        <% end %>
+
+        <% if filtered_entries.any? %>
+          <div class="mt-5">
+            <% filtered_entries.each do |timeline_entry| %>
+              <%= render "timeline_entries/timeline_entry", relationship_profile:, timeline_entry:, selected_type: %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="mt-5 rounded-lg border border-dashed border-stone-300 bg-white px-4 py-5">
+            <p class="text-sm font-semibold text-stone-950"><%= t("timeline_entries.section.empty_title") %></p>
+            <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("timeline_entries.section.empty_body") %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <aside class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
+        <h3 class="text-base font-semibold text-stone-950"><%= t("timeline_entries.section.summary_title") %></h3>
+        <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("timeline_entries.section.summary_body") %></p>
+        <dl class="mt-4 grid gap-3 text-sm">
+          <div>
+            <dt class="font-semibold text-stone-800"><%= t("timeline_entries.section.manual_label") %></dt>
+            <dd class="mt-1 text-stone-700"><%= t("timeline_entries.section.manual_count", count: manual_count) %></dd>
+          </div>
+          <div>
+            <dt class="font-semibold text-stone-800"><%= t("timeline_entries.section.system_label") %></dt>
+            <dd class="mt-1 text-stone-700"><%= t("timeline_entries.section.system_count", count: system_count) %></dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+<% end %>

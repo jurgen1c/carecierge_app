@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "timeline_entries_section" do %>
+  <%= render "timeline_entries/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "layouts/flash", notice: notice, alert: alert %>
+<% end %>

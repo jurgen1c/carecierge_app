@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_08_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_09_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -386,6 +386,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_08_120100) do
     t.index ["relationship_template_id"], name: "index_template_fields_on_relationship_template_id"
   end
 
+  create_table "timeline_entries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "entry_type", null: false
+    t.datetime "occurred_at", null: false
+    t.string "origin", default: "manual", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.uuid "source_record_id"
+    t.string "source_record_type"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "entry_type"], name: "idx_on_relationship_profile_id_entry_type_7a425876dd"
+    t.index ["relationship_profile_id", "occurred_at"], name: "idx_on_relationship_profile_id_occurred_at_81b70cd1a8"
+    t.index ["relationship_profile_id", "origin"], name: "index_timeline_entries_on_relationship_profile_id_and_origin"
+    t.index ["relationship_profile_id"], name: "index_timeline_entries_on_relationship_profile_id"
+    t.index ["source_record_type", "source_record_id"], name: "idx_on_source_record_type_source_record_id_f700104f25"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "confirmation_sent_at"
@@ -443,4 +461,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_08_120100) do
   add_foreign_key "relationship_taggings", "relationship_tags", on_delete: :cascade
   add_foreign_key "relationship_tags", "users"
   add_foreign_key "template_fields", "relationship_templates"
+  add_foreign_key "timeline_entries", "relationship_profiles"
 end

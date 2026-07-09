@@ -16,6 +16,8 @@ es:
       timeline_entry_day: "%-d/%-m/%Y"
       timeline_entry_time: "%H:%M"
   activerecord:
+    models:
+      conversation_recap: "Resumen de conversación"
     attributes:
       feature_flag:
         description: "Descripción"
@@ -81,6 +83,13 @@ es:
         stale_after: "Revisar después"
         status: "Estado"
         title: "Título"
+      conversation_recap:
+        body: "Resumen"
+        capture_source: "Origen de captura"
+        extraction_status: "Estado de extracción"
+        occurred_at: "Cuándo pasó"
+        title: "Título"
+        transcript: "Transcripción"
       timeline_entry:
         body: "Contexto"
         entry_type: "Tipo de entrada"
@@ -795,6 +804,70 @@ es:
       notice: "La memoria fue aprobada para automatización de alto impacto."
     destroy:
       notice: "La memoria fue eliminada."
+  conversation_recaps:
+    capture_sources:
+      typed: "Resumen escrito"
+      voice_transcript: "Transcripción de voz"
+    extraction_statuses:
+      not_requested: "No solicitada"
+      requested: "Extracción solicitada"
+      ready_for_review: "Lista para revisión"
+      rejected: "Rechazada"
+    section:
+      kicker: "Memoria conversacional"
+      title: "Resúmenes de conversaciones"
+      body: "Captura lo que surgió en una conversación y mantiene las memorias extraídas separadas hasta que las apruebes."
+      recap_count:
+        one: "1 resumen"
+        other: "%{count} resúmenes"
+      requested_count:
+        one: "1 extracción solicitada"
+        other: "%{count} extracciones solicitadas"
+      list_title: "Resúmenes recientes"
+      shown_count:
+        one: "1 visible"
+        other: "%{count} visibles"
+      empty_title: "Aún no hay resúmenes de conversaciones"
+      empty_body: "Agrega un resumen breve después de una llamada, almuerzo o conversación por mensajes para que la cronología conserve el contexto."
+      guardrail_title: "Aprobación antes de cambiar memorias"
+      guardrail_body: "Ningún cambio de memoria ocurre hasta que apruebes las sugerencias extraídas."
+      timeline_label: "Cronología"
+      timeline_value: "Cada resumen crea una entrada de cronología enlazada como resumen de conversación."
+      extraction_label: "Extracción de IA"
+      extraction_value: "La extracción se puede solicitar, pero los datos necesitan revisión antes de convertirse en memorias."
+    recap:
+      edit: "Editar"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar este resumen de conversación y su entrada de cronología enlazada?"
+      transcript: "Transcripción"
+      approval_title: "La extracción de memoria está controlada"
+      approval_body: "Ningún cambio de memoria ocurre hasta que apruebes las sugerencias extraídas."
+    form:
+      new_title: "Agregar resumen de conversación"
+      edit_title: "Editar resumen de conversación"
+      body: "Resume la conversación con tus propias palabras. Puedes pedir sugerencias de memoria para revisión posterior sin cambiar memorias guardadas ahora."
+      errors_heading:
+        one: "Revisa este campo"
+        other: "Revisa estos %{count} campos"
+      title: "Título"
+      title_placeholder: "Almuerzo con David, llamada con mamá, conversación después del trabajo"
+      occurred_at: "Cuándo pasó"
+      capture_source: "Origen de captura"
+      recap: "Resumen"
+      recap_placeholder: "Qué surgió, qué importó y qué debería ser fácil de encontrar después"
+      transcript: "Transcripción"
+      transcript_placeholder: "Transcripción sin procesar opcional o texto dictado para soporte futuro de voz a texto"
+      request_extraction: "Sugerir memorias para mi aprobación"
+      request_extraction_body: "Carecierge podrá buscar preferencias, fechas, deseos y seguimientos, pero nada se guarda como memoria hasta que apruebes las sugerencias."
+      create: "Agregar resumen"
+      update: "Actualizar resumen"
+      cancel: "Cancelar"
+    create:
+      notice: "El resumen de conversación fue agregado."
+    update:
+      notice: "El resumen de conversación fue actualizado."
+    destroy:
+      notice: "El resumen de conversación fue eliminado."
   timeline_entries:
     entry_types:
       note: "Nota"

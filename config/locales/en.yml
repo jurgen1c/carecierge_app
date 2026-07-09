@@ -45,6 +45,8 @@ en:
       timeline_entry_day: "%b %-d, %Y"
       timeline_entry_time: "%-l:%M %p"
   activerecord:
+    models:
+      conversation_recap: "Conversation recap"
     attributes:
       feature_flag:
         description: "Description"
@@ -110,6 +112,13 @@ en:
         stale_after: "Review after"
         status: "Status"
         title: "Title"
+      conversation_recap:
+        body: "Recap"
+        capture_source: "Capture source"
+        extraction_status: "Extraction status"
+        occurred_at: "When it happened"
+        title: "Title"
+        transcript: "Transcript"
       timeline_entry:
         body: "Context"
         entry_type: "Entry type"
@@ -784,6 +793,70 @@ en:
       notice: "Memory was approved for high-impact automation."
     destroy:
       notice: "Memory was deleted."
+  conversation_recaps:
+    capture_sources:
+      typed: "Typed recap"
+      voice_transcript: "Voice transcript"
+    extraction_statuses:
+      not_requested: "Not requested"
+      requested: "Extraction requested"
+      ready_for_review: "Ready for review"
+      rejected: "Rejected"
+    section:
+      kicker: "Conversation memory"
+      title: "Conversation recaps"
+      body: "Capture what came up in a conversation while keeping extracted memories separate until you approve them."
+      recap_count:
+        one: "1 recap"
+        other: "%{count} recaps"
+      requested_count:
+        one: "1 extraction requested"
+        other: "%{count} extractions requested"
+      list_title: "Recent recaps"
+      shown_count:
+        one: "1 shown"
+        other: "%{count} shown"
+      empty_title: "No conversation recaps yet"
+      empty_body: "Add a short summary after a call, lunch, or message thread so the relationship timeline keeps the context."
+      guardrail_title: "Approval before memory changes"
+      guardrail_body: "No memory changes happen until you approve extracted suggestions."
+      timeline_label: "Timeline"
+      timeline_value: "Each recap creates a linked conversation-recap timeline entry."
+      extraction_label: "AI extraction"
+      extraction_value: "Extraction can be requested, but facts still need review before they become memories."
+    recap:
+      edit: "Edit"
+      delete: "Delete"
+      delete_confirm: "Delete this conversation recap and its linked timeline entry?"
+      transcript: "Transcript"
+      approval_title: "Memory extraction is gated"
+      approval_body: "No memory changes happen until you approve extracted suggestions."
+    form:
+      new_title: "Add conversation recap"
+      edit_title: "Edit conversation recap"
+      body: "Summarize the conversation in your own words. You can request suggested memories for later review without changing saved memories now."
+      errors_heading:
+        one: "Review this field"
+        other: "Review these %{count} fields"
+      title: "Title"
+      title_placeholder: "Lunch with David, call with Mom, check-in after work"
+      occurred_at: "When it happened"
+      capture_source: "Capture source"
+      recap: "Recap"
+      recap_placeholder: "What came up, what mattered, and what should be easy to find later"
+      transcript: "Transcript"
+      transcript_placeholder: "Optional raw transcript or dictated text for future voice-to-text support"
+      request_extraction: "Suggest memories for my approval"
+      request_extraction_body: "Carecierge can later look for preferences, dates, desires, and follow-ups, but nothing is saved as memory until you approve the suggestions."
+      create: "Add recap"
+      update: "Update recap"
+      cancel: "Cancel"
+    create:
+      notice: "Conversation recap was added."
+    update:
+      notice: "Conversation recap was updated."
+    destroy:
+      notice: "Conversation recap was deleted."
   timeline_entries:
     entry_types:
       note: "Note"

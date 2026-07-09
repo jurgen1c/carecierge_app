@@ -155,6 +155,21 @@ RSpec.describe "Timeline entries", type: :request do
       expect(response.body).to include("Updated")
       expect(entry.reload).to have_attributes(title: "Updated", origin: "system")
     end
+
+    it "does not update a source-backed timeline entry directly" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      recap = create(:conversation_recap, relationship_profile: profile, title: "Lunch recap")
+      entry = create(:timeline_entry, relationship_profile: profile, entry_type: "conversation_recap", origin: "system", source_record: recap, title: "Lunch recap")
+      sign_in user
+
+      patch relationship_profile_timeline_entry_path(profile, entry),
+        params: { timeline_entry: { title: "Tampered", entry_type: "note" } },
+        as: :turbo_stream
+
+      expect(response).to have_http_status(:forbidden)
+      expect(entry.reload).to have_attributes(title: "Lunch recap", entry_type: "conversation_recap", source_record: recap)
+    end
   end
 
   describe "DELETE /relationship_profiles/:relationship_profile_id/timeline_entries/:id" do
@@ -170,6 +185,21 @@ RSpec.describe "Timeline entries", type: :request do
 
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       expect(response.body).to include("No timeline entries match this view")
+    end
+
+    it "does not delete a source-backed timeline entry directly" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      recap = create(:conversation_recap, relationship_profile: profile)
+      entry = create(:timeline_entry, relationship_profile: profile, entry_type: "conversation_recap", origin: "system", source_record: recap)
+      sign_in user
+
+      expect do
+        delete relationship_profile_timeline_entry_path(profile, entry), as: :turbo_stream
+      end.not_to change(TimelineEntry, :count)
+
+      expect(response).to have_http_status(:forbidden)
+      expect(entry.reload).to be_present
     end
   end
 end

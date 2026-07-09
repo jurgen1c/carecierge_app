@@ -1,0 +1,66 @@
+<%= turbo_frame_tag "conversation_recaps_section" do %>
+  <% selected_type = local_assigns[:selected_type] %>
+  <% conversation_recaps = relationship_profile.conversation_recaps.ordered.to_a %>
+  <% requested_count = conversation_recaps.count { |recap| recap.extraction_status == "requested" } %>
+
+  <section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm shadow-stone-200/40">
+    <div class="flex flex-col gap-4 border-b border-stone-200 pb-5 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold text-emerald-800"><%= t("conversation_recaps.section.kicker") %></p>
+        <h2 class="mt-2 text-xl font-semibold text-stone-950"><%= t("conversation_recaps.section.title") %></h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("conversation_recaps.section.body") %></p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="inline-flex w-fit items-center rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-semibold text-stone-800"><%= t("conversation_recaps.section.recap_count", count: conversation_recaps.size) %></span>
+        <span class="inline-flex w-fit items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-900"><%= t("conversation_recaps.section.requested_count", count: requested_count) %></span>
+      </div>
+    </div>
+
+    <div class="mt-5 grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
+      <div class="rounded-xl border border-stone-200 bg-stone-50/70 p-4">
+        <div class="flex items-center justify-between gap-3">
+          <h3 class="text-base font-semibold text-stone-950"><%= t("conversation_recaps.section.list_title") %></h3>
+          <span class="text-xs font-medium text-stone-600"><%= t("conversation_recaps.section.shown_count", count: conversation_recaps.size) %></span>
+        </div>
+
+        <% if conversation_recaps.any? %>
+          <div class="mt-4 grid gap-3">
+            <% conversation_recaps.each do |conversation_recap| %>
+              <%= render "conversation_recaps/conversation_recap", relationship_profile:, conversation_recap:, selected_type: %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="mt-4 rounded-lg border border-dashed border-stone-300 bg-white px-4 py-5">
+            <p class="text-sm font-semibold text-stone-950"><%= t("conversation_recaps.section.empty_title") %></p>
+            <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("conversation_recaps.section.empty_body") %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="grid gap-4">
+        <section class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4">
+          <h3 class="text-base font-semibold text-stone-950"><%= t("conversation_recaps.section.guardrail_title") %></h3>
+          <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("conversation_recaps.section.guardrail_body") %></p>
+          <dl class="mt-4 grid gap-3 text-sm">
+            <div>
+              <dt class="font-semibold text-stone-800"><%= t("conversation_recaps.section.timeline_label") %></dt>
+              <dd class="mt-1 text-stone-700"><%= t("conversation_recaps.section.timeline_value") %></dd>
+            </div>
+            <div>
+              <dt class="font-semibold text-stone-800"><%= t("conversation_recaps.section.extraction_label") %></dt>
+              <dd class="mt-1 text-stone-700"><%= t("conversation_recaps.section.extraction_value") %></dd>
+            </div>
+          </dl>
+        </section>
+
+        <%= turbo_frame_tag "new_conversation_recap", src: new_relationship_profile_conversation_recap_path(relationship_profile, timeline_type: selected_type), loading: :lazy do %>
+          <div class="rounded-xl border border-stone-200 bg-white p-4">
+            <h3 class="text-base font-semibold text-stone-950"><%= t("conversation_recaps.form.new_title") %></h3>
+            <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("conversation_recaps.form.body") %></p>
+            <%= link_to t("conversation_recaps.form.create"), new_relationship_profile_conversation_recap_path(relationship_profile, timeline_type: selected_type), class: "mt-4 inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+<% end %>

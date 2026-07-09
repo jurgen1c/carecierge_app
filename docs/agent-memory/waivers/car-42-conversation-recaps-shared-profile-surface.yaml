@@ -1,0 +1,16 @@
+id: car_42_conversation_recaps_shared_profile_surface
+status: active
+reason: >
+  CAR-42 introduces the durable relationship_profiles.conversation_recaps claim
+  and updates relationship_profiles.timeline_entries because conversation
+  recaps now create linked system timeline entries. The changed relationship
+  profile model/controller/show files are shared surface wiring only; the older
+  important-dates, preference-metadata, and profile-CRUD claims were reviewed
+  and remain current without replacement or conflict.
+files:
+  - app/controllers/relationship_profiles_controller.rb
+  - app/models/relationship_profile.rb
+  - app/views/relationship_profiles/show.html.erb
+  - docs/agent-memory/claims/relationship_profiles/conversation_recaps.md
+  - docs/agent-memory/claims/relationship_profiles/timeline_entries.md
+expires_at: 2026-08-09

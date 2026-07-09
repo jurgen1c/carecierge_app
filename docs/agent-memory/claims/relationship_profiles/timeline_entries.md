@@ -19,20 +19,19 @@ claim: >
   preserves English and Spanish localized labels and validation copy, renders
   entries as an unboxed chronological feed with a responsive context summary, and
   does not accept forged system-origin or source-record params from the manual
-  form. System-created entries and automatic source-object wiring are
-  intentionally deferred to later tickets while the model remains ready to store
-  those entries.
+  form. Source-backed entries cannot be edited or deleted through the generic
+  timeline actions, so conversation recap entries stay controlled by the source
+  recap flow. Conversation recaps create linked system conversation_recap
+  entries, while other automatic source-object wiring remains deferred to later
+  tickets.
 
 source_files:
   - app/models/timeline_entry.rb
-  - app/models/relationship_profile.rb
   - app/controllers/timeline_entries_controller.rb
-  - app/controllers/relationship_profiles_controller.rb
   - app/policies/timeline_entry_policy.rb
   - app/views/timeline_entries/_timeline_entry.html.erb
   - app/views/timeline_entries/_form.html.erb
   - app/views/timeline_entries/_section.html.erb
-  - app/views/relationship_profiles/show.html.erb
   - db/migrate/20260709120000_create_timeline_entries.rb
 
 related_files:
@@ -49,14 +48,10 @@ routes:
   - new_relationship_profile_timeline_entry
   - edit_relationship_profile_timeline_entry
 tags:
-  - relationship_profiles
   - timeline_entries
   - relationship_history
-  - turbo
 
 verification:
-  - SIMPLECOV_DISABLE=1 bundle exec rspec spec/models/timeline_entry_spec.rb spec/requests/timeline_entries_spec.rb
-  - bundle exec rspec spec/requests/relationship_profiles_spec.rb spec/models/relationship_profile_spec.rb spec/models/timeline_entry_spec.rb spec/requests/timeline_entries_spec.rb
   - bundle exec rspec
 last_verified_commit: null
 ---
@@ -73,8 +68,12 @@ entry can be saved. Manual create, edit, delete, and type filtering are scoped
 through the signed-in user's relationship profiles and update inline through
 Turbo streams where possible while preserving the active timeline type filter.
 Manual params cannot forge system-origin metadata or source-record references.
-The profile show surface renders entries as an unboxed chronological feed with a
-context summary that stacks below the feed on smaller screens.
+Source-backed entries cannot be edited or deleted through the generic timeline
+actions, so linked source records remain the owner of their generated timeline
+content. Conversation recaps create linked system conversation-recap entries,
+while other automatic source-object wiring remains deferred. The profile show
+surface renders entries as an unboxed chronological feed with a context summary
+that stacks below the feed on smaller screens.
 
 ## Why It Matters
 
@@ -87,7 +86,9 @@ relationship history across users.
 ## Evidence
 
 - `app/models/timeline_entry.rb`
+- `app/models/conversation_recap.rb`
 - `app/controllers/timeline_entries_controller.rb`
+- `app/controllers/conversation_recaps_controller.rb`
 - `app/policies/timeline_entry_policy.rb`
 - `app/views/timeline_entries/_section.html.erb`
 - `app/views/timeline_entries/_timeline_entry.html.erb`
@@ -95,9 +96,8 @@ relationship history across users.
 - `db/migrate/20260709120000_create_timeline_entries.rb`
 - `spec/models/timeline_entry_spec.rb`
 - `spec/requests/timeline_entries_spec.rb`
+- `spec/requests/conversation_recaps_spec.rb`
 
 ## Verification
 
-- `SIMPLECOV_DISABLE=1 bundle exec rspec spec/models/timeline_entry_spec.rb spec/requests/timeline_entries_spec.rb`
-- `bundle exec rspec spec/requests/relationship_profiles_spec.rb spec/models/relationship_profile_spec.rb spec/models/timeline_entry_spec.rb spec/requests/timeline_entries_spec.rb`
 - `bundle exec rspec`

@@ -1,14 +1,14 @@
-class TimelineEntryPolicy < ApplicationPolicy
+class ConversationRecapPolicy < ApplicationPolicy
   def create?
     owns_profile?
   end
 
   def update?
-    owns_profile? && !source_backed?
+    owns_profile?
   end
 
   def destroy?
-    owns_profile? && !source_backed?
+    owns_profile?
   end
 
   class Scope < ApplicationPolicy::Scope
@@ -23,9 +23,5 @@ class TimelineEntryPolicy < ApplicationPolicy
 
   def owns_profile?
     user.present? && record.relationship_profile.user_id == user.id
-  end
-
-  def source_backed?
-    record.source_record_type.present? || record.source_record_id.present?
   end
 end

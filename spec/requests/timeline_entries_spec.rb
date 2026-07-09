@@ -34,7 +34,7 @@ RSpec.describe "Timeline entries", type: :request do
       end
 
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Cronologia de la relacion")
+      expect(response.body).to include("Cronología de la relación")
       expect(response.body).to include("Agregar entrada")
       expect(response.body).not_to include("Relationship timeline")
       expect(response.body).not_to include("Translation missing")

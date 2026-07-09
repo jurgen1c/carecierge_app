@@ -817,7 +817,7 @@ es:
     source_record: "%{type}: %{title}"
     section:
       kicker: "Historial de relación"
-      title: "Cronologia de la relacion"
+      title: "Cronología de la relación"
       body: "Mantén un registro cronológico de notas, promesas, regalos, planes, correcciones y momentos importantes para que la historia completa sea fácil de revisar."
       filter_label: "Filtros de cronología"
       feed_title: "Cronología"

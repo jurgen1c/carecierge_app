@@ -1,0 +1,7 @@
+<%= turbo_stream.replace "memory_records_section" do %>
+  <%= render "memory_records/section", relationship_profile: @relationship_profile %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "layouts/flash", notice: notice, alert: alert %>
+<% end %>

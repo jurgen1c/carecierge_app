@@ -10,6 +10,7 @@ es:
       important_date: "%-d/%-m/%Y"
       desire_captured_on: "%-d/%-m/%Y"
       gift_given_on: "%-d/%-m/%Y"
+      memory_stale_after: "%-d/%-m/%Y"
   activerecord:
     attributes:
       feature_flag:
@@ -69,6 +70,13 @@ es:
         reaction: "Reacción"
         status: "Estado"
         vendor: "Proveedor"
+      memory_record:
+        body: "Memoria"
+        confidence: "Confianza"
+        source: "Origen"
+        stale_after: "Revisar después"
+        status: "Estado"
+        title: "Título"
       relationship_template:
         key: "Clave"
         name: "Nombre"
@@ -679,6 +687,98 @@ es:
       error: "No se pudo marcar el regalo como entregado."
     destroy:
       notice: "El regalo fue eliminado."
+  memory_records:
+    sources:
+      user_confirmed: "Confirmada por usuario"
+      ai_inferred: "Inferida por IA"
+      imported: "Importada"
+      user_corrected: "Corregida por usuario"
+    confidences:
+      confirmed: "Confirmada"
+      high: "Alta"
+      medium: "Media"
+      low: "Baja"
+      inferred: "Inferida"
+    statuses:
+      active: "Activa"
+      needs_review: "Necesita revisión"
+      stale: "Desactualizada"
+      corrected: "Corregida"
+      archived: "Archivada"
+    section:
+      kicker: "Confianza y revisión"
+      title: "Memorias"
+      body: "Registra lo que Carecierge sabe, de dónde vino, qué tanta confianza tiene y si necesita revisión antes de que una automatización lo use."
+      review_count:
+        one: "1 necesita revisión"
+        other: "%{count} necesitan revisión"
+      blocked_count:
+        one: "1 automatización bloqueada"
+        other: "%{count} automatizaciones bloqueadas"
+      list_title: "Contexto conocido"
+      record_count:
+        one: "1 memoria"
+        other: "%{count} memorias"
+      empty_title: "Aún no hay memorias"
+      empty_body: "Agrega contexto confirmado o importado que futuros recordatorios y sugerencias puedan usar con origen y confianza claros."
+      trust_title: "Controles de automatización"
+      trust_body: "Las memorias inferidas o de baja confianza no se usan para automatizaciones de alto impacto hasta que las apruebes explícitamente."
+      review_label: "Cola de revisión"
+      review_value:
+        one: "1 memoria necesita tu revisión."
+        other: "%{count} memorias necesitan tu revisión."
+      automation_label: "Automatización de alto impacto"
+      automation_value:
+        one: "1 memoria necesita aprobación antes de una automatización de alto impacto."
+        other: "%{count} memorias necesitan aprobación antes de una automatización de alto impacto."
+    record:
+      edit: "Editar"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar esta memoria? Esta acción no se puede deshacer."
+      mark_reviewed: "Marcar revisada"
+      stale_after: "Revisar después"
+      no_stale_after: "Sin fecha de revisión"
+      review_status: "Revisión"
+      needs_review: "Necesita revisión"
+      review_current: "Actual"
+      automation_status: "Automatización"
+      automation_allowed: "Permitida para automatización de alto impacto"
+      automation_blocked: "La automatización de alto impacto necesita aprobación"
+      approval_title: "La automatización de alto impacto necesita aprobación"
+      approval_body: "Revisa esta memoria antes de que Carecierge la use para acciones sensibles como compras, reservas o mensajes."
+      approve_automation: "Aprobar automatización"
+    form:
+      new_title: "Agregar memoria"
+      edit_title: "Editar memoria"
+      body: "Captura el dato, su origen y el nivel de confianza para que la asistencia futura siga siendo explicable y revisable."
+      errors_heading:
+        one: "Revisa este campo"
+        other: "Revisa estos %{count} campos"
+      title: "Título"
+      title_placeholder: "Prefiere cenas de cumpleaños tranquilas"
+      memory: "Memoria"
+      memory_placeholder: "¿Qué debería recordar Carecierge y cómo debería usar ese contexto?"
+      source: "Origen"
+      confidence: "Confianza"
+      status: "Estado"
+      stale_after: "Revisar después"
+      correction_note: "Nota de corrección"
+      correction_note_placeholder: "¿Qué cambió o quién aclaró esto?"
+      create: "Agregar memoria"
+      update: "Actualizar memoria"
+      cancel: "Cancelar"
+    create:
+      notice: "La memoria fue agregada."
+    update:
+      notice: "La memoria fue actualizada."
+      revision_error: "No se pudo actualizar la memoria porque no se pudo guardar el historial de corrección."
+    review:
+      notice: "La memoria fue marcada como revisada."
+      error: "No se pudo marcar la memoria como revisada."
+    approve_high_impact_automation:
+      notice: "La memoria fue aprobada para automatización de alto impacto."
+    destroy:
+      notice: "La memoria fue eliminada."
   relationship_preferences:
     preference_types:
       positive: "Positiva"

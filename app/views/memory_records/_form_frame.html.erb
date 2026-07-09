@@ -1,0 +1,3 @@
+<%= turbo_frame_tag(memory_record.persisted? ? dom_id(memory_record) : "new_memory_record") do %>
+  <%= render "memory_records/form", relationship_profile:, memory_record: %>
+<% end %>

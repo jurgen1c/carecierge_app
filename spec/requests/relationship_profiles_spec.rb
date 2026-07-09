@@ -51,8 +51,9 @@ RSpec.describe "Relationship profiles", type: :request do
 
       get relationship_profiles_path, params: { q: { RelationshipProfile::SearchQuery::SEARCH_PREDICATE => "college" } }
 
-      expect(response.body).to include(visible.full_name)
-      expect(response.body).not_to include(hidden.full_name)
+      response_text = CGI.unescapeHTML(response.body)
+      expect(response_text).to include(visible.full_name)
+      expect(response_text).not_to include(hidden.full_name)
     end
 
     it "filters profiles by tag and relationship group without leaking another user's catalog" do

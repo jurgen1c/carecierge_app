@@ -68,6 +68,7 @@ watched_files:
   - app/views/onboarding/**/*.erb
   - app/javascript/controllers/relationship_template_fields_controller.js
   - config/routes.rb
+  - config/initializers/filter_parameter_logging.rb
   - config/locales/en.yml
   - config/locales/es.yml
   - db/migrate/*relationship*.rb

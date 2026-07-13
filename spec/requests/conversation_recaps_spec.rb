@@ -62,6 +62,19 @@ RSpec.describe "Conversation recaps", type: :request do
       expect(response.body).to include(%(href="#{edit_relationship_profile_conversation_recap_path(profile, recap, timeline_type: "gift")}"))
       expect(response.body).to include(%(action="#{relationship_profile_conversation_recap_path(profile, recap, timeline_type: "gift")}"))
     end
+
+    it "queries conversation recaps once while rendering the profile" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      create_list(:conversation_recap, 2, relationship_profile: profile)
+      sign_in user
+
+      queries = capture_sql { get relationship_profile_path(profile) }
+      recap_queries = queries.grep(/FROM "conversation_recaps"/)
+
+      expect(response).to have_http_status(:ok)
+      expect(recap_queries.size).to eq(1)
+    end
   end
 
   describe "POST /relationship_profiles/:relationship_profile_id/conversation_recaps" do
@@ -211,6 +224,36 @@ RSpec.describe "Conversation recaps", type: :request do
       expect(response.body).to include(%(href="#{relationship_profile_path(profile, timeline_type: "gift", anchor: ActionView::RecordIdentifier.dom_id(recap, :row))}"))
     end
 
+    it "offers extraction on edit while the recap has not requested it" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      recap = create(:conversation_recap, relationship_profile: profile, extraction_status: "not_requested")
+      sign_in user
+
+      get edit_relationship_profile_conversation_recap_path(profile, recap)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(%(name="conversation_recap[request_memory_extraction]"))
+      expect(response.body).to include("Suggest memories for my approval")
+    end
+
+    it "requests extraction during a later edit without mutating memory records" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      recap = create(:conversation_recap, relationship_profile: profile, extraction_status: "not_requested")
+      sign_in user
+
+      expect do
+        patch relationship_profile_conversation_recap_path(profile, recap),
+          params: { conversation_recap: { request_memory_extraction: "1" } },
+          as: :turbo_stream
+      end.not_to change(MemoryRecord, :count)
+
+      expect(response).to have_http_status(:ok)
+      expect(recap.reload.extraction_status).to eq("requested")
+      expect(recap.extraction_requested_at).to be_present
+    end
+
     it "updates the recap and keeps the linked timeline entry in sync" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
@@ -246,5 +289,18 @@ RSpec.describe "Conversation recaps", type: :request do
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       expect(response.body).to include("No conversation recaps yet")
     end
+  end
+
+  def capture_sql
+    queries = []
+    subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == "SCHEMA"
+
+      queries << payload[:sql]
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { yield }
+
+    queries
   end
 end

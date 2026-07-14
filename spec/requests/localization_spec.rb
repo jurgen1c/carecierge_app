@@ -29,4 +29,9 @@ RSpec.describe "Localization baseline", type: :request do
       expect(duplicate_user.errors.full_messages).to include("Correo electrónico ya está en uso")
     end
   end
+
+  it "keeps existing conversation recap attribute labels localized" do
+    expect(ConversationRecap.human_attribute_name(:transcript, locale: :en)).to eq("Transcript")
+    expect(ConversationRecap.human_attribute_name(:transcript, locale: :es)).to eq("Transcripción")
+  end
 end

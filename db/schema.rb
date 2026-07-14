@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_09_183000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_14_003747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -229,6 +229,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_183000) do
     t.index ["memory_record_id", "created_at"], name: "index_memory_revisions_on_memory_record_id_and_created_at"
     t.index ["memory_record_id"], name: "index_memory_revisions_on_memory_record_id"
     t.index ["user_id"], name: "index_memory_revisions_on_user_id"
+  end
+
+  create_table "mood_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.datetime "follow_up_at"
+    t.text "observation", null: false
+    t.datetime "observed_at", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.text "supportive_action"
+    t.boolean "timeline_visible", default: true, null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "category"], name: "index_mood_notes_on_relationship_profile_id_and_category"
+    t.index ["relationship_profile_id", "follow_up_at"], name: "index_mood_notes_on_relationship_profile_id_and_follow_up_at"
+    t.index ["relationship_profile_id", "observed_at"], name: "index_mood_notes_on_relationship_profile_id_and_observed_at"
+    t.index ["relationship_profile_id"], name: "index_mood_notes_on_relationship_profile_id"
   end
 
   create_table "noticed_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -468,6 +484,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_09_183000) do
   add_foreign_key "memory_records", "relationship_profiles"
   add_foreign_key "memory_revisions", "memory_records"
   add_foreign_key "memory_revisions", "users"
+  add_foreign_key "mood_notes", "relationship_profiles"
   add_foreign_key "relationship_field_values", "relationship_profiles"
   add_foreign_key "relationship_field_values", "template_fields"
   add_foreign_key "relationship_group_memberships", "relationship_groups", on_delete: :cascade

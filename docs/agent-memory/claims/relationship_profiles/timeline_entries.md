@@ -20,10 +20,10 @@ claim: >
   entries as an unboxed chronological feed with a responsive context summary, and
   does not accept forged system-origin or source-record params from the manual
   form. Source-backed entries cannot be edited or deleted through the generic
-  timeline actions, so conversation recap entries stay controlled by the source
-  recap flow. Conversation recaps create linked system conversation_recap
-  entries, while other automatic source-object wiring remains deferred to later
-  tickets.
+  timeline actions, so conversation recap and mood-note entries stay controlled
+  by their source workflows. Conversation recaps create linked system
+  conversation_recap entries, while timeline-visible mood notes create linked
+  system mood_note entries that are removed when timeline visibility is disabled.
 
 source_files:
   - app/models/timeline_entry.rb
@@ -71,8 +71,8 @@ Manual params cannot forge system-origin metadata or source-record references.
 Source-backed entries cannot be edited or deleted through the generic timeline
 actions, so linked source records remain the owner of their generated timeline
 content. Conversation recaps create linked system conversation-recap entries,
-while other automatic source-object wiring remains deferred. The profile show
-surface renders entries as an unboxed chronological feed with a context summary
+and timeline-visible mood notes create linked system mood-note entries. The
+profile show surface renders entries as an unboxed chronological feed with a context summary
 that stacks below the feed on smaller screens.
 
 ## Why It Matters
@@ -89,6 +89,7 @@ relationship history across users.
 - `app/models/conversation_recap.rb`
 - `app/controllers/timeline_entries_controller.rb`
 - `app/controllers/conversation_recaps_controller.rb`
+- `app/controllers/mood_notes_controller.rb`
 - `app/policies/timeline_entry_policy.rb`
 - `app/views/timeline_entries/_section.html.erb`
 - `app/views/timeline_entries/_timeline_entry.html.erb`
@@ -97,6 +98,7 @@ relationship history across users.
 - `spec/models/timeline_entry_spec.rb`
 - `spec/requests/timeline_entries_spec.rb`
 - `spec/requests/conversation_recaps_spec.rb`
+- `spec/requests/mood_notes_spec.rb`
 
 ## Verification
 

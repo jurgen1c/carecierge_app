@@ -176,3 +176,13 @@ edges:
     relation: constrains
     reason: Conversation recaps can request extraction review but must not mutate memory records until explicit approval exists.
     strength: 85
+  - source: relationship_profiles.mood_notes
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Mood notes are nested under owner-scoped relationship profiles and reuse that privacy boundary.
+    strength: 90
+  - source: relationship_profiles.mood_notes
+    target: relationship_profiles.timeline_entries
+    relation: requires
+    reason: Timeline-visible mood notes create linked system mood-note timeline entries.
+    strength: 85

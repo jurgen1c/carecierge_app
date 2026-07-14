@@ -1,0 +1,66 @@
+<% selected_type = local_assigns[:selected_type] %>
+<% form_url = mood_note.persisted? ? relationship_profile_mood_note_path(relationship_profile, mood_note, timeline_type: selected_type) : relationship_profile_mood_notes_path(relationship_profile, timeline_type: selected_type) %>
+
+<%= form_with model: mood_note, url: form_url, method: mood_note.persisted? ? :patch : :post, class: "rounded-xl border border-stone-200 bg-white p-4" do |form| %>
+  <div>
+    <h3 class="text-base font-semibold text-stone-950"><%= mood_note.persisted? ? t("mood_notes.form.edit_title") : t("mood_notes.form.new_title") %></h3>
+    <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("mood_notes.form.body") %></p>
+  </div>
+
+  <% if mood_note.errors.any? %>
+    <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950">
+      <p class="font-semibold"><%= t("mood_notes.form.errors_heading", count: mood_note.errors.count) %></p>
+      <ul class="mt-2 list-disc space-y-1 pl-5">
+        <% mood_note.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div>
+      <%= form.label :category, t("mood_notes.form.category"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.select :category, MoodNote.category_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+    </div>
+    <div>
+      <%= form.label :observed_at, t("mood_notes.form.observed_at"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.datetime_local_field :observed_at, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <%= form.label :observation, t("mood_notes.form.observation"), class: "block text-sm font-medium text-stone-800" %>
+    <%= form.text_area :observation, rows: 4, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("mood_notes.form.observation_placeholder") %>
+    <p class="mt-2 text-sm leading-6 text-stone-600"><%= t("mood_notes.form.observation_help") %></p>
+  </div>
+
+  <div class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div>
+      <%= form.label :supportive_action, t("mood_notes.form.supportive_action"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_area :supportive_action, rows: 3, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("mood_notes.form.supportive_action_placeholder") %>
+    </div>
+    <div>
+      <%= form.label :follow_up_at, t("mood_notes.form.follow_up_at"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.datetime_local_field :follow_up_at, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      <p class="mt-2 text-sm leading-6 text-stone-600"><%= t("mood_notes.form.follow_up_help") %></p>
+    </div>
+  </div>
+
+  <div class="mt-4 rounded-lg border border-stone-200 bg-stone-50 px-4 py-3">
+    <div class="flex gap-3">
+      <%= form.check_box :timeline_visible, class: "mt-1 size-5 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
+      <div>
+        <%= form.label :timeline_visible, t("mood_notes.form.timeline_visible"), class: "text-sm font-semibold text-stone-950" %>
+        <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("mood_notes.form.timeline_visible_help") %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap items-center gap-3">
+    <%= form.submit mood_note.persisted? ? t("mood_notes.form.update") : t("mood_notes.form.create"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <% if mood_note.persisted? %>
+      <%= link_to t("mood_notes.form.cancel"), relationship_profile_path(relationship_profile, timeline_type: selected_type, anchor: dom_id(mood_note, :row)), data: { turbo_frame: "_top" }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <% end %>
+  </div>
+<% end %>

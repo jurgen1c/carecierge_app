@@ -47,6 +47,7 @@ en:
   activerecord:
     models:
       conversation_recap: "Conversation recap"
+      mood_note: "Mood note"
     attributes:
       feature_flag:
         description: "Description"
@@ -119,6 +120,13 @@ en:
         occurred_at: "When it happened"
         title: "Title"
         transcript: "Transcript"
+      mood_note:
+        category: "Category"
+        follow_up_at: "Follow-up time"
+        observation: "Observation"
+        observed_at: "Observed time"
+        supportive_action: "Supportive action"
+        timeline_visible: "Timeline visibility"
       timeline_entry:
         body: "Context"
         entry_type: "Entry type"
@@ -857,10 +865,76 @@ en:
       notice: "Conversation recap was updated."
     destroy:
       notice: "Conversation recap was deleted."
+  mood_notes:
+    categories:
+      stressed: "Seemed stressed"
+      distant: "Seemed distant"
+      excited: "Seemed excited"
+      sad: "Seemed sad"
+      overwhelmed: "Seemed overwhelmed"
+      proud: "Seemed proud"
+      other: "Another observation"
+    section:
+      kicker: "Observed context"
+      title: "Mood notes"
+      body: "Record what you noticed, not a diagnosis. Keep the observation private, then choose a gentle next step or a time to check in."
+      note_count:
+        one: "1 observation"
+        other: "%{count} observations"
+      follow_up_count:
+        one: "1 follow-up"
+        other: "%{count} follow-ups"
+      list_title: "Recent observations"
+      shown_count:
+        one: "1 shown"
+        other: "%{count} shown"
+      empty_title: "No mood notes yet"
+      empty_body: "Add a factual observation when something seems worth remembering or checking in about later."
+      guardrail_title: "Observe without labeling"
+      guardrail_body: "Mood notes describe a moment from your perspective. They do not assess or diagnose another person."
+      observe_label: "Notice specifics."
+      observe_body: "Write what you saw or heard and when it happened."
+      support_label: "Keep support concrete."
+      support_body: "Choose a low-pressure action or schedule a reminder to follow up."
+    note:
+      on_timeline: "On timeline"
+      supportive_action: "Supportive action"
+      follow_up: "Follow up"
+      edit: "Edit"
+      delete: "Delete"
+      delete_confirm: "Delete this mood note and its linked timeline entry?"
+    form:
+      new_title: "Add mood note"
+      edit_title: "Edit mood note"
+      body: "Capture one observed moment in neutral language, then optionally plan how and when to check in."
+      errors_heading:
+        one: "Review this field"
+        other: "Review these %{count} fields"
+      category: "What you noticed"
+      observed_at: "When you noticed it"
+      observation: "Observation"
+      observation_placeholder: "Seemed quieter than usual after work and left the conversation early"
+      observation_help: "Describe observable words, behavior, or context. Avoid medical labels and conclusions about intent."
+      supportive_action: "Supportive action"
+      supportive_action_placeholder: "Send a low-pressure check-in or offer one practical kind of help"
+      follow_up_at: "Follow-up reminder"
+      follow_up_help: "Optional. Choose when you want to revisit this observation."
+      timeline_visible: "Show this observation on the relationship timeline"
+      timeline_visible_help: "You can turn this off later. The mood note remains private to this relationship either way."
+      create: "Add mood note"
+      update: "Update mood note"
+      cancel: "Cancel"
+    create:
+      notice: "Mood note was added."
+    update:
+      notice: "Mood note was updated."
+    destroy:
+      notice: "Mood note was deleted."
   timeline_entries:
     entry_types:
       note: "Note"
       conversation_recap: "Conversation recap"
+      mood_note: "Mood note"
       gift: "Gift"
       event: "Event"
       promise: "Promise"

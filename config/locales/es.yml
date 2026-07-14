@@ -18,6 +18,7 @@ es:
   activerecord:
     models:
       conversation_recap: "Resumen de conversación"
+      mood_note: "Nota de ánimo"
     attributes:
       feature_flag:
         description: "Descripción"
@@ -90,6 +91,13 @@ es:
         occurred_at: "Cuándo pasó"
         title: "Título"
         transcript: "Transcripción"
+      mood_note:
+        category: "Categoría"
+        follow_up_at: "Momento de seguimiento"
+        observation: "Observación"
+        observed_at: "Momento observado"
+        supportive_action: "Acción de apoyo"
+        timeline_visible: "Visibilidad en la cronología"
       timeline_entry:
         body: "Contexto"
         entry_type: "Tipo de entrada"
@@ -868,10 +876,76 @@ es:
       notice: "El resumen de conversación fue actualizado."
     destroy:
       notice: "El resumen de conversación fue eliminado."
+  mood_notes:
+    categories:
+      stressed: "Estrés observado"
+      distant: "Distancia observada"
+      excited: "Entusiasmo observado"
+      sad: "Tristeza observada"
+      overwhelmed: "Agobio observado"
+      proud: "Orgullo observado"
+      other: "Otra observación"
+    section:
+      kicker: "Contexto observado"
+      title: "Notas de ánimo"
+      body: "Registra lo que notaste, no un diagnóstico. Mantén la observación privada y luego elige un próximo paso amable o un momento para comunicarte."
+      note_count:
+        one: "1 observación"
+        other: "%{count} observaciones"
+      follow_up_count:
+        one: "1 seguimiento"
+        other: "%{count} seguimientos"
+      list_title: "Observaciones recientes"
+      shown_count:
+        one: "1 visible"
+        other: "%{count} visibles"
+      empty_title: "Aún no hay notas de ánimo"
+      empty_body: "Agrega una observación objetiva cuando algo parezca importante para recordar o retomar después."
+      guardrail_title: "Observa sin etiquetar"
+      guardrail_body: "Las notas de ánimo describen un momento desde tu perspectiva. No evalúan ni diagnostican a otra persona."
+      observe_label: "Nota lo específico."
+      observe_body: "Escribe lo que viste o escuchaste y cuándo ocurrió."
+      support_label: "Haz que el apoyo sea concreto."
+      support_body: "Elige una acción sin presión o programa un recordatorio para dar seguimiento."
+    note:
+      on_timeline: "En la cronología"
+      supportive_action: "Acción de apoyo"
+      follow_up: "Seguimiento"
+      edit: "Editar"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar esta nota de ánimo y su entrada de cronología enlazada?"
+    form:
+      new_title: "Agregar nota de ánimo"
+      edit_title: "Editar nota de ánimo"
+      body: "Captura un momento observado con lenguaje neutral y, si quieres, planea cómo y cuándo comunicarte."
+      errors_heading:
+        one: "Revisa este campo"
+        other: "Revisa estos %{count} campos"
+      category: "Lo que notaste"
+      observed_at: "Cuándo lo notaste"
+      observation: "Observación"
+      observation_placeholder: "Parecía más callado de lo usual después del trabajo y terminó la conversación temprano"
+      observation_help: "Describe palabras, conducta o contexto observables. Evita etiquetas médicas y conclusiones sobre la intención."
+      supportive_action: "Acción de apoyo"
+      supportive_action_placeholder: "Enviar un mensaje sin presión u ofrecer una forma práctica de ayuda"
+      follow_up_at: "Recordatorio de seguimiento"
+      follow_up_help: "Opcional. Elige cuándo quieres retomar esta observación."
+      timeline_visible: "Mostrar esta observación en la cronología de la relación"
+      timeline_visible_help: "Puedes desactivarlo después. La nota permanece privada para esta relación de cualquier manera."
+      create: "Agregar nota de ánimo"
+      update: "Actualizar nota de ánimo"
+      cancel: "Cancelar"
+    create:
+      notice: "La nota de ánimo fue agregada."
+    update:
+      notice: "La nota de ánimo fue actualizada."
+    destroy:
+      notice: "La nota de ánimo fue eliminada."
   timeline_entries:
     entry_types:
       note: "Nota"
       conversation_recap: "Resumen de conversación"
+      mood_note: "Nota de ánimo"
       gift: "Regalo"
       event: "Evento"
       promise: "Promesa"

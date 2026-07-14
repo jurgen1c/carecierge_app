@@ -114,6 +114,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :gifts, dependent: :destroy
   has_many :memory_records, dependent: :destroy
   has_many :conversation_recaps, dependent: :destroy
+  has_many :mood_notes, dependent: :destroy
   has_many :timeline_entries, dependent: :destroy
   has_many :desires, dependent: :destroy
 

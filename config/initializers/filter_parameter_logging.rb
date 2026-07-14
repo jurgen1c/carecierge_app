@@ -5,5 +5,6 @@
 # See the ActiveSupport::ParameterFilter documentation for supported notations and behaviors.
 Rails.application.config.filter_parameters += [
   :passw, :email, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn, :cvv, :cvc,
-  "conversation_recap.body", "conversation_recap.transcript"
+  "conversation_recap.body", "conversation_recap.transcript",
+  "mood_note.observation", "mood_note.supportive_action"
 ]

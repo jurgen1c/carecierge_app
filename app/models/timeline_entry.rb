@@ -31,6 +31,7 @@ class TimelineEntry < ApplicationRecord
   ENTRY_TYPES = %w[
     note
     conversation_recap
+    mood_note
     gift
     event
     promise

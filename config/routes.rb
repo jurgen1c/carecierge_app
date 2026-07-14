@@ -28,6 +28,7 @@ Rails.application.routes.draw do
       patch :approve_high_impact_automation, on: :member
     end
     resources :conversation_recaps, except: %i[index show]
+    resources :mood_notes, except: %i[index show]
     resources :timeline_entries, except: %i[index show]
     resources :desires, except: %i[index show] do
       patch :fulfill, on: :member

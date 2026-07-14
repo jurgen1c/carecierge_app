@@ -1,0 +1,4 @@
+<% content_for :title, t("commitments.form.new_title") %>
+<main class="flex flex-1 flex-col py-8">
+  <%= render "commitments/form_frame", relationship_profile: @relationship_profile, commitment: @commitment, selected_type: @timeline_type %>
+</main>

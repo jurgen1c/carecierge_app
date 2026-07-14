@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_14_070000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_14_141912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -51,6 +51,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_070000) do
     t.uuid "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "commitments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.date "due_on"
+    t.text "notes"
+    t.uuid "relationship_profile_id", null: false
+    t.string "status", default: "open", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "status", "due_on"], name: "idx_on_relationship_profile_id_status_due_on_109b7b7dd5"
+    t.index ["relationship_profile_id"], name: "index_commitments_on_relationship_profile_id"
+    t.index ["status", "due_on"], name: "index_commitments_on_open_due_on", where: "(((status)::text = 'open'::text) AND (due_on IS NOT NULL))"
   end
 
   create_table "contact_methods", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -422,6 +436,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_070000) do
   end
 
   create_table "reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "commitment_id"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.uuid "important_date_id"
@@ -439,6 +454,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_070000) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.index ["commitment_id"], name: "index_reminders_on_commitment_id"
     t.index ["important_date_id"], name: "index_reminders_on_important_date_id"
     t.index ["next_delivery_at"], name: "index_reminders_on_active_next_delivery_at", where: "(((status)::text = 'active'::text) AND (next_delivery_at IS NOT NULL))"
     t.index ["relationship_profile_id", "status", "scheduled_at"], name: "index_reminders_on_profile_status_and_schedule"
@@ -527,6 +543,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_070000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "commitments", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"
   add_foreign_key "conversation_recaps", "relationship_profiles"
   add_foreign_key "desire_fulfillments", "desires"
@@ -554,6 +571,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_070000) do
   add_foreign_key "relationship_tags", "users"
   add_foreign_key "reminder_deliveries", "noticed_events", on_delete: :nullify
   add_foreign_key "reminder_deliveries", "reminders", on_delete: :cascade
+  add_foreign_key "reminders", "commitments", on_delete: :nullify
   add_foreign_key "reminders", "important_dates", on_delete: :nullify
   add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade
   add_foreign_key "reminders", "users", on_delete: :cascade

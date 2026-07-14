@@ -201,3 +201,18 @@ edges:
     relation: same_area
     reason: Existing reminders may reference owner-scoped important dates and inherit their relationship context.
     strength: 85
+  - source: relationship_profiles.commitments
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Commitments are nested under owner-scoped relationship profiles and reuse that privacy boundary.
+    strength: 90
+  - source: relationship_profiles.commitments
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Commitments own reusable reminders but do not duplicate reminder scheduling or delivery behavior.
+    strength: 90
+  - source: relationship_profiles.commitments
+    target: relationship_profiles.timeline_entries
+    relation: requires
+    reason: Each commitment creates and controls a source-backed system promise timeline entry.
+    strength: 90

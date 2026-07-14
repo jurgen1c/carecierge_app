@@ -48,11 +48,12 @@
       <% end %>
 
       <div class="mt-6 rounded-xl border border-stone-200 bg-white px-4 sm:px-5">
+        <%= render "reminders/overdue_commitments", commitments: @overdue_commitments %>
         <%= render "reminders/group", title: t("reminders.groups.overdue"), reminders: @overdue_reminders %>
         <%= render "reminders/group", title: t("reminders.groups.today"), reminders: @today_reminders %>
         <%= render "reminders/group", title: t("reminders.groups.coming_up"), reminders: @upcoming_reminders %>
 
-        <% if @overdue_reminders.empty? && @today_reminders.empty? && @upcoming_reminders.empty? %>
+        <% if @overdue_commitments.empty? && @overdue_reminders.empty? && @today_reminders.empty? && @upcoming_reminders.empty? %>
           <div class="py-8 text-center">
             <h2 class="text-base font-semibold text-stone-950"><%= t("reminders.index.empty_title") %></h2>
             <p class="mx-auto mt-2 max-w-xl text-sm leading-6 text-stone-700"><%= t("reminders.index.empty_body") %></p>

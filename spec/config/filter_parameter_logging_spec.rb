@@ -19,6 +19,10 @@ RSpec.describe "Parameter filtering" do
         "title" => "Call David",
         "notes" => "Private context for the conversation"
       },
+      "commitment" => {
+        "title" => "Send David the report",
+        "notes" => "Private promise context"
+      },
       "body" => "Unrelated body",
       "transcript" => "Unrelated transcript",
       "observation" => "Unrelated observation",
@@ -33,6 +37,8 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("mood_note", "category")).to eq("stressed")
     expect(filtered.dig("reminder", "notes")).to eq("[FILTERED]")
     expect(filtered.dig("reminder", "title")).to eq("Call David")
+    expect(filtered.dig("commitment", "notes")).to eq("[FILTERED]")
+    expect(filtered.dig("commitment", "title")).to eq("Send David the report")
     expect(filtered["body"]).to eq("Unrelated body")
     expect(filtered["transcript"]).to eq("Unrelated transcript")
     expect(filtered["observation"]).to eq("Unrelated observation")

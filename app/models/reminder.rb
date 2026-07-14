@@ -18,6 +18,7 @@
 #  title                   :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
+#  commitment_id           :uuid
 #  important_date_id       :uuid
 #  relationship_profile_id :uuid
 #  user_id                 :uuid             not null
@@ -25,6 +26,7 @@
 # Indexes
 #
 #  index_reminders_on_active_next_delivery_at              (next_delivery_at) WHERE (((status)::text = 'active'::text) AND (next_delivery_at IS NOT NULL))
+#  index_reminders_on_commitment_id                        (commitment_id)
 #  index_reminders_on_important_date_id                    (important_date_id)
 #  index_reminders_on_profile_status_and_schedule          (relationship_profile_id,status,scheduled_at)
 #  index_reminders_on_relationship_profile_id              (relationship_profile_id)
@@ -33,6 +35,7 @@
 #
 # Foreign Keys
 #
+#  fk_rails_...  (commitment_id => commitments.id) ON DELETE => nullify
 #  fk_rails_...  (important_date_id => important_dates.id) ON DELETE => nullify
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
@@ -46,6 +49,7 @@ class Reminder < ApplicationRecord
   belongs_to :user
   belongs_to :relationship_profile, optional: true
   belongs_to :important_date, optional: true
+  belongs_to :commitment, optional: true
 
   has_many :reminder_deliveries, dependent: :destroy
   has_many :noticed_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
@@ -61,6 +65,7 @@ class Reminder < ApplicationRecord
   validate :recognized_time_zone
   validate :associations_belong_to_user
   validate :important_date_matches_relationship
+  validate :commitment_matches_relationship
 
   before_validation :initialize_next_delivery_at, on: :create
   before_validation :refresh_recurrence_anchor
@@ -130,6 +135,14 @@ class Reminder < ApplicationRecord
     end
   end
 
+  def retire!(at: Time.current)
+    with_lock do
+      return if completed?
+
+      update!(status: "completed", completed_at: at, snoozed_until: nil, next_delivery_at: nil)
+    end
+  end
+
   def self.reminder_type_options
     REMINDER_TYPES.map { |value| [ I18n.t("reminders.types.#{value}"), value ] }
   end
@@ -160,6 +173,10 @@ class Reminder < ApplicationRecord
     if important_date.present? && important_date.relationship_profile.user_id != user_id
       errors.add(:important_date, :different_owner)
     end
+
+    if commitment.present? && commitment.relationship_profile.user_id != user_id
+      errors.add(:commitment, :different_owner)
+    end
   end
 
   def important_date_matches_relationship
@@ -167,6 +184,13 @@ class Reminder < ApplicationRecord
     return if important_date.relationship_profile_id == relationship_profile_id
 
     errors.add(:important_date, :different_relationship)
+  end
+
+  def commitment_matches_relationship
+    return if commitment.blank? || relationship_profile.blank?
+    return if commitment.relationship_profile_id == relationship_profile_id
+
+    errors.add(:commitment, :different_relationship)
   end
 
   def initialize_next_delivery_at

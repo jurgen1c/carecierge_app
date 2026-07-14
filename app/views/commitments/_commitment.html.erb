@@ -1,0 +1,38 @@
+<%= turbo_frame_tag dom_id(commitment) do %>
+  <% overdue = commitment.overdue? %>
+  <article id="<%= dom_id(commitment, :row) %>" class="rounded-lg border border-stone-200 bg-white p-4">
+    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="rounded-full px-3 py-1 text-xs font-semibold <%= overdue ? "bg-red-50 text-red-800" : commitment.completed? ? "bg-emerald-50 text-emerald-900" : "bg-stone-100 text-stone-700" %>">
+            <%= overdue ? t("commitments.statuses.overdue") : commitment.status_label %>
+          </span>
+          <% if commitment.due_on.present? %>
+            <span class="text-xs font-medium <%= overdue ? "text-red-700" : "text-stone-600" %>"><%= t("commitments.item.due_on", date: l(commitment.due_on, format: :commitment_due_on)) %></span>
+          <% else %>
+            <span class="text-xs font-medium text-stone-600"><%= t("commitments.item.no_due_date") %></span>
+          <% end %>
+        </div>
+        <h4 class="mt-3 text-base font-semibold text-stone-950"><%= commitment.title %></h4>
+        <% if commitment.notes.present? %><p class="mt-2 whitespace-pre-line text-sm leading-6 text-stone-700"><%= commitment.notes %></p><% end %>
+        <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+          <span class="text-stone-600"><%= t("commitments.item.reminder_count", count: commitment.reminders.size) %></span>
+          <% if commitment.open? && relationship_profile.kept? %>
+            <%= link_to t("commitments.item.add_reminder"), new_reminder_path(relationship_profile_id: relationship_profile.id, commitment_id: commitment.id), data: { turbo_frame: "_top" }, class: "font-semibold text-emerald-800 hover:text-emerald-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="flex shrink-0 flex-wrap gap-2">
+        <%= link_to t("commitments.item.edit"), edit_relationship_profile_commitment_path(relationship_profile, commitment, timeline_type: selected_type), class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+        <% if commitment.open? %>
+          <%= button_to t("commitments.item.complete"), complete_relationship_profile_commitment_path(relationship_profile, commitment, timeline_type: selected_type), method: :patch, class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          <%= button_to t("commitments.item.cancel"), cancel_relationship_profile_commitment_path(relationship_profile, commitment, timeline_type: selected_type), method: :patch, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+        <% else %>
+          <%= button_to t("commitments.item.reopen"), reopen_relationship_profile_commitment_path(relationship_profile, commitment, timeline_type: selected_type), method: :patch, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-emerald-700 bg-white px-4 py-2 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+        <% end %>
+        <%= button_to t("commitments.item.delete"), relationship_profile_commitment_path(relationship_profile, commitment, timeline_type: selected_type), method: :delete, form: { data: { turbo_confirm: t("commitments.item.delete_confirm") } }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700" %>
+      </div>
+    </div>
+  </article>
+<% end %>

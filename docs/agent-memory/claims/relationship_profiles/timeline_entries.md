@@ -24,6 +24,8 @@ claim: >
   by their source workflows. Conversation recaps create linked system
   conversation_recap entries, while timeline-visible mood notes create linked
   system mood_note entries that are removed when timeline visibility is disabled.
+  Commitments create linked system promise entries that remain controlled by the
+  commitment workflow.
 
 source_files:
   - app/models/timeline_entry.rb
@@ -71,7 +73,9 @@ Manual params cannot forge system-origin metadata or source-record references.
 Source-backed entries cannot be edited or deleted through the generic timeline
 actions, so linked source records remain the owner of their generated timeline
 content. Conversation recaps create linked system conversation-recap entries,
-and timeline-visible mood notes create linked system mood-note entries. The
+and timeline-visible mood notes create linked system mood-note entries.
+Commitments create linked system promise entries that are updated or removed
+through the commitment workflow. The
 profile show surface renders entries as an unboxed chronological feed with a context summary
 that stacks below the feed on smaller screens.
 

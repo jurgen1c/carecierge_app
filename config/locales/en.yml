@@ -38,6 +38,7 @@ en:
       relationship_preference_learned_on: "%b %-d, %Y"
       important_date: "%b %-d, %Y"
       desire_captured_on: "%b %-d, %Y"
+      commitment_due_on: "%b %-d, %Y"
       gift_given_on: "%b %-d, %Y"
       memory_stale_after: "%b %-d, %Y"
   time:
@@ -1204,6 +1205,9 @@ en:
       no_relationship: "No relationship"
       important_date: "Important date"
       no_important_date: "No important date"
+      commitment: "Commitment"
+      no_commitment: "No commitment"
+      commitment_option: "%{relationship} — %{title}"
       scheduled_at: "Date and time"
       time_zone: "Time zone"
       time_zone_help: "We detect this from your browser. Choose it here if detection is unavailable."
@@ -1262,6 +1266,85 @@ en:
       notice: "Reminder snoozed."
     complete:
       notice: "Reminder completed."
+    commitments:
+      title: "Overdue commitments"
+      count:
+        one: "1 overdue"
+        other: "%{count} overdue"
+      overdue_since: "Due %{date}"
+      view: "View commitment"
   notification_preferences:
     update:
       notice: "Delivery preferences saved."
+
+  commitments:
+    statuses:
+      open: "Open"
+      completed: "Completed"
+      canceled: "Canceled"
+      overdue: "Overdue"
+    section:
+      kicker: "Follow-through"
+      title: "Promises & commitments"
+      body: "Keep the things you said you would do close at hand. Add a due date and reminder when timing matters."
+      list_title: "Commitments"
+      commitment_count:
+        one: "1 commitment"
+        other: "%{count} commitments"
+      empty_title: "No commitments yet"
+      empty_body: "Record a promise or intention so you can follow through when it matters."
+      summary_title: "Open commitments"
+      summary_body: "One promise at a time. Completed and canceled commitments remain visible for context."
+      open_label: "Still open"
+      open_count:
+        one: "1 active"
+        other: "%{count} active"
+      overdue_label: "Needs attention"
+      overdue_count:
+        one: "1 overdue"
+        other: "%{count} overdue"
+    form:
+      new_title: "Add commitment"
+      edit_title: "Edit commitment"
+      body: "Describe the concrete thing you intend to do."
+      title: "What is the commitment?"
+      title_placeholder: "Send the article to John"
+      due_on: "Due date"
+      due_on_help: "Optional. Add a reminder when you need a notification."
+      status: "Status"
+      notes: "Notes"
+      notes_placeholder: "Add any context that will help you follow through."
+      create: "Add commitment"
+      update: "Save commitment"
+      cancel_edit: "Cancel"
+      errors_heading:
+        one: "We could not save this commitment"
+        other: "We could not save this commitment"
+    item:
+      due_on: "Due %{date}"
+      no_due_date: "No due date"
+      reminder_count:
+        one: "1 reminder"
+        other: "%{count} reminders"
+      add_reminder: "Add reminder"
+      edit: "Edit"
+      complete: "Mark complete"
+      cancel: "Cancel commitment"
+      reopen: "Reopen"
+      delete: "Delete"
+      delete_confirm: "Delete this commitment and its reminders?"
+    create:
+      notice: "Commitment added."
+    update:
+      notice: "Commitment updated."
+    destroy:
+      notice: "Commitment deleted."
+    complete:
+      notice: "Commitment completed."
+      error: "We could not complete this commitment."
+    cancel:
+      notice: "Commitment canceled."
+      error: "We could not cancel this commitment."
+    reopen:
+      notice: "Commitment reopened."
+      error: "We could not reopen this commitment."

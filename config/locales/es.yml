@@ -9,6 +9,7 @@ es:
       relationship_preference_learned_on: "%-d/%-m/%Y"
       important_date: "%-d/%-m/%Y"
       desire_captured_on: "%-d/%-m/%Y"
+      commitment_due_on: "%-d/%-m/%Y"
       gift_given_on: "%-d/%-m/%Y"
       memory_stale_after: "%-d/%-m/%Y"
   time:
@@ -258,6 +259,9 @@ es:
       no_relationship: "Sin relación"
       important_date: "Fecha importante"
       no_important_date: "Sin fecha importante"
+      commitment: "Compromiso"
+      no_commitment: "Sin compromiso"
+      commitment_option: "%{relationship} — %{title}"
       scheduled_at: "Fecha y hora"
       time_zone: "Zona horaria"
       time_zone_help: "La detectamos desde tu navegador. Elígela aquí si la detección no está disponible."
@@ -316,9 +320,87 @@ es:
       notice: "Recordatorio pospuesto."
     complete:
       notice: "Recordatorio completado."
+    commitments:
+      title: "Compromisos atrasados"
+      count:
+        one: "1 atrasado"
+        other: "%{count} atrasados"
+      overdue_since: "Venció el %{date}"
+      view: "Ver compromiso"
   notification_preferences:
     update:
       notice: "Preferencias de entrega guardadas."
+  commitments:
+    statuses:
+      open: "Abierto"
+      completed: "Completado"
+      canceled: "Cancelado"
+      overdue: "Atrasado"
+    section:
+      kicker: "Seguimiento"
+      title: "Promesas y compromisos"
+      body: "Mantén cerca las cosas que dijiste que harías. Agrega una fecha límite y un recordatorio cuando el momento importe."
+      list_title: "Compromisos"
+      commitment_count:
+        one: "1 compromiso"
+        other: "%{count} compromisos"
+      empty_title: "Aún no hay compromisos"
+      empty_body: "Registra una promesa o intención para poder cumplirla cuando importe."
+      summary_title: "Compromisos abiertos"
+      summary_body: "Una promesa a la vez. Los compromisos completados y cancelados permanecen visibles como contexto."
+      open_label: "Aún abiertos"
+      open_count:
+        one: "1 activo"
+        other: "%{count} activos"
+      overdue_label: "Necesitan atención"
+      overdue_count:
+        one: "1 atrasado"
+        other: "%{count} atrasados"
+    form:
+      new_title: "Agregar compromiso"
+      edit_title: "Editar compromiso"
+      body: "Describe la acción concreta que tienes la intención de realizar."
+      title: "¿Cuál es el compromiso?"
+      title_placeholder: "Enviar el artículo a John"
+      due_on: "Fecha límite"
+      due_on_help: "Opcional. Agrega un recordatorio cuando necesites una notificación."
+      status: "Estado"
+      notes: "Notas"
+      notes_placeholder: "Agrega contexto que te ayude a cumplirlo."
+      create: "Agregar compromiso"
+      update: "Guardar compromiso"
+      cancel_edit: "Cancelar"
+      errors_heading:
+        one: "No pudimos guardar este compromiso"
+        other: "No pudimos guardar este compromiso"
+    item:
+      due_on: "Vence el %{date}"
+      no_due_date: "Sin fecha límite"
+      reminder_count:
+        one: "1 recordatorio"
+        other: "%{count} recordatorios"
+      add_reminder: "Agregar recordatorio"
+      edit: "Editar"
+      complete: "Marcar como completado"
+      cancel: "Cancelar compromiso"
+      reopen: "Reabrir"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar este compromiso y sus recordatorios?"
+    create:
+      notice: "Compromiso agregado."
+    update:
+      notice: "Compromiso actualizado."
+    destroy:
+      notice: "Compromiso eliminado."
+    complete:
+      notice: "Compromiso completado."
+      error: "No pudimos completar este compromiso."
+    cancel:
+      notice: "Compromiso cancelado."
+      error: "No pudimos cancelar este compromiso."
+    reopen:
+      notice: "Compromiso reabierto."
+      error: "No pudimos reabrir este compromiso."
   layouts:
     application:
       title: "Carecierge"

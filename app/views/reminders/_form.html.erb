@@ -27,6 +27,11 @@
       <%= form.label :important_date_id, t("reminders.form.important_date"), class: "block text-sm font-medium text-stone-800" %>
       <%= form.collection_select :important_date_id, @important_dates, :id, :display_title, { include_blank: t("reminders.form.no_important_date") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950" %>
     </div>
+
+    <div>
+      <%= form.label :commitment_id, t("reminders.form.commitment"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.collection_select :commitment_id, @commitments, :id, ->(commitment) { t("reminders.form.commitment_option", relationship: commitment.relationship_profile.display_name, title: commitment.title) }, { include_blank: t("reminders.form.no_commitment") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950" %>
+    </div>
     <div>
       <%= form.label :scheduled_at, t("reminders.form.scheduled_at"), class: "block text-sm font-medium text-stone-800" %>
       <%= form.datetime_local_field :scheduled_at, value: reminder.local_scheduled_at&.strftime("%Y-%m-%dT%H:%M"), class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950", data: { timezone_target: "scheduledAt" } %>

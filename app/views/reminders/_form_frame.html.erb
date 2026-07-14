@@ -1,0 +1,3 @@
+<%= turbo_frame_tag(reminder.persisted? ? dom_id(reminder) : "new_reminder") do %>
+  <%= render "reminders/form", reminder: %>
+<% end %>

@@ -80,6 +80,7 @@ class RelationshipProfilesController < ApplicationController
         :contact_methods,
         :gifts,
         :important_dates,
+        :reminders,
         :relationship_preferences,
         :relationship_tags,
         :relationship_groups,

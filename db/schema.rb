@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_14_003747) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_14_060000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -271,6 +271,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_003747) do
     t.index ["recipient_type", "recipient_id"], name: "index_noticed_notifications_on_recipient"
   end
 
+  create_table "notification_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "email_enabled", default: true, null: false
+    t.boolean "in_app_enabled", default: true, null: false
+    t.boolean "push_enabled", default: false, null: false
+    t.boolean "sms_enabled", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+  end
+
   create_table "relationship_field_values", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "custom", default: false, null: false
@@ -392,6 +403,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_003747) do
     t.index ["relationship_type"], name: "index_relationship_templates_on_relationship_type", unique: true
   end
 
+  create_table "reminder_deliveries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "channel", null: false
+    t.datetime "created_at", null: false
+    t.datetime "dispatched_at"
+    t.datetime "enqueued_at"
+    t.text "error_message"
+    t.uuid "reminder_id", null: false
+    t.datetime "scheduled_for", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enqueued_at"], name: "index_reminder_deliveries_on_pending_enqueue_lease", where: "((status)::text = 'pending'::text)"
+    t.index ["reminder_id", "channel", "scheduled_for"], name: "index_reminder_deliveries_on_occurrence_and_channel", unique: true
+    t.index ["reminder_id"], name: "index_reminder_deliveries_on_reminder_id"
+  end
+
+  create_table "reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.uuid "important_date_id"
+    t.datetime "next_delivery_at"
+    t.text "notes"
+    t.string "priority", default: "normal", null: false
+    t.string "recurrence", default: "none", null: false
+    t.datetime "recurrence_anchor_at", null: false
+    t.uuid "relationship_profile_id"
+    t.string "reminder_type", default: "custom", null: false
+    t.datetime "scheduled_at", null: false
+    t.datetime "snoozed_until"
+    t.string "status", default: "active", null: false
+    t.string "time_zone", default: "UTC", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["important_date_id"], name: "index_reminders_on_important_date_id"
+    t.index ["next_delivery_at"], name: "index_reminders_on_active_next_delivery_at", where: "(((status)::text = 'active'::text) AND (next_delivery_at IS NOT NULL))"
+    t.index ["relationship_profile_id", "status", "scheduled_at"], name: "index_reminders_on_profile_status_and_schedule"
+    t.index ["relationship_profile_id"], name: "index_reminders_on_relationship_profile_id"
+    t.index ["user_id", "status", "scheduled_at"], name: "index_reminders_on_user_id_and_status_and_scheduled_at"
+    t.index ["user_id"], name: "index_reminders_on_user_id"
+  end
+
   create_table "rollout_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.jsonb "criteria", default: {}, null: false
@@ -485,6 +537,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_003747) do
   add_foreign_key "memory_revisions", "memory_records"
   add_foreign_key "memory_revisions", "users"
   add_foreign_key "mood_notes", "relationship_profiles"
+  add_foreign_key "notification_preferences", "users", on_delete: :cascade
   add_foreign_key "relationship_field_values", "relationship_profiles"
   add_foreign_key "relationship_field_values", "template_fields"
   add_foreign_key "relationship_group_memberships", "relationship_groups", on_delete: :cascade
@@ -496,6 +549,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_003747) do
   add_foreign_key "relationship_taggings", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_taggings", "relationship_tags", on_delete: :cascade
   add_foreign_key "relationship_tags", "users"
+  add_foreign_key "reminder_deliveries", "reminders", on_delete: :cascade
+  add_foreign_key "reminders", "important_dates", on_delete: :nullify
+  add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "reminders", "users", on_delete: :cascade
   add_foreign_key "template_fields", "relationship_templates"
   add_foreign_key "timeline_entries", "relationship_profiles"
 end

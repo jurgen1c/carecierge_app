@@ -111,6 +111,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :relationship_groups, through: :relationship_group_memberships
   has_many :relationship_field_values, dependent: :destroy
   has_many :important_dates, dependent: :destroy
+  has_many :reminders, dependent: :destroy
   has_many :gifts, dependent: :destroy
   has_many :memory_records, dependent: :destroy
   has_many :conversation_recaps, dependent: :destroy

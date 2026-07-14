@@ -13,6 +13,14 @@ Rails.application.routes.draw do
 
   get "dashboard" => "dashboard#index", as: :dashboard
 
+  resources :reminders, except: :show do
+    get :calendar, on: :collection
+    get :calendar, on: :member
+    patch :snooze, on: :member
+    patch :complete, on: :member
+  end
+  resource :notification_preference, only: :update
+
   resource :onboarding, only: %i[show create], controller: "onboarding" do
     post :skip
   end

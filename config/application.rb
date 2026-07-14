@@ -43,7 +43,11 @@ module CareciergeApp
     config.i18n.default_locale = :en
     config.i18n.available_locales = [ :es, :en ]
 
-    config.factory_bot.definition_file_paths = [ Rails.root.join("spec/factories") ]
+    config.x.mail_from = ENV.fetch("CARECIERGE_MAIL_FROM", "from@example.com")
+
+    if config.respond_to?(:factory_bot)
+      config.factory_bot.definition_file_paths = [ Rails.root.join("spec/factories") ]
+    end
 
     config.generators do |generate|
       generate.orm :active_record, primary_key_type: :uuid

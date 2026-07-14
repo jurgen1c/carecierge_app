@@ -1,0 +1,10 @@
+<% if reminders.any? %>
+  <section class="border-b border-stone-200 py-5 last:border-b-0">
+    <h2 class="text-base font-semibold text-stone-950"><%= title %> <span class="ml-1 text-sm font-medium text-stone-600"><%= reminders.size %></span></h2>
+    <div class="mt-2">
+      <% reminders.each do |reminder| %>
+        <%= component "reminder_row", reminder: %>
+      <% end %>
+    </div>
+  </section>
+<% end %>

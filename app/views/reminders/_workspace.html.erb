@@ -1,0 +1,89 @@
+<%= turbo_frame_tag "reminders_workspace", target: "_top" do %>
+  <div class="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)]">
+    <aside class="hidden rounded-xl border border-stone-200 bg-white p-4 lg:block">
+      <%= form_with url: reminders_path, method: :get, class: "mb-4" do |form| %>
+        <%= form.label :relationship_profile_id, t("reminders.index.find_relationship"), class: "block text-sm font-medium text-stone-800" %>
+        <div class="mt-2 flex gap-2">
+          <%= form.collection_select :relationship_profile_id, @relationship_profiles, :id, :display_name, { include_blank: t("reminders.index.all_reminders") }, class: "min-h-11 min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <%= form.submit t("reminders.index.filter"), class: "min-h-11 rounded-lg border border-stone-300 bg-white px-3 text-sm font-semibold text-stone-900 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+        </div>
+      <% end %>
+
+      <nav aria-label="<%= t("reminders.index.relationships") %>" class="border-t border-stone-200 pt-3">
+        <%= link_to t("reminders.index.all_reminders"), reminders_path, class: ["flex min-h-11 items-center rounded-lg px-3 py-2 text-sm font-semibold", @selected_relationship_profile ? "text-stone-700 hover:bg-stone-100" : "bg-emerald-50 text-emerald-900"] %>
+        <% @relationship_profiles.each do |profile| %>
+          <%= link_to reminders_path(relationship_profile_id: profile.id), class: ["mt-1 flex min-h-11 items-center gap-3 rounded-lg px-3 py-2", @selected_relationship_profile == profile ? "bg-emerald-50 text-emerald-950" : "text-stone-700 hover:bg-stone-100"] do %>
+            <span class="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-stone-100 text-xs font-semibold text-stone-800"><%= profile.display_name.first(2).upcase %></span>
+            <span class="min-w-0 truncate text-sm font-semibold"><%= profile.display_name %></span>
+          <% end %>
+        <% end %>
+      </nav>
+    </aside>
+
+    <section class="min-w-0">
+      <header class="flex flex-col gap-4 border-b border-stone-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p class="text-sm font-semibold text-emerald-800"><%= @selected_relationship_profile ? @selected_relationship_profile.relationship_type_label : t("reminders.index.kicker") %></p>
+          <h1 class="mt-2 text-2xl font-semibold text-stone-950"><%= @selected_relationship_profile&.display_name || t("reminders.index.heading") %></h1>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-700"><%= t("reminders.index.body") %></p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <%= link_to t("reminders.index.export_calendar"), calendar_reminders_path(format: :ics), class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          <%= link_to t("reminders.index.create"), new_reminder_path(relationship_profile_id: @selected_relationship_profile&.id), data: { turbo_frame: "new_reminder" }, class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+        </div>
+      </header>
+
+      <div class="mt-4 lg:hidden">
+        <%= form_with url: reminders_path, method: :get, class: "flex gap-2" do |form| %>
+          <%= form.label :relationship_profile_id, t("reminders.index.relationship_picker"), class: "sr-only" %>
+          <%= form.collection_select :relationship_profile_id, @relationship_profiles, :id, :display_name, { include_blank: t("reminders.index.all_reminders") }, class: "min-h-11 min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950" %>
+          <%= form.submit t("reminders.index.view"), class: "min-h-11 rounded-lg bg-emerald-800 px-4 text-sm font-semibold text-white" %>
+        <% end %>
+      </div>
+
+      <%= turbo_frame_tag "new_reminder", class: "block mt-5" do %>
+        <% if @reminder&.new_record? %>
+          <%= render "reminders/form", reminder: @reminder %>
+        <% end %>
+      <% end %>
+
+      <div class="mt-6 rounded-xl border border-stone-200 bg-white px-4 sm:px-5">
+        <%= render "reminders/group", title: t("reminders.groups.overdue"), reminders: @overdue_reminders %>
+        <%= render "reminders/group", title: t("reminders.groups.today"), reminders: @today_reminders %>
+        <%= render "reminders/group", title: t("reminders.groups.coming_up"), reminders: @upcoming_reminders %>
+
+        <% if @overdue_reminders.empty? && @today_reminders.empty? && @upcoming_reminders.empty? %>
+          <div class="py-8 text-center">
+            <h2 class="text-base font-semibold text-stone-950"><%= t("reminders.index.empty_title") %></h2>
+            <p class="mx-auto mt-2 max-w-xl text-sm leading-6 text-stone-700"><%= t("reminders.index.empty_body") %></p>
+          </div>
+        <% end %>
+      </div>
+
+      <section class="mt-6 grid gap-5 md:grid-cols-2">
+        <div class="rounded-xl border border-stone-200 bg-white p-5">
+          <h2 class="text-base font-semibold text-stone-950"><%= t("reminders.preferences.title") %></h2>
+          <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("reminders.preferences.body") %></p>
+          <%= form_with model: @notification_preference, url: notification_preference_path, method: :patch, class: "mt-4 grid gap-3" do |form| %>
+            <label class="flex min-h-11 items-center gap-3 text-sm font-medium text-stone-900"><%= form.check_box :in_app_enabled, class: "size-5 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %><%= t("reminders.preferences.in_app") %></label>
+            <label class="flex min-h-11 items-center gap-3 text-sm font-medium text-stone-900"><%= form.check_box :email_enabled, class: "size-5 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %><%= t("reminders.preferences.email") %></label>
+            <%= form.submit t("reminders.preferences.save"), class: "mt-2 min-h-11 w-fit rounded-lg border border-emerald-700 bg-white px-4 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-50" %>
+          <% end %>
+        </div>
+
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5">
+          <h2 class="text-base font-semibold text-stone-950"><%= t("reminders.notifications.title") %></h2>
+          <% if @reminder_notifications.any? %>
+            <ul class="mt-4 grid gap-3">
+              <% @reminder_notifications.each do |notification| %>
+                <li><%= link_to notification.message, notification.url, class: "text-sm font-semibold text-emerald-900 hover:text-emerald-950" %></li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("reminders.notifications.empty") %></p>
+          <% end %>
+        </div>
+      </section>
+    </section>
+  </div>
+<% end %>

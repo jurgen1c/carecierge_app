@@ -1,0 +1,4 @@
+<%= t("reminder_mailer.due.heading", title: @reminder.title) %>
+
+<%= t("reminder_mailer.due.scheduled_for", time: l(@reminder.effective_delivery_at, format: :long)) %>
+<%= reminders_url(relationship_profile_id: @reminder.active_relationship_profile_id) %>

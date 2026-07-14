@@ -13,12 +13,16 @@ es:
       memory_stale_after: "%-d/%-m/%Y"
   time:
     formats:
+      long: "%-d/%-m/%Y %H:%M"
       timeline_entry_day: "%-d/%-m/%Y"
       timeline_entry_time: "%H:%M"
+      reminder_day: "%-d/%-m"
+      reminder_time: "%H:%M"
   activerecord:
     models:
       conversation_recap: "Resumen de conversación"
       mood_note: "Nota de ánimo"
+      reminder: "Recordatorio"
     attributes:
       feature_flag:
         description: "Descripción"
@@ -125,6 +129,9 @@ es:
         reminder_schedule: "Calendario de recordatorio"
         starts_on: "Fecha"
         title: "Título"
+      reminder:
+        important_date: "Fecha importante"
+        relationship_profile: "Relación"
       desire:
         captured_on: "Fecha capturada"
         category: "Categoría"
@@ -156,6 +163,13 @@ es:
             source_record:
               complete_reference: "debe incluir el tipo y el id del registro de origen"
               same_relationship_profile: "debe pertenecer al mismo perfil de relación"
+        reminder:
+          attributes:
+            important_date:
+              different_owner: "debe pertenecerte"
+              different_relationship: "debe pertenecer a la relación seleccionada"
+            relationship_profile:
+              different_owner: "debe pertenecerte"
   errors:
     messages:
       blank: "no puede estar en blanco"
@@ -200,6 +214,111 @@ es:
         new_account: "Nuevo en Carecierge?"
         create_account: "Crear cuenta"
         sign_in_with_google: "Continuar con Google"
+  notifiers:
+    reminder_in_app:
+      message: "%{title} está pendiente."
+  reminder_mailer:
+    due:
+      subject: "Recordatorio: %{title}"
+      heading: "%{title} está pendiente"
+      scheduled_for: "Programado para %{time}."
+      open_reminders: "Abrir recordatorios"
+  reminders:
+    index:
+      title: "Recordatorios"
+      kicker: "Atención pendiente"
+      heading: "Todos los recordatorios"
+      body: "Mantén visible el seguimiento oportuno sin perder el contexto de la relación."
+      find_relationship: "Buscar una relación"
+      relationships: "Relaciones"
+      relationship_picker: "Elegir una relación"
+      all_reminders: "Todos los recordatorios"
+      filter: "Filtrar"
+      view: "Ver"
+      export_calendar: "Exportar calendario"
+      create: "Crear recordatorio"
+      empty_title: "Todo está al día"
+      empty_body: "Crea un recordatorio cuando haya algo considerado a lo que quieras dar seguimiento."
+    groups:
+      overdue: "Atrasados"
+      today: "Hoy"
+      coming_up: "Próximos"
+    actions:
+      complete: "Completar"
+      snooze: "Posponer"
+      export: "Exportar"
+      edit: "Editar"
+    form:
+      new_title: "Crear recordatorio"
+      edit_title: "Editar recordatorio"
+      body: "Elige un momento claro y mantén conciso el contexto privado."
+      title: "Recordatorio"
+      title_placeholder: "Llamar a Elena"
+      relationship: "Relación"
+      no_relationship: "Sin relación"
+      important_date: "Fecha importante"
+      no_important_date: "Sin fecha importante"
+      scheduled_at: "Fecha y hora"
+      time_zone: "Zona horaria"
+      time_zone_help: "La detectamos desde tu navegador. Elígela aquí si la detección no está disponible."
+      type: "Tipo de recordatorio"
+      priority: "Prioridad"
+      recurrence: "Se repite"
+      notes: "Notas privadas"
+      notes_placeholder: "Agrega contexto que te ayude a dar seguimiento."
+      create: "Crear recordatorio"
+      update: "Guardar recordatorio"
+      cancel: "Cancelar"
+      errors:
+        one: "No pudimos guardar este recordatorio"
+        other: "No pudimos guardar este recordatorio"
+    preferences:
+      title: "Preferencias de entrega"
+      body: "Elige cómo debe avisarte Carecierge cuando un recordatorio esté pendiente."
+      in_app: "En la aplicación"
+      email: "Correo electrónico"
+      save: "Guardar preferencias"
+    notifications:
+      title: "Notificaciones recientes"
+      empty: "Los recordatorios pendientes aparecerán aquí cuando la entrega en la aplicación esté activa."
+    section:
+      kicker: "Seguimiento"
+      title: "Recordatorios"
+      body: "Mantén las próximas acciones consideradas cerca del historial de esta relación."
+      view_all: "Ver todos los recordatorios"
+      empty: "Aún no hay recordatorios activos para esta relación."
+    types:
+      birthday: "Cumpleaños"
+      gift_planning: "Planificación de regalo"
+      check_in: "Ponerse al día"
+      promise_follow_up: "Seguimiento de promesa"
+      event_preparation: "Preparación de evento"
+      post_event_follow_up: "Seguimiento después del evento"
+      relationship_goal: "Meta de relación"
+      custom: "Personalizado"
+    priorities:
+      low: "Baja"
+      normal: "Normal"
+      high: "Alta"
+    recurrences:
+      none: "No se repite"
+      daily: "Diariamente"
+      weekly: "Semanalmente"
+      monthly: "Mensualmente"
+      yearly: "Anualmente"
+    create:
+      notice: "Recordatorio creado."
+    update:
+      notice: "Recordatorio actualizado."
+    destroy:
+      notice: "Recordatorio eliminado."
+    snooze:
+      notice: "Recordatorio pospuesto."
+    complete:
+      notice: "Recordatorio completado."
+  notification_preferences:
+    update:
+      notice: "Preferencias de entrega guardadas."
   layouts:
     application:
       title: "Carecierge"
@@ -227,6 +346,7 @@ es:
       relationship_profile_action: "Gestionar relaciones"
       important_dates_title: "Fechas importantes"
       important_dates_body: "Captura cumpleaños, aniversarios y momentos que quieres recordar antes de que se vuelvan urgentes."
+      reminders_action: "Abrir recordatorios"
       privacy_title: "Privado por defecto"
       privacy_body: "Carecierge mantiene la configuración de relaciones dentro de tu cuenta y prepara futuras rutas de aprobación antes de la automatización."
       continue_onboarding: "Continuar onboarding"

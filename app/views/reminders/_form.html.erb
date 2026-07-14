@@ -1,0 +1,62 @@
+<% form_url = reminder.persisted? ? reminder_path(reminder) : reminders_path %>
+<%= form_with model: reminder, url: form_url, method: reminder.persisted? ? :patch : :post, class: "rounded-xl border border-stone-200 bg-white p-4", data: { controller: "timezone", timezone_capture_value: reminder.new_record? && reminder.errors.empty? } do |form| %>
+  <div class="flex items-start justify-between gap-3">
+    <div>
+      <h2 class="text-base font-semibold text-stone-950"><%= reminder.persisted? ? t("reminders.form.edit_title") : t("reminders.form.new_title") %></h2>
+      <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("reminders.form.body") %></p>
+    </div>
+  </div>
+
+  <% if reminder.errors.any? %>
+    <div class="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-950">
+      <p class="font-semibold"><%= t("reminders.form.errors", count: reminder.errors.count) %></p>
+      <ul class="mt-2 list-disc space-y-1 pl-5"><% reminder.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <%= form.label :title, t("reminders.form.title"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_field :title, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("reminders.form.title_placeholder") %>
+    </div>
+    <div>
+      <%= form.label :relationship_profile_id, t("reminders.form.relationship"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.collection_select :relationship_profile_id, @relationship_profiles, :id, :display_name, { include_blank: t("reminders.form.no_relationship") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950" %>
+    </div>
+    <div>
+      <%= form.label :important_date_id, t("reminders.form.important_date"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.collection_select :important_date_id, @important_dates, :id, :display_title, { include_blank: t("reminders.form.no_important_date") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950" %>
+    </div>
+    <div>
+      <%= form.label :scheduled_at, t("reminders.form.scheduled_at"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.datetime_local_field :scheduled_at, value: reminder.local_scheduled_at&.strftime("%Y-%m-%dT%H:%M"), class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950", data: { timezone_target: "scheduledAt" } %>
+    </div>
+    <div>
+      <%= form.label :time_zone, t("reminders.form.time_zone"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.select :time_zone, reminder_time_zone_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950", data: { timezone_target: "input" } %>
+      <p class="mt-1 text-xs leading-5 text-stone-600"><%= t("reminders.form.time_zone_help") %></p>
+    </div>
+    <div>
+      <%= form.label :reminder_type, t("reminders.form.type"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.select :reminder_type, Reminder.reminder_type_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950" %>
+    </div>
+    <div>
+      <%= form.label :priority, t("reminders.form.priority"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.select :priority, Reminder.priority_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950" %>
+    </div>
+    <div>
+      <%= form.label :recurrence, t("reminders.form.recurrence"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.select :recurrence, Reminder.recurrence_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= form.label :notes, t("reminders.form.notes"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_area :notes, rows: 3, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950", placeholder: t("reminders.form.notes_placeholder") %>
+    </div>
+  </div>
+  <div class="mt-4 flex flex-wrap gap-3">
+    <%= form.submit reminder.persisted? ? t("reminders.form.update") : t("reminders.form.create"), class: "min-h-11 rounded-lg bg-emerald-800 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <% if reminder.persisted? %>
+      <%= link_to t("reminders.form.cancel"), reminders_path(relationship_profile_id: reminder.relationship_profile_id), data: { turbo_frame: "_top" }, class: "inline-flex min-h-11 items-center rounded-lg border border-stone-300 bg-white px-5 py-2 text-sm font-semibold text-stone-900" %>
+    <% end %>
+  </div>
+<% end %>

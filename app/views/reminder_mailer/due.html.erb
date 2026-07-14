@@ -1,0 +1,3 @@
+<h1><%= t("reminder_mailer.due.heading", title: @reminder.title) %></h1>
+<p><%= t("reminder_mailer.due.scheduled_for", time: l(@reminder.effective_delivery_at, format: :long)) %></p>
+<p><%= link_to t("reminder_mailer.due.open_reminders"), reminders_url(relationship_profile_id: @reminder.active_relationship_profile_id) %></p>

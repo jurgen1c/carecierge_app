@@ -1,11 +1,15 @@
 module RemindersHelper
   def reminder_time_zone_options
-    TZInfo::Timezone.all_identifiers.map do |identifier|
-      zone = TZInfo::Timezone.get(identifier)
-      offset = zone.current_period.utc_total_offset
-      [ time_zone_label(identifier, offset), identifier, offset ]
-    end.sort_by { |(_label, identifier, offset)| [ offset, identifier ] }
-      .map { |label, identifier, _offset| [ label, identifier ] }
+    expires_at = (Time.current.utc + 1.minute).change(sec: 0)
+
+    Rails.cache.fetch("reminder-time-zone-options", expires_at:) do
+      TZInfo::Timezone.all_identifiers.map do |identifier|
+        zone = TZInfo::Timezone.get(identifier)
+        offset = zone.current_period.utc_total_offset
+        [ time_zone_label(identifier, offset), identifier, offset ]
+      end.sort_by { |(_label, identifier, offset)| [ offset, identifier ] }
+        .map { |label, identifier, _offset| [ label, identifier ] }
+    end
   end
 
   private

@@ -37,7 +37,10 @@ claim: >
   delivery failures retry automatically, and deleting a reminder removes its
   Noticed events. Snoozed reminders use their effective delivery time for inbox
   grouping and ordering in the IANA timezone captured from the browser or chosen
-  from the complete visible timezone list. Recurrence anchors preserve month-end
+  from the complete visible timezone list, whose computed labels and current
+  UTC offsets share one cache entry until the next UTC minute boundary so
+  intraday and half-hour DST transitions refresh without accumulating keys.
+  Recurrence anchors preserve month-end
   and leap-day intent, while local-time snoozes preserve wall-clock intent. Partial updates preserve
   omitted links, and relationship links fall back to the global inbox after a
   profile is archived, including after destroy, snooze, and complete actions. NotificationPreference
@@ -88,6 +91,7 @@ related_files:
   - spec/jobs/deliver_reminder_job_spec.rb
   - spec/requests/reminders_spec.rb
   - spec/policies/reminder_policy_spec.rb
+  - spec/helpers/reminders_helper_spec.rb
   - spec/serializers/reminder_calendar_serializer_spec.rb
 symbols:
   - Reminder
@@ -133,7 +137,7 @@ enqueueing, actual-channel retries, browser-captured or visibly selected IANA ti
 month-end and leap-day recurrence anchors,
 effective snooze timing and SQL ordering, policy-enforced ownership,
 active-profile association boundaries, archived-profile action and link fallback,
-configured SMTP and HTTPS email links, and private iCalendar
+minute-boundary-cached timezone options, configured SMTP and HTTPS email links, and private iCalendar
 export. Push and SMS are reserved future
 channels, not active delivery methods. Future commitment and planning models
 must extend this system.
@@ -162,6 +166,7 @@ schedulers as commitments and plans are introduced.
 - `spec/jobs/deliver_reminder_job_spec.rb`
 - `spec/requests/reminders_spec.rb`
 - `spec/policies/reminder_policy_spec.rb`
+- `spec/helpers/reminders_helper_spec.rb`
 
 ## Verification
 

@@ -63,7 +63,7 @@ class MoodNote < ApplicationRecord
   end
 
   def normalize_text_fields
-    self.observation = observation.to_s.squish
+    self.observation = observation.to_s.strip
     self.supportive_action = supportive_action.to_s.strip.presence
   end
 end

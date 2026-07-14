@@ -106,7 +106,7 @@ RSpec.describe "Mood notes", type: :request do
       expect(response.body).to include(%(turbo-stream action="replace" target="timeline_entries_section"))
     end
 
-    it "keeps the note private to its relationship and omits the timeline row when not selected" do
+    it "omits the timeline row when timeline visibility is not selected" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
       sign_in user

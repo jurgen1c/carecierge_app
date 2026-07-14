@@ -11,7 +11,8 @@ title: Mood notes are observation-first owner-scoped follow-up records
 claim: >
   MoodNote records belong to a RelationshipProfile and are managed through
   authenticated, owner-scoped nested routes. Mood notes store a supported
-  non-diagnostic observation category, user-authored observation, observed time,
+  non-diagnostic observation category, user-authored observation with intentional
+  line breaks preserved, observed time,
   optional supportive action, optional follow-up time, and an explicit timeline
   visibility choice. Manual create, edit, and delete actions refresh the profile
   mood-note and relationship-timeline sections with Turbo streams, preserve
@@ -63,9 +64,11 @@ last_verified_commit: null
 Mood notes capture what a user observed about someone in a relationship without
 presenting the observation as a diagnosis. Each note can include a neutral
 category, the observed moment, a concrete supportive action, and a follow-up
-time. The user explicitly controls whether the note also appears in the
-relationship timeline. Enabling that choice writes a linked system timeline
-entry; disabling it or deleting the note removes the linked entry.
+time. Leading and trailing observation whitespace is trimmed while intentional
+line breaks remain available to the profile UI. The user explicitly controls
+whether the note also appears in the relationship timeline. Enabling that choice
+writes a linked system timeline entry; disabling it or deleting the note removes
+the linked entry.
 
 All mood-note routes resolve the parent profile through the signed-in user and
 authorize the nested record. The profile surface and Turbo refreshes use

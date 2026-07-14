@@ -39,16 +39,16 @@ RSpec.describe MoodNote, type: :model do
       expect(note.errors[:category]).to include("is not included in the list")
     end
 
-    it "normalizes user-authored observation and action text" do
+    it "trims user-authored text while preserving observation line breaks" do
       note = build(
         :mood_note,
-        observation: "  Seemed   proud after the presentation.  ",
+        observation: "  Seemed proud after the presentation.\nPaused before sharing more.  ",
         supportive_action: "  Ask how the celebration went.  "
       )
 
       note.valid?
 
-      expect(note.observation).to eq("Seemed proud after the presentation.")
+      expect(note.observation).to eq("Seemed proud after the presentation.\nPaused before sharing more.")
       expect(note.supportive_action).to eq("Ask how the celebration went.")
     end
 

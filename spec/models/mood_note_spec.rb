@@ -83,6 +83,12 @@ RSpec.describe MoodNote, type: :model do
 
       expect(note.display_title.length).to be <= 80
     end
+
+    it "uses a normalized single-line source-record title" do
+      note = build(:mood_note, observation: "Seemed proud.\n  Paused before sharing more.")
+
+      expect(note.display_title).to eq("Seemed proud. Paused before sharing more.")
+    end
   end
 
   describe ".ordered" do

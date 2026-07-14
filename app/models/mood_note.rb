@@ -41,7 +41,7 @@ class MoodNote < ApplicationRecord
   scope :ordered, -> { order(observed_at: :desc, category: :asc, id: :asc) }
 
   def display_title
-    observation.to_s.truncate(80)
+    observation.to_s.squish.truncate(80)
   end
 
   def category_label

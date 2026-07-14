@@ -10,10 +10,10 @@ export default class extends Controller {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
     if (timeZone) this.inputTarget.value = timeZone
-    if (!this.scheduledAtTarget.value) this.scheduledAtTarget.value = this.tomorrowAtTheNextHour()
+    if (!this.scheduledAtTarget.value) this.scheduledAtTarget.value = this.tomorrowAtCurrentHour()
   }
 
-  tomorrowAtTheNextHour() {
+  tomorrowAtCurrentHour() {
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     tomorrow.setMinutes(0, 0, 0)

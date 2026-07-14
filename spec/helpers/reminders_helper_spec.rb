@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe RemindersHelper, type: :helper do
-  it "reuses timezone options within a minute and refreshes them after a half-hour DST transition" do
+  it "reuses timezone options within a minute and refreshes them at the next UTC minute boundary" do
     cache = ActiveSupport::Cache::MemoryStore.new
     allow(Rails).to receive(:cache).and_return(cache)
     expect(TZInfo::Timezone).to receive(:all_identifiers).twice.and_call_original

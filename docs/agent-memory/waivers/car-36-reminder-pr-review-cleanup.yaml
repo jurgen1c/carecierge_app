@@ -1,0 +1,12 @@
+id: car_36_reminder_pr_review_cleanup
+status: active
+reason: >
+  Follow-up PR review cleanup after CAR-36 introduced the durable reminders
+  claim. The claim already documents browser-captured timezones, default
+  scheduling, and minute-boundary timezone-option caching. This cleanup only
+  renames a JavaScript helper and an RSpec example so their names match their
+  unchanged behavior.
+files:
+  - app/javascript/controllers/timezone_controller.js
+  - spec/helpers/reminders_helper_spec.rb
+expires_at: 2026-08-13

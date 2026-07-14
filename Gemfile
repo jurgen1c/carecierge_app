@@ -69,7 +69,7 @@ gem "capybara", "~> 3.40", group: :test
 gem "cuprite", "~> 0.17", group: :test
 gem "simplecov", "~> 0.22.0", group: :test
 
-gem "annotaterb", "~> 4.22", group: :development
+gem "annotaterb", "~> 4.23", group: :development
 
 gem "devise", "~> 5.0"
 gem "omniauth-google-oauth2", "~> 1.2"

@@ -9,7 +9,7 @@
 #  observation             :text             not null
 #  observed_at             :datetime         not null
 #  supportive_action       :text
-#  timeline_visible        :boolean          default(TRUE), not null
+#  timeline_visible        :boolean          default(FALSE), not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null

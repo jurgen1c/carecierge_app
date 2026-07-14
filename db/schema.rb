@@ -239,7 +239,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_003747) do
     t.datetime "observed_at", null: false
     t.uuid "relationship_profile_id", null: false
     t.text "supportive_action"
-    t.boolean "timeline_visible", default: true, null: false
+    t.boolean "timeline_visible", default: false, null: false
     t.datetime "updated_at", null: false
     t.index ["relationship_profile_id", "category"], name: "index_mood_notes_on_relationship_profile_id_and_category"
     t.index ["relationship_profile_id", "follow_up_at"], name: "index_mood_notes_on_relationship_profile_id_and_follow_up_at"

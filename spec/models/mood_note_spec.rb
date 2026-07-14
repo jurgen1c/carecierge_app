@@ -9,7 +9,7 @@
 #  observation             :text             not null
 #  observed_at             :datetime         not null
 #  supportive_action       :text
-#  timeline_visible        :boolean          default(TRUE), not null
+#  timeline_visible        :boolean          default(FALSE), not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null
@@ -60,6 +60,12 @@ RSpec.describe MoodNote, type: :model do
 
         expect(note.observed_at).to eq(Time.zone.local(2026, 7, 13, 9, 15, 0))
       end
+    end
+
+    it "defaults timeline visibility off" do
+      note = described_class.new
+
+      expect(note.timeline_visible).to be(false)
     end
 
     it "does not replace a cleared observed time on an existing note" do

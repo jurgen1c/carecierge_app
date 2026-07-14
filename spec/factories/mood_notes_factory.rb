@@ -9,7 +9,7 @@
 #  observation             :text             not null
 #  observed_at             :datetime         not null
 #  supportive_action       :text
-#  timeline_visible        :boolean          default(TRUE), not null
+#  timeline_visible        :boolean          default(FALSE), not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null
@@ -33,6 +33,6 @@ FactoryBot.define do
     observed_at { Time.zone.local(2026, 7, 12, 18, 30, 0) }
     supportive_action { "Send a low-pressure check-in tomorrow." }
     follow_up_at { Time.zone.local(2026, 7, 13, 10, 0, 0) }
-    timeline_visible { true }
+    timeline_visible { false }
   end
 end

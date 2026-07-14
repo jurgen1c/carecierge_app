@@ -13,13 +13,13 @@ claim: >
   authenticated, owner-scoped nested routes. Mood notes store a supported
   non-diagnostic observation category, user-authored observation with intentional
   line breaks preserved, observed time,
-  optional supportive action, optional follow-up time, and an explicit timeline
-  visibility choice. Manual create, edit, and delete actions refresh the profile
-  mood-note and relationship-timeline sections with Turbo streams, preserve
-  English and Spanish observation-first copy, and cannot access another user's
-  relationship profile. Timeline-visible notes create or update a linked system
-  TimelineEntry with entry_type mood_note; disabling timeline visibility or
-  deleting the note removes that linked entry, and generic timeline actions
+  optional supportive action, optional follow-up time, and an opt-in timeline
+  visibility choice that defaults off. Manual create, edit, and delete actions
+  refresh the profile mood-note and relationship-timeline sections with Turbo
+  streams, preserve English and Spanish observation-first copy, and cannot access
+  another user's relationship profile. Timeline-visible notes create or update a
+  linked system TimelineEntry with entry_type mood_note; disabling timeline
+  visibility or deleting the note removes that linked entry, and generic timeline actions
   cannot edit or delete the source-backed row. Sensitive observation and
   supportive-action parameters are filtered from application request logs.
 
@@ -66,9 +66,9 @@ presenting the observation as a diagnosis. Each note can include a neutral
 category, the observed moment, a concrete supportive action, and a follow-up
 time. Leading and trailing observation whitespace is trimmed while intentional
 line breaks remain available to the profile UI. The user explicitly controls
-whether the note also appears in the relationship timeline. Enabling that choice
-writes a linked system timeline entry; disabling it or deleting the note removes
-the linked entry.
+whether the note also appears in the relationship timeline, with new notes
+defaulting to private. Enabling that choice writes a linked system timeline
+entry; disabling it or deleting the note removes the linked entry.
 
 All mood-note routes resolve the parent profile through the signed-in user and
 authorize the nested record. The profile surface and Turbo refreshes use

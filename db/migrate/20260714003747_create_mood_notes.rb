@@ -7,7 +7,7 @@ class CreateMoodNotes < ActiveRecord::Migration[8.1]
       t.datetime :observed_at, null: false
       t.text :supportive_action
       t.datetime :follow_up_at
-      t.boolean :timeline_visible, null: false, default: true
+      t.boolean :timeline_visible, null: false, default: false
 
       t.timestamps
     end

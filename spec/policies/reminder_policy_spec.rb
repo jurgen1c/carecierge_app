@@ -27,4 +27,10 @@ RSpec.describe ReminderPolicy do
     expect(policy.calendar?).to be(false)
     expect(described_class::Scope.new(other_user, Reminder).resolve).to be_empty
   end
+
+  it "denies creating a reminder assigned to another user" do
+    forged_reminder = build(:reminder, user: create(:user))
+
+    expect(described_class.new(owner, forged_reminder).create?).to be(false)
+  end
 end

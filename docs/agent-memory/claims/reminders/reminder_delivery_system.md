@@ -10,8 +10,10 @@ title: Reminders provide owner-scoped scheduling and idempotent delivery
 
 claim: >
   Reminder records belong to a User and may reference that user's
-  RelationshipProfile and ImportantDate. The global reminder inbox can be
-  filtered by relationship and uses a timeline-style feed; relationship profile
+  RelationshipProfile and ImportantDate; the policy layer only permits creation
+  when the new record is assigned to the current user. The global reminder inbox
+  can be filtered by relationship and orders its timeline-style feed by effective
+  delivery time in SQL; relationship profile
   pages also show their active reminders. One-time reminders complete, recurring
   reminders advance to the next future occurrence, and active reminders can be
   snoozed. DispatchDueRemindersJob claims each enabled channel and scheduled
@@ -38,7 +40,7 @@ claim: >
   from the complete visible timezone list. Recurrence anchors preserve month-end
   and leap-day intent, while local-time snoozes preserve wall-clock intent. Partial updates preserve
   omitted links, and relationship links fall back to the global inbox after a
-  profile is archived. NotificationPreference
+  profile is archived, including after destroy, snooze, and complete actions. NotificationPreference
   enables in-app and email delivery by default; push and SMS fields are reserved
   and are not dispatched. Due occurrences remain pending while every current
   channel is disabled. Relationship profile pages query only their next five
@@ -57,6 +59,7 @@ source_files:
   - app/models/reminder_delivery.rb
   - app/models/notification_preference.rb
   - app/controllers/reminders_controller.rb
+  - app/policies/reminder_policy.rb
   - app/jobs/dispatch_due_reminders_job.rb
   - app/jobs/deliver_reminder_job.rb
   - app/jobs/application_job.rb
@@ -84,12 +87,14 @@ related_files:
   - spec/jobs/dispatch_due_reminders_job_spec.rb
   - spec/jobs/deliver_reminder_job_spec.rb
   - spec/requests/reminders_spec.rb
+  - spec/policies/reminder_policy_spec.rb
   - spec/serializers/reminder_calendar_serializer_spec.rb
 symbols:
   - Reminder
   - ReminderDelivery
   - NotificationPreference
   - RemindersController
+  - ReminderPolicy
   - DispatchDueRemindersJob
   - DeliverReminderJob
   - ReminderCalendarSerializer
@@ -126,8 +131,9 @@ lifecycle checks, short claim locks, stale-claim cancellation,
 notification preferences, after-commit job
 enqueueing, actual-channel retries, browser-captured or visibly selected IANA timezone handling,
 month-end and leap-day recurrence anchors,
-effective snooze timing, active-profile association boundaries, archived-profile
-link fallback, configured SMTP and HTTPS email links, and private iCalendar
+effective snooze timing and SQL ordering, policy-enforced ownership,
+active-profile association boundaries, archived-profile action and link fallback,
+configured SMTP and HTTPS email links, and private iCalendar
 export. Push and SMS are reserved future
 channels, not active delivery methods. Future commitment and planning models
 must extend this system.
@@ -145,6 +151,7 @@ schedulers as commitments and plans are introduced.
 - `app/models/reminder_delivery.rb`
 - `app/models/notification_preference.rb`
 - `app/controllers/reminders_controller.rb`
+- `app/policies/reminder_policy.rb`
 - `app/jobs/dispatch_due_reminders_job.rb`
 - `app/jobs/deliver_reminder_job.rb`
 - `app/notifiers/reminder_in_app_notifier.rb`
@@ -154,6 +161,7 @@ schedulers as commitments and plans are introduced.
 - `spec/jobs/dispatch_due_reminders_job_spec.rb`
 - `spec/jobs/deliver_reminder_job_spec.rb`
 - `spec/requests/reminders_spec.rb`
+- `spec/policies/reminder_policy_spec.rb`
 
 ## Verification
 

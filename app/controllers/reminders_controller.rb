@@ -51,7 +51,7 @@ class RemindersController < ApplicationController
   end
 
   def destroy
-    relationship_profile_id = @reminder.relationship_profile_id
+    relationship_profile_id = @reminder.active_relationship_profile_id
     @reminder.destroy!
     params[:relationship_profile_id] ||= relationship_profile_id
     refresh_workspace(t(".notice"))
@@ -60,13 +60,13 @@ class RemindersController < ApplicationController
   def snooze
     until_time = snooze_time(params[:snooze_for])
     @reminder.snooze!(until_time:)
-    params[:relationship_profile_id] ||= @reminder.relationship_profile_id
+    params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
     refresh_workspace(t(".notice"))
   end
 
   def complete
     @reminder.complete!
-    params[:relationship_profile_id] ||= @reminder.relationship_profile_id
+    params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
     refresh_workspace(t(".notice"))
   end
 
@@ -177,11 +177,9 @@ class RemindersController < ApplicationController
   def prepare_workspace
     @relationship_profiles = current_user.relationship_profiles.active.ordered
     @selected_relationship_profile = selected_relationship_profile
-    scope = policy_scope(Reminder).active.includes(:relationship_profile, :important_date).ordered
+    scope = policy_scope(Reminder).active.includes(:relationship_profile, :important_date).by_effective_delivery
     scope = scope.where(relationship_profile: @selected_relationship_profile) if @selected_relationship_profile
-    reminders = scope.to_a.sort_by do |reminder|
-      [ reminder.effective_delivery_at, reminder.title.downcase, reminder.id ]
-    end
+    reminders = scope.to_a
     now = Time.current
     @overdue_reminders = reminders.select { |reminder| reminder.effective_delivery_at < now }
     @today_reminders = reminders.select { |reminder| reminder.effective_delivery_at >= now && reminder.due_today?(now) }

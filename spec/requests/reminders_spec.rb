@@ -44,6 +44,17 @@ RSpec.describe "Reminders", type: :request do
       expect(response.body).to include("Crear recordatorio")
       expect(response.body).not_to include("Create reminder")
     end
+
+    it "orders the reminder timeline by effective delivery time in SQL" do
+      user = create(:user)
+      create(:reminder, user:, relationship_profile: create(:relationship_profile, user:))
+      sign_in user
+
+      queries = capture_sql { get reminders_path }
+
+      reminder_query = queries.find { |query| query.include?('FROM "reminders"') && query.include?('"reminders"."status"') }
+      expect(reminder_query).to include("COALESCE(snoozed_until, scheduled_at) ASC")
+    end
   end
 
   describe "POST /reminders" do
@@ -297,6 +308,25 @@ RSpec.describe "Reminders", type: :request do
 
       expect(response).to have_http_status(:not_found)
     end
+
+    it "returns archived relationship actions to the global inbox" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      profile.discard!
+      sign_in user
+
+      destroyable = create(:reminder, user:, relationship_profile: profile)
+      delete reminder_path(destroyable)
+      expect(response).to redirect_to(reminders_path)
+
+      snoozable = create(:reminder, user:, relationship_profile: profile)
+      patch snooze_reminder_path(snoozable), params: { snooze_for: "one_hour" }
+      expect(response).to redirect_to(reminders_path)
+
+      completable = create(:reminder, user:, relationship_profile: profile)
+      patch complete_reminder_path(completable)
+      expect(response).to redirect_to(reminders_path)
+    end
   end
 
   describe "active relationship boundaries" do
@@ -417,5 +447,17 @@ RSpec.describe "Reminders", type: :request do
       expect(response.body).to include("Upcoming 1", "Upcoming 5")
       expect(response.body).not_to include("Snoozed late")
     end
+  end
+
+  def capture_sql
+    queries = []
+    subscriber = lambda do |_name, _start, _finish, _id, payload|
+      next if payload[:name] == "SCHEMA" || payload[:cached]
+
+      queries << payload[:sql]
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { yield }
+    queries
   end
 end

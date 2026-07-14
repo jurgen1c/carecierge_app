@@ -1,6 +1,6 @@
 class ReminderPolicy < ApplicationPolicy
   def index? = user.present?
-  def create? = user.present? && (record.new_record? || owner?)
+  def create? = owner?
   def update? = owner?
   def destroy? = owner?
   def snooze? = owner?

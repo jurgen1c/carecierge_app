@@ -1,0 +1,19 @@
+id: car_34_mood_notes_shared_profile_surface
+status: active
+reason: >
+  CAR-34 introduces the durable relationship_profiles.mood_notes claim and
+  updates relationship_profiles.timeline_entries because timeline-visible mood
+  notes now create linked system timeline entries. The relationship profile show
+  view and English/Spanish locale files are shared surface wiring only; the
+  older profile-CRUD, preference-metadata, and feature-flag localization claims
+  were reviewed and remain current without replacement or conflict. The new
+  mood-note claim intentionally requires the existing owner-scope and timeline
+  claims rather than replacing either atomic behavior contract.
+files:
+  - app/models/relationship_profile.rb
+  - app/views/relationship_profiles/show.html.erb
+  - config/locales/en.yml
+  - config/locales/es.yml
+  - docs/agent-memory/claims/relationship_profiles/mood_notes.md
+  - docs/agent-memory/claims/relationship_profiles/timeline_entries.md
+expires_at: 2026-08-13

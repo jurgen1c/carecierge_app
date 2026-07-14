@@ -1,0 +1,3 @@
+<%= turbo_frame_tag(mood_note.persisted? ? dom_id(mood_note) : "new_mood_note") do %>
+  <%= render "mood_notes/form", relationship_profile:, mood_note:, selected_type: %>
+<% end %>

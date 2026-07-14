@@ -16,7 +16,11 @@ class DispatchDueRemindersJob < ApplicationJob
   private
 
   def recover_pending_deliveries
-    ReminderDelivery.recoverable(before: ENQUEUE_LEASE.ago).includes(:reminder).find_each { |delivery| enqueue_delivery(delivery) }
+    recover_before = ENQUEUE_LEASE.ago
+    ReminderDelivery.recoverable(before: recover_before).includes(:reminder).find_each do |delivery|
+      should_enqueue = delivery.with_processing_lock { prepare_delivery(delivery, recover_before:) }
+      enqueue_claimed_delivery(delivery) if should_enqueue
+    end
   end
 
   def claim_deliveries(reminder, user)
@@ -35,7 +39,14 @@ class DispatchDueRemindersJob < ApplicationJob
   end
 
   def enqueue_delivery(delivery)
-    should_enqueue = delivery.with_lock do
+    enqueue_claimed_delivery(delivery) if prepare_delivery(delivery)
+  end
+
+  def prepare_delivery(delivery, recover_before: nil)
+    delivery.with_lock do
+      next false if recover_before && !delivery.recoverable?(before: recover_before)
+
+      delivery.update!(status: "pending", enqueued_at: nil, lease_token: nil) if delivery.dispatching?
       next false unless delivery.pending?
 
       if delivery.current_occurrence?
@@ -46,8 +57,9 @@ class DispatchDueRemindersJob < ApplicationJob
         false
       end
     end
-    return unless should_enqueue
+  end
 
+  def enqueue_claimed_delivery(delivery)
     DeliverReminderJob.perform_later(delivery)
   rescue StandardError
     delivery.update_column(:enqueued_at, nil) if delivery.persisted? && delivery.pending?

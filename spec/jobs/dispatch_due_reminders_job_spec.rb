@@ -53,6 +53,99 @@ RSpec.describe DispatchDueRemindersJob, type: :job do
     end
   end
 
+  it "recovers a dispatching delivery after its processing lease expires" do
+    now = Time.zone.local(2026, 7, 14, 9, 0)
+    delivery = create(:reminder_delivery, status: "dispatching", enqueued_at: now - described_class::ENQUEUE_LEASE - 1.second)
+
+    Timecop.freeze(now) do
+      expect { described_class.perform_now }.to have_enqueued_job(DeliverReminderJob).with(delivery)
+    end
+
+    expect(delivery.reload).to have_attributes(status: "pending", enqueued_at: now)
+  end
+
+  it "does not recover an expired lease while its worker owns the processing lock" do
+    now = Time.zone.local(2026, 7, 14, 9, 0)
+    delivery = create(:reminder_delivery, status: "dispatching", enqueued_at: now - described_class::ENQUEUE_LEASE - 1.second)
+    allow(delivery).to receive(:with_processing_lock).and_return(false)
+    relation = instance_double(ActiveRecord::Relation)
+    allow(ReminderDelivery).to receive(:recoverable).and_return(relation)
+    allow(relation).to receive(:includes).and_return(relation)
+    allow(relation).to receive(:find_each).and_yield(delivery)
+
+    Timecop.freeze(now) do
+      expect { described_class.perform_now }.not_to have_enqueued_job(DeliverReminderJob)
+    end
+
+    expect(delivery.reload.status).to eq("dispatching")
+  end
+
+  it "releases the processing lock before enqueueing a recovered delivery" do
+    now = Time.zone.local(2026, 7, 14, 9, 0)
+    delivery = create(:reminder_delivery, status: "dispatching", enqueued_at: now - described_class::ENQUEUE_LEASE - 1.second)
+    relation = instance_double(ActiveRecord::Relation)
+    processing_lock_held = false
+    allow(ReminderDelivery).to receive(:recoverable).and_return(relation)
+    allow(relation).to receive(:includes).and_return(relation)
+    allow(relation).to receive(:find_each).and_yield(delivery)
+    allow(delivery).to receive(:with_processing_lock).and_wrap_original do |method, *args, &block|
+      method.call(*args) do
+        processing_lock_held = true
+        block.call
+      ensure
+        processing_lock_held = false
+      end
+    end
+    allow(DeliverReminderJob).to receive(:perform_later) do
+      expect(processing_lock_held).to be(false)
+    end
+
+    Timecop.freeze(now) { described_class.perform_now }
+
+    expect(DeliverReminderJob).to have_received(:perform_later).with(delivery)
+  end
+
+  it "does not revoke a processing lease that became fresh before locking" do
+    now = Time.zone.local(2026, 7, 14, 9, 0)
+    delivery = create(:reminder_delivery, status: "dispatching", enqueued_at: now - described_class::ENQUEUE_LEASE - 1.second)
+    fresh_token = SecureRandom.uuid
+    relation = instance_double(ActiveRecord::Relation)
+    allow(ReminderDelivery).to receive(:recoverable).and_return(relation)
+    allow(relation).to receive(:includes).and_return(relation)
+    allow(relation).to receive(:find_each).and_yield(delivery)
+    allow(delivery).to receive(:with_lock).and_wrap_original do |method, *args, &block|
+      delivery.update_columns(enqueued_at: now, lease_token: fresh_token)
+      method.call(*args, &block)
+    end
+
+    Timecop.freeze(now) do
+      expect { described_class.perform_now }.not_to have_enqueued_job(DeliverReminderJob)
+    end
+
+    expect(delivery.reload).to have_attributes(status: "dispatching", enqueued_at: now, lease_token: fresh_token)
+  end
+
+  it "removes a persisted Noticed event when recovery cancels a stale occurrence" do
+    now = Time.zone.local(2026, 7, 14, 9, 0)
+    delivery = create(
+      :reminder_delivery,
+      status: "dispatching",
+      enqueued_at: now - described_class::ENQUEUE_LEASE - 1.second,
+      lease_token: SecureRandom.uuid
+    )
+    event = ReminderInAppNotifier.with(record: delivery.reminder)
+      .deliver(delivery.reminder.user, enqueue_job: false)
+    delivery.update!(noticed_event: event)
+    delivery.reminder.update!(scheduled_at: delivery.scheduled_for + 1.day)
+
+    Timecop.freeze(now) do
+      expect { described_class.perform_now }.not_to have_enqueued_job(DeliverReminderJob)
+    end
+
+    expect(ReminderInAppNotifier.exists?(event.id)).to be(false)
+    expect(delivery.reload).to have_attributes(status: "cancelled", noticed_event_id: nil)
+  end
+
   it "respects saved notification preferences" do
     now = Time.zone.local(2026, 7, 14, 9, 0)
     reminder = create(:reminder, scheduled_at: now, next_delivery_at: now)

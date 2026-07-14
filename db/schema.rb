@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_14_053000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_14_070000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -409,11 +409,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_053000) do
     t.datetime "dispatched_at"
     t.datetime "enqueued_at"
     t.text "error_message"
+    t.uuid "lease_token"
+    t.uuid "noticed_event_id"
     t.uuid "reminder_id", null: false
     t.datetime "scheduled_for", null: false
     t.string "status", default: "pending", null: false
     t.datetime "updated_at", null: false
-    t.index ["enqueued_at"], name: "index_reminder_deliveries_on_pending_enqueue_lease", where: "((status)::text = 'pending'::text)"
+    t.index ["enqueued_at"], name: "index_reminder_deliveries_on_recoverable_lease", where: "((status)::text = ANY ((ARRAY['pending'::character varying, 'dispatching'::character varying])::text[]))"
+    t.index ["noticed_event_id"], name: "index_reminder_deliveries_on_noticed_event_id", unique: true
     t.index ["reminder_id", "channel", "scheduled_for"], name: "index_reminder_deliveries_on_occurrence_and_channel", unique: true
     t.index ["reminder_id"], name: "index_reminder_deliveries_on_reminder_id"
   end
@@ -549,6 +552,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_053000) do
   add_foreign_key "relationship_taggings", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_taggings", "relationship_tags", on_delete: :cascade
   add_foreign_key "relationship_tags", "users"
+  add_foreign_key "reminder_deliveries", "noticed_events", on_delete: :nullify
   add_foreign_key "reminder_deliveries", "reminders", on_delete: :cascade
   add_foreign_key "reminders", "important_dates", on_delete: :nullify
   add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade

@@ -17,13 +17,21 @@ claim: >
   snoozed. DispatchDueRemindersJob claims each enabled channel and scheduled
   occurrence through a unique, durable ReminderDelivery before
   DeliverReminderJob hands delivery to separate Noticed in-app and email
-  notifiers. Pending claims are rescanned through a bounded, indexed enqueue lease
-  to recover failed queue handoffs without minute-by-minute queue amplification,
+  notifiers. Pending and dispatching claims are rescanned through a bounded,
+  indexed processing lease to recover failed queue handoffs or interrupted
+  delivery attempts without minute-by-minute queue amplification,
   while claims made stale by rescheduling, snoozing, or completion are cancelled
-  before notification. Delivery checks and lifecycle updates serialize on the
-  reminder row. The retrying delivery job records success only after the channel
-  completes, including synchronous execution of the actual Noticed email
-  delivery. Jobs defer enqueueing until database transactions commit, transient
+  before notification. Delivery claims and lifecycle checks briefly serialize
+  on the reminder and delivery rows. A PostgreSQL advisory lock serializes each
+  delivery worker and prevents lease recovery from replacing an actively sending
+  worker, while Noticed and email execute outside row locks. The durable claim is
+  marked dispatching and a per-attempt token fences completion or failure from a
+  recovered replacement. Email lifecycle validity is rechecked at the final
+  channel handoff; a later reminder change does not recall a handoff already in
+  progress. Recovery rechecks staleness after locking and reuses the delivery's
+  committed Noticed event. The retrying delivery job
+  records success only after the channel completes, including synchronous
+  execution of the actual Noticed email delivery. Jobs defer enqueueing until database transactions commit, transient
   delivery failures retry automatically, and deleting a reminder removes its
   Noticed events. Snoozed reminders use their effective delivery time for inbox
   grouping and ordering in the IANA timezone captured from the browser or chosen
@@ -67,6 +75,8 @@ related_files:
   - config/initializers/noticed.rb
   - config/deploy.yml
   - db/migrate/20260714030154_create_reminders.rb
+  - db/migrate/20260714030157_create_reminder_deliveries.rb
+  - db/migrate/20260714070000_add_reminder_delivery_processing_fence.rb
   - Dockerfile
   - .kamal/secrets
   - docs/features/03-01-reminder-system.md
@@ -110,8 +120,10 @@ last_verified_commit: null
 Carecierge has one reusable, user-owned reminder scheduler for current
 relationship profiles and important dates. It supports one-time and recurring
 lifecycle behavior, snoozing, completion, relationship-focused browsing,
-idempotent Noticed delivery for in-app and email channels, durable pending-claim
-recovery, stale-claim cancellation, notification preferences, after-commit job
+idempotent Noticed delivery for in-app and email channels, durable fenced
+processing-lease recovery, per-delivery worker serialization, final-handoff
+lifecycle checks, short claim locks, stale-claim cancellation,
+notification preferences, after-commit job
 enqueueing, actual-channel retries, browser-captured or visibly selected IANA timezone handling,
 month-end and leap-day recurrence anchors,
 effective snooze timing, active-profile association boundaries, archived-profile

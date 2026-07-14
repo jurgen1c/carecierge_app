@@ -39,13 +39,22 @@ The reusable system is implemented by `Reminder`, `ReminderDelivery`,
 `NotificationPreference`, `DispatchDueRemindersJob`, and `DeliverReminderJob`.
 `Reminder` owns recurrence and lifecycle behavior; delivery jobs claim each
 channel and scheduled occurrence once in durable `ReminderDelivery` rows before
-delegating to Noticed. The dispatcher rescans pending claims so a failed queue
-handoff is recovered after a bounded enqueue lease without amplifying queued
-work every minute, and stale claims are cancelled after a reminder is
+delegating to Noticed. The dispatcher rescans pending and dispatching claims so
+a failed queue handoff or interrupted delivery attempt is recovered after a
+bounded processing lease without amplifying queued work every minute, and stale claims are cancelled after a reminder is
 rescheduled, snoozed, or completed. Reminder lifecycle updates and delivery
-checks serialize on the reminder row. The retrying delivery job creates in-app
-notifications and executes Noticed email delivery synchronously, then records
-success only after the channel completes. Jobs enqueue only after database
+claims briefly serialize on the reminder and delivery rows. The retrying
+delivery job marks the claim as dispatching with a per-attempt fencing token,
+releases those row locks, and holds a per-delivery PostgreSQL advisory lock while it creates
+in-app notifications or executes Noticed email delivery synchronously, then
+records success only after the channel completes and only when it still owns the
+processing lease. The dispatcher can recover an abandoned lease but cannot
+replace a worker that still owns that advisory lock. Email delivery rechecks the
+reminder lifecycle at the final channel handoff, so rescheduling, snoozing, or
+completion committed before handoff cancels the stale claim; a change after
+handoff does not recall an email already in progress. Recovery rechecks the
+lease after locking and reuses any Noticed event already committed for the
+delivery occurrence. Jobs enqueue only after database
 commits. When every current channel is disabled, the due occurrence stays
 pending for delivery after preferences are re-enabled. Relationship pages query
 only their next five active reminders in effective delivery order. Snoozed reminders are grouped, ordered, and displayed by their effective

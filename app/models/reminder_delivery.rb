@@ -3,32 +3,37 @@
 # Table name: reminder_deliveries
 # Database name: primary
 #
-#  id            :uuid             not null, primary key
-#  channel       :string           not null
-#  dispatched_at :datetime
-#  enqueued_at   :datetime
-#  error_message :text
-#  scheduled_for :datetime         not null
-#  status        :string           default("pending"), not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  reminder_id   :uuid             not null
+#  id               :uuid             not null, primary key
+#  channel          :string           not null
+#  dispatched_at    :datetime
+#  enqueued_at      :datetime
+#  error_message    :text
+#  lease_token      :uuid
+#  scheduled_for    :datetime         not null
+#  status           :string           default("pending"), not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  noticed_event_id :uuid
+#  reminder_id      :uuid             not null
 #
 # Indexes
 #
+#  index_reminder_deliveries_on_noticed_event_id        (noticed_event_id) UNIQUE
 #  index_reminder_deliveries_on_occurrence_and_channel  (reminder_id,channel,scheduled_for) UNIQUE
-#  index_reminder_deliveries_on_pending_enqueue_lease   (enqueued_at) WHERE ((status)::text = 'pending'::text)
+#  index_reminder_deliveries_on_recoverable_lease       (enqueued_at) WHERE ((status)::text = ANY ((ARRAY['pending'::character varying, 'dispatching'::character varying])::text[]))
 #  index_reminder_deliveries_on_reminder_id             (reminder_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (noticed_event_id => noticed_events.id) ON DELETE => nullify
 #  fk_rails_...  (reminder_id => reminders.id) ON DELETE => cascade
 #
 class ReminderDelivery < ApplicationRecord
   CHANNELS = %w[in_app email].freeze
-  STATUSES = %w[pending dispatched failed cancelled].freeze
+  STATUSES = %w[pending dispatching dispatched failed cancelled].freeze
 
   belongs_to :reminder
+  belongs_to :noticed_event, class_name: "Noticed::Event", optional: true
 
   validates :channel, inclusion: { in: CHANNELS }
   validates :scheduled_for, presence: true
@@ -36,7 +41,10 @@ class ReminderDelivery < ApplicationRecord
   validates :channel, uniqueness: { scope: [ :reminder_id, :scheduled_for ] }
 
   scope :pending, -> { where(status: "pending") }
-  scope :recoverable, ->(before:) { pending.where(enqueued_at: nil).or(pending.where(enqueued_at: ..before)) }
+  scope :recoverable, lambda { |before:|
+    where(status: "pending", enqueued_at: nil)
+      .or(where(status: %w[pending dispatching], enqueued_at: ..before))
+  }
 
   def dispatched?
     dispatched_at.present?
@@ -44,6 +52,15 @@ class ReminderDelivery < ApplicationRecord
 
   def pending?
     status == "pending"
+  end
+
+  def dispatching?
+    status == "dispatching"
+  end
+
+  def recoverable?(before:)
+    (pending? && (enqueued_at.nil? || enqueued_at <= before)) ||
+      (dispatching? && enqueued_at.present? && enqueued_at <= before)
   end
 
   def cancelled?
@@ -55,6 +72,30 @@ class ReminderDelivery < ApplicationRecord
   end
 
   def cancel!
-    update!(status: "cancelled", dispatched_at: nil, enqueued_at: nil, error_message: nil)
+    transaction do
+      noticed_event&.destroy!
+      update!(status: "cancelled", dispatched_at: nil, enqueued_at: nil, lease_token: nil, error_message: nil)
+    end
+  end
+
+  def with_processing_lock
+    acquired = false
+    result = false
+
+    self.class.connection_pool.with_connection do |connection|
+      lock_expression = "hashtextextended(#{connection.quote(id)}, 0)"
+      acquired = ActiveModel::Type::Boolean.new.cast(
+        connection.select_value("SELECT pg_try_advisory_lock(#{lock_expression})")
+      )
+      next unless acquired
+
+      begin
+        result = yield
+      ensure
+        connection.select_value("SELECT pg_advisory_unlock(#{lock_expression})")
+      end
+    end
+
+    result
   end
 end

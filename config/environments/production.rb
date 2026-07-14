@@ -53,21 +53,42 @@ Rails.application.configure do
   config.active_job.queue_adapter = :solid_queue
   config.solid_queue.connects_to = { database: { writing: :queue } }
 
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  asset_build = ENV["SECRET_KEY_BASE_DUMMY"].present?
+  smtp_credentials = asset_build ? {} : Rails.application.credentials.smtp || {}
+  asset_build_defaults = {
+    from: "assets@invalid.test",
+    address: "assets.invalid",
+    user_name: "assets",
+    password: "assets"
+  }
+  smtp_value = lambda do |key, environment_name|
+    ENV[environment_name].presence || smtp_credentials[key] || (asset_build_defaults[key] if asset_build) ||
+      raise(KeyError, "Missing #{environment_name} or smtp.#{key} credential")
+  end
+
+  config.x.mail_from = smtp_value.call(:from, "CARECIERGE_MAIL_FROM")
+  smtp_port = Integer(ENV.fetch("CARECIERGE_SMTP_PORT", smtp_credentials.fetch(:port, 587)))
+  smtp_authentication = ENV.fetch("CARECIERGE_SMTP_AUTHENTICATION", smtp_credentials.fetch(:authentication, :plain)).to_s.to_sym
+  unless smtp_authentication.in?(%i[plain login cram_md5])
+    raise ArgumentError, "Unsupported SMTP authentication: #{smtp_authentication}"
+  end
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.smtp_settings = {
+    address: smtp_value.call(:address, "CARECIERGE_SMTP_ADDRESS"),
+    port: smtp_port,
+    user_name: smtp_value.call(:user_name, "CARECIERGE_SMTP_USERNAME"),
+    password: smtp_value.call(:password, "CARECIERGE_SMTP_PASSWORD"),
+    authentication: smtp_authentication,
+    enable_starttls_auto: true
+  }
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  config.action_mailer.default_url_options = {
+    host: ENV["CARECIERGE_HOST"].presence || ("assets.invalid" if asset_build) || raise(KeyError, "Missing CARECIERGE_HOST"),
+    protocol: "https"
+  }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

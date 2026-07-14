@@ -186,3 +186,18 @@ edges:
     relation: requires
     reason: Timeline-visible mood notes create linked system mood-note timeline entries.
     strength: 85
+  - source: reminders.reminder_delivery_system
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Reminder management, delivery preferences, and calendar exports are authenticated and owner-scoped.
+    strength: 90
+  - source: reminders.reminder_delivery_system
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Relationship-focused reminders reuse the existing relationship-profile ownership boundary.
+    strength: 90
+  - source: reminders.reminder_delivery_system
+    target: relationship_profiles.important_dates
+    relation: same_area
+    reason: Existing reminders may reference owner-scoped important dates and inherit their relationship context.
+    strength: 85

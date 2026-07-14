@@ -27,6 +27,7 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class ImportantDate < ApplicationRecord
+  has_many :reminders, dependent: :nullify
   DATE_TYPES = %w[birthday anniversary milestone appointment holiday custom].freeze
   RECURRENCES = %w[none yearly monthly weekly].freeze
   IMPORTANCE_LEVELS = %w[low normal high essential].freeze

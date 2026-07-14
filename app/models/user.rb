@@ -46,6 +46,8 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [ :google_oauth2 ]
 
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
+  has_many :reminders, dependent: :destroy
+  has_one :notification_preference, dependent: :destroy
   has_many :relationship_profiles, dependent: :destroy
   has_many :relationship_tags, dependent: :destroy
   has_many :relationship_groups, dependent: :destroy

@@ -44,10 +44,13 @@ en:
     formats:
       timeline_entry_day: "%b %-d, %Y"
       timeline_entry_time: "%-l:%M %p"
+      reminder_day: "%b %-d"
+      reminder_time: "%-l:%M %p"
   activerecord:
     models:
       conversation_recap: "Conversation recap"
       mood_note: "Mood note"
+      reminder: "Reminder"
     attributes:
       feature_flag:
         description: "Description"
@@ -154,6 +157,9 @@ en:
         reminder_schedule: "Reminder schedule"
         starts_on: "Date"
         title: "Title"
+      reminder:
+        important_date: "Important date"
+        relationship_profile: "Relationship"
       desire:
         captured_on: "Captured date"
         category: "Category"
@@ -185,6 +191,13 @@ en:
             source_record:
               complete_reference: "must include both source record type and source record id"
               same_relationship_profile: "must belong to the same relationship profile"
+        reminder:
+          attributes:
+            important_date:
+              different_owner: "must belong to you"
+              different_relationship: "must belong to the selected relationship"
+            relationship_profile:
+              different_owner: "must belong to you"
   errors:
     messages:
       confirmation: "does not match %{attribute}"
@@ -216,6 +229,7 @@ en:
       relationship_profile_action: "Manage relationships"
       important_dates_title: "Important dates"
       important_dates_body: "Capture birthdays, anniversaries, and moments you want to remember before they become urgent."
+      reminders_action: "Open reminders"
       privacy_title: "Private by default"
       privacy_body: "Carecierge keeps relationship setup inside your account and prepares future approval paths before automation."
       continue_onboarding: "Continue onboarding"
@@ -1146,3 +1160,108 @@ en:
         new_account: "New to Carecierge?"
         create_account: "Create account"
         sign_in_with_google: "Continue with Google"
+  notifiers:
+    reminder_in_app:
+      message: "%{title} is due."
+  reminder_mailer:
+    due:
+      subject: "Reminder: %{title}"
+      heading: "%{title} is due"
+      scheduled_for: "Scheduled for %{time}."
+      open_reminders: "Open reminders"
+  reminders:
+    index:
+      title: "Reminders"
+      kicker: "Care queue"
+      heading: "All reminders"
+      body: "Keep timely follow-through visible without losing the relationship context behind it."
+      find_relationship: "Find a relationship"
+      relationships: "Relationships"
+      relationship_picker: "Choose a relationship"
+      all_reminders: "All reminders"
+      filter: "Filter"
+      view: "View"
+      export_calendar: "Export calendar"
+      create: "Create reminder"
+      empty_title: "You're all caught up"
+      empty_body: "Create a reminder when there is something thoughtful you want to follow through on."
+    groups:
+      overdue: "Overdue"
+      today: "Today"
+      coming_up: "Coming up"
+    actions:
+      complete: "Complete"
+      snooze: "Snooze"
+      export: "Export"
+      edit: "Edit"
+    form:
+      new_title: "Create reminder"
+      edit_title: "Edit reminder"
+      body: "Choose a clear moment and keep private context concise."
+      title: "Reminder"
+      title_placeholder: "Call Elena"
+      relationship: "Relationship"
+      no_relationship: "No relationship"
+      important_date: "Important date"
+      no_important_date: "No important date"
+      scheduled_at: "Date and time"
+      time_zone: "Time zone"
+      time_zone_help: "We detect this from your browser. Choose it here if detection is unavailable."
+      type: "Reminder type"
+      priority: "Priority"
+      recurrence: "Repeats"
+      notes: "Private notes"
+      notes_placeholder: "Add context that will help you follow through."
+      create: "Create reminder"
+      update: "Save reminder"
+      cancel: "Cancel"
+      errors:
+        one: "We could not save this reminder"
+        other: "We could not save this reminder"
+    preferences:
+      title: "Delivery preferences"
+      body: "Choose how Carecierge should notify you when reminders become due."
+      in_app: "In app"
+      email: "Email"
+      save: "Save preferences"
+    notifications:
+      title: "Recent reminder notifications"
+      empty: "Due reminders will appear here when in-app delivery is enabled."
+    section:
+      kicker: "Follow-through"
+      title: "Reminders"
+      body: "Keep the next thoughtful actions for this relationship close to its history."
+      view_all: "View all reminders"
+      empty: "No active reminders for this relationship yet."
+    types:
+      birthday: "Birthday"
+      gift_planning: "Gift planning"
+      check_in: "Check-in"
+      promise_follow_up: "Promise follow-up"
+      event_preparation: "Event preparation"
+      post_event_follow_up: "Post-event follow-up"
+      relationship_goal: "Relationship goal"
+      custom: "Custom"
+    priorities:
+      low: "Low"
+      normal: "Normal"
+      high: "High"
+    recurrences:
+      none: "Does not repeat"
+      daily: "Daily"
+      weekly: "Weekly"
+      monthly: "Monthly"
+      yearly: "Yearly"
+    create:
+      notice: "Reminder created."
+    update:
+      notice: "Reminder updated."
+    destroy:
+      notice: "Reminder deleted."
+    snooze:
+      notice: "Reminder snoozed."
+    complete:
+      notice: "Reminder completed."
+  notification_preferences:
+    update:
+      notice: "Delivery preferences saved."

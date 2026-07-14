@@ -1,0 +1,55 @@
+id: reminders
+name: Reminders
+summary: Owner-scoped one-time and recurring reminders with relationship context, idempotent Noticed delivery, preferences, and iCalendar export.
+claim_globs:
+  - claims/reminders/**/*.md
+default_queries:
+  - reminder recurrence snooze complete owner scope
+  - reminder delivery noticed in app email idempotent occurrence
+  - notification preferences push sms future channels
+  - reminder relationship profile important date association
+  - reminder calendar ics export
+  - future commitment planning reminder integration
+watched_files:
+  - app/models/reminder.rb
+  - app/models/reminder_delivery.rb
+  - app/models/notification_preference.rb
+  - app/models/user.rb
+  - app/models/relationship_profile.rb
+  - app/models/important_date.rb
+  - app/controllers/reminders_controller.rb
+  - app/controllers/notification_preferences_controller.rb
+  - app/jobs/dispatch_due_reminders_job.rb
+  - app/jobs/deliver_reminder_job.rb
+  - app/jobs/application_job.rb
+  - app/mailers/reminder_mailer.rb
+  - app/notifiers/reminder_in_app_notifier.rb
+  - app/notifiers/reminder_email_notifier.rb
+  - app/policies/reminder_policy.rb
+  - app/serializers/reminder_calendar_serializer.rb
+  - app/helpers/reminders_helper.rb
+  - app/javascript/controllers/timezone_controller.js
+  - app/mailers/application_mailer.rb
+  - app/views/reminders/**/*.erb
+  - app/views/reminder_mailer/**/*.erb
+  - app/views/components/reminder_row_component.*
+  - config/recurring.yml
+  - config/initializers/noticed.rb
+  - config/initializers/filter_parameter_logging.rb
+  - config/environments/production.rb
+  - config/deploy.yml
+  - Dockerfile
+  - .kamal/secrets
+  - config/routes.rb
+  - config/locales/en.yml
+  - config/locales/es.yml
+  - db/migrate/*reminder*.rb
+  - db/migrate/*notification_preferences*.rb
+tags:
+  - reminders
+  - noticed
+  - solid_queue
+  - icalendar
+  - timezones
+  - relationship_profiles
+  - important_dates

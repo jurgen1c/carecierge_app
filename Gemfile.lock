@@ -495,6 +495,7 @@ GEM
     thruster (0.1.21)
     thruster (0.1.21-aarch64-linux)
     thruster (0.1.21-x86_64-linux)
+    timecop (0.9.11)
     timeout (0.6.1)
     tsort (0.2.0)
     turbo-rails (2.0.23)
@@ -582,6 +583,7 @@ DEPENDENCIES
   solid_queue
   stimulus-rails
   thruster
+  timecop (~> 0.9.11)
   turbo-rails
   tzinfo-data
   view_component (~> 4.12)

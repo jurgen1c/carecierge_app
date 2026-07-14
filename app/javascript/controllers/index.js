@@ -5,6 +5,8 @@
 import { application } from "./application"
 import HelloController from "./hello_controller"
 import RelationshipTemplateFieldsController from "./relationship_template_fields_controller"
+import TimezoneController from "./timezone_controller"
 
 application.register("hello", HelloController)
 application.register("relationship-template-fields", RelationshipTemplateFieldsController)
+application.register("timezone", TimezoneController)

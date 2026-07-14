@@ -161,3 +161,18 @@ edges:
     relation: same_area
     reason: Timeline entries can reference important dates and other relationship milestones in later system-entry workflows.
     strength: 65
+  - source: relationship_profiles.conversation_recaps
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Conversation recaps are nested under owner-scoped relationship profiles and reuse that privacy boundary.
+    strength: 90
+  - source: relationship_profiles.conversation_recaps
+    target: relationship_profiles.timeline_entries
+    relation: requires
+    reason: Conversation recaps create linked system conversation-recap timeline entries.
+    strength: 85
+  - source: relationship_profiles.conversation_recaps
+    target: relationship_profiles.memory_records
+    relation: constrains
+    reason: Conversation recaps can request extraction review but must not mutate memory records until explicit approval exists.
+    strength: 85

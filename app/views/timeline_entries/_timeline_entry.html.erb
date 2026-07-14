@@ -1,3 +1,5 @@
+<% timeline_entry_policy = policy(timeline_entry) %>
+
 <%= turbo_frame_tag dom_id(timeline_entry) do %>
   <article id="<%= dom_id(timeline_entry, :row) %>" data-timeline-entry-row="true" class="grid gap-3 border-b border-stone-200 py-4 last:border-b-0 sm:grid-cols-[7rem_minmax(0,1fr)_auto]">
     <div class="text-sm text-stone-700">
@@ -21,9 +23,15 @@
       <% end %>
     </div>
 
-    <div class="flex shrink-0 flex-wrap gap-2 sm:justify-end">
-      <%= link_to t("timeline_entries.item.edit"), edit_relationship_profile_timeline_entry_path(relationship_profile, timeline_entry, timeline_type: selected_type), class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
-      <%= button_to t("timeline_entries.item.delete"), relationship_profile_timeline_entry_path(relationship_profile, timeline_entry, timeline_type: selected_type), method: :delete, form: { data: { turbo_confirm: t("timeline_entries.item.delete_confirm") } }, class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700" %>
-    </div>
+    <% if timeline_entry_policy.update? || timeline_entry_policy.destroy? %>
+      <div class="flex shrink-0 flex-wrap gap-2 sm:justify-end">
+        <% if timeline_entry_policy.update? %>
+          <%= link_to t("timeline_entries.item.edit"), edit_relationship_profile_timeline_entry_path(relationship_profile, timeline_entry, timeline_type: selected_type), class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+        <% end %>
+        <% if timeline_entry_policy.destroy? %>
+          <%= button_to t("timeline_entries.item.delete"), relationship_profile_timeline_entry_path(relationship_profile, timeline_entry, timeline_type: selected_type), method: :delete, form: { data: { turbo_confirm: t("timeline_entries.item.delete_confirm") } }, class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700" %>
+        <% end %>
+      </div>
+    <% end %>
   </article>
 <% end %>

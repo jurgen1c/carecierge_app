@@ -1,0 +1,3 @@
+<%= turbo_frame_tag(conversation_recap.persisted? ? dom_id(conversation_recap) : "new_conversation_recap") do %>
+  <%= render "conversation_recaps/form", relationship_profile:, conversation_recap:, selected_type: %>
+<% end %>

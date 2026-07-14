@@ -63,6 +63,17 @@ RSpec.describe DispatchDueRemindersJob, type: :job do
     expect(reminder.reminder_deliveries.pluck(:channel)).to eq([ "in_app" ])
   end
 
+  it "keeps a due occurrence pending when every delivery channel is disabled" do
+    now = Time.zone.local(2026, 7, 14, 9, 0)
+    reminder = create(:reminder, scheduled_at: now, next_delivery_at: now)
+    create(:notification_preference, user: reminder.user, in_app_enabled: false, email_enabled: false)
+
+    Timecop.freeze(now) { described_class.perform_now }
+
+    expect(reminder.reload.next_delivery_at).to eq(now)
+    expect(reminder.reminder_deliveries).to be_empty
+  end
+
   it "preloads reminder owners and notification preferences for a due batch" do
     now = Time.zone.local(2026, 7, 14, 9, 0)
     reminder = create(:reminder, scheduled_at: now, next_delivery_at: now)

@@ -32,7 +32,9 @@ claim: >
   omitted links, and relationship links fall back to the global inbox after a
   profile is archived. NotificationPreference
   enables in-app and email delivery by default; push and SMS fields are reserved
-  and are not dispatched. Owner-scoped endpoints export one reminder or all active
+  and are not dispatched. Due occurrences remain pending while every current
+  channel is disabled. Relationship profile pages query only their next five
+  active reminders in effective delivery order. Owner-scoped endpoints export one reminder or all active
   reminders as private iCalendar events with normalized multiline text.
   Production reminder email links require CARECIERGE_HOST and use HTTPS; SMTP
   transport and sender settings must come from Rails credentials or matching
@@ -64,7 +66,7 @@ related_files:
   - config/recurring.yml
   - config/initializers/noticed.rb
   - config/deploy.yml
-  - db/migrate/20260714060000_add_recurrence_anchor_to_reminders.rb
+  - db/migrate/20260714030154_create_reminders.rb
   - Dockerfile
   - .kamal/secrets
   - docs/features/03-01-reminder-system.md

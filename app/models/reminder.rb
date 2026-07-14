@@ -67,6 +67,7 @@ class Reminder < ApplicationRecord
   before_validation :reset_delivery_after_schedule_change, on: :update
 
   scope :active, -> { where(status: "active") }
+  scope :by_effective_delivery, -> { order(Arel.sql("COALESCE(snoozed_until, scheduled_at) ASC"), :title, :id) }
   scope :ordered, -> { order(:scheduled_at, :title, :id) }
   scope :due, ->(at = Time.current) { active.where(next_delivery_at: ..at) }
 

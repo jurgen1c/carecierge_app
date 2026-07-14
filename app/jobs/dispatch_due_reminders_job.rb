@@ -27,7 +27,7 @@ class DispatchDueRemindersJob < ApplicationJob
       deliveries = NotificationPreference.channels_for(user).map do |channel|
         ReminderDelivery.create_or_find_by!(reminder:, channel:, scheduled_for:)
       end
-      reminder.update_column(:next_delivery_at, nil)
+      reminder.update_column(:next_delivery_at, nil) if deliveries.any?
       deliveries
     end
 

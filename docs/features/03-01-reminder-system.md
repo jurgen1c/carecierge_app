@@ -46,7 +46,9 @@ rescheduled, snoozed, or completed. Reminder lifecycle updates and delivery
 checks serialize on the reminder row. The retrying delivery job creates in-app
 notifications and executes Noticed email delivery synchronously, then records
 success only after the channel completes. Jobs enqueue only after database
-commits. Snoozed reminders are grouped, ordered, and displayed by their effective
+commits. When every current channel is disabled, the due occurrence stays
+pending for delivery after preferences are re-enabled. Relationship pages query
+only their next five active reminders in effective delivery order. Snoozed reminders are grouped, ordered, and displayed by their effective
 delivery time in the IANA timezone captured from the browser or selected from a
 complete visible timezone list. Recurrence anchors preserve month-end and
 leap-day intent, "tomorrow" snoozes preserve local wall-clock intent, and edits

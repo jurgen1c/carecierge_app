@@ -23,6 +23,7 @@ class RelationshipProfilesController < ApplicationController
 
   def show
     @timeline_type = params[:timeline_type].to_s.in?(TimelineEntry::ENTRY_TYPES) ? params[:timeline_type].to_s : nil
+    @relationship_reminders = @relationship_profile.reminders.active.by_effective_delivery.limit(5).to_a
   end
 
   def new
@@ -80,7 +81,6 @@ class RelationshipProfilesController < ApplicationController
         :contact_methods,
         :gifts,
         :important_dates,
-        :reminders,
         :relationship_preferences,
         :relationship_tags,
         :relationship_groups,

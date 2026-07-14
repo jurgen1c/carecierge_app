@@ -265,4 +265,21 @@ RSpec.describe Reminder, type: :model do
       expect(described_class.due(Time.zone.local(2026, 7, 14, 9, 0))).to contain_exactly(due)
     end
   end
+
+  describe ".by_effective_delivery" do
+    it "orders active reminders by snooze time or scheduled time in SQL" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      snoozed = create(
+        :reminder,
+        user:,
+        relationship_profile: profile,
+        scheduled_at: 1.day.ago,
+        snoozed_until: 2.days.from_now
+      )
+      upcoming = create(:reminder, user:, relationship_profile: profile, scheduled_at: 1.day.from_now)
+
+      expect(profile.reminders.active.by_effective_delivery).to eq([ upcoming, snoozed ])
+    end
+  end
 end

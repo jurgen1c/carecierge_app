@@ -7,7 +7,6 @@
     </div>
     <%= link_to t("reminders.section.view_all"), reminders_path(relationship_profile_id: relationship_profile.id), class: "inline-flex min-h-11 w-fit items-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900" %>
   </div>
-  <% reminders = relationship_profile.reminders.select(&:active?).sort_by { |reminder| [reminder.effective_delivery_at, reminder.title.downcase] }.first(5) %>
   <% if reminders.any? %>
     <div class="mt-3"><% reminders.each do |reminder| %><%= component "reminder_row", reminder:, compact: true %><% end %></div>
   <% else %>

@@ -67,14 +67,20 @@ Rails.application.configure do
   end
 
   config.x.mail_from = smtp_value.call(:from, "CARECIERGE_MAIL_FROM")
+  smtp_port = Integer(ENV.fetch("CARECIERGE_SMTP_PORT", smtp_credentials.fetch(:port, 587)))
+  smtp_authentication = ENV.fetch("CARECIERGE_SMTP_AUTHENTICATION", smtp_credentials.fetch(:authentication, :plain)).to_s.to_sym
+  unless smtp_authentication.in?(%i[plain login cram_md5])
+    raise ArgumentError, "Unsupported SMTP authentication: #{smtp_authentication}"
+  end
+
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.smtp_settings = {
     address: smtp_value.call(:address, "CARECIERGE_SMTP_ADDRESS"),
-    port: ENV.fetch("CARECIERGE_SMTP_PORT", smtp_credentials.fetch(:port, 587)),
+    port: smtp_port,
     user_name: smtp_value.call(:user_name, "CARECIERGE_SMTP_USERNAME"),
     password: smtp_value.call(:password, "CARECIERGE_SMTP_PASSWORD"),
-    authentication: ENV.fetch("CARECIERGE_SMTP_AUTHENTICATION", smtp_credentials.fetch(:authentication, :plain)),
+    authentication: smtp_authentication,
     enable_starttls_auto: true
   }
 

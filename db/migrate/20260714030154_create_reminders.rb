@@ -9,6 +9,7 @@ class CreateReminders < ActiveRecord::Migration[8.1]
       t.string :reminder_type, null: false, default: "custom"
       t.string :priority, null: false, default: "normal"
       t.string :recurrence, null: false, default: "none"
+      t.datetime :recurrence_anchor_at, null: false
       t.string :status, null: false, default: "active"
       t.datetime :scheduled_at, null: false
       t.datetime :next_delivery_at

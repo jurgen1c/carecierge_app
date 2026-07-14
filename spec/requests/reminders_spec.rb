@@ -102,6 +102,22 @@ RSpec.describe "Reminders", type: :request do
       expect(response.body).to include(%(target="reminders_workspace"))
     end
 
+    it "preserves active relationship context after an HTML create" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      sign_in user
+
+      post reminders_path, params: {
+        reminder: {
+          relationship_profile_id: profile.id,
+          title: "Call Elena",
+          scheduled_at: "2026-07-25T09:00"
+        }
+      }
+
+      expect(response).to redirect_to(reminders_path(relationship_profile_id: profile.id))
+    end
+
     it "interprets a browser-local scheduled time in the submitted IANA timezone" do
       user = create(:user)
       sign_in user
@@ -160,6 +176,15 @@ RSpec.describe "Reminders", type: :request do
         relationship_profile_id: reminder.important_date.relationship_profile_id,
         important_date_id: reminder.important_date_id
       )
+    end
+
+    it "preserves active relationship context after an HTML update" do
+      reminder = create(:reminder)
+      sign_in reminder.user
+
+      patch reminder_path(reminder), params: { reminder: { title: "Updated title" } }
+
+      expect(response).to redirect_to(reminders_path(relationship_profile_id: reminder.relationship_profile_id))
     end
 
     it "renders the HTML edit form when validation fails without Turbo" do

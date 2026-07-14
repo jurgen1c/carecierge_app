@@ -43,7 +43,8 @@ claim: >
   Recurrence anchors preserve month-end
   and leap-day intent, while local-time snoozes preserve wall-clock intent. Partial updates preserve
   omitted links, and relationship links fall back to the global inbox after a
-  profile is archived, including after destroy, snooze, and complete actions. NotificationPreference
+  profile is archived. HTML create, update, destroy, snooze, and complete actions
+  preserve an active relationship filter and fall back globally for archived profiles. NotificationPreference
   enables in-app and email delivery by default; push and SMS fields are reserved
   and are not dispatched. Due occurrences remain pending while every current
   channel is disabled. Relationship profile pages query only their next five
@@ -136,7 +137,8 @@ notification preferences, after-commit job
 enqueueing, actual-channel retries, browser-captured or visibly selected IANA timezone handling,
 month-end and leap-day recurrence anchors,
 effective snooze timing and SQL ordering, policy-enforced ownership,
-active-profile association boundaries, archived-profile action and link fallback,
+active-profile association boundaries, relationship-preserving HTML redirects,
+archived-profile action and link fallback,
 minute-boundary-cached timezone options, configured SMTP and HTTPS email links, and private iCalendar
 export. Push and SMS are reserved future
 channels, not active delivery methods. Future commitment and planning models

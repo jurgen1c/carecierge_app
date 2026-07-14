@@ -27,6 +27,7 @@ class RemindersController < ApplicationController
     authorize @reminder
 
     if @reminder.save
+      params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
       refresh_workspace(t(".notice"))
     else
       prepare_workspace
@@ -43,6 +44,7 @@ class RemindersController < ApplicationController
     end
 
     if saved
+      params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
       refresh_workspace(t(".notice"))
     else
       prepare_form_options

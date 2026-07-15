@@ -186,6 +186,26 @@ edges:
     relation: requires
     reason: Timeline-visible mood notes create linked system mood-note timeline entries.
     strength: 85
+  - source: relationship_profiles.contact_cadence
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Cadence and interaction records are nested under owner-scoped relationship profiles and reuse that privacy boundary.
+    strength: 95
+  - source: relationship_profiles.contact_cadence
+    target: reminders.reminder_delivery_system
+    relation: constrains
+    reason: Overdue cadence can link to the existing Reminder form but must never create a parallel scheduler or automatic reminder.
+    strength: 90
+  - source: relationship_profiles.contact_cadence
+    target: relationship_profiles.conversation_recaps
+    relation: same_area
+    reason: Conversation recap workflows create traceable derived interactions used by cadence calculations.
+    strength: 85
+  - source: relationship_profiles.contact_cadence
+    target: relationship_profiles.mood_notes
+    relation: same_area
+    reason: Mood note workflows create traceable derived interactions used by cadence calculations.
+    strength: 85
   - source: reminders.reminder_delivery_system
     target: authentication.account_access_boundary
     relation: requires

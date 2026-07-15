@@ -35,6 +35,7 @@ class ConversationRecap < ApplicationRecord
 
   belongs_to :relationship_profile
   has_one :timeline_entry, as: :source_record, dependent: :destroy
+  has_one :interaction, as: :source, dependent: :destroy
   has_one_attached :audio_recording
 
   before_validation :default_occurred_at
@@ -46,6 +47,7 @@ class ConversationRecap < ApplicationRecord
   validates :occurred_at, presence: true
   validates :capture_source, presence: true, inclusion: { in: CAPTURE_SOURCES }
   validates :extraction_status, presence: true, inclusion: { in: EXTRACTION_STATUSES }
+  validate :occurred_at_cannot_be_in_the_future
 
   scope :ordered, -> { order(occurred_at: :desc, title: :asc, id: :asc) }
 
@@ -77,6 +79,12 @@ class ConversationRecap < ApplicationRecord
 
   def default_occurred_at
     self.occurred_at ||= Time.current
+  end
+
+  def occurred_at_cannot_be_in_the_future
+    return if occurred_at.blank? || occurred_at <= Time.current
+
+    errors.add(:occurred_at, :future)
   end
 
   def normalize_text_fields

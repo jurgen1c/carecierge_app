@@ -17,7 +17,9 @@ claim: >
   relationship-timeline sections with Turbo streams, preserve English and
   Spanish localized labels and validation copy, create or update a linked
   system TimelineEntry with entry_type conversation_recap, delete the linked
-  timeline entry with the recap, keep that source-backed timeline entry protected
+  timeline entry with the recap, create or update one source-backed derived
+  Interaction for contact-cadence history, delete that interaction with the
+  recap, keep those source-backed history rows protected
   from direct generic timeline edit and delete actions, and cannot access another
   user's relationship profile. Recap bodies and transcripts are filtered from
   Rails parameter logging. User params can request extraction review during
@@ -75,8 +77,10 @@ and users can request extraction during creation or a later edit while the recap
 has not yet requested extraction.
 Creating or updating a recap writes a linked system TimelineEntry with
 `entry_type` `conversation_recap`, and deleting the recap deletes that linked
-timeline entry. That source-backed timeline row cannot be directly edited or
-deleted through the generic timeline actions. The profile surface renders recaps
+timeline entry. It also synchronizes one source-backed derived Interaction used
+by contact cadence, and deleting the recap removes that interaction. Those
+source-backed rows cannot be directly edited or deleted through generic manual
+history actions. The profile surface renders recaps
 inline, refreshes the recap and timeline sections through Turbo streams, and
 keeps copy localized in English and Spanish.
 

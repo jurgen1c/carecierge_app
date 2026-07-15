@@ -69,20 +69,22 @@ RSpec.describe "Mood notes", type: :request do
 
       expect do
         expect do
-          post relationship_profile_mood_notes_path(profile),
-            params: {
-              mood_note: {
-                category: "overwhelmed",
-                observation: "  Seemed overwhelmed after moving.  ",
-                observed_at: "2026-07-12T18:30",
-                supportive_action: "Offer to help with one practical task.",
-                follow_up_at: "2026-07-14T09:00",
-                timeline_visible: "1"
-              }
-            },
-            as: :turbo_stream
-        end.to change(MoodNote, :count).by(1)
-      end.to change(TimelineEntry, :count).by(1)
+          expect do
+            post relationship_profile_mood_notes_path(profile),
+              params: {
+                mood_note: {
+                  category: "overwhelmed",
+                  observation: "  Seemed overwhelmed after moving.  ",
+                  observed_at: "2026-07-12T18:30",
+                  supportive_action: "Offer to help with one practical task.",
+                  follow_up_at: "2026-07-14T09:00",
+                  timeline_visible: "1"
+                }
+              },
+              as: :turbo_stream
+          end.to change(MoodNote, :count).by(1)
+        end.to change(TimelineEntry, :count).by(1)
+      end.to change(Interaction, :count).by(1)
 
       mood_note = profile.mood_notes.reload.sole
       expect(mood_note).to have_attributes(
@@ -151,6 +153,23 @@ RSpec.describe "Mood notes", type: :request do
       expect(response_text).to include("Category is not included in the list")
     end
 
+    it "surfaces a future observation error on the source form" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      sign_in user
+
+      Timecop.freeze(Time.zone.local(2026, 7, 14, 12)) do
+        expect do
+          post relationship_profile_mood_notes_path(profile),
+            params: { mood_note: { category: "excited", observation: "Not observed yet.", observed_at: "2026-07-14T12:01" } },
+            as: :turbo_stream
+        end.not_to change(MoodNote, :count)
+      end
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(CGI.unescapeHTML(response.body)).to include("Observed time can't be in the future")
+    end
+
     it "redirects back to the profile for non-Turbo HTML fallback requests" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
@@ -185,6 +204,7 @@ RSpec.describe "Mood notes", type: :request do
 
       expect(mood_note.reload.observation).to eq("Seemed more at ease.")
       expect(mood_note.timeline_entry).to have_attributes(title: "Seemed more at ease.", entry_type: "mood_note")
+      expect(mood_note.interaction).to have_attributes(interaction_type: "mood_note", occurred_at: mood_note.observed_at)
     end
   end
 
@@ -194,13 +214,16 @@ RSpec.describe "Mood notes", type: :request do
       profile = create(:relationship_profile, user:)
       mood_note = create(:mood_note, relationship_profile: profile)
       create(:timeline_entry, relationship_profile: profile, source_record: mood_note, entry_type: "mood_note", origin: "system", title: mood_note.display_title, occurred_at: mood_note.observed_at)
+      create(:interaction, :derived_from_mood_note, relationship_profile: profile, source: mood_note)
       sign_in user
 
       expect do
         expect do
-          delete relationship_profile_mood_note_path(profile, mood_note), as: :turbo_stream
-        end.to change(MoodNote, :count).by(-1)
-      end.to change(TimelineEntry, :count).by(-1)
+          expect do
+            delete relationship_profile_mood_note_path(profile, mood_note), as: :turbo_stream
+          end.to change(MoodNote, :count).by(-1)
+        end.to change(TimelineEntry, :count).by(-1)
+      end.to change(Interaction, :count).by(-1)
 
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       expect(response.body).to include("No mood notes yet")

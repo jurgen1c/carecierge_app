@@ -119,6 +119,8 @@ class RelationshipProfile < ApplicationRecord
   has_many :mood_notes, dependent: :destroy
   has_many :timeline_entries, dependent: :destroy
   has_many :desires, dependent: :destroy
+  has_one :contact_cadence, dependent: :destroy
+  has_many :interactions, dependent: :destroy
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true

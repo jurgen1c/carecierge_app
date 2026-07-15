@@ -1,0 +1,103 @@
+en:
+  time:
+    formats:
+      interaction_day: "%b %-d, %Y"
+      interaction_time: "%-l:%M %p"
+  activerecord:
+    models:
+      contact_cadence: "Contact rhythm"
+      interaction: "Interaction"
+    attributes:
+      contact_cadence:
+        interval_days: "Frequency"
+      interaction:
+        interaction_type: "Interaction type"
+        occurred_at: "Date and time"
+        notes: "Notes"
+        source: "Source"
+    errors:
+      models:
+        interaction:
+          attributes:
+            source:
+              manual_forbidden: "is not allowed for manual interactions"
+  contact_rhythm:
+    section:
+      kicker: "Stay connected"
+      title: "Contact rhythm"
+      body: "Keep a gentle record of meaningful check-ins and choose a rhythm that feels natural for this relationship."
+    intervals:
+      "7": "Every week"
+      "14": "Every 2 weeks"
+      "30": "Every month"
+      "60": "Every 2 months"
+      "90": "Every 3 months"
+    cadence:
+      title: "Your rhythm"
+      suggested_for: "Suggested for %{relationship_type} relationships"
+      suggestion_body: "This is only a suggestion. Choose it or adjust it before Carecierge starts showing check-in windows."
+      next_window: "Next gentle check-in window"
+      last_interaction: "Latest recorded interaction"
+      flexible_note: "Rhythms are suggestions, not rules. Adjust yours whenever real life changes."
+      use_suggestion: "Review suggestion"
+      adjust: "Adjust rhythm"
+      frequency: "How often would you like to check in?"
+      frequency_help: "Carecierge uses this to offer a supportive prompt, never to score the relationship."
+      accept: "Use this rhythm"
+      save: "Save rhythm"
+      errors: "We could not save this rhythm"
+    interactions:
+      title: "Interaction history"
+      shown:
+        one: "1 recent interaction"
+        other: "%{count} recent interactions"
+      empty_title: "No interactions recorded yet"
+      empty_body: "Log a call, message, visit, or other meaningful moment. Conversation recaps and mood notes will appear here with their source."
+      log: "Log an interaction"
+      log_first: "Log the first interaction"
+      form_loading: "Loading interaction form"
+      manual: "Manual"
+      derived_from: "From %{source}"
+      edit: "Edit"
+      delete: "Delete"
+      delete_confirm: "Delete this interaction?"
+    interaction_types:
+      call: "Phone call"
+      message: "Message"
+      in_person: "In person"
+      video: "Video call"
+      other: "Other check-in"
+      conversation_recap: "Conversation recap"
+      mood_note: "Mood-note check-in"
+    sources:
+      conversation_recap: "conversation recap"
+      mood_note: "mood note"
+    form:
+      new_title: "Log an interaction"
+      edit_title: "Edit interaction"
+      body: "Record the meaningful moment you want this rhythm to remember."
+      type: "How did you connect?"
+      choose_type: "Choose an interaction type"
+      occurred_at: "When did it happen?"
+      notes: "Notes"
+      notes_placeholder: "Add useful context without turning the moment into a report."
+      create: "Log interaction"
+      update: "Save interaction"
+      cancel: "Cancel"
+      errors: "We could not save this interaction"
+    overdue:
+      title: "A little while since your last recorded check-in"
+      body: "You may have connected more recently. Log it here, or plan a gentle reminder for later."
+      plan_reminder: "Plan a reminder"
+  contact_cadences:
+    create:
+      notice: "Contact rhythm started."
+    update:
+      notice: "Contact rhythm updated."
+  interactions:
+    create:
+      notice: "Interaction logged."
+    update:
+      notice: "Interaction updated."
+    destroy:
+      notice: "Interaction deleted."

@@ -65,6 +65,17 @@ RSpec.describe ConversationRecap, type: :model do
         expect(recap.occurred_at).to eq(Time.zone.local(2026, 7, 9, 8, 30, 0))
       end
     end
+
+    it "rejects future occurrence times at the source boundary" do
+      now = Time.zone.local(2026, 7, 14, 12)
+
+      travel_to now do
+        recap = build(:conversation_recap, occurred_at: now + 1.second)
+
+        expect(recap).not_to be_valid
+        expect(recap.errors[:occurred_at]).to include("can't be in the future")
+      end
+    end
   end
 
   describe ".ordered" do

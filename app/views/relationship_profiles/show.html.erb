@@ -19,6 +19,7 @@
   </header>
 
   <%= render "important_dates/section", relationship_profile: @relationship_profile %>
+  <%= render "contact_cadences/section", relationship_profile: @relationship_profile, interactions: @interactions %>
   <%= render "gifts/section", relationship_profile: @relationship_profile %>
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>
   <%= render "conversation_recaps/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>

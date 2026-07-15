@@ -66,6 +66,7 @@ class ConversationRecapsController < ApplicationController
     ConversationRecap.transaction do
       @conversation_recap.save!
       sync_timeline_entry!
+      Interaction.sync_from_source!(@conversation_recap)
     end
     true
   rescue ActiveRecord::RecordInvalid
@@ -87,6 +88,7 @@ class ConversationRecapsController < ApplicationController
   def refresh_conversation_recaps(message, alert: false, status: :ok)
     flash.now[alert ? :alert : :notice] = message
     @relationship_profile.reload
+    @interactions = @relationship_profile.interactions.includes(:source).ordered.limit(10).to_a
 
     respond_to do |format|
       format.turbo_stream { render :refresh, status: }

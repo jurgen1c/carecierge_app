@@ -86,22 +86,24 @@ RSpec.describe "Conversation recaps", type: :request do
       expect do
         expect do
           expect do
-            post relationship_profile_conversation_recaps_path(profile),
-              params: {
-                conversation_recap: {
-                  title: "Lunch with David",
-                  body: "He is thinking about changing jobs.",
-                  occurred_at: "2026-07-08T12:30",
-                  capture_source: "voice_transcript",
-                  transcript: "Raw transcript text",
-                  request_memory_extraction: "1",
-                  extraction_status: "approved",
-                  extraction_approved_at: "2026-07-08T12:45"
-                }
-              },
-              as: :turbo_stream
-          end.to change(ConversationRecap, :count).by(1)
-        end.to change(TimelineEntry, :count).by(1)
+            expect do
+              post relationship_profile_conversation_recaps_path(profile),
+                params: {
+                  conversation_recap: {
+                    title: "Lunch with David",
+                    body: "He is thinking about changing jobs.",
+                    occurred_at: "2026-07-08T12:30",
+                    capture_source: "voice_transcript",
+                    transcript: "Raw transcript text",
+                    request_memory_extraction: "1",
+                    extraction_status: "approved",
+                    extraction_approved_at: "2026-07-08T12:45"
+                  }
+                },
+                as: :turbo_stream
+            end.to change(ConversationRecap, :count).by(1)
+          end.to change(TimelineEntry, :count).by(1)
+        end.to change(Interaction, :count).by(1)
       end.not_to change(MemoryRecord, :count)
 
       recap = profile.conversation_recaps.reload.sole
@@ -160,6 +162,23 @@ RSpec.describe "Conversation recaps", type: :request do
       expect(response_text).to include("Title can't be blank")
       expect(response_text).to include("Recap can't be blank")
       expect(response_text).to include("Capture source is not included in the list")
+    end
+
+    it "surfaces a future occurrence error on the source form" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      sign_in user
+
+      Timecop.freeze(Time.zone.local(2026, 7, 14, 12)) do
+        expect do
+          post relationship_profile_conversation_recaps_path(profile),
+            params: { conversation_recap: { title: "Planned call", body: "Not happened yet.", occurred_at: "2026-07-14T12:01" } },
+            as: :turbo_stream
+        end.not_to change(ConversationRecap, :count)
+      end
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(CGI.unescapeHTML(response.body)).to include("When it happened can't be in the future")
     end
 
     it "preserves a requested extraction when validation fails" do
@@ -269,6 +288,7 @@ RSpec.describe "Conversation recaps", type: :request do
       expect(response.body).to include("Updated recap")
       expect(recap.reload).to have_attributes(title: "Updated recap", body: "Updated body")
       expect(timeline_entry.reload).to have_attributes(title: "Updated recap", body: "Updated body", occurred_at: Time.zone.local(2026, 7, 8, 13, 0, 0))
+      expect(recap.interaction).to have_attributes(interaction_type: "conversation_recap", occurred_at: Time.zone.local(2026, 7, 8, 13, 0, 0))
     end
   end
 
@@ -278,13 +298,16 @@ RSpec.describe "Conversation recaps", type: :request do
       profile = create(:relationship_profile, user:)
       recap = create(:conversation_recap, relationship_profile: profile)
       create(:timeline_entry, relationship_profile: profile, entry_type: "conversation_recap", origin: "system", source_record: recap)
+      create(:interaction, :derived_from_conversation_recap, relationship_profile: profile, source: recap)
       sign_in user
 
       expect do
         expect do
-          delete relationship_profile_conversation_recap_path(profile, recap), as: :turbo_stream
-        end.to change(ConversationRecap, :count).by(-1)
-      end.to change(TimelineEntry, :count).by(-1)
+          expect do
+            delete relationship_profile_conversation_recap_path(profile, recap), as: :turbo_stream
+          end.to change(ConversationRecap, :count).by(-1)
+        end.to change(TimelineEntry, :count).by(-1)
+      end.to change(Interaction, :count).by(-1)
 
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       expect(response.body).to include("No conversation recaps yet")

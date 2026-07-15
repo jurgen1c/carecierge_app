@@ -1,0 +1,103 @@
+es:
+  time:
+    formats:
+      interaction_day: "%-d/%-m/%Y"
+      interaction_time: "%H:%M"
+  activerecord:
+    models:
+      contact_cadence: "Ritmo de contacto"
+      interaction: "Interacción"
+    attributes:
+      contact_cadence:
+        interval_days: "Frecuencia"
+      interaction:
+        interaction_type: "Tipo de interacción"
+        occurred_at: "Fecha y hora"
+        notes: "Notas"
+        source: "Fuente"
+    errors:
+      models:
+        interaction:
+          attributes:
+            source:
+              manual_forbidden: "no está permitida para interacciones manuales"
+  contact_rhythm:
+    section:
+      kicker: "Mantén el contacto"
+      title: "Ritmo de contacto"
+      body: "Lleva un registro amable de los encuentros importantes y elige un ritmo que se sienta natural para esta relación."
+    intervals:
+      "7": "Cada semana"
+      "14": "Cada 2 semanas"
+      "30": "Cada mes"
+      "60": "Cada 2 meses"
+      "90": "Cada 3 meses"
+    cadence:
+      title: "Tu ritmo"
+      suggested_for: "Sugerido para relaciones de tipo %{relationship_type}"
+      suggestion_body: "Esto es solo una sugerencia. Acéptala o ajústala antes de que Carecierge muestre ventanas de contacto."
+      next_window: "Próxima ventana amable de contacto"
+      last_interaction: "Interacción registrada más reciente"
+      flexible_note: "Los ritmos son sugerencias, no reglas. Ajústalos cuando cambie la vida real."
+      use_suggestion: "Revisar sugerencia"
+      adjust: "Ajustar ritmo"
+      frequency: "¿Con qué frecuencia te gustaría mantener el contacto?"
+      frequency_help: "Carecierge usa esto para ofrecer una sugerencia de apoyo, nunca para calificar la relación."
+      accept: "Usar este ritmo"
+      save: "Guardar ritmo"
+      errors: "No pudimos guardar este ritmo"
+    interactions:
+      title: "Historial de interacciones"
+      shown:
+        one: "1 interacción reciente"
+        other: "%{count} interacciones recientes"
+      empty_title: "Aún no hay interacciones registradas"
+      empty_body: "Registra una llamada, mensaje, visita u otro momento importante. Los resúmenes de conversaciones y las notas de ánimo aparecerán aquí con su fuente."
+      log: "Registrar una interacción"
+      log_first: "Registrar la primera interacción"
+      form_loading: "Cargando formulario de interacción"
+      manual: "Manual"
+      derived_from: "De %{source}"
+      edit: "Editar"
+      delete: "Eliminar"
+      delete_confirm: "¿Eliminar esta interacción?"
+    interaction_types:
+      call: "Llamada telefónica"
+      message: "Mensaje"
+      in_person: "En persona"
+      video: "Videollamada"
+      other: "Otro encuentro"
+      conversation_recap: "Resumen de conversación"
+      mood_note: "Encuentro de nota de ánimo"
+    sources:
+      conversation_recap: "resumen de conversación"
+      mood_note: "nota de ánimo"
+    form:
+      new_title: "Registrar una interacción"
+      edit_title: "Editar interacción"
+      body: "Registra el momento importante que quieres que este ritmo recuerde."
+      type: "¿Cómo se comunicaron?"
+      choose_type: "Elige un tipo de interacción"
+      occurred_at: "¿Cuándo ocurrió?"
+      notes: "Notas"
+      notes_placeholder: "Agrega contexto útil sin convertir el momento en un informe."
+      create: "Registrar interacción"
+      update: "Guardar interacción"
+      cancel: "Cancelar"
+      errors: "No pudimos guardar esta interacción"
+    overdue:
+      title: "Ha pasado un tiempo desde el último contacto registrado"
+      body: "Puede que hayan hablado más recientemente. Regístralo aquí o planifica un recordatorio amable para después."
+      plan_reminder: "Planificar un recordatorio"
+  contact_cadences:
+    create:
+      notice: "El ritmo de contacto comenzó."
+    update:
+      notice: "El ritmo de contacto se actualizó."
+  interactions:
+    create:
+      notice: "La interacción fue registrada."
+    update:
+      notice: "La interacción fue actualizada."
+    destroy:
+      notice: "La interacción fue eliminada."

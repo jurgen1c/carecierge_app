@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preference metadata, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with approval-gated extraction, observation-first mood notes with follow-up intent, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, associated structured preference metadata, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with approval-gated extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -11,6 +11,7 @@ default_queries:
   - memory records source confidence status stale review automation approval revisions
   - conversation recaps timeline source links AI extraction approval gate
   - mood notes observations supportive actions follow-up reminders timeline visibility
+  - contact cadence suggested intervals meaningful interactions derived sources overdue prompts
   - timeline entries relationship history manual system source record filtering
   - promises commitments due dates overdue statuses reminders timeline source record
   - relationship type template fields custom field values
@@ -32,6 +33,8 @@ watched_files:
   - app/models/memory_revision.rb
   - app/models/conversation_recap.rb
   - app/models/mood_note.rb
+  - app/models/contact_cadence.rb
+  - app/models/interaction.rb
   - app/models/timeline_entry.rb
   - app/models/commitment.rb
   - app/models/relationship_tag.rb
@@ -54,6 +57,8 @@ watched_files:
   - app/controllers/memory_records_controller.rb
   - app/controllers/conversation_recaps_controller.rb
   - app/controllers/mood_notes_controller.rb
+  - app/controllers/contact_cadences_controller.rb
+  - app/controllers/interactions_controller.rb
   - app/controllers/timeline_entries_controller.rb
   - app/controllers/commitments_controller.rb
   - app/services/commitments/**/*.rb
@@ -64,6 +69,8 @@ watched_files:
   - app/policies/memory_record_policy.rb
   - app/policies/conversation_recap_policy.rb
   - app/policies/mood_note_policy.rb
+  - app/policies/contact_cadence_policy.rb
+  - app/policies/interaction_policy.rb
   - app/policies/timeline_entry_policy.rb
   - app/policies/commitment_policy.rb
   - app/policies/desire_policy.rb
@@ -72,6 +79,8 @@ watched_files:
   - app/views/memory_records/**/*.erb
   - app/views/conversation_recaps/**/*.erb
   - app/views/mood_notes/**/*.erb
+  - app/views/contact_cadences/**/*.erb
+  - app/views/interactions/**/*.erb
   - app/views/timeline_entries/**/*.erb
   - app/views/commitments/**/*.erb
   - app/views/desires/**/*.erb
@@ -82,12 +91,17 @@ watched_files:
   - config/initializers/filter_parameter_logging.rb
   - config/locales/en.yml
   - config/locales/es.yml
+  - config/locales/contact_rhythm.en.yml
+  - config/locales/contact_rhythm.es.yml
   - db/migrate/*relationship*.rb
   - db/migrate/*important_date*.rb
   - db/migrate/*gift*.rb
   - db/migrate/*memory*.rb
   - db/migrate/*conversation_recap*.rb
   - db/migrate/*mood_note*.rb
+  - db/migrate/*contact_cadence*.rb
+  - db/migrate/*interaction*.rb
+  - db/data/*interaction*.rb
   - db/migrate/*timeline*.rb
   - db/migrate/*commitment*.rb
   - db/migrate/*desire*.rb
@@ -105,6 +119,8 @@ tags:
   - memory_records
   - conversation_recaps
   - mood_notes
+  - contact_cadence
+  - interactions
   - timeline_entries
   - commitments
   - desires

@@ -66,6 +66,7 @@ class MoodNotesController < ApplicationController
     MoodNote.transaction do
       @mood_note.save!
       sync_timeline_entry!
+      Interaction.sync_from_source!(@mood_note)
     end
     true
   rescue ActiveRecord::RecordInvalid
@@ -92,6 +93,7 @@ class MoodNotesController < ApplicationController
   def refresh_mood_notes(message, alert: false, status: :ok)
     flash.now[alert ? :alert : :notice] = message
     @relationship_profile.reload
+    @interactions = @relationship_profile.interactions.includes(:source).ordered.limit(10).to_a
 
     respond_to do |format|
       format.turbo_stream { render :refresh, status: }

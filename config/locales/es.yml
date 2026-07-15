@@ -23,6 +23,7 @@ es:
     models:
       conversation_recap: "Resumen de conversación"
       mood_note: "Nota de ánimo"
+      notification_preference: "Configuración de notificaciones"
       reminder: "Recordatorio"
     attributes:
       feature_flag:
@@ -133,6 +134,8 @@ es:
       reminder:
         important_date: "Fecha importante"
         relationship_profile: "Relación"
+      notification_preference:
+        quiet_hours_end: "Fin de las horas de silencio"
       desire:
         captured_on: "Fecha capturada"
         category: "Categoría"
@@ -174,6 +177,12 @@ es:
               different_relationship: "debe pertenecer a la relación seleccionada"
             relationship_profile:
               different_owner: "debe pertenecerte"
+        notification_preference:
+          attributes:
+            quiet_hours_end:
+              same_as_start: "debe ser diferente de la hora de inicio"
+            base:
+              invalid_relationship_mode: "incluye una configuración de relación no compatible"
   errors:
     messages:
       blank: "no puede estar en blanco"
@@ -286,6 +295,7 @@ es:
       in_app: "En la aplicación"
       email: "Correo electrónico"
       save: "Guardar preferencias"
+      manage: "Administrar configuración de notificaciones"
     notifications:
       title: "Notificaciones recientes"
       empty: "Los recordatorios pendientes aparecerán aquí cuando la entrega en la aplicación esté activa."
@@ -332,8 +342,93 @@ es:
       overdue_since: "Venció el %{date}"
       view: "Ver compromiso"
   notification_preferences:
+    weekdays:
+      "0": "Domingo"
+      "1": "Lunes"
+      "2": "Martes"
+      "3": "Miércoles"
+      "4": "Jueves"
+      "5": "Viernes"
+      "6": "Sábado"
+    reminder_frequencies:
+      none: "No se repite"
+      daily: "Diariamente"
+      weekly: "Semanalmente"
+      monthly: "Mensualmente"
+      yearly: "Anualmente"
+    reminder_leads:
+      "0": "A la hora del evento"
+      "60": "1 hora antes"
+      "1440": "1 día antes"
+      "10080": "1 semana antes"
+      "20160": "2 semanas antes"
+      "43200": "1 mes antes"
+    digest_modes:
+      "off": "Desactivado"
+      daily: "Diario"
+      weekly: "Semanal"
+    edit:
+      page_title: "Configuración de notificaciones"
+      back: "Volver a recordatorios"
+      heading: "Configuración de notificaciones"
+      body: "Elige cómo y cuándo Carecierge se comunica contigo. Esta configuración es privada para tu cuenta y puedes cambiarla en cualquier momento."
+      save: "Guardar cambios"
+      errors: "No pudimos guardar esta configuración de notificaciones"
+      needs_attention: "Necesita atención"
+      channels:
+        title: "Canales de entrega"
+        body: "Elige dónde quieres recibir las notificaciones de recordatorios."
+        in_app: "En la aplicación"
+        in_app_body: "Consulta las notificaciones de recordatorios dentro de Carecierge."
+        email: "Correo electrónico"
+        email_body: "Recibe notificaciones de recordatorios en el correo de tu cuenta."
+        push: "Notificaciones push"
+        push_body: "Guarda tu elección para las notificaciones móviles de Carecierge."
+        sms: "Mensajes de texto SMS"
+        sms_body: "Guarda tu elección para futuras notificaciones por mensaje de texto."
+        saved_for_later: "Se guarda ahora; la entrega estará disponible cuando se lance este canal."
+      timing:
+        title: "Horas de silencio y prioridad"
+        body: "Pausa los recordatorios ordinarios durante tu tiempo protegido sin perderlos."
+        quiet_hours: "Horas de silencio"
+        quiet_hours_body: "Carecierge espera hasta que terminen las horas de silencio para entregar recordatorios ordinarios."
+        starts_at: "Empiezan a las"
+        ends_at: "Terminan a las"
+        time_zone: "Zona horaria"
+        high_priority: "Alertas de alta prioridad"
+        high_priority_body: "Permite que los recordatorios marcados como Alta lleguen durante las horas de silencio."
+      reminders:
+        title: "Valores predeterminados de recordatorios"
+        body: "Define las opciones iniciales para recordatorios nuevos. Los existentes no cambian."
+        frequency: "Frecuencia predeterminada"
+        lead: "Anticipación predeterminada"
+        lead_help: "Se aplica cuando inicias un recordatorio desde una fecha importante."
+      digest:
+        title: "Horario del resumen"
+        body: "Guarda cuándo quieres un resumen conciso de relaciones. CAR-38 usará este horario cuando se lance la entrega de resúmenes."
+        mode: "Modo de resumen"
+        weekday: "Día de entrega semanal"
+        time: "Hora de entrega"
+      relationships:
+        title: "Ajustes por relación"
+        body: "La mayoría de las relaciones usa la configuración de tu cuenta. Silencia solo las que necesiten un límite más tranquilo."
+        inherit: "Usar configuración de la cuenta"
+        muted: "Silenciada"
+        choice: "Configuración de notificaciones para %{name}"
+        empty: "Crea un perfil de relación antes de agregar una configuración de notificaciones específica."
+      preview:
+        title: "Vista previa de entrega"
+        body: "Una explicación rápida de cómo tus elecciones afectan los recordatorios."
+        channels: "Canales habilitados"
+        channels_body: "La entrega en la aplicación y por correo funciona ahora; las opciones push y SMS se guardan para después."
+        quiet_hours: "Horas de silencio"
+        quiet_hours_body: "De %{start} a %{end} en la zona horaria seleccionada."
+        not_set: "Sin definir"
+        priority: "Necesita atención"
+        priority_body: "Los recordatorios de alta prioridad pueden omitir las horas de silencio cuando esta opción está habilitada."
+        digest: "Horario del resumen"
     update:
-      notice: "Preferencias de entrega guardadas."
+      notice: "Configuración de notificaciones guardada."
   commitments:
     statuses:
       open: "Abierto"
@@ -745,6 +840,7 @@ es:
     item:
       date: "Fecha"
       reminder: "Recordatorio"
+      add_reminder: "Agregar recordatorio"
       plan_ahead: "Planear con tiempo"
       edit: "Editar"
       delete: "Eliminar"

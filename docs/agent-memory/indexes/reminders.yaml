@@ -6,7 +6,8 @@ claim_globs:
 default_queries:
   - reminder recurrence snooze complete owner scope
   - reminder delivery noticed in app email idempotent occurrence
-  - notification preferences push sms future channels
+  - notification preferences quiet hours high priority relationship mute push sms future channels
+  - notification reminder defaults digest schedule CAR-38 handoff
   - reminder relationship profile important date commitment association
   - reminder calendar ics export
   - commitment reminder integration overdue commitments
@@ -14,12 +15,14 @@ watched_files:
   - app/models/reminder.rb
   - app/models/reminder_delivery.rb
   - app/models/notification_preference.rb
+  - app/models/relationship_notification_preference.rb
   - app/models/user.rb
   - app/models/relationship_profile.rb
   - app/models/important_date.rb
   - app/models/commitment.rb
   - app/controllers/reminders_controller.rb
   - app/controllers/notification_preferences_controller.rb
+  - app/services/notification_preferences/save.rb
   - app/jobs/dispatch_due_reminders_job.rb
   - app/jobs/deliver_reminder_job.rb
   - app/jobs/application_job.rb
@@ -32,6 +35,7 @@ watched_files:
   - app/javascript/controllers/timezone_controller.js
   - app/mailers/application_mailer.rb
   - app/views/reminders/**/*.erb
+  - app/views/notification_preferences/**/*.erb
   - app/views/commitments/**/*.erb
   - app/views/reminder_mailer/**/*.erb
   - app/views/components/reminder_row_component.*
@@ -48,6 +52,7 @@ watched_files:
   - db/migrate/*reminder*.rb
   - db/migrate/*commitment*.rb
   - db/migrate/*notification_preferences*.rb
+  - db/migrate/*relationship_notification_preferences*.rb
 tags:
   - reminders
   - noticed
@@ -57,3 +62,5 @@ tags:
   - relationship_profiles
   - important_dates
   - commitments
+  - notification_preferences
+  - quiet_hours

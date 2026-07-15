@@ -68,6 +68,169 @@ RSpec.describe "Reminders", type: :request do
       expect(response.body).to include(%(value="America/Costa_Rica"))
       expect(response.body).to include("Time zone")
       expect(response.body).not_to include(%(type="hidden" name="reminder[time_zone]"))
+      expect(response.body).to include(%(data-timezone-capture-value="true"))
+    end
+
+    it "keeps browser timezone capture for a migrated channel-only preference" do
+      user = create(:user)
+      create(:notification_preference, user:, time_zone: "UTC", time_zone_configured: false)
+      sign_in user
+
+      get new_reminder_path
+
+      expect(response.body).to include(%(data-timezone-capture-value="true"))
+    end
+
+    it "defaults an ordinary reminder in an explicitly configured timezone" do
+      user = create(:user)
+      create(
+        :notification_preference,
+        user:,
+        time_zone: "America/Costa_Rica",
+        time_zone_configured: true
+      )
+      sign_in user
+
+      Timecop.freeze(Time.utc(2026, 7, 15, 20, 37)) do
+        get new_reminder_path
+      end
+
+      expect(response.body).to include(%(value="2026-07-16T14:00"))
+      expect(response.body).to include(%(data-timezone-capture-value="false"))
+    end
+
+    it "waits for a migrated user's browser timezone before deriving an important-date schedule" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      important_date = create(
+        :important_date,
+        relationship_profile: profile,
+        starts_on: Date.new(2020, 7, 15),
+        recurrence: "yearly"
+      )
+      create(:notification_preference, user:, time_zone: "UTC", time_zone_configured: false)
+      sign_in user
+
+      Timecop.freeze(Time.utc(2026, 7, 16, 4, 30)) do
+        get new_reminder_path(important_date_id: important_date.id)
+      end
+
+      expect(response.body).to include(%(data-timezone-capture-value="true"))
+      expect(response.body).to include(%(data-timezone-reload-value="true"))
+      expect(response.body).not_to include(%(value="2027-07-14T09:00"))
+
+      Timecop.freeze(Time.utc(2026, 7, 16, 4, 30)) do
+        get new_reminder_path(important_date_id: important_date.id, time_zone: "America/Costa_Rica")
+      end
+
+      expect(response.body).to include(%(value="2026-07-14T09:00"))
+      expect(response.body).to include(%(option selected="selected" value="America/Costa_Rica"))
+      expect(response.body).to include(%(data-timezone-capture-value="false"))
+    end
+
+    it "uses notification defaults when starting a reminder from an important date" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      important_date = create(
+        :important_date,
+        relationship_profile: profile,
+        starts_on: Date.new(2026, 7, 25),
+        recurrence: "yearly"
+      )
+      create(
+        :notification_preference,
+        user:,
+        reminder_frequency: "weekly",
+        reminder_lead_minutes: 10_080,
+        time_zone: "America/Costa_Rica"
+      )
+      sign_in user
+
+      Timecop.freeze(ActiveSupport::TimeZone["America/Costa_Rica"].local(2026, 7, 15, 12, 0)) do
+        get new_reminder_path(important_date_id: important_date.id)
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(%(option selected="selected" value="#{important_date.id}"))
+      expect(response.body).to include(%(option selected="selected" value="weekly"))
+      expect(response.body).to include(%(value="2026-07-18T09:00"))
+      expect(response.body).to include(%(option selected="selected" value="America/Costa_Rica"))
+      expect(response.body).to include(%(data-timezone-capture-value="false"))
+    end
+
+    it "uses the selected timezone date for an important date occurrence" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      important_date = create(
+        :important_date,
+        relationship_profile: profile,
+        starts_on: Date.new(2020, 7, 15),
+        recurrence: "yearly"
+      )
+      create(
+        :notification_preference,
+        user:,
+        reminder_lead_minutes: 0,
+        time_zone: "America/Costa_Rica"
+      )
+      sign_in user
+
+      Timecop.freeze(Time.utc(2026, 7, 16, 4, 30)) do
+        get new_reminder_path(important_date_id: important_date.id)
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(%(value="2026-07-15T09:00"))
+    end
+
+    it "preserves the local reminder time when a calendar lead crosses daylight saving time" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      important_date = create(
+        :important_date,
+        relationship_profile: profile,
+        starts_on: Date.new(2026, 11, 5),
+        recurrence: "yearly"
+      )
+      create(
+        :notification_preference,
+        user:,
+        reminder_lead_minutes: 10_080,
+        time_zone: "America/New_York"
+      )
+      sign_in user
+
+      Timecop.freeze(Time.utc(2026, 7, 15, 12, 0)) do
+        get new_reminder_path(important_date_id: important_date.id)
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(%(value="2026-10-29T09:00"))
+    end
+
+    it "applies a one-month lead as a calendar month" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      important_date = create(
+        :important_date,
+        relationship_profile: profile,
+        starts_on: Date.new(2026, 3, 31),
+        recurrence: "yearly"
+      )
+      create(
+        :notification_preference,
+        user:,
+        reminder_lead_minutes: 43_200,
+        time_zone: "America/Costa_Rica"
+      )
+      sign_in user
+
+      Timecop.freeze(Time.utc(2026, 1, 15, 12, 0)) do
+        get new_reminder_path(important_date_id: important_date.id)
+      end
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include(%(value="2026-02-28T09:00"))
     end
 
     it "creates an owner-scoped reminder with current associations" do
@@ -414,20 +577,21 @@ RSpec.describe "Reminders", type: :request do
   end
 
   describe "PATCH /notification_preference" do
-    it "saves current delivery choices without enabling future channels" do
+    it "saves future channel choices without dispatching those reserved channels" do
       user = create(:user)
       sign_in user
 
       patch notification_preference_path,
         params: { notification_preference: { in_app_enabled: "1", email_enabled: "0", push_enabled: "1", sms_enabled: "1" } }
 
-      expect(response).to redirect_to(reminders_path)
+      expect(response).to redirect_to(edit_notification_preference_path)
       expect(user.reload.notification_preference).to have_attributes(
         in_app_enabled: true,
         email_enabled: false,
-        push_enabled: false,
-        sms_enabled: false
+        push_enabled: true,
+        sms_enabled: true
       )
+      expect(NotificationPreference.channels_for(user)).to eq([ "in_app" ])
     end
   end
 

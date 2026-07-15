@@ -39,6 +39,7 @@ class DeliverReminderJob < ApplicationJob
           delivery.cancel!
           return false
         end
+        return false unless preferences_allow_handoff?(delivery, reminder)
 
         lease_token = SecureRandom.uuid
         delivery.update!(status: "dispatching", enqueued_at: Time.current, lease_token:, error_message: nil)
@@ -74,6 +75,7 @@ class DeliverReminderJob < ApplicationJob
           delivery.cancel! if owns_lease?(delivery, lease_token)
           return
         end
+        return unless preferences_allow_handoff?(delivery, reminder)
         return delivery.noticed_event if delivery.noticed_event
 
         event = notifier_for(delivery)
@@ -97,6 +99,7 @@ class DeliverReminderJob < ApplicationJob
           delivery.cancel! if owns_lease?(delivery, lease_token)
           return false
         end
+        return false unless preferences_allow_handoff?(delivery, reminder)
 
         delivery.update!(enqueued_at: Time.current)
         true
@@ -109,6 +112,42 @@ class DeliverReminderJob < ApplicationJob
     when "in_app" then ReminderInAppNotifier
     when "email" then ReminderEmailNotifier
     else raise ArgumentError, "Unsupported reminder delivery channel: #{delivery.channel}"
+    end
+  end
+
+  def current_preferences_allow?(delivery, reminder)
+    current_preference_decision(delivery, reminder).allow?
+  end
+
+  def preferences_allow_handoff?(delivery, reminder)
+    decision = current_preference_decision(delivery, reminder)
+    return true if decision.allow?
+
+    cancel_for_preferences!(delivery, reminder, restore_at: decision.deferred_until)
+    false
+  end
+
+  def current_preference_decision(delivery, reminder)
+    NotificationPreference.current_delivery_decision(
+      reminder.user,
+      reminder:,
+      channel: delivery.channel
+    )
+  end
+
+  def cancel_for_preferences!(delivery, reminder, restore_at: nil)
+    occurrence = delivery.scheduled_for
+    delivery.cancel!
+    viable_delivery_exists = reminder.reminder_deliveries
+      .where(scheduled_for: occurrence)
+      .where.not(id: delivery.id)
+      .where.not(status: "cancelled")
+      .any? { |other_delivery| other_delivery.dispatched? || current_preferences_allow?(other_delivery, reminder) }
+
+    if restore_at
+      reminder.update_column(:next_delivery_at, restore_at)
+    elsif !viable_delivery_exists
+      reminder.update_column(:next_delivery_at, occurrence)
     end
   end
 

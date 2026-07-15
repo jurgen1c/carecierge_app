@@ -6,10 +6,11 @@ class DispatchDueRemindersJob < ApplicationJob
   def perform
     recover_pending_deliveries
 
-    Reminder.due.includes(user: :notification_preference).find_each do |reminder|
+    Reminder.due.includes(:relationship_profile, user: { notification_preference: :relationship_notification_preferences }).find_each do |reminder|
       user = reminder.user
-      user.notification_preference
-      claim_deliveries(reminder, user)
+      preference = user.notification_preference || NotificationPreference.new(user:)
+      relationship_profile = reminder.relationship_profile
+      claim_deliveries(reminder, user, preference, relationship_profile:)
     end
   end
 
@@ -23,13 +24,20 @@ class DispatchDueRemindersJob < ApplicationJob
     end
   end
 
-  def claim_deliveries(reminder, user)
+  def claim_deliveries(reminder, user, preference, relationship_profile:)
     deliveries = reminder.with_lock do
-      scheduled_for = reminder.next_delivery_at
-      next [] if scheduled_for.blank? || scheduled_for > Time.current || !reminder.active?
+      due_at = reminder.next_delivery_at
+      next [] if due_at.blank? || due_at > Time.current || !reminder.active?
 
-      deliveries = NotificationPreference.channels_for(user).map do |channel|
-        ReminderDelivery.create_or_find_by!(reminder:, channel:, scheduled_for:)
+      if (deferred_until = preference.delivery_deferred_until(reminder))
+        reminder.update_column(:next_delivery_at, deferred_until)
+        next []
+      end
+
+      deliveries = NotificationPreference.channels_for(user, reminder:, relationship_profile:).map do |channel|
+        delivery = reminder.reminder_deliveries.find_or_initialize_by(channel:, scheduled_for: reminder.effective_delivery_at)
+        delivery.save! if delivery.new_record?
+        delivery.revive!
       end
       reminder.update_column(:next_delivery_at, nil) if deliveries.any?
       deliveries

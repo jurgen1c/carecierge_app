@@ -1,0 +1,12 @@
+id: car_37_notification_preferences_shared_important_date_surface
+status: active
+reason: >
+  CAR-37 adds a reminder entry point to the established important-date card so
+  notification lead-time defaults are reachable. The new
+  reminders.notification_preferences claim documents that behavior and its
+  verification. The relationship_profiles.important_dates claim remains
+  accurate because ownership, recurrence, planning, and Turbo boundaries do not
+  change.
+files:
+  - app/views/important_dates/_important_date.html.erb
+expires_at: 2026-08-15

@@ -156,6 +156,91 @@ RSpec.describe DispatchDueRemindersJob, type: :job do
     expect(reminder.reminder_deliveries.pluck(:channel)).to eq([ "in_app" ])
   end
 
+  it "revives cancelled occurrence claims after delivery preferences are restored" do
+    now = Time.zone.local(2026, 7, 14, 9, 0)
+    reminder = create(:reminder, scheduled_at: now, next_delivery_at: now)
+    create(:notification_preference, user: reminder.user)
+    cancelled_delivery = create(
+      :reminder_delivery,
+      reminder:,
+      channel: "in_app",
+      scheduled_for: now,
+      status: "cancelled"
+    )
+
+    Timecop.freeze(now) do
+      expect { described_class.perform_now }
+        .to change(ReminderDelivery, :count).by(1)
+        .and have_enqueued_job(DeliverReminderJob).exactly(:twice)
+    end
+
+    expect(cancelled_delivery.reload.status).to eq("pending")
+    expect(reminder.reload.next_delivery_at).to be_nil
+  end
+
+  it "defers an ordinary due reminder until quiet hours end before claiming delivery" do
+    zone = ActiveSupport::TimeZone["America/Costa_Rica"]
+    now = zone.local(2026, 7, 15, 22, 0)
+    reminder = create(:reminder, scheduled_at: now, next_delivery_at: now)
+    create(
+      :notification_preference,
+      user: reminder.user,
+      quiet_hours_enabled: true,
+      quiet_hours_start: "21:00",
+      quiet_hours_end: "07:00",
+      time_zone: zone.tzinfo.name
+    )
+
+    Timecop.freeze(now) { described_class.perform_now }
+
+    expect(reminder.reload.next_delivery_at).to eq(zone.local(2026, 7, 16, 7, 0))
+    expect(reminder.reminder_deliveries).to be_empty
+
+    Timecop.freeze(zone.local(2026, 7, 16, 7, 0)) do
+      expect { described_class.perform_now }.to have_enqueued_job(DeliverReminderJob).exactly(:twice)
+    end
+
+    expect(reminder.reload.next_delivery_at).to be_nil
+    expect(reminder.reminder_deliveries.pluck(:scheduled_for)).to contain_exactly(now, now)
+  end
+
+  it "claims a high-priority reminder during quiet hours when priority alerts are enabled" do
+    zone = ActiveSupport::TimeZone["America/Costa_Rica"]
+    now = zone.local(2026, 7, 15, 22, 0)
+    reminder = create(:reminder, priority: "high", scheduled_at: now, next_delivery_at: now)
+    create(
+      :notification_preference,
+      user: reminder.user,
+      quiet_hours_enabled: true,
+      quiet_hours_start: "21:00",
+      quiet_hours_end: "07:00",
+      time_zone: zone.tzinfo.name,
+      high_priority_alerts_enabled: true
+    )
+
+    Timecop.freeze(now) { described_class.perform_now }
+
+    expect(reminder.reload.next_delivery_at).to be_nil
+    expect(reminder.reminder_deliveries.count).to eq(2)
+  end
+
+  it "keeps a muted relationship reminder pending without delivery claims" do
+    now = Time.zone.local(2026, 7, 15, 9, 0)
+    reminder = create(:reminder, scheduled_at: now, next_delivery_at: now)
+    preference = create(:notification_preference, user: reminder.user)
+    create(
+      :relationship_notification_preference,
+      notification_preference: preference,
+      relationship_profile: reminder.relationship_profile,
+      mode: "muted"
+    )
+
+    Timecop.freeze(now) { described_class.perform_now }
+
+    expect(reminder.reload.next_delivery_at).to eq(now)
+    expect(reminder.reminder_deliveries).to be_empty
+  end
+
   it "keeps a due occurrence pending when every delivery channel is disabled" do
     now = Time.zone.local(2026, 7, 14, 9, 0)
     reminder = create(:reminder, scheduled_at: now, next_delivery_at: now)
@@ -172,9 +257,11 @@ RSpec.describe DispatchDueRemindersJob, type: :job do
     reminder = create(:reminder, scheduled_at: now, next_delivery_at: now)
     create(:notification_preference, user: reminder.user)
 
-    allow(NotificationPreference).to receive(:channels_for).and_wrap_original do |method, user|
+    allow(NotificationPreference).to receive(:channels_for).and_wrap_original do |method, user, reminder:, relationship_profile:|
+      expect(relationship_profile.id).to eq(reminder.relationship_profile_id)
       expect(user.association(:notification_preference)).to be_loaded
-      method.call(user)
+      expect(user.notification_preference.association(:relationship_notification_preferences)).to be_loaded
+      method.call(user, reminder:, relationship_profile:)
     end
 
     Timecop.freeze(now) { described_class.perform_now }

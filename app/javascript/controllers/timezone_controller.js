@@ -2,12 +2,19 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["input", "scheduledAt"]
-  static values = { capture: Boolean }
+  static values = { capture: Boolean, reload: Boolean }
 
   connect() {
     if (!this.captureValue) return
 
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
+    if (timeZone && this.reloadValue) {
+      const url = new URL(window.location.href)
+      url.searchParams.set("time_zone", timeZone)
+      window.location.replace(url)
+      return
+    }
 
     if (timeZone) this.inputTarget.value = timeZone
     if (!this.scheduledAtTarget.value) this.scheduledAtTarget.value = this.tomorrowAtCurrentHour()

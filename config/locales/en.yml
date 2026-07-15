@@ -51,6 +51,7 @@ en:
     models:
       conversation_recap: "Conversation recap"
       mood_note: "Mood note"
+      notification_preference: "Notification settings"
       reminder: "Reminder"
     attributes:
       feature_flag:
@@ -161,6 +162,8 @@ en:
       reminder:
         important_date: "Important date"
         relationship_profile: "Relationship"
+      notification_preference:
+        quiet_hours_end: "Quiet hours end"
       desire:
         captured_on: "Captured date"
         category: "Category"
@@ -202,6 +205,12 @@ en:
               different_relationship: "must belong to the selected relationship"
             relationship_profile:
               different_owner: "must belong to you"
+        notification_preference:
+          attributes:
+            quiet_hours_end:
+              same_as_start: "must be different from the start time"
+            base:
+              invalid_relationship_mode: "includes an unsupported relationship setting"
   errors:
     messages:
       confirmation: "does not match %{attribute}"
@@ -547,6 +556,7 @@ en:
     item:
       date: "Date"
       reminder: "Reminder"
+      add_reminder: "Add reminder"
       plan_ahead: "Plan ahead"
       edit: "Edit"
       delete: "Delete"
@@ -1232,6 +1242,7 @@ en:
       in_app: "In app"
       email: "Email"
       save: "Save preferences"
+      manage: "Manage notification settings"
     notifications:
       title: "Recent reminder notifications"
       empty: "Due reminders will appear here when in-app delivery is enabled."
@@ -1278,8 +1289,93 @@ en:
       overdue_since: "Due %{date}"
       view: "View commitment"
   notification_preferences:
+    weekdays:
+      "0": "Sunday"
+      "1": "Monday"
+      "2": "Tuesday"
+      "3": "Wednesday"
+      "4": "Thursday"
+      "5": "Friday"
+      "6": "Saturday"
+    reminder_frequencies:
+      none: "Does not repeat"
+      daily: "Daily"
+      weekly: "Weekly"
+      monthly: "Monthly"
+      yearly: "Yearly"
+    reminder_leads:
+      "0": "At the event time"
+      "60": "1 hour before"
+      "1440": "1 day before"
+      "10080": "1 week before"
+      "20160": "2 weeks before"
+      "43200": "1 month before"
+    digest_modes:
+      "off": "Off"
+      daily: "Daily"
+      weekly: "Weekly"
+    edit:
+      page_title: "Notification settings"
+      back: "Back to reminders"
+      heading: "Notification settings"
+      body: "Choose how and when Carecierge reaches you. These settings are private to your account and can be changed at any time."
+      save: "Save changes"
+      errors: "We could not save these notification settings"
+      needs_attention: "Needs attention"
+      channels:
+        title: "Delivery channels"
+        body: "Choose where you want to receive reminder notifications."
+        in_app: "In app"
+        in_app_body: "See reminder notifications inside Carecierge."
+        email: "Email"
+        email_body: "Receive reminder notifications at your account email address."
+        push: "Push notifications"
+        push_body: "Save your choice for Carecierge mobile notifications."
+        sms: "SMS text messages"
+        sms_body: "Save your choice for future text-message notifications."
+        saved_for_later: "Saved now; delivery becomes available when this channel launches."
+      timing:
+        title: "Quiet hours and priority"
+        body: "Pause ordinary reminders during protected time without losing them."
+        quiet_hours: "Quiet hours"
+        quiet_hours_body: "Carecierge waits until quiet hours end before delivering ordinary reminders."
+        starts_at: "Starts at"
+        ends_at: "Ends at"
+        time_zone: "Time zone"
+        high_priority: "High-priority alerts"
+        high_priority_body: "Allow reminders marked High to arrive during quiet hours."
+      reminders:
+        title: "Reminder defaults"
+        body: "Set the starting choices for new reminders. Existing reminders do not change."
+        frequency: "Default frequency"
+        lead: "Default lead time"
+        lead_help: "Applied when you start a reminder from an important date."
+      digest:
+        title: "Digest schedule"
+        body: "Save when you want a concise relationship summary. CAR-38 will use this schedule when digest delivery launches."
+        mode: "Digest mode"
+        weekday: "Weekly delivery day"
+        time: "Delivery time"
+      relationships:
+        title: "Relationship overrides"
+        body: "Most relationships follow your account settings. Mute only the ones that need a quieter boundary."
+        inherit: "Use account settings"
+        muted: "Muted"
+        choice: "Notification setting for %{name}"
+        empty: "Create a relationship profile before adding a relationship-specific notification setting."
+      preview:
+        title: "Delivery preview"
+        body: "A quick explanation of how your choices affect reminders."
+        channels: "Enabled channels"
+        channels_body: "In-app and email delivery work now; push and SMS choices are saved for later."
+        quiet_hours: "Quiet hours"
+        quiet_hours_body: "%{start} to %{end} in your selected time zone."
+        not_set: "Not set"
+        priority: "Needs attention"
+        priority_body: "High-priority reminders may bypass quiet hours when enabled."
+        digest: "Digest schedule"
     update:
-      notice: "Delivery preferences saved."
+      notice: "Notification settings saved."
 
   commitments:
     statuses:

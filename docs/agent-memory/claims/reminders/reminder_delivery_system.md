@@ -45,9 +45,15 @@ claim: >
   omitted links, and relationship links fall back to the global inbox after a
   profile is archived. HTML create, update, destroy, snooze, and complete actions
   preserve an active relationship filter and fall back globally for archived profiles. NotificationPreference
-  enables in-app and email delivery by default; push and SMS fields are reserved
-  and are not dispatched. Due occurrences remain pending while every current
-  channel is disabled. Relationship profile pages query only their next five
+  activates in-app and email while saving push and SMS without dispatch;
+  reminders.notification_preferences owns other settings. Pending claims recheck
+  current channel and relationship-mute choices at the final Noticed handoff, and
+  reapply quiet hours before the handoff. Preference cancellations restore the
+  occurrence when they remove its last viable claim, while quiet-hour cancellations
+  restore it at the next local quiet-hours end.
+  Cancelled, uniquely indexed claims are revived if those choices later allow the
+  same occurrence. Due occurrences remain pending when no active channel is
+  available. Relationship profile pages query only their next five
   active reminders in effective delivery order. Owner-scoped endpoints export one reminder or all active
   reminders as private iCalendar events with normalized multiline text.
   Production reminder email links require CARECIERGE_HOST and use HTTPS; SMTP
@@ -157,6 +163,13 @@ Reminder scheduling is shared infrastructure for relationship care. Keeping
 recurrence, delivery claims, preferences, authorization, and exports in one
 system prevents duplicate notifications, cross-account access, and competing
 schedulers as commitments and plans are introduced.
+
+## Review Notes
+
+CAR-37 reviewed this claim while extending the existing dispatcher with
+notification timing and relationship-specific controls. Delivery claims,
+recovery, Noticed handoff, recurrence, and lifecycle behavior remain current;
+`reminders.notification_preferences` owns the new settings contract.
 
 ## Evidence
 

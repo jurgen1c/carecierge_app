@@ -1,5 +1,5 @@
 <% form_url = reminder.persisted? ? reminder_path(reminder) : reminders_path %>
-<%= form_with model: reminder, url: form_url, method: reminder.persisted? ? :patch : :post, class: "rounded-xl border border-stone-200 bg-white p-4", data: { controller: "timezone", timezone_capture_value: reminder.new_record? && reminder.errors.empty? } do |form| %>
+<%= form_with model: reminder, url: form_url, method: reminder.persisted? ? :patch : :post, class: "rounded-xl border border-stone-200 bg-white p-4", data: { controller: "timezone", timezone_capture_value: reminder.new_record? && reminder.errors.empty? && @capture_browser_time_zone == true, timezone_reload_value: @reload_after_time_zone_capture == true } do |form| %>
   <div class="flex items-start justify-between gap-3">
     <div>
       <h2 class="text-base font-semibold text-stone-950"><%= reminder.persisted? ? t("reminders.form.edit_title") : t("reminders.form.new_title") %></h2>

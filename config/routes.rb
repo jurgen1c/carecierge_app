@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     patch :snooze, on: :member
     patch :complete, on: :member
   end
-  resource :notification_preference, only: :update
+  resource :notification_preference, only: %i[edit update]
 
   resource :onboarding, only: %i[show create], controller: "onboarding" do
     post :skip

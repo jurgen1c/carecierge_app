@@ -94,6 +94,15 @@ RSpec.describe Commitment, type: :model do
     expect(reminder.reload).to have_attributes(status: "completed", completed_at: canceled_at, next_delivery_at: nil, snoozed_until: nil)
   end
 
+  it "deletes owned reminders when deleted directly in the database" do
+    commitment = create(:commitment)
+    reminder = create(:reminder, user: commitment.relationship_profile.user, relationship_profile: commitment.relationship_profile, commitment:)
+
+    described_class.where(id: commitment.id).delete_all
+
+    expect(Reminder.exists?(reminder.id)).to be(false)
+  end
+
   it "rejects invalid status transitions" do
     open_commitment = create(:commitment, status: "open")
     canceled_commitment = create(:commitment, status: "canceled")

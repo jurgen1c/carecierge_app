@@ -18,7 +18,10 @@ claim: >
   closing a commitment retires active linked reminders, while reopening leaves
   those historical reminder schedules completed.
   Each commitment owns a protected system promise TimelineEntry and may own many
-  reusable Reminder records from the existing reminder delivery system. Profile
+  reusable Reminder records from the existing reminder delivery system; both
+  Rails association cleanup and the database foreign key cascade those reminders
+  when a commitment is deleted. Commitment persistence accepts exactly one
+  attributes update or whitelisted complete, cancel, or reopen event. Profile
   associations apply the domain ordering before commitments reach the view. The
   relationship profile supports localized Turbo CRUD and lifecycle actions, while
   the existing reminder workspace shows owner-scoped overdue commitments and
@@ -40,6 +43,7 @@ source_files:
 
 related_files:
   - spec/models/commitment_spec.rb
+  - spec/services/commitments/save_spec.rb
   - spec/policies/commitment_policy_spec.rb
   - spec/requests/commitments_spec.rb
   - spec/requests/commitment_reminders_spec.rb
@@ -63,7 +67,7 @@ tags:
   - follow_through
 
 verification:
-  - bundle exec rspec spec/models/commitment_spec.rb spec/models/reminder_spec.rb spec/policies/commitment_policy_spec.rb spec/requests/commitments_spec.rb spec/requests/commitment_reminders_spec.rb spec/requests/reminders_spec.rb spec/requests/timeline_entries_spec.rb
+  - bundle exec rspec spec/models/commitment_spec.rb spec/models/reminder_spec.rb spec/services/commitments/save_spec.rb spec/policies/commitment_policy_spec.rb spec/requests/commitments_spec.rb spec/requests/commitment_reminders_spec.rb spec/requests/reminders_spec.rb spec/requests/timeline_entries_spec.rb
   - bin/rubocop
   - bin/ci
 last_verified_commit: null
@@ -96,9 +100,10 @@ localized, and tenant-safe.
 - `app/controllers/reminders_controller.rb`
 - `spec/requests/commitments_spec.rb`
 - `spec/requests/commitment_reminders_spec.rb`
+- `spec/services/commitments/save_spec.rb`
 
 ## Verification
 
-- `bundle exec rspec spec/models/commitment_spec.rb spec/models/reminder_spec.rb spec/policies/commitment_policy_spec.rb spec/requests/commitments_spec.rb spec/requests/commitment_reminders_spec.rb spec/requests/reminders_spec.rb spec/requests/timeline_entries_spec.rb`
+- `bundle exec rspec spec/models/commitment_spec.rb spec/models/reminder_spec.rb spec/services/commitments/save_spec.rb spec/policies/commitment_policy_spec.rb spec/requests/commitments_spec.rb spec/requests/commitment_reminders_spec.rb spec/requests/reminders_spec.rb spec/requests/timeline_entries_spec.rb`
 - `bin/rubocop`
 - `bin/ci`

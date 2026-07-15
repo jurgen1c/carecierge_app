@@ -56,7 +56,8 @@ claim: >
   iCalendar events use their IANA TZID and recurring-event-based transition
   coverage to preserve local wall-clock time. Commitments may own multiple
   reminders and derive their relationship context through the same owner-scoped
-  association boundary. Reminder form commitment options stay policy-scoped even
+  association boundary. Deleting a commitment cascades its owned reminders at
+  both the Rails association and database foreign-key layers. Reminder form commitment options stay policy-scoped even
   for inconsistent persisted foreign keys. Completing or canceling a commitment retires its active
   reminders, and reopening it does not reactivate their historical schedules;
   future planning models must integrate with Reminder

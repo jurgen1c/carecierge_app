@@ -35,7 +35,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (commitment_id => commitments.id) ON DELETE => nullify
+#  fk_rails_...  (commitment_id => commitments.id) ON DELETE => cascade
 #  fk_rails_...  (important_date_id => important_dates.id) ON DELETE => nullify
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade

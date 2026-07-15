@@ -571,7 +571,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_141912) do
   add_foreign_key "relationship_tags", "users"
   add_foreign_key "reminder_deliveries", "noticed_events", on_delete: :nullify
   add_foreign_key "reminder_deliveries", "reminders", on_delete: :cascade
-  add_foreign_key "reminders", "commitments", on_delete: :nullify
+  add_foreign_key "reminders", "commitments", on_delete: :cascade
   add_foreign_key "reminders", "important_dates", on_delete: :nullify
   add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade
   add_foreign_key "reminders", "users", on_delete: :cascade

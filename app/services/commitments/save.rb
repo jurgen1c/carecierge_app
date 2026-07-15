@@ -1,5 +1,11 @@
 module Commitments
   class Save
+    EVENTS = {
+      complete: :complete!,
+      cancel: :cancel!,
+      reopen: :reopen!
+    }.freeze
+
     def self.call(commitment, attributes: nil, event: nil)
       new(commitment, attributes:, event:).call
     end
@@ -11,6 +17,8 @@ module Commitments
     end
 
     def call
+      validate_operation!
+
       Commitment.transaction do
         persist_commitment!
         sync_timeline_entry!
@@ -24,9 +32,14 @@ module Commitments
 
     attr_reader :commitment, :attributes, :event
 
+    def validate_operation!
+      raise ArgumentError, "provide exactly one of attributes or event" if attributes.nil? == event.nil?
+      raise ArgumentError, "unsupported commitment event: #{event}" if event && !EVENTS.key?(event)
+    end
+
     def persist_commitment!
       if event
-        commitment.public_send("#{event}!")
+        commitment.public_send(EVENTS.fetch(event))
       else
         commitment.assign_attributes(attributes)
         commitment.save!

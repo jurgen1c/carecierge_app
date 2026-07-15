@@ -10,7 +10,7 @@ export default class extends Controller {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
     if (timeZone && this.reloadValue) {
-      const url = new URL(window.location.href)
+      const url = new window.URL(window.location.href)
       url.searchParams.set("time_zone", timeZone)
       window.location.replace(url)
       return

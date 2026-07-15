@@ -156,7 +156,10 @@ class NotificationPreference < ApplicationRecord
   def next_local_boundary(date, hours, minutes, seconds, after:)
     zone = time_zone_object
     wall_time = Time.utc(date.year, date.month, date.day, hours, minutes, seconds)
-    candidates = zone.tzinfo.periods_for_local(wall_time).map do |period|
+    periods = zone.tzinfo.periods_for_local(wall_time)
+    return zone.local(date.year, date.month, date.day, hours, minutes, seconds) if periods.empty?
+
+    candidates = periods.map do |period|
       (wall_time - period.utc_total_offset).in_time_zone(zone)
     end
     upcoming = candidates.select { |candidate| candidate > after }.min

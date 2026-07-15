@@ -50,7 +50,7 @@ claim: >
   current channel and relationship-mute choices at the final Noticed handoff, and
   reapply quiet hours before the handoff. Preference cancellations restore the
   occurrence when they remove its last viable claim, while quiet-hour cancellations
-  restore it at the next local quiet-hours end.
+  restore it at the next valid local quiet-hours end across DST gaps and repeats.
   Cancelled, uniquely indexed claims are revived if those choices later allow the
   same occurrence. Due occurrences remain pending when no active channel is
   available. Relationship profile pages query only their next five

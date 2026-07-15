@@ -15,7 +15,8 @@ claim: >
   delivery channels; push and SMS choices are saved but undispatched. Quiet hours
   defer ordinary due reminders to the next local quiet-hours end before delivery
   claims are created, while an enabled high-priority bypass allows high-priority
-  reminders through. Changing quiet-hour rules releases deferred, non-snoozed due
+  reminders through. Repeated and nonexistent DST wall times resolve to the next
+  valid local quiet-hours boundary. Changing quiet-hour rules releases deferred, non-snoozed due
   reminders for immediate reevaluation. Sparse, owner-matched relationship
   overrides mute delivery and keep due occurrences pending, queued claims recheck
   current channel and mute choices before handoff, and archived relationships no

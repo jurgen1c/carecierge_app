@@ -156,6 +156,17 @@ RSpec.describe NotificationPreference, type: :model do
       expect(preference.delivery_deferred_until(reminder, at: local_time))
         .to eq(Time.utc(2026, 11, 1, 6, 30).in_time_zone(preference.time_zone))
     end
+
+    it "shifts a nonexistent quiet-hours boundary past the daylight saving gap" do
+      preference.time_zone = "America/New_York"
+      preference.quiet_hours_start = "00:00"
+      preference.quiet_hours_end = "02:30"
+      reminder = build(:reminder, priority: "normal")
+      local_time = Time.utc(2026, 3, 8, 6, 30).in_time_zone(preference.time_zone)
+
+      expect(preference.delivery_deferred_until(reminder, at: local_time))
+        .to eq(Time.utc(2026, 3, 8, 7, 30).in_time_zone(preference.time_zone))
+    end
   end
 
   it "validates the time fields required by the database" do

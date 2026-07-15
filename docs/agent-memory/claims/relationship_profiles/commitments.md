@@ -10,7 +10,8 @@ title: Commitments track owner-scoped promises through reminders and timeline hi
 
 claim: >
   Commitment records belong to a RelationshipProfile and are managed through
-  authenticated, owner-scoped nested routes. Commitments store normalized titles,
+  authenticated, owner-scoped nested routes. Commitments require titles at both
+  the model and database layers and normalize user-authored title text,
   optional private notes, optional due dates, open/completed/canceled status, and
   completion time; overdue is derived only for open commitments whose due date is
   past. Explicit complete, cancel, and reopen transitions serialize on the record;

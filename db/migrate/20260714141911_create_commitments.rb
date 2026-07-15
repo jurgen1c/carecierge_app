@@ -2,7 +2,7 @@ class CreateCommitments < ActiveRecord::Migration[8.1]
   def change
     create_table :commitments, id: :uuid do |t|
       t.references :relationship_profile, null: false, foreign_key: { on_delete: :cascade }, type: :uuid
-      t.string :title
+      t.string :title, null: false
       t.text :notes
       t.date :due_on
       t.string :status, null: false, default: "open"

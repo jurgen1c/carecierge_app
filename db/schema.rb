@@ -60,7 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_141912) do
     t.text "notes"
     t.uuid "relationship_profile_id", null: false
     t.string "status", default: "open", null: false
-    t.string "title"
+    t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["relationship_profile_id", "status", "due_on"], name: "idx_on_relationship_profile_id_status_due_on_109b7b7dd5"
     t.index ["relationship_profile_id"], name: "index_commitments_on_relationship_profile_id"

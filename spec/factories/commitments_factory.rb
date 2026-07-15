@@ -8,7 +8,7 @@
 #  due_on                  :date
 #  notes                   :text
 #  status                  :string           default("open"), not null
-#  title                   :string
+#  title                   :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null

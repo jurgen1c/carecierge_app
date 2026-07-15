@@ -8,7 +8,7 @@
 #  due_on                  :date
 #  notes                   :text
 #  status                  :string           default("open"), not null
-#  title                   :string
+#  title                   :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null
@@ -31,6 +31,7 @@ RSpec.describe Commitment, type: :model do
   it { is_expected.to belong_to(:relationship_profile) }
   it { is_expected.to have_many(:reminders).dependent(:destroy) }
   it { is_expected.to have_one(:timeline_entry).dependent(:destroy) }
+  it { is_expected.to have_db_column(:title).of_type(:string).with_options(null: false) }
   it { is_expected.to validate_presence_of(:title) }
   it { is_expected.to validate_inclusion_of(:status).in_array(%w[open completed canceled]) }
 

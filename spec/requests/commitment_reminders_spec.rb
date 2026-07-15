@@ -55,6 +55,19 @@ RSpec.describe "Commitment reminders", type: :request do
     expect(response).to have_http_status(:not_found)
   end
 
+  it "does not expose a foreign commitment from inconsistent persisted reminder data" do
+    user = create(:user)
+    reminder = create(:reminder, user:)
+    foreign_commitment = create(:commitment, title: "Another owner's private promise")
+    reminder.update_column(:commitment_id, foreign_commitment.id)
+    sign_in user
+
+    get edit_reminder_path(reminder)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).not_to include("Another owner&#39;s private promise")
+  end
+
   it "shows owner-scoped overdue commitments in the existing reminder workspace and respects the relationship filter" do
     user = create(:user)
     selected_profile = create(:relationship_profile, user:, first_name: "Ana")

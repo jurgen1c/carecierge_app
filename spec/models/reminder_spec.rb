@@ -61,12 +61,16 @@ RSpec.describe Reminder, type: :model do
     other_relationship_commitment = create(:commitment, relationship_profile: other_profile)
 
     reminder = build(:reminder, user:, relationship_profile: profile, commitment: other_owner_commitment)
-    expect(reminder).not_to be_valid
-    expect(reminder.errors[:commitment]).to be_present
+    I18n.with_locale(:en) do
+      expect(reminder).not_to be_valid
+      expect(reminder.errors[:commitment]).to include("must belong to you")
+    end
 
     reminder.commitment = other_relationship_commitment
-    expect(reminder).not_to be_valid
-    expect(reminder.errors[:commitment]).to be_present
+    I18n.with_locale(:es) do
+      expect(reminder).not_to be_valid
+      expect(reminder.errors[:commitment]).to include("debe pertenecer a la relación seleccionada")
+    end
   end
 
   it "requires a recognized IANA timezone" do

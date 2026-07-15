@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "commitments_section" do %>
-  <% commitments = relationship_profile.commitments.to_a.sort_by { |commitment| [ commitment.open? ? 0 : commitment.completed? ? 1 : 2, commitment.due_on || Date.new(9999, 12, 31), commitment.title.downcase, commitment.id.to_s ] } %>
+  <% commitments = relationship_profile.commitments.to_a %>
   <% open_commitments = commitments.select(&:open?) %>
   <% overdue_count = open_commitments.count(&:overdue?) %>
 

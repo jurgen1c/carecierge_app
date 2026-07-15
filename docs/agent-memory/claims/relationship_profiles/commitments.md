@@ -18,10 +18,13 @@ claim: >
   closing a commitment retires active linked reminders, while reopening leaves
   those historical reminder schedules completed.
   Each commitment owns a protected system promise TimelineEntry and may own many
-  reusable Reminder records from the existing reminder delivery system. The
+  reusable Reminder records from the existing reminder delivery system. Profile
+  associations apply the domain ordering before commitments reach the view. The
   relationship profile supports localized Turbo CRUD and lifecycle actions, while
   the existing reminder workspace shows owner-scoped overdue commitments and
-  respects its relationship filter. Commitment notes are filtered from request
+  respects its relationship filter. Reminder form commitment options remain
+  owner-scoped even when persisted reminder data is inconsistent, and association
+  validation errors are localized in English and Spanish. Commitment notes are filtered from request
   logs, and future note extraction must remain review-gated rather than creating
   commitments automatically.
 

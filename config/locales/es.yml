@@ -166,6 +166,9 @@ es:
               same_relationship_profile: "debe pertenecer al mismo perfil de relación"
         reminder:
           attributes:
+            commitment:
+              different_owner: "debe pertenecerte"
+              different_relationship: "debe pertenecer a la relación seleccionada"
             important_date:
               different_owner: "debe pertenecerte"
               different_relationship: "debe pertenecer a la relación seleccionada"

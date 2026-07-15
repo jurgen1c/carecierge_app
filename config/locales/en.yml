@@ -194,6 +194,9 @@ en:
               same_relationship_profile: "must belong to the same relationship profile"
         reminder:
           attributes:
+            commitment:
+              different_owner: "must belong to you"
+              different_relationship: "must belong to the selected relationship"
             important_date:
               different_owner: "must belong to you"
               different_relationship: "must belong to the selected relationship"

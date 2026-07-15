@@ -113,4 +113,13 @@ RSpec.describe Commitment, type: :model do
       expect(described_class.overdue(Date.new(2026, 7, 14))).to eq([ due_first, due_later ])
     end
   end
+
+  it "applies domain ordering to the relationship association" do
+    profile = create(:relationship_profile)
+    canceled = create(:commitment, relationship_profile: profile, status: "canceled", title: "Canceled")
+    completed = create(:commitment, relationship_profile: profile, status: "completed", title: "Completed")
+    open = create(:commitment, relationship_profile: profile, status: "open", title: "Open")
+
+    expect(profile.commitments.to_a).to eq([ open, completed, canceled ])
+  end
 end

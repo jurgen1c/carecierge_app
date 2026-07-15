@@ -236,8 +236,9 @@ class RemindersController < ApplicationController
       .order(:starts_on, :title, :id)
 
     open_commitment_ids = active_commitments.select(:id)
-    commitments = Commitment.where(id: open_commitment_ids)
-    commitments = commitments.or(Commitment.where(id: @reminder.commitment_id)) if @reminder&.persisted? && @reminder.commitment_id
+    owner_commitments = policy_scope(Commitment)
+    commitments = owner_commitments.where(id: open_commitment_ids)
+    commitments = commitments.or(owner_commitments.where(id: @reminder.commitment_id)) if @reminder&.persisted? && @reminder.commitment_id
     @commitments = commitments.includes(:relationship_profile).ordered
   end
 

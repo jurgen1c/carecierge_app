@@ -38,6 +38,11 @@ Rails.application.routes.draw do
     resources :conversation_recaps, except: %i[index show]
     resources :mood_notes, except: %i[index show]
     resources :timeline_entries, except: %i[index show]
+    resources :commitments, except: %i[index show] do
+      patch :complete, on: :member
+      patch :cancel, on: :member
+      patch :reopen, on: :member
+    end
     resources :desires, except: %i[index show] do
       patch :fulfill, on: :member
     end

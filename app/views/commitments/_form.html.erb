@@ -1,0 +1,46 @@
+<% form_url = commitment.persisted? ? relationship_profile_commitment_path(relationship_profile, commitment, timeline_type: selected_type) : relationship_profile_commitments_path(relationship_profile, timeline_type: selected_type) %>
+
+<%= form_with model: commitment, url: form_url, method: commitment.persisted? ? :patch : :post, class: "rounded-xl border border-stone-200 bg-white p-4" do |form| %>
+  <div>
+    <h3 class="text-base font-semibold text-stone-950"><%= commitment.persisted? ? t("commitments.form.edit_title") : t("commitments.form.new_title") %></h3>
+    <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("commitments.form.body") %></p>
+  </div>
+
+  <% if commitment.errors.any? %>
+    <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950" role="alert">
+      <p class="font-semibold"><%= t("commitments.form.errors_heading", count: commitment.errors.count) %></p>
+      <ul class="mt-2 list-disc space-y-1 pl-5">
+        <% commitment.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <%= form.label :title, t("commitments.form.title"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_field :title, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("commitments.form.title_placeholder"), autofocus: true %>
+    </div>
+    <div>
+      <%= form.label :due_on, t("commitments.form.due_on"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.date_field :due_on, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      <p class="mt-1 text-xs leading-5 text-stone-600"><%= t("commitments.form.due_on_help") %></p>
+    </div>
+    <% if commitment.persisted? %>
+      <div>
+        <p class="block text-sm font-medium text-stone-800"><%= t("commitments.form.status") %></p>
+        <p class="mt-2 min-h-11 rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-base text-stone-700"><%= commitment.status_label %></p>
+      </div>
+    <% end %>
+    <div class="sm:col-span-2">
+      <%= form.label :notes, t("commitments.form.notes"), class: "block text-sm font-medium text-stone-800" %>
+      <%= form.text_area :notes, rows: 3, class: "mt-2 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20", placeholder: t("commitments.form.notes_placeholder") %>
+    </div>
+  </div>
+
+  <div class="mt-4 flex flex-wrap items-center gap-3">
+    <%= form.submit commitment.persisted? ? t("commitments.form.update") : t("commitments.form.create"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <% if commitment.persisted? %>
+      <%= link_to t("commitments.form.cancel_edit"), relationship_profile_path(relationship_profile, timeline_type: selected_type, anchor: dom_id(commitment, :row)), data: { turbo_frame: "_top" }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <% end %>
+  </div>
+<% end %>

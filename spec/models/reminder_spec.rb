@@ -18,6 +18,7 @@
 #  title                   :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
+#  commitment_id           :uuid
 #  important_date_id       :uuid
 #  relationship_profile_id :uuid
 #  user_id                 :uuid             not null
@@ -25,6 +26,7 @@
 # Indexes
 #
 #  index_reminders_on_active_next_delivery_at              (next_delivery_at) WHERE (((status)::text = 'active'::text) AND (next_delivery_at IS NOT NULL))
+#  index_reminders_on_commitment_id                        (commitment_id)
 #  index_reminders_on_important_date_id                    (important_date_id)
 #  index_reminders_on_profile_status_and_schedule          (relationship_profile_id,status,scheduled_at)
 #  index_reminders_on_relationship_profile_id              (relationship_profile_id)
@@ -33,6 +35,7 @@
 #
 # Foreign Keys
 #
+#  fk_rails_...  (commitment_id => commitments.id) ON DELETE => cascade
 #  fk_rails_...  (important_date_id => important_dates.id) ON DELETE => nullify
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
@@ -40,6 +43,36 @@
 require "rails_helper"
 
 RSpec.describe Reminder, type: :model do
+  it "accepts a commitment owned by the same user and relationship" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    commitment = create(:commitment, relationship_profile: profile)
+
+    reminder = build(:reminder, user:, relationship_profile: profile, commitment:)
+
+    expect(reminder).to be_valid
+  end
+
+  it "rejects a commitment from another user or relationship" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    other_profile = create(:relationship_profile, user:)
+    other_owner_commitment = create(:commitment)
+    other_relationship_commitment = create(:commitment, relationship_profile: other_profile)
+
+    reminder = build(:reminder, user:, relationship_profile: profile, commitment: other_owner_commitment)
+    I18n.with_locale(:en) do
+      expect(reminder).not_to be_valid
+      expect(reminder.errors[:commitment]).to include("must belong to you")
+    end
+
+    reminder.commitment = other_relationship_commitment
+    I18n.with_locale(:es) do
+      expect(reminder).not_to be_valid
+      expect(reminder.errors[:commitment]).to include("debe pertenecer a la relación seleccionada")
+    end
+  end
+
   it "requires a recognized IANA timezone" do
     reminder = build(:reminder, time_zone: "Mars/Olympus_Mons")
 

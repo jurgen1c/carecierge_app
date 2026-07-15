@@ -1,15 +1,15 @@
 id: reminders
 name: Reminders
-summary: Owner-scoped one-time and recurring reminders with relationship context, idempotent Noticed delivery, preferences, and iCalendar export.
+summary: Owner-scoped one-time and recurring reminders with relationship, important-date, and commitment context, idempotent Noticed delivery, preferences, overdue commitment visibility, and iCalendar export.
 claim_globs:
   - claims/reminders/**/*.md
 default_queries:
   - reminder recurrence snooze complete owner scope
   - reminder delivery noticed in app email idempotent occurrence
   - notification preferences push sms future channels
-  - reminder relationship profile important date association
+  - reminder relationship profile important date commitment association
   - reminder calendar ics export
-  - future commitment planning reminder integration
+  - commitment reminder integration overdue commitments
 watched_files:
   - app/models/reminder.rb
   - app/models/reminder_delivery.rb
@@ -17,6 +17,7 @@ watched_files:
   - app/models/user.rb
   - app/models/relationship_profile.rb
   - app/models/important_date.rb
+  - app/models/commitment.rb
   - app/controllers/reminders_controller.rb
   - app/controllers/notification_preferences_controller.rb
   - app/jobs/dispatch_due_reminders_job.rb
@@ -31,6 +32,7 @@ watched_files:
   - app/javascript/controllers/timezone_controller.js
   - app/mailers/application_mailer.rb
   - app/views/reminders/**/*.erb
+  - app/views/commitments/**/*.erb
   - app/views/reminder_mailer/**/*.erb
   - app/views/components/reminder_row_component.*
   - config/recurring.yml
@@ -44,6 +46,7 @@ watched_files:
   - config/locales/en.yml
   - config/locales/es.yml
   - db/migrate/*reminder*.rb
+  - db/migrate/*commitment*.rb
   - db/migrate/*notification_preferences*.rb
 tags:
   - reminders
@@ -53,3 +56,4 @@ tags:
   - timezones
   - relationship_profiles
   - important_dates
+  - commitments

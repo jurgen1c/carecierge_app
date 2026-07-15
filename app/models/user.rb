@@ -49,6 +49,7 @@ class User < ApplicationRecord
   has_many :reminders, dependent: :destroy
   has_one :notification_preference, dependent: :destroy
   has_many :relationship_profiles, dependent: :destroy
+  has_many :commitments, through: :relationship_profiles
   has_many :relationship_tags, dependent: :destroy
   has_many :relationship_groups, dependent: :destroy
 

@@ -10,7 +10,7 @@ title: Reminders provide owner-scoped scheduling and idempotent delivery
 
 claim: >
   Reminder records belong to a User and may reference that user's
-  RelationshipProfile and ImportantDate; the policy layer only permits creation
+  RelationshipProfile, ImportantDate, and open Commitment; the policy layer only permits creation
   when the new record is assigned to the current user. The global reminder inbox
   can be filtered by relationship and orders its timeline-style feed by effective
   delivery time in SQL; relationship profile
@@ -54,9 +54,14 @@ claim: >
   transport and sender settings must come from Rails credentials or matching
   CARECIERGE environment variables exposed through Kamal secrets. Recurring
   iCalendar events use their IANA TZID and recurring-event-based transition
-  coverage to preserve local wall-clock time. Future
-  commitment and planning models must
-  integrate with Reminder rather than create a parallel scheduler.
+  coverage to preserve local wall-clock time. Commitments may own multiple
+  reminders and derive their relationship context through the same owner-scoped
+  association boundary. Deleting a commitment cascades its owned reminders at
+  both the Rails association and database foreign-key layers. Reminder form commitment options stay policy-scoped even
+  for inconsistent persisted foreign keys. Completing or canceling a commitment retires its active
+  reminders, and reopening it does not reactivate their historical schedules;
+  future planning models must integrate with Reminder
+  rather than create a parallel scheduler.
 
 source_files:
   - app/models/reminder.rb
@@ -76,6 +81,7 @@ source_files:
 
 related_files:
   - app/views/reminders/_workspace.html.erb
+  - app/views/reminders/_overdue_commitments.html.erb
   - app/views/components/reminder_row_component.rb
   - app/views/components/reminder_row_component.html.erb
   - config/recurring.yml
@@ -128,7 +134,7 @@ last_verified_commit: null
 ## Claim
 
 Carecierge has one reusable, user-owned reminder scheduler for current
-relationship profiles and important dates. It supports one-time and recurring
+relationship profiles, important dates, and commitments. It supports one-time and recurring
 lifecycle behavior, snoozing, completion, relationship-focused browsing,
 idempotent Noticed delivery for in-app and email channels, durable fenced
 processing-lease recovery, per-delivery worker serialization, final-handoff
@@ -141,8 +147,9 @@ active-profile association boundaries, relationship-preserving HTML redirects,
 archived-profile action and link fallback,
 minute-boundary-cached timezone options, configured SMTP and HTTPS email links, and private iCalendar
 export. Push and SMS are reserved future
-channels, not active delivery methods. Future commitment and planning models
-must extend this system.
+channels, not active delivery methods. Commitments extend this system with
+owner- and relationship-matched reminder links; future planning models must do
+the same.
 
 ## Why It Matters
 

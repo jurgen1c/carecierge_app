@@ -30,6 +30,7 @@ class MoodNote < ApplicationRecord
 
   belongs_to :relationship_profile
   has_one :timeline_entry, as: :source_record, dependent: :destroy
+  has_one :interaction, as: :source, dependent: :destroy
 
   before_validation :default_observed_at
   before_validation :normalize_text_fields
@@ -37,6 +38,7 @@ class MoodNote < ApplicationRecord
   validates :category, presence: true, inclusion: { in: CATEGORIES }
   validates :observation, presence: true
   validates :observed_at, presence: true
+  validate :observed_at_cannot_be_in_the_future
 
   scope :ordered, -> { order(observed_at: :desc, category: :asc, id: :asc) }
 
@@ -60,6 +62,12 @@ class MoodNote < ApplicationRecord
 
   def default_observed_at
     self.observed_at ||= Time.current if new_record?
+  end
+
+  def observed_at_cannot_be_in_the_future
+    return if observed_at.blank? || observed_at <= Time.current
+
+    errors.add(:observed_at, :future)
   end
 
   def normalize_text_fields

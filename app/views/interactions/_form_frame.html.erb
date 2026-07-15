@@ -1,0 +1,3 @@
+<%= turbo_frame_tag(interaction.persisted? ? dom_id(interaction) : "new_interaction") do %>
+  <%= render "interactions/form", relationship_profile:, interaction: %>
+<% end %>

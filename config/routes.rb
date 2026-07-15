@@ -37,6 +37,8 @@ Rails.application.routes.draw do
     end
     resources :conversation_recaps, except: %i[index show]
     resources :mood_notes, except: %i[index show]
+    resource :contact_cadence, only: %i[new create edit update]
+    resources :interactions, except: %i[index show]
     resources :timeline_entries, except: %i[index show]
     resources :commitments, except: %i[index show] do
       patch :complete, on: :member

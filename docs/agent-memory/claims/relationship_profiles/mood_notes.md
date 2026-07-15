@@ -9,19 +9,15 @@ severity: important
 title: Mood notes are observation-first owner-scoped follow-up records
 
 claim: >
-  MoodNote records belong to a RelationshipProfile and are managed through
-  authenticated, owner-scoped nested routes. Mood notes store a supported
-  non-diagnostic observation category, user-authored observation with intentional
-  line breaks preserved, a normalized single-line timeline title, observed time,
-  optional supportive action, optional follow-up time, and an opt-in timeline
-  visibility choice that defaults off. Manual create, edit, and delete actions
-  refresh the profile mood-note and relationship-timeline sections with Turbo
-  streams, preserve English and Spanish observation-first copy, and cannot access
-  another user's relationship profile. Timeline-visible notes create or update a
-  linked system TimelineEntry with entry_type mood_note; disabling timeline
-  visibility or deleting the note removes that linked entry, and generic timeline actions
-  cannot edit or delete the source-backed row. Sensitive observation and
-  supportive-action parameters are filtered from application request logs.
+  MoodNote records use authenticated, owner-scoped RelationshipProfile routes and
+  store a non-diagnostic category, multiline observation, normalized timeline
+  title, observed time, optional supportive action and follow-up, and timeline
+  visibility that defaults off. Timeline-visible notes control one protected
+  system TimelineEntry. Every saved note also controls one protected,
+  source-backed derived Interaction for contact-cadence history. Deleting the
+  note removes both derived records; disabling timeline visibility removes only
+  the timeline entry. Turbo UI and validation copy remain localized in English
+  and Spanish, and sensitive text is filtered from request logs.
 
 source_files:
   - app/models/mood_note.rb
@@ -61,20 +57,17 @@ last_verified_commit: null
 
 ## Claim
 
-Mood notes capture what a user observed about someone in a relationship without
-presenting the observation as a diagnosis. Each note can include a neutral
-category, the observed moment, a concrete supportive action, and a follow-up
-time. Leading and trailing observation whitespace is trimmed while intentional
-line breaks remain available to the profile UI; linked timeline titles use a
-normalized single-line summary. The user explicitly controls
-whether the note also appears in the relationship timeline, with new notes
-defaulting to private. Enabling that choice writes a linked system timeline
-entry; disabling it or deleting the note removes the linked entry.
+Mood notes capture an observation without presenting it as a diagnosis. A note
+can include a neutral category, observed moment, supportive action, and follow-up
+time. Trimming preserves intentional line breaks, while timeline titles use a
+single-line summary. New notes default off the timeline; enabling visibility
+writes a protected system entry and disabling it removes that entry. Saving any
+note also synchronizes one protected, source-backed Interaction for contact
+cadence, and deleting the note removes both derived records.
 
 All mood-note routes resolve the parent profile through the signed-in user and
-authorize the nested record. The profile surface and Turbo refreshes use
-localized English and Spanish copy that reinforces observable language and
-keeps the workflow usable on mobile and desktop. Request parameter filtering
+authorize the nested record. The responsive Turbo surface uses localized English
+and Spanish observation-first copy. Request parameter filtering
 prevents observation and supportive-action text from appearing in plaintext
 application logs.
 

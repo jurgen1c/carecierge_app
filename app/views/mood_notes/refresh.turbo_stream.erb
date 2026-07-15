@@ -6,6 +6,10 @@
   <%= render "timeline_entries/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>
 <% end %>
 
+<%= turbo_stream.replace "contact_rhythm_section" do %>
+  <%= render "contact_cadences/section", relationship_profile: @relationship_profile, interactions: @interactions %>
+<% end %>
+
 <%= turbo_stream.replace "flash" do %>
   <%= render "layouts/flash", notice: notice, alert: alert %>
 <% end %>

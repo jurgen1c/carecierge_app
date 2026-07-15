@@ -62,6 +62,17 @@ RSpec.describe MoodNote, type: :model do
       end
     end
 
+    it "rejects future observation times at the source boundary" do
+      now = Time.zone.local(2026, 7, 14, 12)
+
+      travel_to now do
+        note = build(:mood_note, observed_at: now + 1.second)
+
+        expect(note).not_to be_valid
+        expect(note.errors[:observed_at]).to include("can't be in the future")
+      end
+    end
+
     it "defaults timeline visibility off" do
       note = described_class.new
 

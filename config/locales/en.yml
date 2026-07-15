@@ -205,6 +205,7 @@ en:
   errors:
     messages:
       confirmation: "does not match %{attribute}"
+      future: "can't be in the future"
       inclusion: "is not included in the list"
   layouts:
     application:

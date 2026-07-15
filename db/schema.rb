@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_14_141912) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_15_032726) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -65,6 +65,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_141912) do
     t.index ["relationship_profile_id", "status", "due_on"], name: "idx_on_relationship_profile_id_status_due_on_109b7b7dd5"
     t.index ["relationship_profile_id"], name: "index_commitments_on_relationship_profile_id"
     t.index ["status", "due_on"], name: "index_commitments_on_open_due_on", where: "(((status)::text = 'open'::text) AND (due_on IS NOT NULL))"
+  end
+
+  create_table "contact_cadences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "interval_days", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id"], name: "index_contact_cadences_on_relationship_profile_id", unique: true
+    t.check_constraint "interval_days = ANY (ARRAY[7, 14, 30, 60, 90])", name: "contact_cadences_supported_interval_days"
   end
 
   create_table "contact_methods", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -210,6 +219,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_141912) do
     t.index ["relationship_profile_id", "importance_level"], name: "idx_on_relationship_profile_id_importance_level_a07d6afa11"
     t.index ["relationship_profile_id", "starts_on"], name: "index_important_dates_on_relationship_profile_id_and_starts_on"
     t.index ["relationship_profile_id"], name: "index_important_dates_on_relationship_profile_id"
+  end
+
+  create_table "interactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "interaction_type", null: false
+    t.text "notes"
+    t.datetime "occurred_at", null: false
+    t.string "origin", default: "manual", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.uuid "source_id"
+    t.string "source_type"
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "occurred_at", "id"], name: "idx_on_relationship_profile_id_occurred_at_id_afacfa9a3b", order: { occurred_at: :desc }
+    t.index ["relationship_profile_id"], name: "index_interactions_on_relationship_profile_id"
+    t.index ["source_type", "source_id"], name: "index_interactions_on_unique_source", unique: true, where: "(source_id IS NOT NULL)"
+    t.check_constraint "interaction_type::text = ANY (ARRAY['call'::character varying, 'message'::character varying, 'in_person'::character varying, 'video'::character varying, 'other'::character varying, 'conversation_recap'::character varying, 'mood_note'::character varying]::text[])", name: "interactions_supported_type"
+    t.check_constraint "origin::text = 'manual'::text AND (interaction_type::text = ANY (ARRAY['call'::character varying, 'message'::character varying, 'in_person'::character varying, 'video'::character varying, 'other'::character varying]::text[])) OR origin::text = 'derived'::text AND (interaction_type::text = ANY (ARRAY['conversation_recap'::character varying, 'mood_note'::character varying]::text[]))", name: "interactions_origin_matches_type"
+    t.check_constraint "origin::text = 'manual'::text AND source_id IS NULL AND source_type IS NULL OR origin::text = 'derived'::text AND source_id IS NOT NULL AND source_type IS NOT NULL", name: "interactions_origin_matches_source"
+    t.check_constraint "origin::text = ANY (ARRAY['manual'::character varying, 'derived'::character varying]::text[])", name: "interactions_supported_origin"
   end
 
   create_table "memory_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -544,6 +572,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_141912) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "commitments", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "contact_cadences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"
   add_foreign_key "conversation_recaps", "relationship_profiles"
   add_foreign_key "desire_fulfillments", "desires"
@@ -553,6 +582,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_14_141912) do
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
   add_foreign_key "gifts", "relationship_profiles"
   add_foreign_key "important_dates", "relationship_profiles"
+  add_foreign_key "interactions", "relationship_profiles", on_delete: :cascade
   add_foreign_key "memory_records", "relationship_profiles"
   add_foreign_key "memory_revisions", "memory_records"
   add_foreign_key "memory_revisions", "users"

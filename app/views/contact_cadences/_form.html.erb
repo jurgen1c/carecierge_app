@@ -1,0 +1,18 @@
+<% form_url = relationship_profile_contact_cadence_path(relationship_profile) %>
+
+<%= form_with model: contact_cadence, url: form_url, method: contact_cadence.persisted? ? :patch : :post, class: "mt-4 border-t border-stone-200 pt-4" do |form| %>
+  <% if contact_cadence.errors.any? %>
+    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-950">
+      <p class="font-semibold"><%= t("contact_rhythm.cadence.errors") %></p>
+      <ul class="mt-2 list-disc pl-5"><% contact_cadence.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <%= form.label :interval_days, t("contact_rhythm.cadence.frequency"), class: "block text-sm font-medium text-stone-800" %>
+  <%= form.select :interval_days,
+    ContactCadence::INTERVAL_DAYS.map { |days| [ t("contact_rhythm.intervals.#{days}"), days ] },
+    {},
+    class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+  <p class="mt-2 text-xs leading-5 text-stone-600"><%= t("contact_rhythm.cadence.frequency_help") %></p>
+  <%= form.submit contact_cadence.persisted? ? t("contact_rhythm.cadence.save") : t("contact_rhythm.cadence.accept"), class: "mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+<% end %>

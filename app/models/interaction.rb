@@ -83,7 +83,7 @@ class Interaction < ApplicationRecord
 
   def origin_matches_source
     if manual? && source.present?
-      errors.add(:source, :blank)
+      errors.add(:source, :manual_forbidden)
     elsif derived? && source.blank?
       errors.add(:source, :required)
     end

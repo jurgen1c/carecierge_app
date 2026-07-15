@@ -15,6 +15,12 @@ en:
         occurred_at: "Date and time"
         notes: "Notes"
         source: "Source"
+    errors:
+      models:
+        interaction:
+          attributes:
+            source:
+              manual_forbidden: "is not allowed for manual interactions"
   contact_rhythm:
     section:
       kicker: "Stay connected"

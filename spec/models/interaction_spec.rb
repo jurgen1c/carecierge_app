@@ -55,6 +55,14 @@ RSpec.describe Interaction, type: :model do
       expect(derived.errors[:interaction_type]).to be_present
     end
 
+    it "explains that source provenance is forbidden for manual interactions" do
+      recap = create(:conversation_recap)
+      interaction = build(:interaction, relationship_profile: recap.relationship_profile, source: recap)
+
+      expect(interaction).not_to be_valid
+      expect(interaction.errors[:source]).to include("is not allowed for manual interactions")
+    end
+
     it "allows the present boundary but rejects future interactions" do
       now = Time.zone.local(2026, 7, 14, 12)
 

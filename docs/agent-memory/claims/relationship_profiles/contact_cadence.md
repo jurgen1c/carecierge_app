@@ -14,7 +14,8 @@ claim: >
   Interaction records form an owner-scoped chronological history of manual calls,
   messages, visits, video calls, and other check-ins plus polymorphic derived
   sources. Conversation recaps and mood notes transactionally create or update one
-  traceable derived interaction, and existing source records are backfilled.
+  traceable derived interaction, and existing non-future source records are
+  backfilled while legacy future-dated sources remain untouched.
   Derived interactions remain controlled by their source workflows and cannot be
   changed through manual interaction routes. Interaction notes are filtered from
   request logs, and owner-scoped cadence controls remain available when viewing an
@@ -46,6 +47,7 @@ related_files:
   - config/locales/contact_rhythm.es.yml
   - spec/models/contact_cadence_spec.rb
   - spec/models/interaction_spec.rb
+  - spec/data_migrations/backfill_interactions_from_relationship_sources_spec.rb
   - spec/requests/contact_cadences_spec.rb
   - spec/requests/interactions_spec.rb
 symbols:
@@ -67,6 +69,7 @@ tags:
 
 verification:
   - bundle exec rspec spec/config/filter_parameter_logging_spec.rb
+  - bundle exec rspec spec/data_migrations/backfill_interactions_from_relationship_sources_spec.rb
   - bundle exec rspec spec/models/contact_cadence_spec.rb spec/models/interaction_spec.rb spec/policies/contact_cadence_policy_spec.rb spec/policies/interaction_policy_spec.rb spec/requests/contact_cadences_spec.rb spec/requests/interactions_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb
 last_verified_commit: null
 ---
@@ -80,6 +83,8 @@ meaningful interaction history without turning missing data into a relationship
 score. Manual interactions and source-backed derived interactions share the same
 owner-scoped history, while polymorphic provenance keeps later integration
 adapters possible without coupling cadence to those external systems.
+The historical backfill includes only source timestamps that have already
+occurred, so legacy future-dated rows cannot postpone cadence prompts.
 
 Cadence uses the most recent interaction to calculate a next check-in window.
 When the window passes, Carecierge explains that a recent contact may simply be
@@ -103,10 +108,12 @@ notification system beside Reminder.
 - `app/views/contact_cadences/_section.html.erb`
 - `spec/models/contact_cadence_spec.rb`
 - `spec/models/interaction_spec.rb`
+- `spec/data_migrations/backfill_interactions_from_relationship_sources_spec.rb`
 - `spec/requests/contact_cadences_spec.rb`
 - `spec/requests/interactions_spec.rb`
 
 ## Verification
 
 - `bundle exec rspec spec/config/filter_parameter_logging_spec.rb`
+- `bundle exec rspec spec/data_migrations/backfill_interactions_from_relationship_sources_spec.rb`
 - `bundle exec rspec spec/models/contact_cadence_spec.rb spec/models/interaction_spec.rb spec/policies/contact_cadence_policy_spec.rb spec/policies/interaction_policy_spec.rb spec/requests/contact_cadences_spec.rb spec/requests/interactions_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb`

@@ -13,8 +13,9 @@ claim: >
   Record Encryption-backed PrivacyVaultItem. Protection redacts ordinary sources
   and memory revisions, excludes normal search and suggestions by default, and
   serializes against stale plaintext writes. Opening requires a fresh password and
-  grants a rate-limited, password-bound 10-minute inactivity lease. Explicit lock
-  uses a server-checked per-user version to revoke issued cookie leases. Sensitive
+  grants a rate-limited, password-bound 10-minute inactivity lease; the
+  authoritative lease check-and-touch must succeed before decrypted data loads.
+  Explicit lock uses a server-checked per-user version to revoke issued cookie leases. Sensitive
   pages disable Turbo snapshots, send HTTP no-store, and remove decrypted DOM
   content on a response-relative timer or a cross-tab signal from UI lease
   revocations. Password recovery signs authenticated users out and revokes the

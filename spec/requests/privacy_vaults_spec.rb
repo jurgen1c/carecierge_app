@@ -46,6 +46,19 @@ RSpec.describe "Privacy vaults", type: :request do
     expect(response.body).to match(/data-privacy-vault-lease-duration-value="\d+"/)
   end
 
+  it "does not render decrypted content when the authoritative lease touch fails" do
+    memory = create(:memory_record, relationship_profile:, title: "Private plan", body: "Secret payload")
+    PrivacyVault::Protect.call(actor: user, protectable: memory)
+    allow_any_instance_of(PrivacyVaultsController).to receive(:privacy_vault_unlocked?).and_return(true)
+    allow_any_instance_of(PrivacyVaultsController).to receive(:touch_privacy_vault_lease!).and_return(false)
+
+    get relationship_profile_privacy_vault_path(relationship_profile)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Enter your password")
+    expect(response.body).not_to include("Secret payload")
+  end
+
   it "requires a valid password and records metadata-only unlock events" do
     post unlock_relationship_profile_privacy_vault_path(relationship_profile),
       params: { privacy_vault_unlock: { password: "wrong-password" } }

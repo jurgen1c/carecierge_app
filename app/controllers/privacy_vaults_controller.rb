@@ -9,7 +9,7 @@ class PrivacyVaultsController < ApplicationController
 
   def show
     authorize @relationship_profile, :show?
-    @privacy_vault_unlocked = privacy_vault_unlocked?
+    @privacy_vault_unlocked = touch_privacy_vault_lease!
     if @privacy_vault_unlocked
       response.headers["Cache-Control"] = "no-store"
       prepare_unlocked_vault
@@ -68,7 +68,6 @@ class PrivacyVaultsController < ApplicationController
   end
 
   def prepare_unlocked_vault
-    touch_privacy_vault_lease!
     @privacy_vault_items = @relationship_profile.privacy_vault_items.includes(:protectable).ordered.to_a
     @protectable_groups = [
       [ "private_note", @relationship_profile.relationship_notes.includes(:privacy_vault_item).reject(&:vault_protected?) ],

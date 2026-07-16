@@ -272,7 +272,7 @@ class RemindersController < ApplicationController
     @overdue_commitments = @overdue_commitments.to_a
     @reminder_notifications = current_user.notifications
       .includes(event: :record)
-      .where(type: "ReminderInAppNotifier::Notification")
+      .where(type: [ "ReminderInAppNotifier::Notification", "DigestInAppNotifier::Notification" ])
       .order(created_at: :desc)
       .limit(5)
     prepare_form_options

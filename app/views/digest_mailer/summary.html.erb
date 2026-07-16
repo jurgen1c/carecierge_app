@@ -1,0 +1,64 @@
+<style>
+  .digest-canvas { margin: 0; padding: 24px 12px; background: #fafaf9; color: #0c0a09; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .digest-sheet { box-sizing: border-box; max-width: 640px; margin: 0 auto; padding: 40px 44px; border: 1px solid #e7e5e4; background: #ffffff; }
+  .digest-brand { margin: 0 0 36px; color: #065f46; font-size: 20px; font-weight: 600; }
+  .digest-title { margin: 0 0 28px; font-size: 24px; line-height: 1.3; }
+  .digest-section { padding: 24px 0; border-top: 1px solid #e7e5e4; }
+  .digest-section-title { margin: 0 0 20px; font-size: 18px; }
+  .digest-item { padding: 18px 0; border-top: 1px solid #e7e5e4; }
+  .digest-section .digest-item:first-of-type { padding-top: 0; border-top: 0; }
+  .digest-item-title { margin: 0; font-size: 16px; line-height: 1.45; }
+  .digest-meta { margin: 6px 0 0; color: #44403c; font-size: 14px; line-height: 1.5; }
+  .digest-meta-attention { color: #9a3412; }
+  .digest-guidance { margin: 14px 0 0; color: #44403c; font-size: 14px; line-height: 1.6; }
+  .digest-link { display: inline-block; margin-top: 14px; color: #065f46; font-size: 14px; font-weight: 600; }
+  .digest-action { margin: 28px 0; text-align: center; }
+  .digest-button { display: inline-block; padding: 12px 20px; border-radius: 8px; background: #065f46; color: #ffffff !important; font-size: 14px; font-weight: 600; text-decoration: none; }
+  .digest-footer { padding-top: 24px; border-top: 1px solid #e7e5e4; color: #44403c; font-size: 12px; line-height: 1.6; text-align: center; }
+  .digest-footer a { color: #065f46; }
+  @media only screen and (max-width: 640px) {
+    .digest-canvas { padding: 0; }
+    .digest-sheet { padding: 28px 22px; border-right: 0; border-left: 0; }
+    .digest-brand { margin-bottom: 28px; }
+    .digest-title { font-size: 21px; }
+  }
+</style>
+
+<main class="digest-canvas">
+  <article class="digest-sheet">
+    <p class="digest-brand">Carecierge</p>
+    <h1 class="digest-title"><%= t("digest_mailer.summary.heading.#{@digest.mode}") %></h1>
+
+    <section class="digest-section" aria-labelledby="digest-start-heading">
+      <h2 id="digest-start-heading" class="digest-section-title"><%= t("digest_mailer.summary.start_here") %></h2>
+      <% item = @digest.start_item %>
+      <div class="digest-item">
+        <h3 class="digest-item-title"><%= digest_item_title(item) %></h3>
+        <p class="digest-meta <%= "digest-meta-attention" if item.overdue %>"><%= item.relationship_name %> · <%= digest_item_timing(item) %></p>
+        <% if item.kind == :planning_prompt %>
+          <p class="digest-guidance"><%= digest_item_planning_prompt(item) %></p>
+        <% end %>
+        <%= link_to t("digest_mailer.summary.open_relationship", name: item.relationship_name), digest_item_url(item), class: "digest-link" %>
+      </div>
+    </section>
+
+    <% if @digest.remaining_items.any? %>
+      <section class="digest-section" aria-labelledby="digest-coming-up-heading">
+        <h2 id="digest-coming-up-heading" class="digest-section-title"><%= t("digest_mailer.summary.coming_up") %></h2>
+        <% @digest.remaining_items.each do |remaining_item| %>
+          <div class="digest-item">
+            <h3 class="digest-item-title"><%= digest_item_title(remaining_item) %></h3>
+            <p class="digest-meta <%= "digest-meta-attention" if remaining_item.overdue %>"><%= remaining_item.relationship_name %> · <%= digest_item_timing(remaining_item) %></p>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+
+    <p class="digest-action"><%= link_to t("digest_mailer.summary.all_actions"), reminders_url, class: "digest-button" %></p>
+
+    <footer class="digest-footer">
+      <p><%= t("digest_mailer.summary.footer.#{@digest.mode}", channel: t("notification_preferences.digest_channels.email").downcase) %></p>
+      <p><%= link_to t("digest_mailer.summary.settings"), edit_notification_preference_url %></p>
+    </footer>
+  </article>
+</main>

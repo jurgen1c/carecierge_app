@@ -4,7 +4,9 @@
 # Database name: primary
 #
 #  id                           :uuid             not null, primary key
+#  digest_channel               :string           default("email"), not null
 #  digest_mode                  :string           default("off"), not null
+#  digest_schedule_changed_at   :datetime
 #  digest_time                  :time             default(2000-01-01 09:00:00.000000000 UTC +00:00), not null
 #  digest_weekday               :integer          default(1), not null
 #  email_enabled                :boolean          default(TRUE), not null
@@ -34,6 +36,82 @@
 require "rails_helper"
 
 RSpec.describe NotificationPreference, type: :model do
+  describe "digest delivery" do
+    it "defaults to email and only accepts active digest channels" do
+      preference = described_class.new(user: build(:user))
+
+      expect(preference.digest_channel).to eq("email")
+
+      preference.digest_channel = "sms"
+      expect(preference).not_to be_valid
+      expect(preference.errors[:digest_channel]).to be_present
+    end
+
+    it "finds the due daily occurrence in the saved time zone" do
+      preference = build(
+        :notification_preference,
+        digest_mode: "daily",
+        digest_time: "09:00",
+        time_zone: "America/Costa_Rica"
+      )
+      now = ActiveSupport::TimeZone["America/Costa_Rica"].local(2026, 7, 15, 9, 3)
+
+      expect(preference.due_digest_occurrence(at: now, lookback: 5.minutes)).to eq(
+        ActiveSupport::TimeZone["America/Costa_Rica"].local(2026, 7, 15, 9, 0)
+      )
+    end
+
+    it "only finds weekly occurrences on the selected weekday" do
+      preference = build(
+        :notification_preference,
+        digest_mode: "weekly",
+        digest_weekday: 1,
+        digest_time: "09:00",
+        time_zone: "America/Costa_Rica"
+      )
+      zone = ActiveSupport::TimeZone["America/Costa_Rica"]
+
+      expect(preference.due_digest_occurrence(at: zone.local(2026, 7, 13, 9, 2), lookback: 5.minutes)).to eq(
+        zone.local(2026, 7, 13, 9, 0)
+      )
+      expect(preference.due_digest_occurrence(at: zone.local(2026, 7, 14, 9, 2), lookback: 5.minutes)).to be_nil
+    end
+
+    it "requires the selected digest channel to remain enabled" do
+      preference = build(:notification_preference, digest_mode: "daily", digest_channel: "email", email_enabled: false)
+
+      expect(preference.digest_delivery_allowed?).to be(false)
+
+      preference.digest_channel = "in_app"
+      expect(preference.digest_delivery_allowed?).to be(true)
+    end
+
+    it "does not recover occurrences from before the current schedule was activated" do
+      zone = ActiveSupport::TimeZone["America/Costa_Rica"]
+      preference = build(
+        :notification_preference,
+        digest_mode: "daily",
+        digest_time: "09:00",
+        time_zone: zone.tzinfo.name,
+        digest_schedule_changed_at: zone.local(2026, 7, 15, 8, 0)
+      )
+
+      expect(preference.due_digest_occurrence(at: zone.local(2026, 7, 15, 8, 30), lookback: 8.days)).to be_nil
+      expect(preference.due_digest_occurrence(at: zone.local(2026, 7, 15, 10, 0), lookback: 8.days)).to eq(
+        zone.local(2026, 7, 15, 9, 0)
+      )
+    end
+
+    it "records when the active digest schedule changes" do
+      now = Time.zone.local(2026, 7, 15, 8, 0)
+      preference = create(:notification_preference, digest_mode: "off")
+
+      Timecop.freeze(now) { preference.update!(digest_mode: "daily") }
+
+      expect(preference.digest_schedule_changed_at).to eq(now)
+    end
+  end
+
   it "defaults to enabled in-app and email delivery while reserving future channels" do
     preference = described_class.new
 

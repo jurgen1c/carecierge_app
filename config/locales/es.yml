@@ -229,8 +229,36 @@ es:
         create_account: "Crear cuenta"
         sign_in_with_google: "Continuar con Google"
   notifiers:
+    digest_in_app:
+      message: "Tu resumen %{mode} de relaciones: %{actions}"
     reminder_in_app:
       message: "%{title} está pendiente."
+  digests:
+    items:
+      check_in_title: "Comunícate con %{name}"
+  digest_mailer:
+    summary:
+      subject:
+        daily: "Tu resumen diario de relaciones"
+        weekly: "Tu resumen semanal de relaciones"
+      heading:
+        daily: "Tu resumen diario de relaciones"
+        weekly: "Tu resumen semanal de relaciones"
+      start_here: "Empieza aquí"
+      coming_up: "Próximamente"
+      open_relationship: "Abrir a %{name}"
+      all_actions: "Ver todas las acciones de relaciones"
+      settings: "Cambiar la configuración de notificaciones"
+      footer:
+        daily: "Recibes un resumen diario por %{channel}."
+        weekly: "Recibes un resumen semanal por %{channel}."
+      items:
+        commitment:
+          overdue:
+            one: "1 día de atraso"
+            other: "%{count} días de atraso"
+          due: "Vence el %{date}"
+        check_in: "Seguimiento pendiente"
   reminder_mailer:
     due:
       subject: "Recordatorio: %{title}"
@@ -367,6 +395,9 @@ es:
       "off": "Desactivado"
       daily: "Diario"
       weekly: "Semanal"
+    digest_channels:
+      email: "Correo electrónico"
+      in_app: "En la aplicación"
     edit:
       page_title: "Configuración de notificaciones"
       back: "Volver a recordatorios"
@@ -405,8 +436,9 @@ es:
         lead_help: "Se aplica cuando inicias un recordatorio desde una fecha importante."
       digest:
         title: "Horario del resumen"
-        body: "Guarda cuándo quieres un resumen conciso de relaciones. CAR-38 usará este horario cuando se lance la entrega de resúmenes."
+        body: "Elige cuándo y dónde quieres recibir un resumen conciso de relaciones. No se envían resúmenes vacíos."
         mode: "Modo de resumen"
+        channel: "Canal de entrega"
         weekday: "Día de entrega semanal"
         time: "Hora de entrega"
       relationships:

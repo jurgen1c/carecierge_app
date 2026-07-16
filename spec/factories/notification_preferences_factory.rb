@@ -4,7 +4,9 @@
 # Database name: primary
 #
 #  id                           :uuid             not null, primary key
+#  digest_channel               :string           default("email"), not null
 #  digest_mode                  :string           default("off"), not null
+#  digest_schedule_changed_at   :datetime
 #  digest_time                  :time             default(2000-01-01 09:00:00.000000000 UTC +00:00), not null
 #  digest_weekday               :integer          default(1), not null
 #  email_enabled                :boolean          default(TRUE), not null

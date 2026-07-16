@@ -47,6 +47,7 @@ class User < ApplicationRecord
 
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
   has_many :reminders, dependent: :destroy
+  has_many :digest_deliveries, dependent: :destroy
   has_one :notification_preference, dependent: :destroy
   has_many :relationship_profiles, dependent: :destroy
   has_many :commitments, through: :relationship_profiles

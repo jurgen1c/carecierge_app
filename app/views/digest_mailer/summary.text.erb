@@ -1,0 +1,19 @@
+<%= t("digest_mailer.summary.heading.#{@digest.mode}") %>
+
+<%= t("digest_mailer.summary.start_here") %>
+<%= digest_item_title(@digest.start_item) %>
+<%= @digest.start_item.relationship_name %> · <%= digest_item_timing(@digest.start_item) %>
+<%= digest_item_url(@digest.start_item) %>
+
+<% if @digest.remaining_items.any? %>
+<%= t("digest_mailer.summary.coming_up") %>
+<% @digest.remaining_items.each do |item| %>
+<%= digest_item_title(item) %>
+<%= item.relationship_name %> · <%= digest_item_timing(item) %>
+
+<% end %>
+<% end %>
+<%= t("digest_mailer.summary.all_actions") %>: <%= reminders_url %>
+
+<%= t("digest_mailer.summary.footer.#{@digest.mode}", channel: t("notification_preferences.digest_channels.email").downcase) %>
+<%= t("digest_mailer.summary.settings") %>: <%= edit_notification_preference_url %>

@@ -5,6 +5,8 @@ class DeliverDigestJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 
   def perform(delivery)
+    return if defer_for_quiet_hours(delivery)
+
     delivery.with_processing_lock do
       return unless start_delivery(delivery)
 
@@ -12,7 +14,7 @@ class DeliverDigestJob < ApplicationJob
       occurrence = delivery.scheduled_for.in_time_zone(preference.time_zone)
       digest = Digests::Compose.call(
         user: delivery.user,
-        as_of: preference.digest_effective_delivery_at(occurrence),
+        as_of: digest_composition_at(delivery, preference, occurrence),
         mode: delivery.mode
       )
       return finish(delivery, "skipped") if digest.empty?
@@ -33,6 +35,28 @@ class DeliverDigestJob < ApplicationJob
   end
 
   private
+
+  def digest_composition_at(delivery, preference, occurrence)
+    scheduled_delivery = preference.digest_effective_delivery_at(occurrence)
+    actual_delivery = delivery.enqueued_at&.in_time_zone(preference.time_zone)
+    [ scheduled_delivery, actual_delivery ].compact.max
+  end
+
+  def defer_for_quiet_hours(delivery)
+    preference = delivery.user.notification_preference
+    deferred_until = preference&.digest_delivery_deferred_until
+    return false unless deferred_until
+
+    should_enqueue = delivery.with_lock do
+      next false if delivery.pending? && delivery.enqueued_at == deferred_until
+      next false if delivery.dispatched? || delivery.skipped? || delivery.cancelled?
+
+      delivery.update!(status: "pending", enqueued_at: deferred_until, error_message: nil)
+      true
+    end
+    self.class.set(wait_until: deferred_until).perform_later(delivery) if should_enqueue
+    true
+  end
 
   def start_delivery(delivery)
     delivery.with_lock do

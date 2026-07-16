@@ -21,14 +21,21 @@ claim: >
   time of the current schedule. Composition preserves the saved zone's calendar
   date even when the scheduled instant crosses a UTC date boundary, and quiet-hour
   deferrals compose against their effective delivery date while retaining the original
-  occurrence for deduplication. A bounded lease, row locks,
+  occurrence for deduplication. Recovery stores the actual quiet-hours deferral on
+  the claim so composition uses the deferred local calendar date. Current quiet hours
+  are reapplied while recovering a missed occurrence, when the delivery job starts,
+  and at the final email send so queue delays cannot deliver inside the quiet window. A bounded lease, row locks,
   a PostgreSQL advisory processing lock, and a persisted external-handoff marker
   prevent queue amplification, concurrent delivery, and repeated side effects.
   Email handoff recovery uses a pre-queue marker plus a delivery-completion marker so duplicate queued
-  handoffs become harmless, and the immutable content snapshot prevents later action changes from
-  invalidating delivery. In-app notifications surface the composed action titles from the same snapshot.
-  DeliverDigestJob rechecks the current mode, channel, and schedule activation before sending
-  localized HTML/text email or an in-app notification visible in the reminders feed.
+  handoffs become harmless; a contended final email lock retries through Active Job instead of
+  acknowledging an unsent message. The immutable content snapshot prevents later action changes
+  from invalidating delivery while storing stable important-date metadata for render-time localization.
+  In-app notifications surface the composed action titles from the same snapshot. DeliverDigestJob and
+  the final email worker recheck the current mode, channel, enabled state, and schedule activation before
+  sending localized HTML/text email or an in-app notification visible in the reminders feed. The final email
+  worker also filters the snapshot against current active profiles and relationship mutes, skipping delivery
+  when no currently eligible actions remain.
 
 source_files:
   - app/services/digests/compose.rb
@@ -75,7 +82,7 @@ tags:
   - notification_digest
 
 verification:
-  - bundle exec rspec spec/models/notification_preference_spec.rb spec/models/digest_delivery_spec.rb spec/services/digests/compose_spec.rb spec/jobs/dispatch_due_digests_job_spec.rb spec/jobs/deliver_digest_job_spec.rb spec/mailers/digest_mailer_spec.rb spec/requests/notification_preferences_spec.rb spec/data_migrations/backfill_digest_schedule_activation_spec.rb
+  - bundle exec rspec spec/models/notification_preference_spec.rb spec/models/digest_delivery_spec.rb spec/services/digests/compose_spec.rb spec/jobs/dispatch_due_digests_job_spec.rb spec/jobs/deliver_digest_job_spec.rb spec/jobs/deliver_digest_email_job_spec.rb spec/mailers/digest_mailer_spec.rb spec/requests/notification_preferences_spec.rb spec/data_migrations/backfill_digest_schedule_activation_spec.rb
   - bundle exec rspec
   - bin/rubocop
   - bin/ci
@@ -112,7 +119,7 @@ choices.
 
 ## Verification
 
-- `bundle exec rspec spec/models/notification_preference_spec.rb spec/models/digest_delivery_spec.rb spec/services/digests/compose_spec.rb spec/jobs/dispatch_due_digests_job_spec.rb spec/jobs/deliver_digest_job_spec.rb spec/mailers/digest_mailer_spec.rb spec/requests/notification_preferences_spec.rb spec/data_migrations/backfill_digest_schedule_activation_spec.rb`
+- `bundle exec rspec spec/models/notification_preference_spec.rb spec/models/digest_delivery_spec.rb spec/services/digests/compose_spec.rb spec/jobs/dispatch_due_digests_job_spec.rb spec/jobs/deliver_digest_job_spec.rb spec/jobs/deliver_digest_email_job_spec.rb spec/mailers/digest_mailer_spec.rb spec/requests/notification_preferences_spec.rb spec/data_migrations/backfill_digest_schedule_activation_spec.rb`
 - `bundle exec rspec`
 - `bin/rubocop`
 - `bin/ci`

@@ -3,6 +3,8 @@
 <%= t("digest_mailer.summary.start_here") %>
 <%= digest_item_title(@digest.start_item) %>
 <%= @digest.start_item.relationship_name %> · <%= digest_item_timing(@digest.start_item) %>
+<% if @digest.start_item.kind == :planning_prompt %><%= digest_item_planning_prompt(@digest.start_item) %>
+<% end %>
 <%= digest_item_url(@digest.start_item) %>
 
 <% if @digest.remaining_items.any? %>
@@ -10,6 +12,8 @@
 <% @digest.remaining_items.each do |item| %>
 <%= digest_item_title(item) %>
 <%= item.relationship_name %> · <%= digest_item_timing(item) %>
+<% if item.kind == :planning_prompt %><%= digest_item_planning_prompt(item) %>
+<% end %>
 
 <% end %>
 <% end %>

@@ -1,7 +1,7 @@
 module Digests
   SnapshotItem = Data.define(
     :kind, :title, :relationship_name, :relationship_profile_id,
-    :due_at, :overdue, :planning_prompt
+    :due_at, :overdue, :date_type, :planning_prompt
   )
 
   SnapshotDigest = Data.define(:mode, :as_of, :items) do
@@ -17,7 +17,7 @@ module Digests
       {
         mode: digest.mode,
         as_of: digest.as_of.iso8601,
-        items: digest.items.map { |item| dump_item(item, digest:) }
+        items: digest.items.map { |item| dump_item(item) }
       }
     end
 
@@ -25,20 +25,23 @@ module Digests
       attributes = attributes.deep_symbolize_keys
       items = attributes.fetch(:items).map do |item|
         item = item.deep_symbolize_keys
-        SnapshotItem.new(**item.merge(kind: item.fetch(:kind).to_sym, due_at: Time.iso8601(item.fetch(:due_at))))
+        defaults = { date_type: nil, planning_prompt: nil }
+        SnapshotItem.new(**defaults.merge(item, kind: item.fetch(:kind).to_sym, due_at: Time.iso8601(item.fetch(:due_at))))
       end
       SnapshotDigest.new(mode: attributes.fetch(:mode), as_of: Time.iso8601(attributes.fetch(:as_of)), items:)
     end
 
-    def dump_item(item, digest:)
+    def dump_item(item)
+      important_date = item.record if item.kind.in?([ :upcoming_date, :planning_prompt ])
       {
         kind: item.kind,
-        title: item.title,
+        title: important_date ? important_date.title : item.title,
         relationship_name: item.relationship_name,
         relationship_profile_id: item.relationship_profile.id,
         due_at: item.due_at.iso8601,
         overdue: item.overdue,
-        planning_prompt: item.kind == :planning_prompt ? item.record.planning_prompt(as_of: digest.as_of.to_date) : nil
+        date_type: important_date&.date_type,
+        planning_prompt: nil
       }
     end
   end

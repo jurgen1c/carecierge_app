@@ -25,10 +25,8 @@ class DigestMailer < ApplicationMailer
     when :commitment
       key = item.overdue ? "overdue" : "due"
       I18n.t("digest_mailer.summary.items.commitment.#{key}", count: (item.due_at.to_date - @digest.as_of.to_date).to_i.abs, date: I18n.l(item.due_at.to_date, format: :commitment_due_on))
-    when :upcoming_date
+    when :upcoming_date, :planning_prompt
       I18n.l(item.due_at.to_date, format: :important_date)
-    when :planning_prompt
-      digest_item_planning_prompt(item)
     when :check_in
       I18n.t("digest_mailer.summary.items.check_in")
     end
@@ -40,14 +38,22 @@ class DigestMailer < ApplicationMailer
   end
 
   def digest_item_planning_prompt(item)
-    return item.planning_prompt if item.respond_to?(:planning_prompt)
+    if item.respond_to?(:date_type)
+      return item.planning_prompt if item.date_type.blank?
+
+      return I18n.t("important_dates.planning_prompts.#{item.date_type}", default: :"important_dates.planning_prompts.default")
+    end
 
     item.record.planning_prompt(as_of: @digest.as_of.to_date)
   end
 
   def digest_item_title(item)
-    return item.title unless item.kind == :check_in
+    return I18n.t("digests.items.check_in_title", name: item.relationship_name) if item.kind == :check_in
+    return item.record.display_title if item.kind.in?([ :upcoming_date, :planning_prompt ]) && item.respond_to?(:record)
+    if item.kind.in?([ :upcoming_date, :planning_prompt ]) && item.title.blank?
+      return I18n.t("important_dates.date_types.#{item.date_type}")
+    end
 
-    I18n.t("digests.items.check_in_title", name: item.relationship_name)
+    item.title
   end
 end

@@ -67,4 +67,17 @@ RSpec.describe Digests::Compose do
 
     expect(digest.items.map(&:kind)).to eq([ :check_in ])
   end
+
+  it "uses the latest interaction when calculating contact cadence" do
+    now = Time.zone.local(2026, 7, 15, 9, 0)
+    user = create(:user)
+    profile = create(:relationship_profile, user:, preferred_name: "Recently contacted")
+    create(:contact_cadence, relationship_profile: profile, interval_days: 7, created_at: now - 30.days)
+    create(:interaction, relationship_profile: profile, occurred_at: now - 20.days)
+    create(:interaction, relationship_profile: profile, occurred_at: now - 2.days)
+
+    digest = described_class.call(user:, as_of: now, mode: "daily")
+
+    expect(digest.items).to be_empty
+  end
 end

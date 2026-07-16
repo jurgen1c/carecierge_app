@@ -8,6 +8,8 @@ class DigestInAppNotifier < Noticed::Event
         item = raw_item.with_indifferent_access
         if item.fetch(:kind) == "check_in"
           I18n.t("digests.items.check_in_title", name: item.fetch(:relationship_name))
+        elsif item.fetch(:kind).in?([ "upcoming_date", "planning_prompt" ]) && item[:title].blank?
+          I18n.t("important_dates.date_types.#{item.fetch(:date_type)}")
         else
           item.fetch(:title)
         end

@@ -25,7 +25,11 @@ module Digests
     end
 
     def call
-      items = eligible_profiles.flat_map { |profile| items_for(profile) }
+      profiles = eligible_profiles.to_a
+      latest_interactions = Interaction.where(relationship_profile_id: profiles)
+        .group(:relationship_profile_id)
+        .maximum(:occurred_at)
+      items = profiles.flat_map { |profile| items_for(profile, latest_interactions[profile.id]) }
       items.sort_by! { |item| [ item.overdue ? 0 : 1, item.due_at, KIND_ORDER.fetch(item.kind), item.title.downcase ] }
 
       Digest.new(mode:, as_of:, items: items.first(MAX_ITEMS))
@@ -39,11 +43,11 @@ module Digests
       muted_ids = user.notification_preference&.relationship_notification_preferences&.pluck(:relationship_profile_id) || []
       user.relationship_profiles.active
         .where.not(id: muted_ids)
-        .includes(:commitments, :important_dates, :contact_cadence, :interactions)
+        .includes(:commitments, :important_dates, :contact_cadence)
     end
 
-    def items_for(profile)
-      commitment_items(profile) + important_date_items(profile) + check_in_items(profile)
+    def items_for(profile, last_interaction_at)
+      commitment_items(profile) + important_date_items(profile) + check_in_items(profile, last_interaction_at)
     end
 
     def commitment_items(profile)
@@ -80,11 +84,10 @@ module Digests
       end
     end
 
-    def check_in_items(profile)
+    def check_in_items(profile, last_interaction_at)
       cadence = profile.contact_cadence
       return [] unless cadence
 
-      last_interaction_at = profile.interactions.map(&:occurred_at).max
       due_at = (last_interaction_at || cadence.created_at) + cadence.interval_days.days
       return [] if due_at > horizon_end
 

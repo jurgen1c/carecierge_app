@@ -143,6 +143,13 @@ class NotificationPreference < ApplicationRecord
     quiet_hours_enabled? && quiet_hours_include?(occurrence) ? quiet_hours_end_after(occurrence) : occurrence
   end
 
+  def digest_delivery_deferred_until(at: Time.current)
+    return unless quiet_hours_enabled?
+
+    local_time = at.in_time_zone(time_zone_object)
+    quiet_hours_end_after(local_time) if quiet_hours_include?(local_time)
+  end
+
   def muted_for?(relationship_profile_id)
     overrides = relationship_notification_preferences
     if overrides.loaded?

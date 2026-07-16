@@ -20,7 +20,9 @@ claim: >
   reminders for immediate reevaluation. Sparse, owner-matched relationship
   overrides mute delivery and keep due occurrences pending, queued claims recheck
   current channel and mute choices before handoff, and archived relationships no
-  longer apply hidden mute overrides. A separate configured marker distinguishes
+  longer apply hidden mute overrides. Saving relationship modes batches the
+  owner-scoped profile and existing-override reads instead of querying once per
+  submitted relationship. A separate configured marker distinguishes
   an explicitly saved time zone from the UTC migration default so existing users
   keep browser time-zone capture; important-date scheduling round-trips that
   capture before deriving a local occurrence. Reminder recurrence and lead-time
@@ -100,6 +102,7 @@ cross-account overrides, duplicate schedulers, and irreversible quiet-hour delay
 - `app/jobs/deliver_reminder_job.rb`
 - `app/views/important_dates/_important_date.html.erb`
 - `spec/jobs/dispatch_due_reminders_job_spec.rb`
+- `spec/services/notification_preferences/save_spec.rb`
 - `spec/requests/notification_preferences_spec.rb`
 
 ## Verification

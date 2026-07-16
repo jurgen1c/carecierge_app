@@ -41,10 +41,20 @@ module NotificationPreferences
     end
 
     def sync_relationship_modes!
+      relationship_modes.each_value { |mode| validate_mode!(mode) }
+
+      profile_ids = relationship_modes.keys
+      profiles_by_id = preference.user.relationship_profiles
+        .find(profile_ids)
+        .index_by { |profile| profile.id.to_s }
+      overrides_by_profile_id = preference.relationship_notification_preferences
+        .where(relationship_profile_id: profile_ids)
+        .index_by { |override| override.relationship_profile_id.to_s }
+
       relationship_modes.each do |profile_id, mode|
-        validate_mode!(mode)
-        profile = preference.user.relationship_profiles.find(profile_id)
-        override = preference.relationship_notification_preferences.find_by(relationship_profile: profile)
+        profile = profiles_by_id.fetch(profile_id.to_s)
+        override = overrides_by_profile_id[profile_id.to_s]
+        override&.relationship_profile = profile
 
         if mode == "inherit"
           override&.destroy!

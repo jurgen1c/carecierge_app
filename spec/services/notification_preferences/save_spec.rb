@@ -50,6 +50,28 @@ RSpec.describe NotificationPreferences::Save do
     end.to change(RelationshipNotificationPreference, :count).by(-1)
   end
 
+  it "loads submitted relationships and existing overrides in bounded queries" do
+    user = create(:user)
+    preference = create(:notification_preference, user:)
+    profiles = create_list(:relationship_profile, 3, user:)
+    create(
+      :relationship_notification_preference,
+      notification_preference: preference,
+      relationship_profile: profiles.first
+    )
+
+    queries = capture_sql do
+      described_class.call(
+        preference,
+        attributes: {},
+        relationship_modes: profiles.index_with { "muted" }.transform_keys(&:id)
+      )
+    end
+
+    expect(queries.grep(/SELECT .* FROM "relationship_profiles"/).size).to eq(1)
+    expect(queries.grep(/SELECT "relationship_notification_preferences"\.\* FROM/).size).to eq(1)
+  end
+
   it "rejects another user's relationship without changing account settings" do
     preference = create(:notification_preference, email_enabled: true)
     foreign_profile = create(:relationship_profile)
@@ -81,5 +103,17 @@ RSpec.describe NotificationPreferences::Save do
     end
 
     expect(reminder.reload.next_delivery_at).to eq(reminder.scheduled_at)
+  end
+
+  def capture_sql
+    queries = []
+    subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == "SCHEMA"
+
+      queries << payload[:sql]
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { yield }
+    queries
   end
 end

@@ -121,6 +121,8 @@ class RelationshipProfile < ApplicationRecord
   has_many :desires, dependent: :destroy
   has_one :contact_cadence, dependent: :destroy
   has_many :interactions, dependent: :destroy
+  has_many :privacy_vault_items, dependent: :destroy
+  has_many :vault_access_events, dependent: :nullify
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true
@@ -215,7 +217,7 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def visible_relationship_field_values
-    relationship_field_values.reject(&:marked_for_destruction?).reject(&:hidden?).select do |field_value|
+    relationship_field_values.reject(&:marked_for_destruction?).reject(&:hidden?).reject(&:vault_protected?).select do |field_value|
       field_value.value.present? && current_relationship_field_value?(field_value)
     end.sort_by do |field_value|
       [ field_value.position || 0, field_value.display_label.downcase ]
@@ -294,11 +296,11 @@ class RelationshipProfile < ApplicationRecord
   end
 
   def public_notes
-    relationship_notes.reject(&:private?)
+    relationship_notes.reject(&:private?).reject(&:vault_protected?)
   end
 
   def private_notes
-    relationship_notes.select(&:private?)
+    relationship_notes.select(&:private?).reject(&:vault_protected?)
   end
 
   def public_notes_preview

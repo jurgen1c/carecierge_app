@@ -1,12 +1,17 @@
 class RelationshipProfilesController < ApplicationController
   before_action :set_relationship_profile, only: %i[show edit update archive destroy]
+  around_action :serialize_profile_update_with_privacy_vault, only: :update
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
   def index
     authorize RelationshipProfile
     query = RelationshipProfile::SearchQuery.new(
-      policy_scope(RelationshipProfile).includes(:relationship_tags, :relationship_groups, relationship_notes: :rich_text_body),
+      policy_scope(RelationshipProfile).includes(
+        :relationship_tags,
+        :relationship_groups,
+        relationship_notes: [ :privacy_vault_item, :rich_text_body ]
+      ),
       params:
     )
 
@@ -90,8 +95,8 @@ class RelationshipProfilesController < ApplicationController
         desires: :fulfillments,
         relationship_taggings: :relationship_tag,
         relationship_group_memberships: :relationship_group,
-        relationship_field_values: { template_field: :relationship_template },
-        relationship_notes: :rich_text_body
+        relationship_field_values: [ :privacy_vault_item, { template_field: :relationship_template } ],
+        relationship_notes: [ :privacy_vault_item, :rich_text_body ]
       )
       .friendly
       .find(params[:id])
@@ -114,7 +119,7 @@ class RelationshipProfilesController < ApplicationController
       relationship_groups_attributes: %i[id name _destroy],
       relationship_field_values_attributes: %i[id template_field_id key label value hidden custom position _destroy]
     )
-    sanitize_discriminator_params(permitted_params)
+    reject_protected_nested_records(sanitize_discriminator_params(permitted_params))
   end
 
   def prepare_relationship_profile_form
@@ -168,6 +173,39 @@ class RelationshipProfilesController < ApplicationController
     return if preference_params[key].in?(allowed_values.keys)
 
     preference_params[key] = nil
+  end
+
+  def reject_protected_nested_records(permitted_params)
+    return permitted_params if @relationship_profile.blank? || @relationship_profile.new_record?
+
+    {
+      relationship_notes_attributes: "RelationshipNote",
+      relationship_field_values_attributes: "RelationshipFieldValue"
+    }.each do |parameter_key, protectable_type|
+      protected_ids = @relationship_profile.privacy_vault_items
+        .where(protectable_type:)
+        .pluck(:protectable_id)
+        .map(&:to_s)
+
+      nested_records = permitted_params.fetch(parameter_key, {})
+      if nested_records.respond_to?(:each_pair)
+        nested_records.each_pair do |index, nested_attributes|
+          nested_records.delete(index) if nested_attributes[:id].to_s.in?(protected_ids)
+        end
+      else
+        nested_records.reject! { |nested_attributes| nested_attributes[:id].to_s.in?(protected_ids) }
+      end
+    end
+
+    permitted_params
+  end
+
+  def serialize_profile_update_with_privacy_vault
+    @relationship_profile.with_lock do
+      @relationship_profile.reload
+      authorize @relationship_profile
+      yield
+    end
   end
 
   def not_found

@@ -1,6 +1,7 @@
 class MemoryRecordsController < ApplicationController
   before_action :set_relationship_profile
   before_action :set_memory_record, only: %i[edit update review approve_high_impact_automation destroy]
+  around_action :serialize_memory_mutation_with_privacy_vault, only: %i[update review approve_high_impact_automation destroy]
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
@@ -126,7 +127,7 @@ class MemoryRecordsController < ApplicationController
   end
 
   def update_record_with_revision!(previous_body, note, mark_corrected)
-    MemoryRecord.transaction do
+    MemoryRecord.transaction(requires_new: true) do
       @memory_record.save!
       create_revision(previous_body, note) if mark_corrected
     end
@@ -157,5 +158,13 @@ class MemoryRecordsController < ApplicationController
 
   def not_found
     head :not_found
+  end
+
+  def serialize_memory_mutation_with_privacy_vault
+    @relationship_profile.with_lock do
+      @memory_record.reload
+      authorize @memory_record
+      yield
+    end
   end
 end

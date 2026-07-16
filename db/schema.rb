@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_045005) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_16_125515) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -363,6 +363,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_045005) do
     t.check_constraint "reminder_lead_minutes = ANY (ARRAY[0, 60, 1440, 10080, 20160, 43200])", name: "notification_preferences_supported_reminder_lead"
   end
 
+  create_table "privacy_vault_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "payload", null: false
+    t.uuid "protectable_id", null: false
+    t.string "protectable_type", null: false
+    t.datetime "protected_at", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.string "suggestion_usage", default: "excluded", null: false
+    t.datetime "updated_at", null: false
+    t.index ["protectable_type", "protectable_id"], name: "index_privacy_vault_items_on_protectable", unique: true
+    t.index ["relationship_profile_id", "protected_at"], name: "idx_on_relationship_profile_id_protected_at_06b534e13e"
+    t.index ["relationship_profile_id"], name: "index_privacy_vault_items_on_relationship_profile_id"
+    t.check_constraint "protectable_type::text = ANY (ARRAY['MemoryRecord'::character varying, 'RelationshipFieldValue'::character varying, 'RelationshipNote'::character varying]::text[])", name: "privacy_vault_items_supported_protectable_type"
+    t.check_constraint "suggestion_usage::text = ANY (ARRAY['excluded'::character varying, 'allowed'::character varying]::text[])", name: "privacy_vault_items_supported_suggestion_usage"
+  end
+
   create_table "relationship_field_values", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "custom", default: false, null: false
@@ -603,6 +619,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_045005) do
     t.datetime "locked_at"
     t.datetime "onboarding_completed_at"
     t.datetime "onboarding_skipped_at"
+    t.integer "privacy_vault_lease_version", default: 0, null: false
     t.string "provider"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
@@ -617,6 +634,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_045005) do
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
+  end
+
+  create_table "vault_access_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "event_type", null: false
+    t.datetime "occurred_at", null: false
+    t.uuid "privacy_vault_item_id"
+    t.uuid "relationship_profile_id"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["privacy_vault_item_id"], name: "index_vault_access_events_on_privacy_vault_item_id"
+    t.index ["relationship_profile_id", "occurred_at"], name: "idx_on_relationship_profile_id_occurred_at_dc7b578e55"
+    t.index ["relationship_profile_id"], name: "index_vault_access_events_on_relationship_profile_id"
+    t.index ["user_id", "occurred_at"], name: "index_vault_access_events_on_user_id_and_occurred_at"
+    t.index ["user_id"], name: "index_vault_access_events_on_user_id"
+    t.check_constraint "event_type::text = ANY (ARRAY['unlock_failed'::character varying, 'unlocked'::character varying, 'locked'::character varying, 'viewed'::character varying, 'protected'::character varying, 'restored'::character varying, 'suggestion_usage_changed'::character varying]::text[])", name: "vault_access_events_supported_event_type"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -639,6 +672,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_045005) do
   add_foreign_key "memory_revisions", "users"
   add_foreign_key "mood_notes", "relationship_profiles"
   add_foreign_key "notification_preferences", "users", on_delete: :cascade
+  add_foreign_key "privacy_vault_items", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_field_values", "relationship_profiles"
   add_foreign_key "relationship_field_values", "template_fields"
   add_foreign_key "relationship_group_memberships", "relationship_groups", on_delete: :cascade
@@ -660,4 +694,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_045005) do
   add_foreign_key "reminders", "users", on_delete: :cascade
   add_foreign_key "template_fields", "relationship_templates"
   add_foreign_key "timeline_entries", "relationship_profiles"
+  add_foreign_key "vault_access_events", "privacy_vault_items", on_delete: :nullify
+  add_foreign_key "vault_access_events", "relationship_profiles", on_delete: :nullify
+  add_foreign_key "vault_access_events", "users", on_delete: :cascade
 end

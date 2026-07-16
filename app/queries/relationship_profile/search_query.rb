@@ -96,6 +96,7 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
           .and(rich_text_table[:name].eq("body"))
       )
       .where(notes_table[:relationship_profile_id].eq(profile_table[:id]))
+      .where(notes_table[:id].not_in(PrivacyVaultItem.where(protectable_type: "RelationshipNote").select(:protectable_id)))
       .where(lower(rich_text_table[:body]).matches(term))
       .exists
   end

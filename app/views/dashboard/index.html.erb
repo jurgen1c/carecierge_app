@@ -13,7 +13,7 @@
       <% end %>
     </div>
 
-    <%= button_to t(".sign_out"), destroy_user_session_path, method: :delete, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-900 transition hover:border-stone-400 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <%= button_to t(".sign_out"), destroy_user_session_path, method: :delete, form: { data: { action: "submit->privacy-vault#lock" } }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-900 transition hover:border-stone-400 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
   </header>
 
   <section class="grid gap-4 md:grid-cols-3">

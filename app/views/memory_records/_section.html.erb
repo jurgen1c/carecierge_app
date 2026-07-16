@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "memory_records_section" do %>
-  <% memory_records = relationship_profile.memory_records.ordered.to_a %>
+  <% memory_records = relationship_profile.memory_records.unprotected.ordered.to_a %>
   <% memory_record_counts = memory_records.each_with_object({ review: 0, blocked: 0 }) do |memory_record, counts| %>
     <% counts[:review] += 1 if memory_record.review_required? %>
     <% counts[:blocked] += 1 if memory_record.high_impact_automation_blocked? %>

@@ -29,8 +29,11 @@
 #  fk_rails_...  (template_field_id => template_fields.id)
 #
 class RelationshipFieldValue < ApplicationRecord
+  attr_accessor :privacy_vault_transition
+
   belongs_to :relationship_profile
   belongs_to :template_field, optional: true
+  has_one :privacy_vault_item, as: :protectable, dependent: :destroy
 
   before_validation :apply_template_defaults
   before_validation :normalize_label
@@ -47,6 +50,7 @@ class RelationshipFieldValue < ApplicationRecord
   validates :value, presence: true, if: :value_required?
   validates :template_field_id, uniqueness: { scope: :relationship_profile_id, allow_nil: true }
   validate :template_field_exists, if: -> { template_field_id.present? }
+  validate :vault_protected_content_unchanged, on: :update, unless: :privacy_vault_transition
 
   scope :custom, -> { where(custom: true) }
   scope :suggested, -> { where(custom: false) }
@@ -55,6 +59,10 @@ class RelationshipFieldValue < ApplicationRecord
 
   def display_label
     template_field&.localized_label || label
+  end
+
+  def vault_protected?
+    privacy_vault_item.present?
   end
 
   private
@@ -85,5 +93,12 @@ class RelationshipFieldValue < ApplicationRecord
 
   def value_required?
     custom? || !hidden?
+  end
+
+  def vault_protected_content_unchanged
+    return unless will_save_change_to_value? || (custom? && will_save_change_to_label?)
+    return unless PrivacyVaultItem.exists?(protectable_type: self.class.base_class.name, protectable_id: id)
+
+    errors.add(:base, :vault_protected)
   end
 end

@@ -1,0 +1,117 @@
+<% content_for :title, t("privacy_vaults.show.page_title", name: @relationship_profile.display_name) %>
+<% disable_turbo_cache %>
+<% vault_unlocked = @privacy_vault_unlocked %>
+<% if vault_unlocked %>
+  <% content_for :privacy_vault_lease_duration, [ ((privacy_vault_lease_expires_at - Time.current) * 1000).to_i, 0 ].max %>
+<% end %>
+
+<main class="flex flex-1 flex-col gap-6 py-8">
+  <header class="flex flex-col gap-4 border-b border-stone-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <%= link_to @relationship_profile.display_name, relationship_profile_path(@relationship_profile), class: "text-sm font-semibold text-emerald-800 hover:text-emerald-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+      <h1 class="mt-3 text-3xl font-semibold text-stone-950"><%= t("privacy_vaults.show.title") %></h1>
+      <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.body") %></p>
+    </div>
+
+    <% if vault_unlocked %>
+      <%= button_to t("privacy_vaults.show.lock"), lock_relationship_profile_privacy_vault_path(@relationship_profile), method: :delete, form: { data: { action: "submit->privacy-vault#lock" } }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <% end %>
+  </header>
+
+  <% if vault_unlocked %>
+    <div class="contents" data-privacy-vault-target="content">
+      <section class="rounded-xl border border-emerald-200 bg-emerald-50 p-4" aria-live="polite">
+      <p class="text-sm font-semibold text-emerald-950"><%= t("privacy_vaults.show.unlocked") %></p>
+      <p class="mt-1 text-sm leading-6 text-emerald-900"><%= t("privacy_vaults.show.unlocked_body") %></p>
+      </section>
+
+      <section class="rounded-2xl border border-stone-200 bg-white p-5">
+      <div class="border-b border-stone-200 pb-4">
+        <h2 class="text-xl font-semibold text-stone-950"><%= t("privacy_vaults.show.protected_title") %></h2>
+        <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.protected_body") %></p>
+      </div>
+
+      <% if @privacy_vault_items.any? %>
+        <div class="divide-y divide-stone-200">
+          <% @privacy_vault_items.each do |item| %>
+            <article class="py-5">
+              <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900"><%= t("privacy_vaults.item_types.#{item.type_key}") %></span>
+                    <span class="rounded-full border border-stone-200 bg-stone-50 px-3 py-1 text-xs font-medium text-stone-700"><%= t("privacy_vaults.suggestion_usages.#{item.suggestion_usage}") %></span>
+                  </div>
+                  <h3 class="mt-3 text-base font-semibold text-stone-950"><%= item.display_title %></h3>
+                  <p class="mt-2 whitespace-pre-line text-sm leading-6 text-stone-700"><%= strip_tags(item.display_body) %></p>
+                </div>
+
+                <div class="flex shrink-0 flex-wrap gap-2">
+                  <%= button_to t("privacy_vaults.show.#{item.suggestion_allowed? ? 'exclude_suggestions' : 'allow_suggestions'}"), relationship_profile_privacy_vault_item_path(@relationship_profile, item), method: :patch, params: { privacy_vault_item: { suggestion_usage: item.suggestion_allowed? ? "excluded" : "allowed" } }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+                  <%= button_to t("privacy_vaults.show.restore"), relationship_profile_privacy_vault_item_path(@relationship_profile, item), method: :delete, form: { data: { turbo_confirm: t("privacy_vaults.show.restore_confirm") } }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+                </div>
+              </div>
+            </article>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="py-6">
+          <p class="text-sm font-semibold text-stone-950"><%= t("privacy_vaults.show.empty_title") %></p>
+          <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.empty_body") %></p>
+        </div>
+      <% end %>
+      </section>
+
+      <section class="rounded-2xl border border-stone-200 bg-white p-5">
+      <h2 class="text-xl font-semibold text-stone-950"><%= t("privacy_vaults.show.protect_title") %></h2>
+      <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.protect_body") %></p>
+
+      <div class="mt-5 grid gap-5 lg:grid-cols-3">
+        <% @protectable_groups.each do |type_key, records| %>
+          <section class="rounded-xl border border-stone-200 bg-stone-50 p-4">
+            <h3 class="text-base font-semibold text-stone-950"><%= t("privacy_vaults.item_types.#{type_key}") %></h3>
+            <% if records.any? %>
+              <div class="mt-3 grid gap-3">
+                <% records.each do |record| %>
+                  <div class="rounded-lg border border-stone-200 bg-white p-3">
+                    <p class="text-sm font-medium text-stone-900"><%= privacy_vault_candidate_label(record) %></p>
+                    <%= button_to t("privacy_vaults.show.protect"), relationship_profile_privacy_vault_items_path(@relationship_profile), params: { privacy_vault_item: { protectable_type: record.class.base_class.name, protectable_id: record.id } }, class: "mt-3 inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="mt-3 text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.no_candidates") %></p>
+            <% end %>
+          </section>
+        <% end %>
+      </div>
+      </section>
+    </div>
+
+    <section hidden data-privacy-vault-target="locked" class="mx-auto w-full max-w-xl rounded-2xl border border-stone-200 bg-white p-6 shadow-sm shadow-stone-200/40" aria-live="assertive">
+      <h2 class="text-xl font-semibold text-stone-950"><%= t("privacy_vaults.show.lease_ended_title") %></h2>
+      <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.lease_ended_body") %></p>
+      <%= link_to t("privacy_vaults.show.reopen"), relationship_profile_privacy_vault_path(@relationship_profile), class: "mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    </section>
+  <% else %>
+    <section class="mx-auto w-full max-w-xl rounded-2xl border border-stone-200 bg-white p-6 shadow-sm shadow-stone-200/40">
+      <h2 class="text-xl font-semibold text-stone-950"><%= t("privacy_vaults.show.password_title") %></h2>
+      <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.password_body") %></p>
+
+      <%= form_with url: unlock_relationship_profile_privacy_vault_path(@relationship_profile), scope: :privacy_vault_unlock, data: { action: "submit->privacy-vault#lock" }, class: "mt-5 grid gap-4" do |form| %>
+        <div>
+          <%= form.label :password, t("privacy_vaults.show.password"), class: "block text-sm font-medium text-stone-800" %>
+          <%= form.password_field :password, required: true, autocomplete: "current-password", aria: { describedby: @unlock_error.present? ? "vault-password-error vault-password-hint" : "vault-password-hint" }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% if @unlock_error.present? %>
+            <p id="vault-password-error" class="mt-2 text-sm font-medium text-red-800" role="alert"><%= @unlock_error %></p>
+          <% end %>
+          <p id="vault-password-hint" class="mt-2 text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.password_hint") %></p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <%= button_tag t("privacy_vaults.show.reset_password"), type: "submit", formaction: reset_password_relationship_profile_privacy_vault_path(@relationship_profile), formmethod: "post", formnovalidate: true, class: "cursor-pointer text-sm font-semibold text-emerald-800 hover:text-emerald-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          <%= form.submit t("privacy_vaults.show.unlock"), class: "inline-flex min-h-11 cursor-pointer items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
+</main>

@@ -11,4 +11,8 @@ module ApplicationHelper
     component = name.to_s.split("/").map(&:camelize).tap { |names| names[-1] += "Component" }.join("::").constantize
     render(component.new(*, **), &)
   end
+
+  def disable_turbo_cache
+    content_for :head, tag.meta(name: "turbo-cache-control", content: "no-cache")
+  end
 end

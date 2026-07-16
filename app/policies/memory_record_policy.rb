@@ -4,19 +4,19 @@ class MemoryRecordPolicy < ApplicationPolicy
   end
 
   def update?
-    owns_profile?
+    owns_profile? && !record.vault_protected?
   end
 
   def review?
-    owns_profile?
+    update?
   end
 
   def approve_high_impact_automation?
-    owns_profile?
+    update?
   end
 
   def destroy?
-    owns_profile?
+    update?
   end
 
   class Scope < ApplicationPolicy::Scope

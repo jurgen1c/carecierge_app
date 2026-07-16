@@ -107,8 +107,12 @@
           <%= note_fields.hidden_field :private, value: "0" %>
           <%= note_fields.hidden_field :category, value: "General" %>
           <%= note_fields.label :body, t(".notes"), class: "block text-sm font-medium text-stone-800" %>
-          <%= note_fields.rich_text_area :body, class: "lexxy-content mt-2 min-h-32 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
-          <% if note_fields.object.persisted? %>
+          <% if note_fields.object.vault_protected? %>
+            <p class="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm leading-6 text-emerald-950"><%= t(".vault_protected_hint") %></p>
+          <% else %>
+            <%= note_fields.rich_text_area :body, class: "lexxy-content mt-2 min-h-32 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% end %>
+          <% if note_fields.object.persisted? && !note_fields.object.vault_protected? %>
             <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
               <%= note_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
               <%= note_fields.label :_destroy, t(".remove_note"), class: "font-medium text-stone-700" %>
@@ -124,8 +128,12 @@
           <%= note_fields.hidden_field :category, value: "Private" %>
           <%= note_fields.label :body, t(".private_notes"), class: "block text-sm font-medium text-stone-800" %>
           <p class="mt-1 text-sm leading-6 text-stone-700"><%= t(".private_notes_hint") %></p>
-          <%= note_fields.rich_text_area :body, class: "lexxy-content mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
-          <% if note_fields.object.persisted? %>
+          <% if note_fields.object.vault_protected? %>
+            <p class="mt-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm leading-6 text-emerald-950"><%= t(".vault_protected_hint") %></p>
+          <% else %>
+            <%= note_fields.rich_text_area :body, class: "lexxy-content mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+          <% end %>
+          <% if note_fields.object.persisted? && !note_fields.object.vault_protected? %>
             <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
               <%= note_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
               <%= note_fields.label :_destroy, t(".remove_private_note"), class: "font-medium text-stone-700" %>
@@ -224,12 +232,16 @@
                         <% if field_value.template_field&.localized_prompt.present? %>
                           <p class="text-sm leading-6 text-stone-700"><%= field_value.template_field.localized_prompt %></p>
                         <% end %>
-                        <%= field_value_fields.text_field :value, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
-                        <div class="flex items-center gap-2 text-sm text-stone-700">
+                        <% if field_value.vault_protected? %>
+                          <p class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm leading-6 text-emerald-950"><%= t(".vault_protected_hint") %></p>
+                        <% else %>
+                          <%= field_value_fields.text_field :value, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                        <% end %>
+                        <div class="flex items-center gap-2 text-sm text-stone-700" <%= "hidden" if field_value.vault_protected? %>>
                           <%= field_value_fields.check_box :hidden, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
                           <%= field_value_fields.label :hidden, t(".hide_suggested_field"), class: "font-medium text-stone-700" %>
                         </div>
-                        <% if field_value_fields.object.persisted? %>
+                        <% if field_value_fields.object.persisted? && !field_value.vault_protected? %>
                           <div class="flex items-center gap-2 text-sm text-stone-700">
                             <%= field_value_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
                             <%= field_value_fields.label :_destroy, t(".remove_field_value"), class: "font-medium text-stone-700" %>
@@ -255,11 +267,16 @@
                 <%= field_value_fields.hidden_field :id if field_value_fields.object.persisted? %>
                 <%= field_value_fields.hidden_field :custom, value: "1" %>
                 <%= field_value_fields.hidden_field :position %>
-                <%= field_value_fields.label :label, t(".custom_field_label"), class: "text-sm font-medium text-stone-800" %>
-                <%= field_value_fields.text_field :label, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
-                <%= field_value_fields.label :value, t(".custom_field_value"), class: "text-sm font-medium text-stone-800" %>
-                <%= field_value_fields.text_field :value, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
-                <% if field_value_fields.object.persisted? %>
+                <% if field_value.vault_protected? %>
+                  <p class="text-sm font-medium text-stone-800"><%= t(".protected_relationship_detail") %></p>
+                  <p class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm leading-6 text-emerald-950"><%= t(".vault_protected_hint") %></p>
+                <% else %>
+                  <%= field_value_fields.label :label, t(".custom_field_label"), class: "text-sm font-medium text-stone-800" %>
+                  <%= field_value_fields.text_field :label, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                  <%= field_value_fields.label :value, t(".custom_field_value"), class: "text-sm font-medium text-stone-800" %>
+                  <%= field_value_fields.text_field :value, class: "min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+                <% end %>
+                <% if field_value_fields.object.persisted? && !field_value.vault_protected? %>
                   <div class="flex items-center gap-2 text-sm text-stone-700">
                     <%= field_value_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
                     <%= field_value_fields.label :_destroy, t(".remove_field_value"), class: "font-medium text-stone-700" %>

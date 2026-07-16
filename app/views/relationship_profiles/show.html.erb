@@ -1,4 +1,5 @@
 <% content_for :title, @relationship_profile.display_name %>
+<% disable_turbo_cache %>
 
 <main class="flex flex-1 flex-col gap-8 py-8">
   <header class="flex flex-col gap-5 border-b border-stone-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
@@ -21,6 +22,7 @@
   <%= render "important_dates/section", relationship_profile: @relationship_profile %>
   <%= render "contact_cadences/section", relationship_profile: @relationship_profile, interactions: @interactions %>
   <%= render "gifts/section", relationship_profile: @relationship_profile %>
+  <%= render "privacy_vaults/section", relationship_profile: @relationship_profile %>
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>
   <%= render "conversation_recaps/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>
   <%= render "mood_notes/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>

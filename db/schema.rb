@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_15_032726) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_15_160002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -315,13 +315,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_032726) do
 
   create_table "notification_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "digest_mode", default: "off", null: false
+    t.time "digest_time", default: "2000-01-01 09:00:00", null: false
+    t.integer "digest_weekday", default: 1, null: false
     t.boolean "email_enabled", default: true, null: false
+    t.boolean "high_priority_alerts_enabled", default: true, null: false
     t.boolean "in_app_enabled", default: true, null: false
     t.boolean "push_enabled", default: false, null: false
+    t.boolean "quiet_hours_enabled", default: false, null: false
+    t.time "quiet_hours_end", default: "2000-01-01 07:00:00", null: false
+    t.time "quiet_hours_start", default: "2000-01-01 22:00:00", null: false
+    t.string "reminder_frequency", default: "none", null: false
+    t.integer "reminder_lead_minutes", default: 1440, null: false
     t.boolean "sms_enabled", default: false, null: false
+    t.string "time_zone", default: "UTC", null: false
+    t.boolean "time_zone_configured", default: false, null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+    t.check_constraint "digest_mode::text = ANY (ARRAY['off'::character varying, 'daily'::character varying, 'weekly'::character varying]::text[])", name: "notification_preferences_supported_digest_mode"
+    t.check_constraint "digest_weekday >= 0 AND digest_weekday <= 6", name: "notification_preferences_supported_digest_weekday"
+    t.check_constraint "reminder_frequency::text = ANY (ARRAY['none'::character varying, 'daily'::character varying, 'weekly'::character varying, 'monthly'::character varying, 'yearly'::character varying]::text[])", name: "notification_preferences_supported_reminder_frequency"
+    t.check_constraint "reminder_lead_minutes = ANY (ARRAY[0, 60, 1440, 10080, 20160, 43200])", name: "notification_preferences_supported_reminder_lead"
   end
 
   create_table "relationship_field_values", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -369,6 +384,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_032726) do
     t.datetime "updated_at", null: false
     t.index ["relationship_profile_id", "private"], name: "idx_on_relationship_profile_id_private_777e9fc47b"
     t.index ["relationship_profile_id"], name: "index_relationship_notes_on_relationship_profile_id"
+  end
+
+  create_table "relationship_notification_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "mode", default: "muted", null: false
+    t.uuid "notification_preference_id", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notification_preference_id"], name: "idx_on_notification_preference_id_f719334035"
+    t.index ["relationship_profile_id"], name: "idx_on_relationship_profile_id_ed7238d212", unique: true
+    t.check_constraint "mode::text = 'muted'::text", name: "relationship_notification_preferences_supported_mode"
   end
 
   create_table "relationship_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -594,6 +620,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_032726) do
   add_foreign_key "relationship_group_memberships", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_groups", "users"
   add_foreign_key "relationship_notes", "relationship_profiles"
+  add_foreign_key "relationship_notification_preferences", "notification_preferences", on_delete: :cascade
+  add_foreign_key "relationship_notification_preferences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_preferences", "relationship_profiles"
   add_foreign_key "relationship_profiles", "users"
   add_foreign_key "relationship_taggings", "relationship_profiles", on_delete: :cascade

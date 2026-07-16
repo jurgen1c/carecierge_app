@@ -9,9 +9,21 @@ class RemindersController < ApplicationController
   end
 
   def new
+    saved_preference = current_user.notification_preference
+    preference = saved_preference || NotificationPreference.new(user: current_user)
+    important_date = selected_important_date
+    needs_browser_time_zone = saved_preference.nil? || !saved_preference.time_zone_configured?
+    captured_zone = captured_time_zone if needs_browser_time_zone
+    @capture_browser_time_zone = needs_browser_time_zone && captured_zone.nil?
+    @reload_after_time_zone_capture = @capture_browser_time_zone && important_date.present?
+    preference.time_zone = captured_zone if captured_zone
     @reminder = current_user.reminders.new(
-      relationship_profile: selected_commitment&.relationship_profile || selected_relationship_profile,
-      commitment: selected_commitment
+      relationship_profile: selected_commitment&.relationship_profile || important_date&.relationship_profile || selected_relationship_profile,
+      important_date:,
+      commitment: selected_commitment,
+      recurrence: preference.reminder_frequency,
+      time_zone: preference.time_zone,
+      scheduled_at: initial_schedule_for(important_date, preference)
     )
     authorize @reminder
     prepare_form_options
@@ -109,6 +121,52 @@ class RemindersController < ApplicationController
     return if id.blank?
 
     active_commitments.find(id)
+  end
+
+  def selected_important_date
+    id = params[:important_date_id].presence
+    return if id.blank?
+
+    active_important_dates.find(id)
+  end
+
+  def captured_time_zone
+    value = params[:time_zone].presence
+    value if value && ActiveSupport::TimeZone[value].present?
+  end
+
+  def default_schedule_for(important_date, preference)
+    return if important_date.blank?
+
+    zone = ActiveSupport::TimeZone[preference.time_zone]
+    return if zone.blank?
+
+    occurrence = important_date.next_occurrence_on(as_of: Time.current.in_time_zone(zone).to_date)
+    return if occurrence.blank?
+
+    reminder_date, elapsed_minutes = reminder_lead_offset(occurrence, preference.reminder_lead_minutes)
+    zone.local(reminder_date.year, reminder_date.month, reminder_date.day, 9) - elapsed_minutes.minutes
+  end
+
+  def initial_schedule_for(important_date, preference)
+    return if @reload_after_time_zone_capture
+    return default_schedule_for(important_date, preference) if important_date
+    return if @capture_browser_time_zone
+
+    zone = ActiveSupport::TimeZone[preference.time_zone]
+    return if zone.blank?
+
+    (Time.current.in_time_zone(zone) + 1.day).change(min: 0, sec: 0)
+  end
+
+  def reminder_lead_offset(occurrence, lead_minutes)
+    case lead_minutes
+    when 1_440 then [ occurrence - 1.day, 0 ]
+    when 10_080 then [ occurrence - 1.week, 0 ]
+    when 20_160 then [ occurrence - 2.weeks, 0 ]
+    when 43_200 then [ occurrence.prev_month, 0 ]
+    else [ occurrence, lead_minutes ]
+    end
   end
 
   def assign_relationship_context(reminder)
@@ -212,7 +270,6 @@ class RemindersController < ApplicationController
     @overdue_commitments = policy_scope(Commitment).overdue.includes(:relationship_profile, :reminders)
     @overdue_commitments = @overdue_commitments.where(relationship_profile: @selected_relationship_profile) if @selected_relationship_profile
     @overdue_commitments = @overdue_commitments.to_a
-    @notification_preference = current_user.notification_preference || current_user.build_notification_preference
     @reminder_notifications = current_user.notifications
       .includes(event: :record)
       .where(type: "ReminderInAppNotifier::Notification")

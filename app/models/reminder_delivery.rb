@@ -78,6 +78,13 @@ class ReminderDelivery < ApplicationRecord
     end
   end
 
+  def revive!
+    return self unless cancelled?
+
+    update!(status: "pending", dispatched_at: nil, enqueued_at: nil, lease_token: nil, error_message: nil)
+    self
+  end
+
   def with_processing_lock
     acquired = false
     result = false

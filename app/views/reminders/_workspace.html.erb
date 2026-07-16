@@ -65,11 +65,7 @@
         <div class="rounded-xl border border-stone-200 bg-white p-5">
           <h2 class="text-base font-semibold text-stone-950"><%= t("reminders.preferences.title") %></h2>
           <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("reminders.preferences.body") %></p>
-          <%= form_with model: @notification_preference, url: notification_preference_path, method: :patch, class: "mt-4 grid gap-3" do |form| %>
-            <label class="flex min-h-11 items-center gap-3 text-sm font-medium text-stone-900"><%= form.check_box :in_app_enabled, class: "size-5 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %><%= t("reminders.preferences.in_app") %></label>
-            <label class="flex min-h-11 items-center gap-3 text-sm font-medium text-stone-900"><%= form.check_box :email_enabled, class: "size-5 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %><%= t("reminders.preferences.email") %></label>
-            <%= form.submit t("reminders.preferences.save"), class: "mt-2 min-h-11 w-fit rounded-lg border border-emerald-700 bg-white px-4 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-50" %>
-          <% end %>
+          <%= link_to t("reminders.preferences.manage"), edit_notification_preference_path, class: "mt-4 inline-flex min-h-11 items-center justify-center rounded-lg border border-emerald-700 bg-white px-4 py-2 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
         </div>
 
         <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-5">

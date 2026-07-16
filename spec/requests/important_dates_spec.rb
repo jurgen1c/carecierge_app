@@ -7,7 +7,7 @@ RSpec.describe "Important dates", type: :request do
     it "renders important dates, planning suggestions, and upcoming right-rail dates" do
       user = create(:user)
       profile = create(:relationship_profile, user:, first_name: "Ana")
-      create(:important_date, relationship_profile: profile, date_type: "birthday", starts_on: Date.new(2020, 7, 25), recurrence: "yearly", importance_level: "high")
+      important_date = create(:important_date, relationship_profile: profile, date_type: "birthday", starts_on: Date.new(2020, 7, 25), recurrence: "yearly", importance_level: "high")
       create(:important_date, relationship_profile: profile, date_type: "appointment", title: "Dentist", starts_on: Date.new(2026, 7, 12), recurrence: "none")
       sign_in user
 
@@ -23,6 +23,7 @@ RSpec.describe "Important dates", type: :request do
       expect(response.body).to include("Upcoming dates")
       expect(response.body).to include("Add important date")
       expect(response.body).to include(%(href="#{new_relationship_profile_important_date_path(profile)}"))
+      expect(CGI.unescapeHTML(response.body)).to include(new_reminder_path(relationship_profile_id: profile.id, important_date_id: important_date.id))
       expect(response.body).to include(%(<div id="flash" aria-live="polite">))
       expect(response.body).not_to include(%(<div id="flash" class="mb-5))
     end
@@ -71,6 +72,26 @@ RSpec.describe "Important dates", type: :request do
       expect(response).to have_http_status(:ok)
       expect(planning_hrefs).to be_present
       expect(planning_hrefs - rendered_ids).to be_empty
+    end
+
+    it "keeps the reminder action available for a one-time date at a timezone boundary" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      important_date = create(
+        :important_date,
+        relationship_profile: profile,
+        starts_on: Date.new(2026, 7, 15),
+        recurrence: "none"
+      )
+      sign_in user
+
+      travel_to Time.utc(2026, 7, 16, 4, 30) do
+        get relationship_profile_path(profile)
+      end
+
+      expect(CGI.unescapeHTML(response.body)).to include(
+        new_reminder_path(relationship_profile_id: profile.id, important_date_id: important_date.id)
+      )
     end
   end
 

@@ -28,6 +28,74 @@ RSpec.describe DeliverReminderJob, type: :job do
     expect(delivery.noticed_event).to be_a(ReminderInAppNotifier)
   end
 
+  it "cancels a queued delivery when its relationship is muted before handoff" do
+    delivery = create(:reminder_delivery, channel: "in_app")
+    reminder = delivery.reminder
+    preference = create(:notification_preference, user: reminder.user)
+    create(
+      :relationship_notification_preference,
+      notification_preference: preference,
+      relationship_profile: reminder.relationship_profile
+    )
+
+    expect { described_class.perform_now(delivery) }
+      .not_to change(ReminderInAppNotifier, :count)
+
+    expect(delivery.reload.status).to eq("cancelled")
+    expect(reminder.reload.next_delivery_at).to eq(delivery.scheduled_for)
+  end
+
+  it "defers a queued delivery when quiet hours begin before handoff" do
+    zone = ActiveSupport::TimeZone["America/Costa_Rica"]
+    now = zone.local(2026, 7, 15, 22, 0)
+    reminder = create(:reminder, scheduled_at: now, next_delivery_at: nil)
+    delivery = create(:reminder_delivery, reminder:, channel: "in_app", scheduled_for: now)
+    create(
+      :notification_preference,
+      user: reminder.user,
+      quiet_hours_enabled: true,
+      quiet_hours_start: "21:00",
+      quiet_hours_end: "07:00",
+      time_zone: zone.tzinfo.name
+    )
+
+    Timecop.freeze(now) do
+      expect { described_class.perform_now(delivery) }
+        .not_to change(ReminderInAppNotifier, :count)
+    end
+
+    expect(delivery.reload.status).to eq("cancelled")
+    expect(reminder.reload.next_delivery_at).to eq(zone.local(2026, 7, 16, 7, 0))
+  end
+
+  it "restores a deferred channel even when a sibling channel already dispatched" do
+    zone = ActiveSupport::TimeZone["America/Costa_Rica"]
+    now = zone.local(2026, 7, 15, 22, 0)
+    reminder = create(:reminder, scheduled_at: now, next_delivery_at: nil)
+    create(
+      :reminder_delivery,
+      reminder:,
+      channel: "in_app",
+      scheduled_for: now,
+      status: "dispatched",
+      dispatched_at: now - 1.minute
+    )
+    email_delivery = create(:reminder_delivery, reminder:, channel: "email", scheduled_for: now)
+    create(
+      :notification_preference,
+      user: reminder.user,
+      quiet_hours_enabled: true,
+      quiet_hours_start: "21:00",
+      quiet_hours_end: "07:00",
+      time_zone: zone.tzinfo.name
+    )
+
+    Timecop.freeze(now) { described_class.perform_now(email_delivery) }
+
+    expect(email_delivery.reload.status).to eq("cancelled")
+    expect(reminder.reload.next_delivery_at).to eq(zone.local(2026, 7, 16, 7, 0))
+  end
+
   it "releases reminder and delivery locks before calling the external email channel" do
     delivery = create(:reminder_delivery, channel: "email")
     reminder = delivery.reminder

@@ -1,0 +1,25 @@
+<label class="<%= style %>">
+  <span class="min-w-0">
+    <span class="flex flex-wrap items-center gap-2 text-sm font-semibold text-stone-950">
+      <%= title %>
+      <% if attention %>
+        <span class="<%= style(:attention, attention:) %>">
+          <span class="size-2 rounded-full bg-orange-700" aria-hidden="true"></span>
+          <%= t("notification_preferences.edit.needs_attention") %>
+        </span>
+      <% end %>
+    </span>
+    <span class="mt-1 block max-w-2xl text-sm leading-5 text-stone-600"><%= description %></span>
+    <% if availability %>
+      <span class="mt-1 block text-xs font-medium text-stone-600"><%= availability %></span>
+    <% end %>
+  </span>
+  <span class="relative inline-flex min-h-11 shrink-0 items-center">
+    <%= form.check_box field,
+      class: "peer sr-only",
+      role: "switch",
+      aria: { label: title } %>
+    <span aria-hidden="true" class="<%= style(:track) %>"></span>
+    <span aria-hidden="true" class="<%= style(:thumb) %>"></span>
+  </span>
+</label>

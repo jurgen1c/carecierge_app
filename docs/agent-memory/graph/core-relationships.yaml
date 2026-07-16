@@ -211,6 +211,21 @@ edges:
     relation: requires
     reason: Reminder management, delivery preferences, and calendar exports are authenticated and owner-scoped.
     strength: 90
+  - source: reminders.notification_preferences
+    target: reminders.reminder_delivery_system
+    relation: constrains
+    reason: Channel, quiet-hour, priority, and relationship choices determine whether and when due reminders may create delivery claims.
+    strength: 95
+  - source: reminders.notification_preferences
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Notification settings are private to the authenticated account owner.
+    strength: 90
+  - source: reminders.notification_preferences
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Relationship-specific notification overrides may reference only profiles owned by the preference owner.
+    strength: 90
   - source: reminders.reminder_delivery_system
     target: relationship_profiles.profile_crud_owner_scope
     relation: requires

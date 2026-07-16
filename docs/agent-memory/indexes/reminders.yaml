@@ -1,19 +1,20 @@
 id: reminders
 name: Reminders
-summary: Owner-scoped one-time and recurring reminders with relationship, important-date, and commitment context, idempotent Noticed delivery, preferences, overdue commitment visibility, and iCalendar export.
+summary: Owner-scoped reminders and relationship digests with preference-aware delivery, important-date and commitment context, overdue visibility, and iCalendar export.
 claim_globs:
   - claims/reminders/**/*.md
 default_queries:
   - reminder recurrence snooze complete owner scope
   - reminder delivery noticed in app email idempotent occurrence
   - notification preferences quiet hours high priority relationship mute push sms future channels
-  - notification reminder defaults digest schedule CAR-38 handoff
+  - notification digest daily weekly composition delivery channel CAR-38
   - reminder relationship profile important date commitment association
   - reminder calendar ics export
   - commitment reminder integration overdue commitments
 watched_files:
   - app/models/reminder.rb
   - app/models/reminder_delivery.rb
+  - app/models/digest_delivery.rb
   - app/models/notification_preference.rb
   - app/models/relationship_notification_preference.rb
   - app/models/user.rb
@@ -25,8 +26,16 @@ watched_files:
   - app/services/notification_preferences/save.rb
   - app/jobs/dispatch_due_reminders_job.rb
   - app/jobs/deliver_reminder_job.rb
+  - app/jobs/dispatch_due_digests_job.rb
+  - app/jobs/deliver_digest_job.rb
+  - app/jobs/deliver_digest_email_job.rb
   - app/jobs/application_job.rb
   - app/mailers/reminder_mailer.rb
+  - app/mailers/digest_mailer.rb
+  - app/services/digests/compose.rb
+  - app/services/digests/snapshot.rb
+  - app/notifiers/digest_in_app_notifier.rb
+  - app/notifiers/digest_email_notifier.rb
   - app/notifiers/reminder_in_app_notifier.rb
   - app/notifiers/reminder_email_notifier.rb
   - app/policies/reminder_policy.rb
@@ -38,6 +47,7 @@ watched_files:
   - app/views/notification_preferences/**/*.erb
   - app/views/commitments/**/*.erb
   - app/views/reminder_mailer/**/*.erb
+  - app/views/digest_mailer/**/*.erb
   - app/views/components/reminder_row_component.*
   - config/recurring.yml
   - config/initializers/noticed.rb
@@ -53,6 +63,7 @@ watched_files:
   - db/migrate/*commitment*.rb
   - db/migrate/*notification_preferences*.rb
   - db/migrate/*relationship_notification_preferences*.rb
+  - db/migrate/*digest_deliveries*.rb
 tags:
   - reminders
   - noticed
@@ -63,4 +74,5 @@ tags:
   - important_dates
   - commitments
   - notification_preferences
+  - notification_digest
   - quiet_hours

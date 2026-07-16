@@ -40,6 +40,7 @@ RSpec.describe "Notification preferences", type: :request do
         reminder_frequency: "weekly",
         reminder_lead_minutes: "10080",
         digest_mode: "weekly",
+        digest_channel: "in_app",
         digest_time: "09:30",
         digest_weekday: "5"
       },
@@ -58,6 +59,7 @@ RSpec.describe "Notification preferences", type: :request do
       reminder_frequency: "weekly",
       reminder_lead_minutes: 10_080,
       digest_mode: "weekly",
+      digest_channel: "in_app",
       digest_weekday: 5
     )
     expect(user.notification_preference.relationship_notification_preferences.sole.relationship_profile_id).to eq(profile.id)

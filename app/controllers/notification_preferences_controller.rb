@@ -36,6 +36,7 @@ class NotificationPreferencesController < ApplicationController
       :reminder_frequency,
       :reminder_lead_minutes,
       :digest_mode,
+      :digest_channel,
       :digest_time,
       :digest_weekday
     )

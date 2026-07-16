@@ -1176,8 +1176,36 @@ en:
         create_account: "Create account"
         sign_in_with_google: "Continue with Google"
   notifiers:
+    digest_in_app:
+      message: "Your %{mode} relationship digest: %{actions}"
     reminder_in_app:
       message: "%{title} is due."
+  digests:
+    items:
+      check_in_title: "Check in with %{name}"
+  digest_mailer:
+    summary:
+      subject:
+        daily: "Your daily relationship digest"
+        weekly: "Your weekly relationship digest"
+      heading:
+        daily: "Your daily relationship digest"
+        weekly: "Your weekly relationship digest"
+      start_here: "Start here"
+      coming_up: "Coming up"
+      open_relationship: "Open %{name}"
+      all_actions: "See all relationship actions"
+      settings: "Change notification settings"
+      footer:
+        daily: "You’re receiving a daily digest by %{channel}."
+        weekly: "You’re receiving a weekly digest by %{channel}."
+      items:
+        commitment:
+          overdue:
+            one: "1 day overdue"
+            other: "%{count} days overdue"
+          due: "Due %{date}"
+        check_in: "Check-in due"
   reminder_mailer:
     due:
       subject: "Reminder: %{title}"
@@ -1314,6 +1342,9 @@ en:
       "off": "Off"
       daily: "Daily"
       weekly: "Weekly"
+    digest_channels:
+      email: "Email"
+      in_app: "In app"
     edit:
       page_title: "Notification settings"
       back: "Back to reminders"
@@ -1352,8 +1383,9 @@ en:
         lead_help: "Applied when you start a reminder from an important date."
       digest:
         title: "Digest schedule"
-        body: "Save when you want a concise relationship summary. CAR-38 will use this schedule when digest delivery launches."
+        body: "Choose when and where you want a concise relationship briefing. Empty digests are not sent."
         mode: "Digest mode"
+        channel: "Delivery channel"
         weekday: "Weekly delivery day"
         time: "Delivery time"
       relationships:

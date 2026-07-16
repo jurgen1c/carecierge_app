@@ -45,6 +45,21 @@ RSpec.describe "Reminders", type: :request do
       expect(response.body).not_to include("Create reminder")
     end
 
+    it "surfaces in-app relationship digests in the notification feed" do
+      user = create(:user)
+      delivery = create(:digest_delivery, user:, mode: "daily", channel: "in_app")
+      profile = create(:relationship_profile, user:)
+      create(:commitment, relationship_profile: profile, title: "Call Elena", due_on: delivery.scheduled_for.to_date)
+      digest = Digests::Compose.call(user:, as_of: delivery.scheduled_for, mode: "daily")
+      DigestInAppNotifier.with(record: delivery, mode: "daily", digest_snapshot: Digests::Snapshot.dump(digest)).deliver(user)
+      sign_in user
+
+      get reminders_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Your Daily relationship digest: Call Elena")
+    end
+
     it "orders the reminder timeline by effective delivery time in SQL" do
       user = create(:user)
       create(:reminder, user:, relationship_profile: create(:relationship_profile, user:))

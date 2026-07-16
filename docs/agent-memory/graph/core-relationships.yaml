@@ -217,6 +217,31 @@ edges:
     reason: Channel, quiet-hour, priority, and relationship choices determine whether and when due reminders may create delivery claims.
     strength: 95
   - source: reminders.notification_preferences
+    target: reminders.notification_digest
+    relation: constrains
+    reason: Digest mode, channel, time zone, quiet hours, and relationship mute choices determine digest composition and delivery.
+    strength: 95
+  - source: reminders.notification_digest
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Digest composition may read only active relationship profiles owned by the recipient.
+    strength: 95
+  - source: reminders.notification_digest
+    target: relationship_profiles.important_dates
+    relation: requires
+    reason: Upcoming dates and localized planning prompts are digest action inputs.
+    strength: 85
+  - source: reminders.notification_digest
+    target: relationship_profiles.commitments
+    relation: requires
+    reason: Due open commitments are digest action inputs without creating parallel commitment state.
+    strength: 85
+  - source: reminders.notification_digest
+    target: relationship_profiles.contact_cadence
+    relation: requires
+    reason: Due contact-cadence check-ins are digest action inputs without creating automatic reminders.
+    strength: 85
+  - source: reminders.notification_preferences
     target: authentication.account_access_boundary
     relation: requires
     reason: Notification settings are private to the authenticated account owner.

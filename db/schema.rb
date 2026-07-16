@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_15_160002) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_16_045005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -133,6 +133,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_160002) do
     t.index ["relationship_profile_id", "category"], name: "index_desires_on_relationship_profile_id_and_category"
     t.index ["relationship_profile_id", "status"], name: "index_desires_on_relationship_profile_id_and_status"
     t.index ["relationship_profile_id"], name: "index_desires_on_relationship_profile_id"
+  end
+
+  create_table "digest_deliveries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "channel", null: false
+    t.datetime "created_at", null: false
+    t.datetime "dispatched_at"
+    t.datetime "email_delivered_at"
+    t.datetime "enqueued_at"
+    t.text "error_message"
+    t.datetime "handed_off_at"
+    t.string "mode", null: false
+    t.datetime "scheduled_for", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["enqueued_at"], name: "index_digest_deliveries_on_recoverable_lease", where: "((status)::text = ANY ((ARRAY['pending'::character varying, 'dispatching'::character varying])::text[]))"
+    t.index ["user_id", "scheduled_for"], name: "index_digest_deliveries_on_user_and_occurrence", unique: true
+    t.index ["user_id"], name: "index_digest_deliveries_on_user_id"
+    t.check_constraint "channel::text = ANY (ARRAY['email'::character varying, 'in_app'::character varying]::text[])", name: "digest_deliveries_supported_channel"
+    t.check_constraint "mode::text = ANY (ARRAY['daily'::character varying, 'weekly'::character varying]::text[])", name: "digest_deliveries_supported_mode"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'dispatching'::character varying, 'dispatched'::character varying, 'skipped'::character varying, 'failed'::character varying, 'cancelled'::character varying]::text[])", name: "digest_deliveries_supported_status"
   end
 
   create_table "feature_flag_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -315,7 +336,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_160002) do
 
   create_table "notification_preferences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "digest_channel", default: "email", null: false
     t.string "digest_mode", default: "off", null: false
+    t.datetime "digest_schedule_changed_at"
     t.time "digest_time", default: "2000-01-01 09:00:00", null: false
     t.integer "digest_weekday", default: 1, null: false
     t.boolean "email_enabled", default: true, null: false
@@ -333,6 +356,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_160002) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["user_id"], name: "index_notification_preferences_on_user_id", unique: true
+    t.check_constraint "digest_channel::text = ANY (ARRAY['email'::character varying, 'in_app'::character varying]::text[])", name: "notification_preferences_supported_digest_channel"
     t.check_constraint "digest_mode::text = ANY (ARRAY['off'::character varying, 'daily'::character varying, 'weekly'::character varying]::text[])", name: "notification_preferences_supported_digest_mode"
     t.check_constraint "digest_weekday >= 0 AND digest_weekday <= 6", name: "notification_preferences_supported_digest_weekday"
     t.check_constraint "reminder_frequency::text = ANY (ARRAY['none'::character varying, 'daily'::character varying, 'weekly'::character varying, 'monthly'::character varying, 'yearly'::character varying]::text[])", name: "notification_preferences_supported_reminder_frequency"
@@ -603,6 +627,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_15_160002) do
   add_foreign_key "conversation_recaps", "relationship_profiles"
   add_foreign_key "desire_fulfillments", "desires"
   add_foreign_key "desires", "relationship_profiles"
+  add_foreign_key "digest_deliveries", "users"
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"

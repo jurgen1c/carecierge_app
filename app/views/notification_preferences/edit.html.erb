@@ -84,10 +84,14 @@
             <h2 id="digest-heading" class="text-base font-semibold text-stone-950"><%= t("notification_preferences.edit.digest.title") %></h2>
             <p class="mt-1 text-sm leading-5 text-stone-600"><%= t("notification_preferences.edit.digest.body") %></p>
           </div>
-          <div class="grid gap-4 px-4 py-4 sm:grid-cols-3 sm:px-5">
+          <div class="grid gap-4 px-4 py-4 sm:grid-cols-2 sm:px-5 lg:grid-cols-4">
             <div>
               <%= form.label :digest_mode, t("notification_preferences.edit.digest.mode"), class: "block text-sm font-medium text-stone-800" %>
               <%= form.select :digest_mode, NotificationPreference.digest_mode_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+            </div>
+            <div>
+              <%= form.label :digest_channel, t("notification_preferences.edit.digest.channel"), class: "block text-sm font-medium text-stone-800" %>
+              <%= form.select :digest_channel, NotificationPreference.digest_channel_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
             </div>
             <div>
               <%= form.label :digest_weekday, t("notification_preferences.edit.digest.weekday"), class: "block text-sm font-medium text-stone-800" %>

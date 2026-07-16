@@ -4,7 +4,9 @@
 # Database name: primary
 #
 #  id                           :uuid             not null, primary key
+#  digest_channel               :string           default("email"), not null
 #  digest_mode                  :string           default("off"), not null
+#  digest_schedule_changed_at   :datetime
 #  digest_time                  :time             default(2000-01-01 09:00:00.000000000 UTC +00:00), not null
 #  digest_weekday               :integer          default(1), not null
 #  email_enabled                :boolean          default(TRUE), not null
@@ -39,6 +41,11 @@ class NotificationPreference < ApplicationRecord
   REMINDER_FREQUENCIES = Reminder::RECURRENCES
   REMINDER_LEAD_MINUTES = [ 0, 60, 1_440, 10_080, 20_160, 43_200 ].freeze
   DIGEST_MODES = %w[off daily weekly].freeze
+  DIGEST_CHANNELS = %w[email in_app].freeze
+  DIGEST_SCHEDULE_ATTRIBUTES = %w[
+    digest_mode digest_channel digest_time digest_weekday time_zone
+    quiet_hours_enabled quiet_hours_start quiet_hours_end
+  ].freeze
 
   CHANNEL_ATTRIBUTES = {
     "in_app" => :in_app_enabled,
@@ -48,10 +55,13 @@ class NotificationPreference < ApplicationRecord
   belongs_to :user
   has_many :relationship_notification_preferences, dependent: :destroy
 
+  before_save :stamp_digest_schedule_change, if: :digest_schedule_change?
+
   validates :user_id, uniqueness: true
   validates :reminder_frequency, inclusion: { in: REMINDER_FREQUENCIES }
   validates :reminder_lead_minutes, inclusion: { in: REMINDER_LEAD_MINUTES }
   validates :digest_mode, inclusion: { in: DIGEST_MODES }
+  validates :digest_channel, inclusion: { in: DIGEST_CHANNELS }
   validates :digest_weekday, inclusion: { in: 0..6 }
   validates :quiet_hours_start, :quiet_hours_end, :digest_time, presence: true
   validate :recognized_time_zone
@@ -85,6 +95,10 @@ class NotificationPreference < ApplicationRecord
     DIGEST_MODES.map { |value| [ I18n.t("notification_preferences.digest_modes.#{value}"), value ] }
   end
 
+  def self.digest_channel_options
+    DIGEST_CHANNELS.map { |value| [ I18n.t("notification_preferences.digest_channels.#{value}"), value ] }
+  end
+
   def self.digest_weekday_options
     (0..6).map { |index| [ I18n.t("notification_preferences.weekdays.#{index}"), index ] }
   end
@@ -104,6 +118,38 @@ class NotificationPreference < ApplicationRecord
     attribute.present? && public_send(attribute) && !muted_for_reminder?(relationship_profile)
   end
 
+  def digest_delivery_allowed?
+    digest_mode != "off" && CHANNEL_ATTRIBUTES.fetch(digest_channel).then { |attribute| public_send(attribute) }
+  end
+
+  def due_digest_occurrence(at: Time.current, lookback:)
+    return unless digest_delivery_allowed?
+
+    local_time = at.in_time_zone(time_zone_object)
+    days_back = (lookback / 1.day).ceil
+    candidate_dates = (0..days_back).map { |offset| local_time.to_date - offset.days }
+    candidate_dates.filter_map do |date|
+      next if digest_mode == "weekly" && date.wday != digest_weekday
+
+      occurrence = time_zone_object.local(date.year, date.month, date.day, digest_time.hour, digest_time.min, digest_time.sec)
+      next if digest_schedule_changed_at.present? && occurrence < digest_schedule_changed_at
+
+      effective_delivery_at = digest_effective_delivery_at(occurrence)
+      occurrence if effective_delivery_at <= local_time && effective_delivery_at >= local_time - lookback
+    end.max
+  end
+
+  def digest_effective_delivery_at(occurrence)
+    quiet_hours_enabled? && quiet_hours_include?(occurrence) ? quiet_hours_end_after(occurrence) : occurrence
+  end
+
+  def digest_delivery_deferred_until(at: Time.current)
+    return unless quiet_hours_enabled?
+
+    local_time = at.in_time_zone(time_zone_object)
+    quiet_hours_end_after(local_time) if quiet_hours_include?(local_time)
+  end
+
   def muted_for?(relationship_profile_id)
     overrides = relationship_notification_preferences
     if overrides.loaded?
@@ -114,6 +160,16 @@ class NotificationPreference < ApplicationRecord
   end
 
   private
+
+  def digest_schedule_change?
+    DIGEST_SCHEDULE_ATTRIBUTES.any? { |attribute| will_save_change_to_attribute?(attribute) } ||
+      (digest_channel == "email" && will_save_change_to_email_enabled?) ||
+      (digest_channel == "in_app" && will_save_change_to_in_app_enabled?)
+  end
+
+  def stamp_digest_schedule_change
+    self.digest_schedule_changed_at = Time.current unless will_save_change_to_digest_schedule_changed_at?
+  end
 
   def muted_for_reminder?(relationship_profile)
     relationship_profile.present? && !relationship_profile.archived? && muted_for?(relationship_profile.id)

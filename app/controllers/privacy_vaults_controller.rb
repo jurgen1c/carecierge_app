@@ -70,7 +70,7 @@ class PrivacyVaultsController < ApplicationController
   def prepare_unlocked_vault
     @privacy_vault_items = @relationship_profile.privacy_vault_items.includes(:protectable).ordered.to_a
     @protectable_groups = [
-      [ "private_note", @relationship_profile.relationship_notes.includes(:privacy_vault_item).reject(&:vault_protected?) ],
+      [ "general_note", @relationship_profile.relationship_notes.includes(:privacy_vault_item).reject(&:vault_protected?) ],
       [ "memory", @relationship_profile.memory_records.includes(:privacy_vault_item).reject(&:vault_protected?) ],
       [ "relationship_detail", @relationship_profile.relationship_field_values.includes(:privacy_vault_item, :template_field).reject(&:vault_protected?) ]
     ]

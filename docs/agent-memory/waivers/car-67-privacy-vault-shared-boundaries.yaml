@@ -10,6 +10,7 @@ reason: >
   The vault claim intentionally requires those existing authentication and
   owner-scope boundaries instead of superseding their atomic behavior.
 files:
+  - app/controllers/privacy_vaults_controller.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/models/relationship_profile.rb
   - app/models/user.rb

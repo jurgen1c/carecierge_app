@@ -46,6 +46,19 @@ RSpec.describe "Privacy vaults", type: :request do
     expect(response.body).to match(/data-privacy-vault-lease-duration-value="\d+"/)
   end
 
+  it "uses a neutral heading for the mixed protectable notes group" do
+    create(:relationship_note, relationship_profile:, category: "General", body: "Shared context")
+    create(:relationship_note, relationship_profile:, category: "Private", body: "Sensitive context")
+    post unlock_relationship_profile_privacy_vault_path(relationship_profile),
+      params: { privacy_vault_unlock: { password: } }
+
+    get relationship_profile_privacy_vault_path(relationship_profile)
+
+    headings = response.parsed_body.css("section h3").map { _1.text.strip }
+    expect(headings).to include("Note")
+    expect(headings).not_to include("Private note")
+  end
+
   it "does not render decrypted content when the authoritative lease touch fails" do
     memory = create(:memory_record, relationship_profile:, title: "Private plan", body: "Secret payload")
     PrivacyVault::Protect.call(actor: user, protectable: memory)

@@ -61,6 +61,19 @@ RSpec.describe PrivacyVaultItem, type: :model do
     expect(item.errors[:payload]).to be_present
   end
 
+  it "uses the encrypted note title key for the item type badge" do
+    profile = create(:relationship_profile)
+    note = create(:relationship_note, relationship_profile: profile, category: "General", body: "Shared context")
+    item = build(
+      :privacy_vault_item,
+      relationship_profile: profile,
+      protectable: note,
+      payload: { "title_key" => "general_note", "category" => "General", "body" => "Shared context" }
+    )
+
+    expect(item.type_key).to eq("general_note")
+  end
+
   it "requires the protected record to belong to the same relationship profile" do
     item = build(
       :privacy_vault_item,

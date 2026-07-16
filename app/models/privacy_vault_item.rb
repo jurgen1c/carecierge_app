@@ -62,10 +62,11 @@ class PrivacyVaultItem < ApplicationRecord
   end
 
   def type_key
+    return payload["title_key"].presence || "general_note" if protectable_type == "RelationshipNote"
+
     {
       "MemoryRecord" => "memory",
-      "RelationshipFieldValue" => "relationship_detail",
-      "RelationshipNote" => "private_note"
+      "RelationshipFieldValue" => "relationship_detail"
     }.fetch(protectable_type)
   end
 

@@ -49,4 +49,15 @@ class VaultAccessEvent < ApplicationRecord
       occurred_at: Time.current
     )
   end
+
+  def self.record_safely(event_type:, user:, relationship_profile:, privacy_vault_item: nil)
+    record!(event_type:, user:, relationship_profile:, privacy_vault_item:)
+  rescue ActiveRecord::ActiveRecordError => error
+    Rails.error.report(
+      error,
+      handled: true,
+      context: { component: "privacy_vault_access_audit", event_type: }
+    )
+    nil
+  end
 end

@@ -20,8 +20,10 @@ claim: >
   content on a response-relative timer or a cross-tab signal from UI lease
   revocations. Password recovery signs authenticated users out and revokes the
   lease before handing off to Devise. Unlocked users can reveal, restore, or allow
-  an item for suggestions; VaultAccessEvent stores metadata only. The vault
-  migration refuses rollback while encrypted payloads remain.
+  an item for suggestions; VaultAccessEvent stores metadata only. Access-event
+  persistence is best-effort and reports failures without blocking password,
+  lock, or view outcomes, while mutation-event persistence remains transactional.
+  The vault migration refuses rollback while encrypted payloads remain.
 
 source_files:
   - app/models/privacy_vault_item.rb
@@ -98,8 +100,10 @@ versions revoke stale cookies; decrypted responses use HTTP no-store, and the
 browser uses a response-relative timer plus cross-tab UI revocation signals to
 remove decrypted DOM content. Password recovery first signs the user out and
 revokes the lease so Devise's unauthenticated recovery flow remains usable for
-Google-created accounts. Audits store metadata only. Authenticator MFA remains
-deferred to CAR-82.
+Google-created accounts. Audits store metadata only; access audit failures are
+reported without blocking unlock, failed-unlock, lock, or view outcomes, while
+protection and restoration audits remain transactional. Authenticator MFA
+remains deferred to CAR-82.
 
 ## Why It Matters
 

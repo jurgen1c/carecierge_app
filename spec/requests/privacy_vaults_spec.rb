@@ -102,6 +102,8 @@ RSpec.describe "Privacy vaults", type: :request do
     post unlock_relationship_profile_privacy_vault_path(relationship_profile),
       params: { privacy_vault_unlock: { password: "wrong-password" } }
 
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("Password was not accepted")
     allow(VaultAccessEvent).to receive(:record!).and_call_original
     get relationship_profile_privacy_vault_path(relationship_profile)
     expect(response.body).to include("Enter your password")
@@ -158,6 +160,7 @@ RSpec.describe "Privacy vaults", type: :request do
 
     delete lock_relationship_profile_privacy_vault_path(relationship_profile)
 
+    expect(response).to redirect_to(relationship_profile_privacy_vault_path(relationship_profile))
     allow(VaultAccessEvent).to receive(:record!).and_call_original
     get relationship_profile_privacy_vault_path(relationship_profile)
     expect(response.body).to include("Enter your password")
@@ -240,6 +243,39 @@ RSpec.describe "Privacy vaults", type: :request do
       params: { privacy_vault_unlock: { password: } }
 
     expect(response).to redirect_to(relationship_profile_privacy_vault_path(relationship_profile))
+  end
+
+  it "keeps a successful unlock usable when access auditing fails" do
+    allow(VaultAccessEvent).to receive(:record!).and_wrap_original do |method, **attributes|
+      raise ActiveRecord::RecordInvalid.new(VaultAccessEvent.new) if attributes[:event_type] == "unlocked"
+
+      method.call(**attributes)
+    end
+
+    post unlock_relationship_profile_privacy_vault_path(relationship_profile),
+      params: { privacy_vault_unlock: { password: } }
+
+    expect(response).to redirect_to(relationship_profile_privacy_vault_path(relationship_profile))
+    allow(VaultAccessEvent).to receive(:record!).and_call_original
+    get relationship_profile_privacy_vault_path(relationship_profile)
+    expect(response.body).to include("Unlocked for 10 minutes")
+  end
+
+  it "renders decrypted content when view auditing fails" do
+    memory = create(:memory_record, relationship_profile:, title: "Private plan", body: "Visible after unlock")
+    PrivacyVault::Protect.call(actor: user, protectable: memory)
+    post unlock_relationship_profile_privacy_vault_path(relationship_profile),
+      params: { privacy_vault_unlock: { password: } }
+    allow(VaultAccessEvent).to receive(:record!).and_wrap_original do |method, **attributes|
+      raise ActiveRecord::RecordInvalid.new(VaultAccessEvent.new) if attributes[:event_type] == "viewed"
+
+      method.call(**attributes)
+    end
+
+    get relationship_profile_privacy_vault_path(relationship_profile)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include("Visible after unlock")
   end
 
   it "halts vault mutations when the authoritative check-and-touch fails" do

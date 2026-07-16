@@ -30,11 +30,11 @@ class PrivacyVaultsController < ApplicationController
     end
 
     if password_valid
-      VaultAccessEvent.record!(event_type: "unlocked", user: current_user, relationship_profile: @relationship_profile)
+      VaultAccessEvent.record_safely(event_type: "unlocked", user: current_user, relationship_profile: @relationship_profile)
       redirect_to relationship_profile_privacy_vault_path(@relationship_profile), notice: t("privacy_vaults.unlock.notice")
     else
       clear_privacy_vault_lease
-      VaultAccessEvent.record!(event_type: "unlock_failed", user: current_user, relationship_profile: @relationship_profile)
+      VaultAccessEvent.record_safely(event_type: "unlock_failed", user: current_user, relationship_profile: @relationship_profile)
       @unlock_error = t("privacy_vaults.unlock.invalid_password")
       render :show, status: :unprocessable_content
     end
@@ -44,7 +44,7 @@ class PrivacyVaultsController < ApplicationController
     authorize @relationship_profile, :show?
     current_user.with_lock { current_user.increment!(:privacy_vault_lease_version) }
     clear_privacy_vault_lease
-    VaultAccessEvent.record!(event_type: "locked", user: current_user, relationship_profile: @relationship_profile)
+    VaultAccessEvent.record_safely(event_type: "locked", user: current_user, relationship_profile: @relationship_profile)
     redirect_to relationship_profile_privacy_vault_path(@relationship_profile), notice: t("privacy_vaults.lock.notice")
   end
 
@@ -74,7 +74,7 @@ class PrivacyVaultsController < ApplicationController
       [ "memory", @relationship_profile.memory_records.includes(:privacy_vault_item).reject(&:vault_protected?) ],
       [ "relationship_detail", @relationship_profile.relationship_field_values.includes(:privacy_vault_item, :template_field).reject(&:vault_protected?) ]
     ]
-    VaultAccessEvent.record!(event_type: "viewed", user: current_user, relationship_profile: @relationship_profile)
+    VaultAccessEvent.record_safely(event_type: "viewed", user: current_user, relationship_profile: @relationship_profile)
   end
 
   def not_found

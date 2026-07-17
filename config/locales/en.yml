@@ -216,6 +216,9 @@ en:
       confirmation: "does not match %{attribute}"
       future: "can't be in the future"
       inclusion: "is not included in the list"
+      profile_mismatch: "must belong to the same relationship profile"
+      vault_protected: "cannot change while protected in the privacy vault"
+      vault_embeds_not_supported: "Remove embedded files before protecting this note"
   layouts:
     application:
       title: "Carecierge"
@@ -460,6 +463,8 @@ en:
       notes: "Notes"
       private_notes: "Private or sensitive notes"
       private_notes_hint: "Keep sensitive context explicit and separate so future sharing or automation can avoid it by default."
+      vault_protected_hint: "This value is protected in the privacy vault. Open the vault to reveal, restore, or change its suggestion preference."
+      protected_relationship_detail: "Protected relationship detail"
       structured_preferences: "Structured preferences"
       structured_preferences_hint: "Track what this person likes, avoids, prefers, or cannot have."
       preference_row: "Preference %{number}"
@@ -1480,3 +1485,61 @@ en:
     reopen:
       notice: "Commitment reopened."
       error: "We could not reopen this commitment."
+  privacy_vaults:
+    restored_label: "%{label} (restored)"
+    access_required: "Enter your password to open the privacy vault."
+    item_types:
+      general_note: "Note"
+      private_note: "Private note"
+      memory: "Memory"
+      relationship_detail: "Relationship detail"
+    suggestion_usages:
+      excluded: "Excluded from suggestions"
+      allowed: "Allowed for suggestions"
+    section:
+      title: "Privacy vault"
+      body: "Protected content stays out of profile views and search. Suggestions use it only when you explicitly allow that item."
+      item_count:
+        one: "1 protected item"
+        other: "%{count} protected items"
+      open: "Open vault"
+    show:
+      page_title: "Privacy vault for %{name}"
+      title: "Privacy vault"
+      body: "Protect sensitive notes, memories, and relationship details behind a fresh password check. Controls stay visible and reversible."
+      lock: "Lock vault"
+      unlocked: "Unlocked for 10 minutes"
+      lease_ended_title: "Vault access ended"
+      lease_ended_body: "Protected content was removed from this page because the vault was locked or the inactivity lease ended. Reopen the vault to verify your password again."
+      reopen: "Reopen vault"
+      unlocked_body: "The timer renews while you use this vault. Leaving it inactive for 10 minutes locks it again."
+      protected_title: "Protected items"
+      protected_body: "These values are encrypted before they are stored and concealed from ordinary relationship views and search."
+      empty_title: "Nothing is protected yet"
+      empty_body: "Choose an existing note, memory, or relationship detail below when it needs the stronger vault boundary."
+      protect_title: "Protect existing context"
+      protect_body: "Moving an item here removes its readable value from the ordinary profile. You can restore it whenever you choose."
+      no_candidates: "No available items in this category."
+      protect: "Protect"
+      restore: "Restore to profile"
+      restore_confirm: "Restore this item to the ordinary relationship profile?"
+      allow_suggestions: "Allow for suggestions"
+      exclude_suggestions: "Exclude from suggestions"
+      password_title: "Enter your password"
+      password_body: "Signing in is not enough to open protected relationship context. Confirm your Carecierge password each time the vault lease expires."
+      password: "Password"
+      password_hint: "Opening the vault lasts for 10 minutes of activity and is recorded without saving your password or protected content."
+      reset_password: "Reset or create a password"
+      unlock: "Unlock for 10 minutes"
+    unlock:
+      notice: "Privacy vault unlocked."
+      invalid_password: "Password was not accepted."
+    lock:
+      notice: "Privacy vault locked."
+  privacy_vault_items:
+    create:
+      notice: "Item protected in the privacy vault."
+    update:
+      notice: "Suggestion preference updated."
+    destroy:
+      notice: "Item restored to the relationship profile."

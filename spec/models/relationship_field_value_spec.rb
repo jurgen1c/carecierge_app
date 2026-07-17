@@ -82,4 +82,16 @@ RSpec.describe RelationshipFieldValue, type: :model do
 
     expect(value.label).to eq("Communication style")
   end
+
+  it "allows protected suggested fields to refresh non-secret template labels" do
+    profile = create(:relationship_profile)
+    field = create(:template_field, label: "Old label")
+    value = create(:relationship_field_value, relationship_profile: profile, template_field: field, value: "Secret")
+    PrivacyVault::Protect.call(actor: profile.user, protectable: value)
+    field.update!(label: "New label")
+
+    expect { profile.reload.update!(first_name: "Updated") }.not_to raise_error
+    expect(value.reload.label).to eq("New label")
+    expect(value.value).to eq(PrivacyVaultItem::REDACTED_TEXT)
+  end
 end

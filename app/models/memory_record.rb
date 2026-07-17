@@ -35,8 +35,11 @@ class MemoryRecord < ApplicationRecord
   STATUSES = %w[active needs_review stale corrected archived].freeze
   EDITABLE_STATUSES = %w[active needs_review archived].freeze
 
+  attr_accessor :privacy_vault_transition
+
   belongs_to :relationship_profile
   has_many :memory_revisions, dependent: :destroy
+  has_one :privacy_vault_item, as: :protectable, dependent: :destroy
 
   before_validation :normalize_text_fields
 
@@ -45,8 +48,14 @@ class MemoryRecord < ApplicationRecord
   validates :source, presence: true, inclusion: { in: SOURCES }
   validates :confidence, presence: true, inclusion: { in: CONFIDENCES }
   validates :status, presence: true, inclusion: { in: STATUSES }
+  validate :vault_protected_content_unchanged, on: :update, unless: :privacy_vault_transition
 
   scope :ordered, -> { order(Arel.sql("CASE status WHEN 'needs_review' THEN 0 WHEN 'stale' THEN 1 WHEN 'active' THEN 2 WHEN 'corrected' THEN 3 ELSE 4 END"), :title) }
+  scope :unprotected, -> { where.missing(:privacy_vault_item) }
+
+  def vault_protected?
+    privacy_vault_item.present?
+  end
 
   def source_label
     self.class.source_label(source)
@@ -130,5 +139,12 @@ class MemoryRecord < ApplicationRecord
   def normalize_text_fields
     self.title = title.to_s.squish
     self.body = body.to_s.strip
+  end
+
+  def vault_protected_content_unchanged
+    return unless will_save_change_to_title? || will_save_change_to_body?
+    return unless PrivacyVaultItem.exists?(protectable_type: self.class.base_class.name, protectable_id: id)
+
+    errors.add(:base, :vault_protected)
   end
 end

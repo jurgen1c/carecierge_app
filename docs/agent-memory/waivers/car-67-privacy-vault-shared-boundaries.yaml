@@ -1,0 +1,25 @@
+id: car_67_privacy_vault_shared_boundaries
+status: active
+reason: >
+  CAR-67 introduces the durable relationship_profiles.privacy_vault claim and
+  reviews the existing profile-CRUD and preference-metadata claims. The profile
+  model/controller/show, search query, User association, routes, and English and
+  Spanish locale files are shared wiring. Existing important-date,
+  authentication, feature-flag authorization, localization, preference, and
+  profile ownership contracts remain current without replacement or conflict.
+  The vault claim intentionally requires those existing authentication and
+  owner-scope boundaries instead of superseding their atomic behavior.
+files:
+  - app/controllers/privacy_vaults_controller.rb
+  - app/controllers/relationship_profiles_controller.rb
+  - app/models/relationship_profile.rb
+  - app/models/user.rb
+  - app/queries/relationship_profile/search_query.rb
+  - app/views/relationship_profiles/edit.html.erb
+  - app/views/relationship_profiles/index.html.erb
+  - app/views/relationship_profiles/show.html.erb
+  - config/locales/en.yml
+  - config/locales/es.yml
+  - config/routes.rb
+  - docs/agent-memory/claims/relationship_profiles/privacy-vault.md
+expires_at: 2026-08-16

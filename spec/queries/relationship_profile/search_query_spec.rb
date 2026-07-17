@@ -118,6 +118,20 @@ RSpec.describe RelationshipProfile::SearchQuery do
     end
   end
 
+  it "correlates protected-note exclusion with each searched note" do
+    user = create(:user)
+    sql = described_class.new(
+      RelationshipProfile.where(user:),
+      params: ActionController::Parameters.new(
+        q: { described_class::SEARCH_PREDICATE => "garden" }
+      )
+    ).resolve.to_sql
+
+    expect(sql).to match(/NOT \(EXISTS .*FROM "privacy_vault_items"/)
+    expect(sql).to include(%("privacy_vault_items"."protectable_id" = "relationship_notes"."id"))
+    expect(sql).not_to include("NOT IN")
+  end
+
   it "normalizes accepted filter UUIDs to canonical lowercase values" do
     user = create(:user)
     tag = create(:relationship_tag, user:, name: "VIP")

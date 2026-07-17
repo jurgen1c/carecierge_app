@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+  devise_for :users, controllers: {
+    omniauth_callbacks: "users/omniauth_callbacks",
+    sessions: "users/sessions"
+  }
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -27,6 +30,12 @@ Rails.application.routes.draw do
 
   resources :relationship_profiles do
     patch :archive, on: :member
+    resource :privacy_vault, only: :show do
+      post :unlock
+      post :reset_password
+      delete :lock
+    end
+    resources :privacy_vault_items, only: %i[create update destroy]
     resources :important_dates, except: %i[index show]
     resources :gifts, except: %i[index show] do
       patch :mark_given, on: :member

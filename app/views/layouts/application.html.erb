@@ -23,7 +23,14 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="min-h-screen bg-stone-50 text-stone-950 antialiased">
+  <body class="min-h-screen bg-stone-50 text-stone-950 antialiased"
+        <% if user_signed_in? %>
+          data-controller="privacy-vault"
+          data-privacy-vault-lock-key-value="carecierge:privacy-vault:locked:<%= current_user.id %>"
+          <% if content_for?(:privacy_vault_lease_duration) %>
+            data-privacy-vault-lease-duration-value="<%= content_for(:privacy_vault_lease_duration) %>"
+          <% end %>
+        <% end %>>
     <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8">
       <%= render "layouts/flash", notice: notice, alert: alert %>
 

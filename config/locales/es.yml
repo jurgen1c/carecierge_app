@@ -193,6 +193,9 @@ es:
       greater_than_or_equal_to: "debe ser mayor que o igual a %{count}"
       taken: "ya está en uso"
       too_short: "es demasiado corta; mínimo %{count} caracteres"
+      profile_mismatch: "debe pertenecer al mismo perfil de relación"
+      vault_protected: "no puede cambiar mientras está protegido en la bóveda de privacidad"
+      vault_embeds_not_supported: "Elimina los archivos incrustados antes de proteger esta nota"
   devise:
     forms:
       errors:
@@ -776,6 +779,8 @@ es:
       notes: "Notas"
       private_notes: "Notas privadas o sensibles"
       private_notes_hint: "Mantén el contexto sensible explícito y separado para que futuras funciones de compartir o automatización puedan evitarlo por defecto."
+      vault_protected_hint: "Este valor está protegido en la bóveda de privacidad. Abre la bóveda para verlo, restaurarlo o cambiar su preferencia de sugerencias."
+      protected_relationship_detail: "Detalle de relación protegido"
       structured_preferences: "Preferencias estructuradas"
       structured_preferences_hint: "Registra lo que esta persona disfruta, evita, prefiere o no puede tener."
       preference_row: "Preferencia %{number}"
@@ -1456,3 +1461,61 @@ es:
           one: "1 grupo"
           other: "%{count} grupos"
         rollout_groups_empty: "Aún no se han definido grupos de lanzamiento."
+  privacy_vaults:
+    restored_label: "%{label} (restaurado)"
+    access_required: "Ingresa tu contraseña para abrir la bóveda de privacidad."
+    item_types:
+      general_note: "Nota"
+      private_note: "Nota privada"
+      memory: "Memoria"
+      relationship_detail: "Detalle de la relación"
+    suggestion_usages:
+      excluded: "Excluido de sugerencias"
+      allowed: "Permitido para sugerencias"
+    section:
+      title: "Bóveda de privacidad"
+      body: "El contenido protegido no aparece en las vistas del perfil ni en la búsqueda. Las sugerencias solo lo usan cuando lo permites explícitamente para ese elemento."
+      item_count:
+        one: "1 elemento protegido"
+        other: "%{count} elementos protegidos"
+      open: "Abrir bóveda"
+    show:
+      page_title: "Bóveda de privacidad de %{name}"
+      title: "Bóveda de privacidad"
+      body: "Protege notas, memorias y detalles sensibles detrás de una nueva verificación de contraseña. Los controles permanecen visibles y reversibles."
+      lock: "Bloquear bóveda"
+      unlocked: "Desbloqueada por 10 minutos"
+      lease_ended_title: "El acceso a la bóveda terminó"
+      lease_ended_body: "El contenido protegido se eliminó de esta página porque la bóveda se bloqueó o terminó el período de inactividad. Vuelve a abrirla para verificar tu contraseña."
+      reopen: "Volver a abrir la bóveda"
+      unlocked_body: "El tiempo se renueva mientras usas la bóveda. Diez minutos de inactividad vuelven a bloquearla."
+      protected_title: "Elementos protegidos"
+      protected_body: "Estos valores se cifran antes de guardarse y se ocultan de las vistas normales de la relación y de la búsqueda."
+      empty_title: "Aún no hay elementos protegidos"
+      empty_body: "Elige abajo una nota, memoria o detalle existente cuando necesite la protección adicional de la bóveda."
+      protect_title: "Proteger contexto existente"
+      protect_body: "Mover un elemento aquí elimina su valor legible del perfil normal. Puedes restaurarlo cuando lo decidas."
+      no_candidates: "No hay elementos disponibles en esta categoría."
+      protect: "Proteger"
+      restore: "Restaurar al perfil"
+      restore_confirm: "¿Restaurar este elemento al perfil normal de la relación?"
+      allow_suggestions: "Permitir para sugerencias"
+      exclude_suggestions: "Excluir de sugerencias"
+      password_title: "Ingresa tu contraseña"
+      password_body: "Haber iniciado sesión no basta para abrir el contexto protegido. Confirma tu contraseña de Carecierge cada vez que expire el acceso a la bóveda."
+      password: "Contraseña"
+      password_hint: "La bóveda permanece abierta durante 10 minutos de actividad y el acceso se registra sin guardar tu contraseña ni el contenido protegido."
+      reset_password: "Restablecer o crear una contraseña"
+      unlock: "Desbloquear por 10 minutos"
+    unlock:
+      notice: "Bóveda de privacidad desbloqueada."
+      invalid_password: "La contraseña no fue aceptada."
+    lock:
+      notice: "Bóveda de privacidad bloqueada."
+  privacy_vault_items:
+    create:
+      notice: "El elemento quedó protegido en la bóveda de privacidad."
+    update:
+      notice: "La preferencia de sugerencias fue actualizada."
+    destroy:
+      notice: "El elemento fue restaurado al perfil de la relación."

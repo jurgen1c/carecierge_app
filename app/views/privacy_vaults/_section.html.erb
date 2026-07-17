@@ -1,0 +1,15 @@
+<section class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm shadow-stone-200/40">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <div class="flex flex-wrap items-center gap-2">
+        <h2 class="text-xl font-semibold text-stone-950"><%= t("privacy_vaults.section.title") %></h2>
+        <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900">
+          <%= t("privacy_vaults.section.item_count", count: relationship_profile.privacy_vault_items.size) %>
+        </span>
+      </div>
+      <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("privacy_vaults.section.body") %></p>
+    </div>
+
+    <%= link_to t("privacy_vaults.section.open"), relationship_profile_privacy_vault_path(relationship_profile), class: "inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+  </div>
+</section>

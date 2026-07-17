@@ -3,31 +3,32 @@
 # Table name: users
 # Database name: primary
 #
-#  id                      :uuid             not null, primary key
-#  admin                   :boolean          default(FALSE), not null
-#  confirmation_sent_at    :datetime
-#  confirmation_token      :string
-#  confirmed_at            :datetime
-#  current_sign_in_at      :datetime
-#  current_sign_in_ip      :string
-#  email                   :string           default(""), not null
-#  encrypted_password      :string           default(""), not null
-#  failed_attempts         :integer          default(0), not null
-#  last_sign_in_at         :datetime
-#  last_sign_in_ip         :string
-#  locked_at               :datetime
-#  onboarding_completed_at :datetime
-#  onboarding_skipped_at   :datetime
-#  provider                :string
-#  remember_created_at     :datetime
-#  reset_password_sent_at  :datetime
-#  reset_password_token    :string
-#  sign_in_count           :integer          default(0), not null
-#  uid                     :string
-#  unconfirmed_email       :string
-#  unlock_token            :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
+#  id                          :uuid             not null, primary key
+#  admin                       :boolean          default(FALSE), not null
+#  confirmation_sent_at        :datetime
+#  confirmation_token          :string
+#  confirmed_at                :datetime
+#  current_sign_in_at          :datetime
+#  current_sign_in_ip          :string
+#  email                       :string           default(""), not null
+#  encrypted_password          :string           default(""), not null
+#  failed_attempts             :integer          default(0), not null
+#  last_sign_in_at             :datetime
+#  last_sign_in_ip             :string
+#  locked_at                   :datetime
+#  onboarding_completed_at     :datetime
+#  onboarding_skipped_at       :datetime
+#  privacy_vault_lease_version :integer          default(0), not null
+#  provider                    :string
+#  remember_created_at         :datetime
+#  reset_password_sent_at      :datetime
+#  reset_password_token        :string
+#  sign_in_count               :integer          default(0), not null
+#  uid                         :string
+#  unconfirmed_email           :string
+#  unlock_token                :string
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
 #
 # Indexes
 #
@@ -53,6 +54,7 @@ class User < ApplicationRecord
   has_many :commitments, through: :relationship_profiles
   has_many :relationship_tags, dependent: :destroy
   has_many :relationship_groups, dependent: :destroy
+  has_many :vault_access_events, dependent: :destroy
 
   def onboarding_completed?
     return true if onboarding_completed_at.present?

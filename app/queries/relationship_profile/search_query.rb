@@ -87,6 +87,13 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
   end
 
   def matching_rich_text_exists(profile_table, notes_table, rich_text_table, term)
+    vault_items_table = PrivacyVaultItem.arel_table
+    protected_note_exists = vault_items_table
+      .project(Arel.sql("1"))
+      .where(vault_items_table[:protectable_type].eq("RelationshipNote"))
+      .where(vault_items_table[:protectable_id].eq(notes_table[:id]))
+      .exists
+
     notes_table
       .project(Arel.sql("1"))
       .join(rich_text_table)
@@ -96,6 +103,7 @@ class RelationshipProfile::SearchQuery < ApplicationQuery
           .and(rich_text_table[:name].eq("body"))
       )
       .where(notes_table[:relationship_profile_id].eq(profile_table[:id]))
+      .where(Arel::Nodes::Not.new(protected_note_exists))
       .where(lower(rich_text_table[:body]).matches(term))
       .exists
   end

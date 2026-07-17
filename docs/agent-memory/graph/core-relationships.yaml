@@ -141,6 +141,21 @@ edges:
     relation: same_area
     reason: Memory records and desires are reviewable relationship-memory inputs for future suggestions and planning.
     strength: 65
+  - source: relationship_profiles.privacy_vault
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Vault items remain nested under and authorized through the signed-in owner's relationship profile.
+    strength: 95
+  - source: relationship_profiles.privacy_vault
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Opening protected relationship context requires both the authenticated session and a fresh valid account password.
+    strength: 95
+  - source: relationship_profiles.privacy_vault
+    target: relationship_profiles.memory_records
+    relation: constrains
+    reason: Protected memory records are redacted and unavailable to ordinary memory editing, review, and suggestion workflows until restored or explicitly allowed.
+    strength: 90
   - source: relationship_profiles.timeline_entries
     target: relationship_profiles.profile_crud_owner_scope
     relation: requires

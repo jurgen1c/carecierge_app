@@ -106,6 +106,17 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response).to have_http_status(:ok)
       expect(sql.grep(/FROM "relationship_notes"/).size).to eq(1)
       expect(sql.grep(/FROM "action_text_rich_texts"/).size).to eq(1)
+      expect(sql.grep(/FROM "privacy_vault_items"/).size).to eq(1)
+    end
+
+    it "prevents Turbo from snapshotting protectable profile content" do
+      user = create(:user)
+      create(:relationship_profile, user:, first_name: "Maya")
+      sign_in user
+
+      get relationship_profiles_path
+
+      expect(response.body).to include('<meta name="turbo-cache-control" content="no-cache">')
     end
 
     it "ignores malformed search params" do

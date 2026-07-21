@@ -90,6 +90,6 @@ gem "shoulda-matchers", "~> 8.0", group: :test
 
 gem "discard", "~> 2.0"
 
-gem "lexxy", "~> 0.9.20"
+gem "lexxy", "~> 0.9.25"
 
 gem "timecop", "~> 0.9.11", groups: [ :development, :test ]

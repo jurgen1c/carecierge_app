@@ -30,11 +30,7 @@ FactoryBot.define do
     mode { "ask_every_time" }
 
     trait :relationship_override do
-      association :relationship_profile, factory: :relationship_profile
-
-      after(:build) do |permission|
-        permission.relationship_profile.user = permission.user
-      end
+      relationship_profile { association(:relationship_profile, user: user) }
     end
   end
 end

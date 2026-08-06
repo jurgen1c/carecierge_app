@@ -89,8 +89,8 @@ class AutomationPermission < ApplicationRecord
   end
 
   def relationship_owned_by_user
-    return if relationship_profile.blank? || user.blank?
-    return if relationship_profile.user_id == user_id
+    return if relationship_profile_id.blank? || user_id.blank?
+    return if RelationshipProfile.where(id: relationship_profile_id, user_id:).exists?
 
     errors.add(:relationship_profile, :invalid)
   end

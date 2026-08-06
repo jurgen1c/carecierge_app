@@ -51,6 +51,22 @@ RSpec.describe AutomationPermission, type: :model do
     expect(permission.errors[:relationship_profile]).to be_present
   end
 
+  it "validates relationship ownership from persisted data" do
+    user = create(:user)
+    foreign_profile = create(:relationship_profile)
+    permission = build(
+      :automation_permission,
+      user:,
+      relationship_profile: foreign_profile,
+      capability: "make_reservations"
+    )
+    foreign_profile.user = user
+
+    expect(permission).not_to be_valid
+    expect(permission.errors[:relationship_profile]).to be_present
+    expect(foreign_profile.reload.user_id).not_to eq(user.id)
+  end
+
   it "keeps one account default and one override per relationship and capability" do
     global = create(:automation_permission)
     duplicate_global = build(:automation_permission, user: global.user, capability: global.capability)

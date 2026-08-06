@@ -8,6 +8,10 @@ module AutomationPermissions
       new(user: permission.user, actor:).remove!(permission:)
     end
 
+    def self.call_defaults(user:, actor:, modes:)
+      new(user:, actor:).call_defaults(modes:)
+    end
+
     def initialize(user:, actor:)
       @user = user
       @actor = actor
@@ -19,22 +23,18 @@ module AutomationPermissions
       validate_actor!
 
       user.with_lock do
-        permission = user.automation_permissions
-          .lock
-          .find_or_initialize_by(capability: definition.key, relationship_profile: owned_relationship)
-        previous_mode = permission.persisted? ? permission.mode : "disabled"
+        apply_change(definition:, mode:, owned_relationship:)
+      end
+    end
 
-        return permission if previous_mode == mode.to_s && (permission.persisted? || owned_relationship.nil?)
+    def call_defaults(modes:)
+      changes = modes.map { |capability, mode| [ AutomationCapability.fetch(capability), mode ] }
+      validate_actor!
 
-        permission.mode = mode
-        permission.save!
-        record_change!(
-          permission:,
-          action: permission.previously_new_record? ? "created" : "updated",
-          previous_mode:,
-          new_mode: permission.mode
-        )
-        permission
+      user.with_lock do
+        changes.each do |definition, mode|
+          apply_change(definition:, mode:, owned_relationship: nil)
+        end
       end
     end
 
@@ -69,6 +69,32 @@ module AutomationPermissions
       return if relationship_profile.blank?
 
       user.relationship_profiles.find(relationship_profile.id)
+    end
+
+    def apply_change(definition:, mode:, owned_relationship:)
+      permission = user.automation_permissions
+        .lock
+        .find_or_initialize_by(capability: definition.key, relationship_profile: owned_relationship)
+      previous_mode = previous_mode_for(permission:, definition:, owned_relationship:)
+
+      return permission if previous_mode == mode.to_s && (permission.persisted? || owned_relationship.nil?)
+
+      permission.mode = mode
+      permission.save!
+      record_change!(
+        permission:,
+        action: permission.previously_new_record? ? "created" : "updated",
+        previous_mode:,
+        new_mode: permission.mode
+      )
+      permission
+    end
+
+    def previous_mode_for(permission:, definition:, owned_relationship:)
+      return permission.mode if permission.persisted?
+      return "disabled" unless owned_relationship
+
+      user.automation_permissions.account_defaults.find_by(capability: definition.key)&.mode || "disabled"
     end
 
     def record_change!(permission:, action:, previous_mode:, new_mode:)

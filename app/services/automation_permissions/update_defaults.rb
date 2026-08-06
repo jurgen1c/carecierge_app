@@ -11,13 +11,7 @@ module AutomationPermissions
     end
 
     def call
-      modes.each_key { |capability| AutomationCapability.fetch(capability) }
-
-      AutomationPermission.transaction do
-        modes.each do |capability, mode|
-          Change.call(user:, actor:, capability:, mode:)
-        end
-      end
+      Change.call_defaults(user:, actor:, modes:)
       true
     end
 

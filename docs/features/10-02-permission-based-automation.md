@@ -40,7 +40,8 @@ missing records resolve to `disabled`. A kept, owner-scoped relationship profile
 may have a sparse override that takes precedence over the account default;
 the decision path re-resolves supplied profiles through the owner's current
 `kept` scope, archived profiles resolve to `disabled`, and foreign profiles are
-rejected.
+rejected. Permission records validate relationship ownership from persisted
+owner-scoped profile data rather than potentially dirty association state.
 
 The supported modes are `disabled`, `ask_every_time`, and
 `allow_automatically`. High-impact purchase and deposit capabilities deliberately
@@ -55,7 +56,10 @@ default wrapper) so the permission and its append-only
 `AutomationPermissionChange` audit event commit atomically. The authenticated
 settings surface provides account defaults in the main ledger and independently
 collapsible, mutable relationship overrides in the capability inspector.
-Writes and removals serialize on the owning user before locking permission rows.
+Writes and removals serialize on the owning user before locking permission rows;
+bulk default changes hold that owner lock once for the whole batch. When a
+relationship override is first created, its audit event records the inherited
+account mode as the previous state.
 Relationship deletion records a removal event for every override before
 cleanup, and audit rows retain the
 relationship UUID after a profile is deleted so their scope remains

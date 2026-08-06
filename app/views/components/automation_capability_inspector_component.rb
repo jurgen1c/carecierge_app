@@ -21,8 +21,8 @@ class AutomationCapabilityInspectorComponent < ApplicationViewComponent
   end
 
   def available_relationship_profiles
-    overridden_ids = overrides.map(&:relationship_profile_id).to_set
-    relationship_profiles.reject { |profile| overridden_ids.include?(profile.id) }
+    overridden_ids = overrides.to_h { |override| [ override.relationship_profile_id, true ] }
+    relationship_profiles.reject { |profile| overridden_ids.key?(profile.id) }
   end
 
   def capability_name

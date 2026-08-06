@@ -23,6 +23,19 @@ RSpec.describe AutomationPermissions::UpdateDefaults do
     )
   end
 
+  it "locks the owner once for the entire batch" do
+    expect(user).to receive(:with_lock).once.and_call_original
+
+    described_class.call(
+      user:,
+      actor: user,
+      modes: {
+        draft_messages: "allow_automatically",
+        make_purchases: "ask_every_time"
+      }
+    )
+  end
+
   it "rejects unknown capabilities before writing any changes" do
     expect do
       described_class.call(

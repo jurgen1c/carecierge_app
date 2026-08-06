@@ -75,7 +75,7 @@ RSpec.describe RelationshipProfile, type: :model do
 
     profile.destroy!
 
-    expect(AutomationPermission).not_to exist(permission.id)
+    expect(AutomationPermission.exists?(permission.id)).to be(false)
     expect(profile.user.automation_permission_changes.sole).to have_attributes(
       relationship_profile_id: profile.id,
       action: "removed",

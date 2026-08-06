@@ -62,6 +62,25 @@ RSpec.describe AutomationPermissions::Change do
       .to eq("disabled")
   end
 
+  it "records the inherited account mode when creating a relationship override" do
+    profile = create(:relationship_profile, user:)
+    create(:automation_permission, user:, capability: "draft_messages", mode: "allow_automatically")
+
+    described_class.call(
+      user:,
+      actor: user,
+      relationship_profile: profile,
+      capability: :draft_messages,
+      mode: "ask_every_time"
+    )
+
+    expect(user.automation_permission_changes.sole).to have_attributes(
+      action: "created",
+      previous_mode: "allow_automatically",
+      new_mode: "ask_every_time"
+    )
+  end
+
   it "records the previous mode when a permission changes" do
     permission = create(:automation_permission, user:, mode: "ask_every_time")
 

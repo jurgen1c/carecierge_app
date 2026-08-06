@@ -55,6 +55,8 @@ class User < ApplicationRecord
   has_many :relationship_tags, dependent: :destroy
   has_many :relationship_groups, dependent: :destroy
   has_many :vault_access_events, dependent: :destroy
+  has_many :automation_permissions, dependent: :destroy
+  has_many :automation_permission_changes, dependent: :delete_all
 
   def onboarding_completed?
     return true if onboarding_completed_at.present?

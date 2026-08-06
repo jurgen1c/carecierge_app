@@ -23,6 +23,8 @@ Rails.application.routes.draw do
     patch :complete, on: :member
   end
   resource :notification_preference, only: %i[edit update]
+  resource :automation_permissions, only: %i[edit update]
+  resources :automation_permission_overrides, only: %i[create update destroy]
 
   resource :onboarding, only: %i[show create], controller: "onboarding" do
     post :skip

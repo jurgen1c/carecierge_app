@@ -1276,6 +1276,7 @@ en:
       email: "Email"
       save: "Save preferences"
       manage: "Manage notification settings"
+      automation_permissions: "Manage automation permissions"
     notifications:
       title: "Recent reminder notifications"
       empty: "Due reminders will appear here when in-app delivery is enabled."
@@ -1543,3 +1544,99 @@ en:
       notice: "Suggestion preference updated."
     destroy:
       notice: "Item restored to the relationship profile."
+  automation_permissions:
+    edit:
+      page_title: "Automation permissions"
+      back: "Back to reminders"
+      heading: "Automation permissions"
+      body: "Choose what Carecierge can do automatically, what it should ask you about first, and what stays off. You can change these settings at any time."
+      save: "Save permissions"
+      ledger_title: "Account permissions"
+      ledger_body: "These defaults apply across your account unless you add an override for a specific relationship."
+      risk: "Risk"
+      override_count:
+        one: "1 relationship override"
+        other: "%{count} relationship overrides"
+      conservative_default: "Capabilities stay disabled until you choose a permission."
+      inspector: "Capability details and relationship overrides"
+      relationship_overrides: "Relationship overrides"
+      relationship_overrides_body: "Change how this capability behaves for individual people. Each override can be reviewed independently."
+      no_overrides: "This capability uses the account permission for every relationship."
+      add_override: "Add relationship override"
+      relationship: "Relationship"
+      approval_cap_title: "Approval is always required"
+      approval_cap_body: "High-impact actions such as purchases and deposits cannot run automatically, even when a relationship override exists."
+    update:
+      notice: "Automation permissions saved."
+      error: "We could not save those permissions. Review the choices and try again."
+    permission_mode: "Permission mode"
+    mode_group:
+      account: "%{capability} account permission"
+      relationship: "%{capability} permission for %{relationship}"
+    modes:
+      disabled: "Disabled"
+      ask_every_time: "Ask every time"
+      allow_automatically: "Allow automatically"
+    risks:
+      low: "Low risk"
+      medium: "Medium risk"
+      high: "High risk"
+    groups:
+      everyday_help: "Everyday help"
+      external_actions: "External actions"
+      sensitive_actions: "Sensitive actions"
+    required_permissions:
+      relationship_context: "Relationship context"
+      notifications: "Notifications"
+      contacts: "Contacts"
+      calendar: "Calendar"
+      vendor_communication: "Vendor communication"
+      external_communication: "External communication"
+      payment_method: "Payment method"
+      uploaded_social_content: "Uploaded social content"
+    capabilities:
+      draft_messages:
+        name: "Draft messages"
+        description: "Prepare message drafts without sending them."
+      send_reminders:
+        name: "Send reminders"
+        description: "Create and deliver reminders you have configured."
+      access_contacts:
+        name: "Access contacts"
+        description: "Read contact details needed for a requested action."
+      access_calendar:
+        name: "Access calendar"
+        description: "Read or update calendar details for plans and events."
+      suggest_gifts:
+        name: "Suggest gifts"
+        description: "Use relationship context to suggest thoughtful gifts."
+      contact_vendors:
+        name: "Contact vendors"
+        description: "Reach out to vendors about availability or details."
+      send_invitations:
+        name: "Send invitations"
+        description: "Send event invitations to selected people."
+      make_reservations:
+        name: "Make reservations"
+        description: "Find, hold, or book reservations for plans and activities."
+      make_purchases:
+        name: "Make purchases"
+        description: "Purchase goods or services using a saved payment method."
+      pay_deposits:
+        name: "Pay deposits"
+        description: "Pay a deposit required to secure a booking."
+      analyze_uploaded_social_content:
+        name: "Analyze uploaded social content"
+        description: "Analyze only the social content you deliberately upload."
+    override:
+      save: "Save override"
+      remove: "Remove override"
+  automation_permission_overrides:
+    create:
+      notice: "Relationship override added."
+      error: "We could not add that relationship override."
+    update:
+      notice: "Relationship override updated."
+      error: "We could not update that relationship override."
+    destroy:
+      notice: "Relationship override removed."

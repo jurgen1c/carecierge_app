@@ -327,6 +327,7 @@ es:
       email: "Correo electrónico"
       save: "Guardar preferencias"
       manage: "Administrar configuración de notificaciones"
+      automation_permissions: "Administrar permisos de automatización"
     notifications:
       title: "Notificaciones recientes"
       empty: "Los recordatorios pendientes aparecerán aquí cuando la entrega en la aplicación esté activa."
@@ -1519,3 +1520,99 @@ es:
       notice: "La preferencia de sugerencias fue actualizada."
     destroy:
       notice: "El elemento fue restaurado al perfil de la relación."
+  automation_permissions:
+    edit:
+      page_title: "Permisos de automatización"
+      back: "Volver a recordatorios"
+      heading: "Permisos de automatización"
+      body: "Elige qué puede hacer Carecierge automáticamente, qué debe preguntarte primero y qué permanece deshabilitado. Puedes cambiar estas opciones en cualquier momento."
+      save: "Guardar permisos"
+      ledger_title: "Permisos de la cuenta"
+      ledger_body: "Estos valores se aplican a toda tu cuenta, salvo que agregues una excepción para una relación específica."
+      risk: "Riesgo"
+      override_count:
+        one: "1 excepción por relación"
+        other: "%{count} excepciones por relación"
+      conservative_default: "Las capacidades permanecen deshabilitadas hasta que elijas un permiso."
+      inspector: "Detalles de la capacidad y excepciones por relación"
+      relationship_overrides: "Excepciones por relación"
+      relationship_overrides_body: "Cambia cómo se comporta esta capacidad para personas específicas. Puedes revisar cada excepción por separado."
+      no_overrides: "Esta capacidad usa el permiso de la cuenta para todas las relaciones."
+      add_override: "Agregar excepción por relación"
+      relationship: "Relación"
+      approval_cap_title: "La aprobación siempre es obligatoria"
+      approval_cap_body: "Las acciones de alto impacto, como compras y depósitos, no pueden ejecutarse automáticamente, incluso cuando existe una excepción por relación."
+    update:
+      notice: "Los permisos de automatización fueron guardados."
+      error: "No pudimos guardar esos permisos. Revisa las opciones e inténtalo de nuevo."
+    permission_mode: "Modo de permiso"
+    mode_group:
+      account: "Permiso de cuenta para %{capability}"
+      relationship: "Permiso de %{capability} para %{relationship}"
+    modes:
+      disabled: "Deshabilitada"
+      ask_every_time: "Preguntar siempre"
+      allow_automatically: "Permitir automáticamente"
+    risks:
+      low: "Riesgo bajo"
+      medium: "Riesgo medio"
+      high: "Riesgo alto"
+    groups:
+      everyday_help: "Ayuda cotidiana"
+      external_actions: "Acciones externas"
+      sensitive_actions: "Acciones sensibles"
+    required_permissions:
+      relationship_context: "Contexto de la relación"
+      notifications: "Notificaciones"
+      contacts: "Contactos"
+      calendar: "Calendario"
+      vendor_communication: "Comunicación con proveedores"
+      external_communication: "Comunicación externa"
+      payment_method: "Método de pago"
+      uploaded_social_content: "Contenido social subido"
+    capabilities:
+      draft_messages:
+        name: "Redactar mensajes"
+        description: "Prepara borradores de mensajes sin enviarlos."
+      send_reminders:
+        name: "Enviar recordatorios"
+        description: "Crea y entrega los recordatorios que configuraste."
+      access_contacts:
+        name: "Acceder a contactos"
+        description: "Consulta los datos de contacto necesarios para una acción solicitada."
+      access_calendar:
+        name: "Acceder al calendario"
+        description: "Consulta o actualiza detalles del calendario para planes y eventos."
+      suggest_gifts:
+        name: "Sugerir regalos"
+        description: "Usa el contexto de la relación para sugerir regalos considerados."
+      contact_vendors:
+        name: "Contactar proveedores"
+        description: "Consulta con proveedores sobre disponibilidad o detalles."
+      send_invitations:
+        name: "Enviar invitaciones"
+        description: "Envía invitaciones de eventos a las personas seleccionadas."
+      make_reservations:
+        name: "Hacer reservaciones"
+        description: "Busca, aparta o reserva planes y actividades."
+      make_purchases:
+        name: "Realizar compras"
+        description: "Compra bienes o servicios con un método de pago guardado."
+      pay_deposits:
+        name: "Pagar depósitos"
+        description: "Paga el depósito necesario para asegurar una reserva."
+      analyze_uploaded_social_content:
+        name: "Analizar contenido social subido"
+        description: "Analiza solo el contenido social que subes deliberadamente."
+    override:
+      save: "Guardar excepción"
+      remove: "Eliminar excepción"
+  automation_permission_overrides:
+    create:
+      notice: "Se agregó la excepción para la relación."
+      error: "No pudimos agregar esa excepción para la relación."
+    update:
+      notice: "Se actualizó la excepción para la relación."
+      error: "No pudimos actualizar esa excepción para la relación."
+    destroy:
+      notice: "Se eliminó la excepción para la relación."

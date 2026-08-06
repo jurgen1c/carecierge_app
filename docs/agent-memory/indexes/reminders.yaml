@@ -1,6 +1,6 @@
 id: reminders
 name: Reminders
-summary: Owner-scoped reminders and relationship digests with preference-aware delivery, important-date and commitment context, overdue visibility, and iCalendar export.
+summary: Owner-scoped reminders and relationship digests with preference-aware delivery, important-date and commitment context, overdue visibility, iCalendar export, and the automation-permission settings entry point.
 claim_globs:
   - claims/reminders/**/*.md
 default_queries:
@@ -11,6 +11,7 @@ default_queries:
   - reminder relationship profile important date commitment association
   - reminder calendar ics export
   - commitment reminder integration overdue commitments
+  - reminders workspace automation permission settings entry point
 watched_files:
   - app/models/reminder.rb
   - app/models/reminder_delivery.rb

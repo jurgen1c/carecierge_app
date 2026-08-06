@@ -1,0 +1,43 @@
+id: automation_permissions
+name: Automation Permissions
+summary: Fail-closed account and relationship-scoped controls for automation risk, approval, and audited permission changes.
+claim_globs:
+  - claims/automation_permissions/**/*.md
+default_queries:
+  - automation capability risk required permissions allowed modes
+  - account defaults relationship overrides precedence archived profile
+  - explicit approval high impact purchase deposit
+  - automation permission audit changes
+watched_files:
+  - app/models/automation_capability.rb
+  - app/models/automation_permission.rb
+  - app/models/automation_permission_decision.rb
+  - app/models/automation_permission_change.rb
+  - app/models/user.rb
+  - app/models/relationship_profile.rb
+  - app/services/automation_permissions/**/*.rb
+  - app/controllers/automation_permissions_controller.rb
+  - app/controllers/automation_permission_overrides_controller.rb
+  - app/policies/automation_permission_policy.rb
+  - app/views/automation_permissions/**/*.erb
+  - app/views/reminders/_workspace.html.erb
+  - app/views/components/automation_capability_*
+  - app/views/components/automation_permission_*
+  - app/javascript/controllers/automation_permissions_controller.js
+  - config/routes.rb
+  - config/locales/en.yml
+  - config/locales/es.yml
+  - db/migrate/*automation_permissions*.rb
+  - docs/features/10-02-permission-based-automation.md
+  - spec/models/automation_capability_spec.rb
+  - spec/models/automation_permission*.rb
+  - spec/services/automation_permissions/**/*.rb
+  - spec/policies/automation_permission_policy_spec.rb
+  - spec/requests/automation_permissions_spec.rb
+  - spec/components/automation_*.rb
+  - spec/system/automation_permissions_spec.rb
+tags:
+  - automation_permissions
+  - approval
+  - audit
+  - relationship_profiles

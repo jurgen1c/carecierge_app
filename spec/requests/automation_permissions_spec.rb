@@ -129,4 +129,33 @@ RSpec.describe "Automation permissions", type: :request do
     expect(response).to have_http_status(:not_found)
     expect(user.automation_permissions).to be_empty
   end
+
+  it "hides archived overrides and rejects direct mutations" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:, preferred_name: "Archived Elena")
+    override = create(
+      :automation_permission,
+      user:,
+      relationship_profile: profile,
+      capability: "make_reservations",
+      mode: "ask_every_time"
+    )
+    profile.discard!
+    sign_in user
+
+    get edit_automation_permissions_path(capability: "make_reservations")
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).not_to include("Archived Elena")
+
+    patch automation_permission_override_path(override), params: {
+      automation_permission: { mode: "allow_automatically" }
+    }
+    expect(response).to have_http_status(:not_found)
+
+    delete automation_permission_override_path(override)
+    expect(response).to have_http_status(:not_found)
+    expect(override.reload.mode).to eq("ask_every_time")
+    expect(AutomationPermissionChange.count).to eq(0)
+  end
 end

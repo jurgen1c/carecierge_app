@@ -49,6 +49,8 @@ class AutomationPermissionOverridesController < ApplicationController
     @automation_permission = current_user
       .automation_permissions
       .relationship_overrides
+      .joins(:relationship_profile)
+      .merge(current_user.relationship_profiles.kept)
       .find(params[:id])
     authorize @automation_permission
   end

@@ -1,6 +1,23 @@
 require "rails_helper"
 
 RSpec.describe "Automation permissions", type: :system do
+  it "restores the selected capability after Turbo navigation and browser back" do
+    user = create(:user)
+    sign_in user
+
+    visit edit_automation_permissions_path
+    click_link "Make reservations"
+
+    expect(page).to have_current_path(edit_automation_permissions_path(capability: "make_reservations"))
+    click_link "Back to reminders"
+    expect(page).to have_current_path(reminders_path)
+
+    page.go_back
+
+    expect(page).to have_current_path(edit_automation_permissions_path(capability: "make_reservations"))
+    expect(page).to have_css('[data-capability-panel="make_reservations"]:not([hidden])')
+  end
+
   it "switches capability context and manages independently collapsible overrides" do
     user = create(:user)
     elena = create(:relationship_profile, user:, preferred_name: "Elena")

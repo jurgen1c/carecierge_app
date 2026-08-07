@@ -68,7 +68,7 @@ module AutomationPermissions
     def owned_relationship_profile(relationship_profile)
       return if relationship_profile.blank?
 
-      user.relationship_profiles.find(relationship_profile.id)
+      user.relationship_profiles.kept.find(relationship_profile.id)
     end
 
     def apply_change(definition:, mode:, owned_relationship:)

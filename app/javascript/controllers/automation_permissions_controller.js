@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
   static targets = ["panel", "row", "selectedCapability"]
@@ -25,6 +26,8 @@ export default class extends Controller {
 
     const panel = this.panelTargets.find((candidate) => candidate.dataset.capabilityPanel === capability)
     panel?.querySelector("[data-inspector-heading]")?.focus()
-    window.history.replaceState({}, "", event.currentTarget.href)
+    const location = new window.URL(event.currentTarget.href)
+    Turbo.session.history.replace(location, Turbo.session.restorationIdentifier)
+    Turbo.session.view.lastRenderedLocation = location
   }
 }

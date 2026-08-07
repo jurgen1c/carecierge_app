@@ -27,13 +27,17 @@ class AutomationPermissionsController < ApplicationController
 
   def load_settings
     @capabilities = AutomationCapability.all
-    permissions = current_user.automation_permissions.includes(:relationship_profile).to_a
-    @account_modes = permissions
-      .select(&:account_default?)
+    account_permissions = current_user.automation_permissions.account_defaults.to_a
+    relationship_overrides = current_user
+      .automation_permissions
+      .relationship_overrides
+      .joins(:relationship_profile)
+      .merge(current_user.relationship_profiles.kept)
+      .includes(:relationship_profile)
+      .to_a
+    @account_modes = account_permissions
       .to_h { |permission| [ permission.capability, permission.mode ] }
-    @overrides_by_capability = permissions
-      .select(&:override?)
-      .group_by(&:capability)
+    @overrides_by_capability = relationship_overrides.group_by(&:capability)
     @relationship_profiles = current_user.relationship_profiles.kept.order(:first_name, :last_name).to_a
     @selected_capability = selected_capability
   end

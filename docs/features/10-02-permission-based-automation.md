@@ -42,6 +42,9 @@ the decision path re-resolves supplied profiles through the owner's current
 `kept` scope, archived profiles resolve to `disabled`, and foreign profiles are
 rejected. Permission records validate relationship ownership from persisted
 owner-scoped profile data rather than potentially dirty association state.
+Archived relationship overrides remain ineffective, are excluded from the
+settings surface, and cannot be changed through override endpoints unless the
+relationship is restored.
 
 The supported modes are `disabled`, `ask_every_time`, and
 `allow_automatically`. High-impact purchase and deposit capabilities deliberately
@@ -56,6 +59,9 @@ default wrapper) so the permission and its append-only
 `AutomationPermissionChange` audit event commit atomically. The authenticated
 settings surface provides account defaults in the main ledger and independently
 collapsible, mutable relationship overrides in the capability inspector.
+Selecting a capability updates the URL through Turbo's history state without a
+page reload, while preserving the restoration identity and rendered location
+needed for reliable browser Back navigation.
 Writes and removals serialize on the owning user before locking permission rows;
 bulk default changes hold that owner lock once for the whole batch. When a
 relationship override is first created, its audit event records the inherited

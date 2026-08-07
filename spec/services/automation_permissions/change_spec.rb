@@ -116,6 +116,31 @@ RSpec.describe AutomationPermissions::Change do
     expect(AutomationPermissionChange.count).to eq(0)
   end
 
+  it "rejects changes for an archived relationship" do
+    profile = create(:relationship_profile, user:)
+    permission = create(
+      :automation_permission,
+      user:,
+      relationship_profile: profile,
+      capability: "make_reservations",
+      mode: "ask_every_time"
+    )
+    profile.discard!
+
+    expect do
+      described_class.call(
+        user:,
+        actor: user,
+        relationship_profile: profile,
+        capability: permission.capability,
+        mode: "allow_automatically"
+      )
+    end.to raise_error(ActiveRecord::RecordNotFound)
+
+    expect(permission.reload.mode).to eq("ask_every_time")
+    expect(AutomationPermissionChange.count).to eq(0)
+  end
+
   it "rolls back the permission when the audit event cannot be written" do
     allow(AutomationPermissionChange).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
 

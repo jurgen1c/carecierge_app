@@ -63,6 +63,27 @@ RSpec.describe RelationshipProfile, type: :model do
     expect(profile).to be_archived
   end
 
+  it "audits relationship permission removals before deletion" do
+    profile = create(:relationship_profile)
+    permission = create(
+      :automation_permission,
+      user: profile.user,
+      relationship_profile: profile,
+      capability: "make_reservations",
+      mode: "ask_every_time"
+    )
+
+    profile.destroy!
+
+    expect(AutomationPermission.exists?(permission.id)).to be(false)
+    expect(profile.user.automation_permission_changes.sole).to have_attributes(
+      relationship_profile_id: profile.id,
+      action: "removed",
+      previous_mode: "ask_every_time",
+      new_mode: nil
+    )
+  end
+
   it "exposes associated preferences as a keyed hash" do
     profile = create(:relationship_profile)
     create(:relationship_preference, relationship_profile: profile, key: "Coffee", value: "decaf")

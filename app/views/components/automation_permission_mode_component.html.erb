@@ -1,0 +1,12 @@
+<fieldset class="<%= style(columns: column_count) %>" aria-label="<%= label %>">
+  <% allowed_modes.each do |mode| %>
+    <label>
+      <%= radio_button_tag name,
+        mode,
+        selected_mode == mode,
+        id: "#{id_prefix}_#{mode}",
+        class: "peer sr-only" %>
+      <span class="<%= style(:option) %>"><%= t("automation_permissions.modes.#{mode}") %></span>
+    </label>
+  <% end %>
+</fieldset>

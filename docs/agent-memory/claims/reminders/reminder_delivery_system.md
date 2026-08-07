@@ -167,9 +167,12 @@ schedulers as commitments and plans are introduced.
 ## Review Notes
 
 CAR-37 reviewed this claim while extending the existing dispatcher with
-notification timing and relationship-specific controls. Delivery claims,
-recovery, Noticed handoff, recurrence, and lifecycle behavior remain current;
-`reminders.notification_preferences` owns the new settings contract.
+notification timing and relationship-specific controls. CAR-68 reviewed the
+reminder workspace and added its authenticated entry point to automation
+permission settings without changing reminder scheduling or delivery behavior.
+Delivery claims, recovery, Noticed handoff, recurrence, and lifecycle behavior
+remain current; `reminders.notification_preferences` owns the notification
+settings contract.
 
 ## Evidence
 
@@ -183,6 +186,7 @@ recovery, Noticed handoff, recurrence, and lifecycle behavior remain current;
 - `app/notifiers/reminder_in_app_notifier.rb`
 - `app/notifiers/reminder_email_notifier.rb`
 - `app/serializers/reminder_calendar_serializer.rb`
+- `app/views/reminders/_workspace.html.erb`
 - `spec/models/reminder_spec.rb`
 - `spec/jobs/dispatch_due_reminders_job_spec.rb`
 - `spec/jobs/deliver_reminder_job_spec.rb`

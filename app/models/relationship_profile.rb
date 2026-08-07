@@ -123,6 +123,8 @@ class RelationshipProfile < ApplicationRecord
   has_many :interactions, dependent: :destroy
   has_many :privacy_vault_items, dependent: :destroy
   has_many :vault_access_events, dependent: :nullify
+  has_many :automation_permissions, dependent: :destroy
+  has_many :automation_permission_changes
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true
@@ -132,6 +134,7 @@ class RelationshipProfile < ApplicationRecord
 
   before_validation :default_type
   before_validation :normalize_profile_attributes
+  before_destroy :remove_automation_permissions_with_audit, prepend: true
   after_save :destroy_marked_relationship_assignments
 
   validates :first_name, presence: true
@@ -379,6 +382,12 @@ class RelationshipProfile < ApplicationRecord
   end
 
   private
+
+  def remove_automation_permissions_with_audit
+    automation_permissions.find_each do |permission|
+      AutomationPermissions::Change.remove!(permission:, actor: user)
+    end
+  end
 
   def default_type
     self.type = DEFAULT_TYPE if type.blank?

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_16_125515) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -51,6 +51,45 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_125515) do
     t.uuid "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "automation_permission_changes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "action", null: false
+    t.uuid "actor_id", null: false
+    t.string "capability", null: false
+    t.datetime "created_at", null: false
+    t.string "new_mode"
+    t.string "previous_mode"
+    t.uuid "relationship_profile_id"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["actor_id"], name: "index_automation_permission_changes_on_actor_id"
+    t.index ["relationship_profile_id", "created_at"], name: "idx_automation_permission_changes_relationship_time"
+    t.index ["relationship_profile_id"], name: "index_automation_permission_changes_on_relationship_profile_id"
+    t.index ["user_id", "created_at"], name: "index_automation_permission_changes_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_automation_permission_changes_on_user_id"
+    t.check_constraint "action::text = 'removed'::text AND new_mode IS NULL OR (action::text = ANY (ARRAY['created'::character varying, 'updated'::character varying]::text[])) AND new_mode IS NOT NULL", name: "automation_permission_changes_action_mode_check"
+    t.check_constraint "action::text = ANY (ARRAY['created'::character varying, 'updated'::character varying, 'removed'::character varying]::text[])", name: "automation_permission_changes_action_check"
+    t.check_constraint "actor_id = user_id", name: "automation_permission_changes_actor_owner_check"
+    t.check_constraint "capability::text = ANY (ARRAY['draft_messages'::character varying, 'send_reminders'::character varying, 'access_contacts'::character varying, 'access_calendar'::character varying, 'suggest_gifts'::character varying, 'contact_vendors'::character varying, 'send_invitations'::character varying, 'make_reservations'::character varying, 'make_purchases'::character varying, 'pay_deposits'::character varying, 'analyze_uploaded_social_content'::character varying]::text[])", name: "automation_permission_changes_capability_check"
+    t.check_constraint "new_mode IS NULL OR (new_mode::text = ANY (ARRAY['disabled'::character varying, 'ask_every_time'::character varying, 'allow_automatically'::character varying]::text[]))", name: "automation_permission_changes_new_mode_check"
+    t.check_constraint "previous_mode IS NULL OR (previous_mode::text = ANY (ARRAY['disabled'::character varying, 'ask_every_time'::character varying, 'allow_automatically'::character varying]::text[]))", name: "automation_permission_changes_previous_mode_check"
+  end
+
+  create_table "automation_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "capability", null: false
+    t.datetime "created_at", null: false
+    t.string "mode", null: false
+    t.uuid "relationship_profile_id"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["relationship_profile_id"], name: "index_automation_permissions_on_relationship_profile_id"
+    t.index ["user_id", "capability"], name: "idx_automation_permissions_account_defaults", unique: true, where: "(relationship_profile_id IS NULL)"
+    t.index ["user_id", "relationship_profile_id", "capability"], name: "idx_automation_permissions_relationship_overrides", unique: true, where: "(relationship_profile_id IS NOT NULL)"
+    t.index ["user_id"], name: "index_automation_permissions_on_user_id"
+    t.check_constraint "(capability::text <> ALL (ARRAY['make_purchases'::character varying, 'pay_deposits'::character varying]::text[])) OR mode::text <> 'allow_automatically'::text", name: "automation_permissions_high_impact_mode_check"
+    t.check_constraint "capability::text = ANY (ARRAY['draft_messages'::character varying, 'send_reminders'::character varying, 'access_contacts'::character varying, 'access_calendar'::character varying, 'suggest_gifts'::character varying, 'contact_vendors'::character varying, 'send_invitations'::character varying, 'make_reservations'::character varying, 'make_purchases'::character varying, 'pay_deposits'::character varying, 'analyze_uploaded_social_content'::character varying]::text[])", name: "automation_permissions_capability_check"
+    t.check_constraint "mode::text = ANY (ARRAY['disabled'::character varying, 'ask_every_time'::character varying, 'allow_automatically'::character varying]::text[])", name: "automation_permissions_mode_check"
   end
 
   create_table "commitments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -654,6 +693,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_16_125515) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "automation_permission_changes", "users"
+  add_foreign_key "automation_permission_changes", "users", column: "actor_id"
+  add_foreign_key "automation_permissions", "relationship_profiles"
+  add_foreign_key "automation_permissions", "users"
   add_foreign_key "commitments", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_cadences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"

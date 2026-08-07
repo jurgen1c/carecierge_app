@@ -1,0 +1,59 @@
+<% content_for :title, t("automation_permissions.edit.page_title") %>
+
+<main class="flex flex-1 flex-col py-6"
+      data-controller="automation-permissions"
+      data-automation-permissions-selected-value="<%= @selected_capability.key %>">
+  <%= link_to t("automation_permissions.edit.back"), reminders_path, class: "mb-5 inline-flex min-h-11 w-fit items-center text-sm font-semibold text-stone-700 hover:text-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+
+  <header class="flex flex-col gap-4 border-b border-stone-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-stone-950"><%= t("automation_permissions.edit.heading") %></h1>
+      <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("automation_permissions.edit.body") %></p>
+    </div>
+    <%= submit_tag t("automation_permissions.edit.save"), form: "automation-permissions-form", class: "min-h-11 shrink-0 rounded-lg bg-emerald-800 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+  </header>
+
+  <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
+    <%= form_with url: automation_permissions_path, method: :patch, id: "automation-permissions-form", class: "min-w-0 overflow-hidden rounded-xl border border-stone-200 bg-white" do %>
+      <%= hidden_field_tag :selected_capability, @selected_capability.key, data: { automation_permissions_target: "selectedCapability" } %>
+
+      <div class="border-b border-stone-200 bg-stone-50/70 px-4 py-4 sm:px-5">
+        <h2 class="text-base font-semibold text-stone-950"><%= t("automation_permissions.edit.ledger_title") %></h2>
+        <p class="mt-1 text-sm leading-5 text-stone-600"><%= t("automation_permissions.edit.ledger_body") %></p>
+      </div>
+
+      <% @capabilities.group_by(&:group).each do |group, capabilities| %>
+        <section aria-labelledby="automation-group-<%= group %>">
+          <div class="grid gap-2 bg-stone-50/70 px-4 py-3 sm:px-5 lg:grid-cols-[minmax(0,1fr)_7rem_minmax(21rem,1.25fr)]">
+            <h3 id="automation-group-<%= group %>" class="text-sm font-semibold text-stone-950"><%= t("automation_permissions.groups.#{group}") %></h3>
+            <span class="hidden text-xs font-semibold text-stone-600 lg:block"><%= t("automation_permissions.edit.risk") %></span>
+            <span class="hidden text-xs font-semibold text-stone-600 lg:block"><%= t("automation_permissions.permission_mode") %></span>
+          </div>
+
+          <% capabilities.each do |capability| %>
+            <%= component "automation_capability_row",
+              capability:,
+              selected_mode: @account_modes.fetch(capability.key, "disabled"),
+              selected: capability == @selected_capability,
+              override_count: @overrides_by_capability.fetch(capability.key, []).size %>
+          <% end %>
+        </section>
+      <% end %>
+
+      <div class="flex flex-col gap-3 border-t border-stone-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <p class="text-sm leading-5 text-stone-600"><%= t("automation_permissions.edit.conservative_default") %></p>
+        <%= submit_tag t("automation_permissions.edit.save"), class: "min-h-11 rounded-lg bg-emerald-800 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+      </div>
+    <% end %>
+
+    <aside aria-label="<%= t("automation_permissions.edit.inspector") %>" class="min-w-0 xl:sticky xl:top-6">
+      <% @capabilities.each do |capability| %>
+        <%= component "automation_capability_inspector",
+          capability:,
+          overrides: @overrides_by_capability.fetch(capability.key, []),
+          relationship_profiles: @relationship_profiles,
+          selected: capability == @selected_capability %>
+      <% end %>
+    </aside>
+  </div>
+</main>

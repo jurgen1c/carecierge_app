@@ -291,3 +291,18 @@ edges:
     relation: requires
     reason: Each commitment creates and controls a source-backed system promise timeline entry.
     strength: 90
+  - source: automation_permissions.permission_decisions
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Automation permission settings and audit records belong to the authenticated account owner.
+    strength: 95
+  - source: automation_permissions.permission_decisions
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Relationship overrides can reference only kept profiles owned by the permission owner.
+    strength: 95
+  - source: automation_permissions.permission_decisions
+    target: reminders.notification_preferences
+    relation: same_area
+    reason: Both settings surfaces use sparse relationship-specific overrides while owning distinct permission and delivery decisions.
+    strength: 65

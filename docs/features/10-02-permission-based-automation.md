@@ -34,4 +34,40 @@ Users define what the app can do automatically and what requires approval.
 
 ## Implementation Notes
 
-This should be built before any real automation that touches external systems.
+`AutomationCapability` is the canonical catalog for capability risk levels,
+required permissions, and allowed modes. Account defaults are conservative:
+missing records resolve to `disabled`. A kept, owner-scoped relationship profile
+may have a sparse override that takes precedence over the account default;
+the decision path re-resolves supplied profiles through the owner's current
+`kept` scope, archived profiles resolve to `disabled`, and foreign profiles are
+rejected. Permission records validate relationship ownership from persisted
+owner-scoped profile data rather than potentially dirty association state.
+Archived relationship overrides remain ineffective, are excluded from the
+settings surface, and cannot be changed through override endpoints unless the
+relationship is restored.
+
+The supported modes are `disabled`, `ask_every_time`, and
+`allow_automatically`. High-impact purchase and deposit capabilities deliberately
+exclude `allow_automatically`, so an explicit approval is always required before
+execution. Consumers must call `AutomationPermission.decision_for` and then
+`permits_execution?` before performing a governed action. Approval is accepted
+only as the literal boolean `true`; truthy strings and other untrusted values
+fail closed.
+
+Permission mutations go through `AutomationPermissions::Change` (or the bulk
+default wrapper) so the permission and its append-only
+`AutomationPermissionChange` audit event commit atomically. The authenticated
+settings surface provides account defaults in the main ledger and independently
+collapsible, mutable relationship overrides in the capability inspector.
+Selecting a capability updates the URL through Turbo's history state without a
+page reload, while preserving the restoration identity and rendered location
+needed for reliable browser Back navigation.
+Writes and removals serialize on the owning user before locking permission rows;
+bulk default changes hold that owner lock once for the whole batch. When a
+relationship override is first created, its audit event records the inherited
+account mode as the previous state.
+Relationship deletion records a removal event for every override before
+cleanup, and audit rows retain the
+relationship UUID after a profile is deleted so their scope remains
+distinguishable; deleting the owning account removes its audit history with the
+rest of the account data.

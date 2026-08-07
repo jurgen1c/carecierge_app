@@ -1,0 +1,66 @@
+<section id="capability-panel-<%= capability.key %>"
+         class="<%= style %>"
+         data-automation-permissions-target="panel"
+         data-capability-panel="<%= capability.key %>"
+         <%= "hidden" unless selected %>>
+  <header class="border-b border-stone-200 px-4 py-5 sm:px-5">
+    <h2 class="text-lg font-semibold text-stone-950" tabindex="-1" data-inspector-heading><%= capability_name %></h2>
+    <p class="mt-2 text-sm leading-6 text-stone-700"><%= capability_description %></p>
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+      <span class="<%= style(:risk, risk: capability.risk_level.to_sym) %>"><%= t("automation_permissions.risks.#{capability.risk_level}") %></span>
+      <% capability.required_permissions.each do |required_permission| %>
+        <span class="rounded-md bg-stone-100 px-2 py-1 text-xs font-medium text-stone-700"><%= t("automation_permissions.required_permissions.#{required_permission}") %></span>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="px-4 py-5 sm:px-5">
+    <div>
+      <h3 class="text-base font-semibold text-stone-950"><%= t("automation_permissions.edit.relationship_overrides") %></h3>
+      <p class="mt-1 text-sm leading-5 text-stone-600"><%= t("automation_permissions.edit.relationship_overrides_body") %></p>
+    </div>
+
+    <% if overrides.any? %>
+      <div class="mt-4 grid gap-3">
+        <% overrides.each do |permission| %>
+          <%= component "automation_permission_override", permission: %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="mt-4 text-sm leading-6 text-stone-700"><%= t("automation_permissions.edit.no_overrides") %></p>
+    <% end %>
+
+    <% if available_relationship_profiles.any? %>
+      <details class="mt-4 rounded-lg border border-stone-200 bg-stone-50/70">
+        <summary class="flex min-h-11 cursor-pointer items-center px-3 py-2 text-sm font-semibold text-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"><%= t("automation_permissions.edit.add_override") %></summary>
+        <div class="border-t border-stone-200 px-3 py-3">
+          <%= form_with scope: :automation_permission,
+            url: automation_permission_overrides_path,
+            namespace: capability.key do |form| %>
+            <%= form.hidden_field :capability, value: capability.key %>
+            <%= form.label :relationship_profile_id, t("automation_permissions.edit.relationship"), class: "block text-sm font-medium text-stone-800" %>
+            <%= form.collection_select :relationship_profile_id,
+              available_relationship_profiles,
+              :id,
+              :display_name,
+              {},
+              class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+            <%= form.label :mode, t("automation_permissions.permission_mode"), class: "mt-3 block text-sm font-medium text-stone-800" %>
+            <%= form.select :mode,
+              capability.allowed_modes.map { |mode| [t("automation_permissions.modes.#{mode}"), mode] },
+              { selected: "ask_every_time" },
+              class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+            <%= form.submit t("automation_permissions.edit.add_override"), class: "mt-3 min-h-11 rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          <% end %>
+        </div>
+      </details>
+    <% end %>
+
+    <% if capability.high_impact? %>
+      <div class="mt-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-950">
+        <p class="text-sm font-semibold"><%= t("automation_permissions.edit.approval_cap_title") %></p>
+        <p class="mt-1 text-sm leading-6"><%= t("automation_permissions.edit.approval_cap_body") %></p>
+      </div>
+    <% end %>
+  </div>
+</section>

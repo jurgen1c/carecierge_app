@@ -1,0 +1,43 @@
+<%= form_with url:, method: :get, class: "grid gap-4 rounded-xl border border-stone-200 bg-white p-4 sm:grid-cols-2 xl:grid-cols-4", role: "search" do %>
+  <% if local_assigns.key?(:account) %>
+    <div>
+      <%= label_tag :account, t("admin.audit_events.index.account"), class: "block text-sm font-semibold text-stone-900" %>
+      <%= search_field_tag :account,
+        account,
+        placeholder: t("admin.audit_events.index.account_placeholder"),
+        autocomplete: "off",
+        class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= label_tag :event_action, t("audit_events.filters.action"), class: "block text-sm font-semibold text-stone-900" %>
+    <%= select_tag :event_action,
+      options_for_select(AuditEvent::ACTIONS.map { |action| [t("audit_events.actions.#{action.tr('.', '_')}.title"), action] }, query.action),
+      include_blank: t("audit_events.filters.all_actions"),
+      class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+  </div>
+
+  <div>
+    <%= label_tag :source, t("audit_events.filters.source"), class: "block text-sm font-semibold text-stone-900" %>
+    <%= select_tag :source,
+      options_for_select(AuditEvent::SOURCES.map { |source| [t("audit_events.sources.#{source}"), source] }, query.source),
+      include_blank: t("audit_events.filters.all_sources"),
+      class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+  </div>
+
+  <div>
+    <%= label_tag :occurred_from, t("audit_events.filters.from"), class: "block text-sm font-semibold text-stone-900" %>
+    <%= date_field_tag :occurred_from, query.occurred_from, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+  </div>
+
+  <div>
+    <%= label_tag :occurred_to, t("audit_events.filters.to"), class: "block text-sm font-semibold text-stone-900" %>
+    <%= date_field_tag :occurred_to, query.occurred_to, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+  </div>
+
+  <div class="flex items-end gap-3 sm:col-span-2 xl:col-span-3">
+    <%= submit_tag t("audit_events.filters.apply"), class: "min-h-11 rounded-lg bg-emerald-800 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <%= link_to t("audit_events.filters.reset"), url, class: "inline-flex min-h-11 items-center text-sm font-semibold text-stone-700 hover:text-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+  </div>
+<% end %>

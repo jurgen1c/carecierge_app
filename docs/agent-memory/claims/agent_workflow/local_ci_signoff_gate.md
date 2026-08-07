@@ -20,12 +20,8 @@ claim: >
 
 source_files:
   - config/ci.rb
-  - package.json
-  - eslint.config.mjs
-  - AGENTS.md
 
 tags:
-  - agent_workflow
   - rule
   - ci
   - signoff
@@ -33,6 +29,8 @@ tags:
 
 verification:
   - CI_SIGNOFF=false bin/ci
+  - bun audit
+  - bin/bundler-audit check --update
   - gh extension list
   - test ! -f .github/workflows/ci.yml
 
@@ -73,5 +71,7 @@ signoff commands from bypassing tests, lint, or security audits.
 ## Verification
 
 - `CI_SIGNOFF=false bin/ci`
+- `bun audit`
+- `bin/bundler-audit check --update`
 - `gh extension list`
 - `test ! -f .github/workflows/ci.yml`

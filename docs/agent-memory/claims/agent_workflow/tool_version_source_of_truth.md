@@ -13,31 +13,30 @@ claim: >
   comments and values must stay aligned with .tool-versions rather than a removed
   .ruby-version file. The agent-memory CLI is pinned in package.json and bun.lock,
   with bin/memory preferring the local node_modules binary before global or bunx
-  fallback execution. agent-memory.config.yaml owns canonical memory paths and
-  validation defaults. GitHub Actions CI is intentionally absent because local
-  bin/ci signoff is the PR quality gate.
+  fallback execution. Transitive JavaScript security pins belong in explicit
+  package.json overrides and the generated bun.lock. agent-memory.config.yaml
+  owns canonical memory paths and validation defaults. GitHub Actions CI is
+  intentionally absent because local bin/ci signoff is the PR quality gate.
 
 source_files:
   - .tool-versions
   - Dockerfile
-  - AGENTS.md
-  - package.json
-  - bun.lock
   - bin/memory
   - agent-memory.config.yaml
-related_files: []
+related_files:
+  - package.json
+  - bun.lock
 symbols: []
 routes: []
 tags:
-  - agent_workflow
   - tooling
-  - ci
   - agent-memory
 
 verification:
   - bin/memory --version
   - bin/memory sync
   - bin/memory doctor
+  - bun audit
   - test ! -f .github/workflows/ci.yml
   - rg -n RUBY_VERSION Dockerfile
   - rg -n ruby .tool-versions
@@ -56,6 +55,8 @@ The agent-memory CLI is pinned in `package.json` and `bun.lock`. `bin/memory`
 must prefer the repository-local `node_modules/.bin/agent-memory` binary before a
 global executable or `bunx @jurgen1c/agent-memory-cli` fallback. The durable
 memory paths and validation defaults are owned by `agent-memory.config.yaml`.
+Transitive JavaScript security pins must be explicit `package.json` overrides
+and reflected in `bun.lock`, rather than undeclared top-level dependencies.
 
 GitHub Actions CI is intentionally absent because local `bin/ci` signoff is the
 PR quality gate.
@@ -83,6 +84,7 @@ lockfile.
 - `bin/memory --version`
 - `bin/memory sync`
 - `bin/memory doctor`
+- `bun audit`
 - `test ! -f .github/workflows/ci.yml`
 - `rg -n RUBY_VERSION Dockerfile`
 - `rg -n ruby .tool-versions`

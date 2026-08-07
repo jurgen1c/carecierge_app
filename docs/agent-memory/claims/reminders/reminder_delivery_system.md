@@ -55,7 +55,10 @@ claim: >
   same occurrence. Due occurrences remain pending when no active channel is
   available. Relationship profile pages query only their next five
   active reminders in effective delivery order. Owner-scoped endpoints export one reminder or all active
-  reminders as private iCalendar events with normalized multiline text.
+  reminders as private iCalendar events with normalized multiline text and emit
+  privacy-minimized export-request audit evidence after successful serialization;
+  bulk exports use the account as their non-sensitive audit target, and Turbo
+  prefetches are excluded from export evidence.
   Production reminder email links require CARECIERGE_HOST and use HTTPS; SMTP
   transport and sender settings must come from Rails credentials or matching
   CARECIERGE environment variables exposed through Kamal secrets. Recurring
@@ -152,7 +155,7 @@ effective snooze timing and SQL ordering, policy-enforced ownership,
 active-profile association boundaries, relationship-preserving HTML redirects,
 archived-profile action and link fallback,
 minute-boundary-cached timezone options, configured SMTP and HTTPS email links, and private iCalendar
-export. Push and SMS are reserved future
+export with account audit evidence. Push and SMS are reserved future
 channels, not active delivery methods. Commitments extend this system with
 owner- and relationship-matched reminder links; future planning models must do
 the same.

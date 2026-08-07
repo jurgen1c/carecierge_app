@@ -1,0 +1,54 @@
+id: audit_events
+name: Audit Events
+summary: Privacy-minimized, append-only account history and authorized cross-account admin visibility.
+claim_globs:
+  - claims/audit_events/**/*.md
+default_queries:
+  - audit events account history admin ledger authorization
+  - audit metadata allowlist target ownership append only
+  - profile reminder automation privacy vault audit integration
+watched_files:
+  - app/models/audit_event.rb
+  - app/models/user.rb
+  - app/models/relationship_profile.rb
+  - app/models/reminder.rb
+  - app/models/automation_permission.rb
+  - app/models/privacy_vault_item.rb
+  - app/models/vault_access_event.rb
+  - app/services/audit_events/**/*.rb
+  - app/services/automation_permissions/change.rb
+  - app/queries/audit_events/**/*.rb
+  - app/policies/audit_event_policy.rb
+  - app/controllers/audit_events_controller.rb
+  - app/controllers/admin/audit_events_controller.rb
+  - app/controllers/onboarding_controller.rb
+  - app/controllers/relationship_profiles_controller.rb
+  - app/controllers/reminders_controller.rb
+  - app/presenters/audit_event_presenter.rb
+  - app/views/audit_events/**/*.erb
+  - app/views/admin/audit_events/**/*.erb
+  - app/views/components/audit_event_marker_component.*
+  - app/views/dashboard/index.html.erb
+  - config/routes.rb
+  - config/locales/en.yml
+  - config/locales/es.yml
+  - db/migrate/*audit_events*.rb
+  - docs/features/10-04-audit-log.md
+  - spec/models/audit_event_spec.rb
+  - spec/models/vault_access_event_spec.rb
+  - spec/services/audit_events/**/*.rb
+  - spec/services/automation_permissions/change_spec.rb
+  - spec/queries/audit_events/**/*.rb
+  - spec/policies/audit_event_policy_spec.rb
+  - spec/requests/audit_events_spec.rb
+  - spec/requests/admin_audit_events_spec.rb
+  - spec/requests/audit_event_integrations_spec.rb
+  - spec/requests/onboarding_spec.rb
+  - spec/requests/reminders_spec.rb
+  - spec/components/audit_event_marker_component_spec.rb
+  - spec/presenters/audit_event_presenter_spec.rb
+tags:
+  - audit_events
+  - privacy
+  - authorization
+  - admin

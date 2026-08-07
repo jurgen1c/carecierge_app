@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   resource :notification_preference, only: %i[edit update]
   resource :automation_permissions, only: %i[edit update]
   resources :automation_permission_overrides, only: %i[create update destroy]
+  resources :audit_events, only: :index
 
   resource :onboarding, only: %i[show create], controller: "onboarding" do
     post :skip
@@ -62,6 +63,7 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    resources :audit_events, only: :index
     resources :feature_flags, only: :index
   end
 

@@ -23,6 +23,34 @@ RSpec.describe AutomationPermissions::Change do
       previous_mode: "disabled",
       new_mode: "ask_every_time"
     )
+    expect(user.audit_events.sole).to have_attributes(
+      actor: user,
+      action: "permission.changed",
+      target: permission,
+      metadata: {
+        "capability" => "draft_messages",
+        "new_mode" => "ask_every_time",
+        "permission_scope" => "account",
+        "previous_mode" => "disabled"
+      }
+    )
+  end
+
+  it "rolls back a permission change when the generic audit event cannot be written" do
+    permission = create(:automation_permission, user:, mode: "ask_every_time")
+    allow(AuditEvent).to receive(:record!).and_raise(ActiveRecord::RecordInvalid.new(AuditEvent.new))
+
+    expect do
+      described_class.call(
+        user:,
+        actor: user,
+        capability: permission.capability,
+        mode: "allow_automatically"
+      )
+    end.to raise_error(ActiveRecord::RecordInvalid)
+
+    expect(permission.reload.mode).to eq("ask_every_time")
+    expect(AutomationPermissionChange.count).to eq(0)
   end
 
   it "serializes first-time writes on the stable permission owner" do

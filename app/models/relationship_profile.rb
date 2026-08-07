@@ -125,6 +125,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :vault_access_events, dependent: :nullify
   has_many :automation_permissions, dependent: :destroy
   has_many :automation_permission_changes
+  has_many :targeted_audit_events, as: :target, class_name: "AuditEvent", dependent: :nullify
 
   accepts_nested_attributes_for :contact_methods, allow_destroy: true
   accepts_nested_attributes_for :relationship_notes, allow_destroy: true
@@ -296,6 +297,10 @@ class RelationshipProfile < ApplicationRecord
 
   def structured_preferences
     relationship_preferences.index_by(&:key).transform_values(&:value)
+  end
+
+  def custom_type_label=(value)
+    super(value.to_s.squish.presence)
   end
 
   def public_notes

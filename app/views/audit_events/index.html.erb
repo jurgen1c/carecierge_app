@@ -1,0 +1,62 @@
+<% content_for :title, t(".title") %>
+
+<main class="flex flex-1 flex-col gap-6 py-8">
+  <%= link_to t(".back"), dashboard_path, class: "inline-flex min-h-11 w-fit items-center text-sm font-semibold text-stone-700 hover:text-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+
+  <header class="border-b border-stone-200 pb-6">
+    <p class="text-sm font-semibold text-emerald-800"><%= t(".kicker") %></p>
+    <h1 class="mt-3 text-3xl font-semibold text-stone-950"><%= t(".heading") %></h1>
+    <p class="mt-3 max-w-3xl text-base leading-7 text-stone-700"><%= t(".body") %></p>
+  </header>
+
+  <%= render "filters", url: audit_events_path, query: @query %>
+
+  <section aria-labelledby="history-heading" class="overflow-hidden rounded-xl border border-stone-200 bg-white">
+    <h2 id="history-heading" class="sr-only"><%= t(".history") %></h2>
+    <% if @audit_events.any? %>
+      <% @grouped_audit_events.each do |date, events| %>
+        <section aria-labelledby="audit-day-<%= date.iso8601 %>">
+          <h3 id="audit-day-<%= date.iso8601 %>" class="border-b border-stone-200 bg-stone-50 px-4 py-3 text-sm font-semibold text-stone-900 sm:px-5">
+            <%= if date == @today
+              t(".today")
+            elsif date == @yesterday
+              t(".yesterday")
+            else
+              l(date, format: :audit_event_day)
+            end %>
+          </h3>
+          <ol class="divide-y divide-stone-200">
+            <% events.each do |event| %>
+              <% presenter = AuditEventPresenter.new(event) %>
+              <li class="flex gap-4 px-4 py-5 sm:px-5">
+                <%= component "audit_event_marker", tone: presenter.tone %>
+                <div class="min-w-0 flex-1 sm:grid sm:grid-cols-[minmax(0,1fr)_9rem] sm:gap-6">
+                  <div>
+                    <h4 class="text-sm font-semibold text-stone-950"><%= presenter.title %></h4>
+                    <p class="mt-1 max-w-2xl text-sm leading-6 text-stone-700"><%= presenter.description %></p>
+                    <dl class="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-stone-600">
+                      <div class="flex gap-1"><dt class="font-semibold"><%= t(".source") %>:</dt><dd><%= presenter.source_label %></dd></div>
+                      <div class="flex gap-1"><dt class="font-semibold"><%= t(".target") %>:</dt><dd><%= presenter.target_label %></dd></div>
+                    </dl>
+                  </div>
+                  <time datetime="<%= event.occurred_at.iso8601 %>" class="mt-3 block text-sm text-stone-600 sm:mt-0 sm:text-right"><%= l(event.occurred_at.in_time_zone(@time_zone), format: :audit_event_time) %></time>
+                </div>
+              </li>
+            <% end %>
+          </ol>
+        </section>
+      <% end %>
+      <%= render "pagination", pagy: @pagy %>
+    <% else %>
+      <div class="px-5 py-12">
+        <h3 class="text-base font-semibold text-stone-950"><%= @query.filtered? ? t(".filtered_empty_title") : t(".empty_title") %></h3>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-700"><%= @query.filtered? ? t(".filtered_empty_body") : t(".empty_body") %></p>
+      </div>
+    <% end %>
+  </section>
+
+  <aside class="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+    <h2 class="text-base font-semibold text-emerald-950"><%= t(".private_title") %></h2>
+    <p class="mt-2 max-w-3xl text-sm leading-6 text-emerald-950"><%= t(".private_body") %></p>
+  </aside>
+</main>

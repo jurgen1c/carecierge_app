@@ -25,7 +25,12 @@ class OnboardingController < ApplicationController
     end
 
     ActiveRecord::Base.transaction do
-      @relationship_profile.save!
+      AuditEvents::Track.call(
+        user: current_user,
+        actor: current_user,
+        action: "relationship_profile.created",
+        target: @relationship_profile
+      ) { @relationship_profile.save! }
       current_user.complete_onboarding!
     end
 

@@ -2,6 +2,12 @@
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>
 <% end %>
 
+<%= turbo_stream.replace "relationship_persona_section" do %>
+  <%= render "relationship_personas/section",
+    relationship_profile: @relationship_profile,
+    relationship_persona: RelationshipPersona.new(relationship_profile: @relationship_profile) %>
+<% end %>
+
 <%= turbo_stream.replace "flash" do %>
   <%= render "layouts/flash", notice: notice, alert: alert %>
 <% end %>

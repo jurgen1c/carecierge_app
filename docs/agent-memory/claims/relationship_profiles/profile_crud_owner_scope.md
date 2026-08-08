@@ -130,6 +130,9 @@ source_files:
   - db/migrate/20260703142000_add_cascade_to_relationship_assignment_foreign_keys.rb
 
 related_files:
+  - app/models/relationship_persona.rb
+  - app/views/relationship_personas/_section.html.erb
+  - docs/agent-memory/claims/relationship_profiles/relationship-personas-remain-source-backed-and-uncertainty-aware.md
   - app/models/user.rb
   - app/javascript/application.js
   - app/views/layouts/application.html.erb
@@ -148,6 +151,7 @@ related_files:
   - spec/models/relationship_tagging_spec.rb
   - spec/models/template_field_spec.rb
   - spec/requests/relationship_profiles_spec.rb
+  - spec/requests/relationship_personas_spec.rb
   - spec/system/relationship_profile_edit_spec.rb
   - config/locales/en.yml
   - config/locales/es.yml
@@ -279,6 +283,9 @@ stores.
 CAR-25 reviewed this claim while adding nested important-date onboarding capture. The
 owner-scoped profile boundary remains current; date-specific behavior is owned by
 `relationship_profiles.important_dates`.
+CAR-44 reviewed this boundary while adding the derived relationship-persona
+surface. Persona data remains reachable only through the existing authenticated,
+owner-scoped profile load and does not introduce a parallel persistence boundary.
 
 ## Evidence
 
@@ -301,12 +308,15 @@ owner-scoped profile boundary remains current; date-specific behavior is owned b
 - `app/forms/relationship_profiles/form_state.rb`
 - `app/queries/relationship_profile/search_query.rb`
 - `app/controllers/relationship_profiles_controller.rb`
+- `app/models/relationship_persona.rb`
+- `app/views/relationship_personas/_section.html.erb`
 - `app/policies/relationship_profile_policy.rb`
 - `app/views/relationship_profiles/show.html.erb`
 - `app/views/relationship_profiles/new.html.erb`
 - `app/views/relationship_profiles/edit.html.erb`
 - `app/views/relationship_profiles/_form.html.erb`
 - `spec/requests/relationship_profiles_spec.rb`
+- `spec/requests/relationship_personas_spec.rb`
 - `spec/models/relationship_profile_spec.rb`
 - `spec/models/relationship_template_spec.rb`
 - `spec/models/relationship_field_value_spec.rb`

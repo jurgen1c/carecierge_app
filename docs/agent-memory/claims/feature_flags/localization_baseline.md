@@ -3,7 +3,7 @@ id: feature_flags.localization_baseline
 type: constraint
 system: feature_flags
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Feature flag user-facing copy keeps English and Spanish locales
@@ -26,7 +26,8 @@ tags:
 
 verification:
   - bundle exec rspec spec/requests/admin_feature_flags_spec.rb
-last_verified_commit: 59c16d37d66419852ab109e5f68ef29f0a746e53
+  - bundle exec rspec spec/requests/relationship_personas_spec.rb
+last_verified_commit: null
 ---
 
 # Feature flag user-facing copy keeps English and Spanish locales
@@ -44,6 +45,9 @@ Admin-facing feature flag changes can introduce copy without matching localizati
 
 CAR-25 reviewed this claim while adding onboarding important-date copy to English and Spanish
 locales. Feature flag copy and localization behavior remain unchanged.
+CAR-44 reviewed this shared locale boundary while adding English and Spanish
+relationship-persona copy. Feature flag copy, the English default, and Spanish
+availability remain unchanged.
 
 ## Evidence
 
@@ -54,3 +58,4 @@ locales. Feature flag copy and localization behavior remain unchanged.
 ## Verification
 
 - `bundle exec rspec spec/requests/admin_feature_flags_spec.rb`
+- `bundle exec rspec spec/requests/relationship_personas_spec.rb`

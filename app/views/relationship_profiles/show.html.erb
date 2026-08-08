@@ -24,6 +24,7 @@
   <%= render "gifts/section", relationship_profile: @relationship_profile %>
   <%= render "privacy_vaults/section", relationship_profile: @relationship_profile %>
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>
+  <%= render "relationship_personas/section", relationship_profile: @relationship_profile, relationship_persona: @relationship_persona %>
   <%= render "conversation_recaps/section", relationship_profile: @relationship_profile, conversation_recaps: @conversation_recaps, selected_type: @timeline_type %>
   <% if @memory_extraction_enabled || @extracted_memories.any? || @conversation_recaps.any? { |recap| recap.extraction_status != "not_requested" } %>
     <%= render "extracted_memories/section",
@@ -103,7 +104,7 @@
         <% if @relationship_profile.relationship_preferences.any? %>
           <div class="mt-4 space-y-4">
             <% @relationship_profile.relationship_preferences.sort_by { |preference| [ preference.category_label, preference.key.downcase ] }.each do |preference| %>
-              <article class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+              <article id="<%= dom_id(preference, :persona_source) %>" class="rounded-lg border border-stone-200 bg-stone-50 p-4">
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900"><%= preference.preference_type_label %></span>
                   <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-stone-700"><%= preference.category_label %></span>

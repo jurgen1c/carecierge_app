@@ -201,6 +201,38 @@ RSpec.describe "Memory records", type: :request do
       )
     end
 
+    it "marks a semantic title-only edit as a user correction without a body revision" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(
+        :memory_record,
+        relationship_profile: profile,
+        title: "Large birthday gathering",
+        body: "A recent gathering was discussed.",
+        source: "ai_inferred",
+        confidence: "medium"
+      )
+      sign_in user
+
+      expect do
+        patch relationship_profile_memory_record_path(profile, record),
+          params: { memory_record: { title: "Quiet birthday gathering", body: record.body } },
+          as: :turbo_stream
+      end.not_to change(MemoryRevision, :count)
+
+      expect(record.reload).to have_attributes(
+        title: "Quiet birthday gathering",
+        body: "A recent gathering was discussed.",
+        source: "user_corrected",
+        status: "corrected",
+        confidence: "medium"
+      )
+      expect(RelationshipPersona.new(relationship_profile: profile).traits.sole).to have_attributes(
+        statement: "Quiet birthday gathering",
+        certainty: "confirmed"
+      )
+    end
+
     it "clears prior high-impact approval when the memory body is corrected" do
       user = create(:user)
       profile = create(:relationship_profile, user:)

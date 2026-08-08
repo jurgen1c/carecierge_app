@@ -17,7 +17,10 @@ claim: >
   reviews; unsupported decisions fail closed with localized feedback. Exports
   include proposals. Selective deletion locks and resets recap state before
   deleting proposals, preventing delayed recreation while preserving
-  user-corrected memories.
+  user-corrected memories. Approved AI-inferred canonical memories may feed the
+  relationship persona but retain inferred language regardless of confidence;
+  user-corrected canonical memories render as confirmed, and pending proposals
+  never enter persona assembly directly.
 
 source_files:
   - app/models/extracted_memory.rb
@@ -35,6 +38,8 @@ source_files:
 
 related_files:
   - .kamal/secrets
+  - app/models/relationship_persona.rb
+  - app/views/relationship_personas/_section.html.erb
   - app/controllers/conversation_recaps_controller.rb
   - app/models/conversation_recap.rb
   - app/serializers/data_exports/snapshot.rb
@@ -49,7 +54,9 @@ related_files:
   - spec/data_migrations/install_ai_memory_extraction_rollout_spec.rb
   - spec/jobs/memory_extraction_job_spec.rb
   - spec/models/extracted_memory_spec.rb
+  - spec/models/relationship_persona_spec.rb
   - spec/requests/extracted_memories_spec.rb
+  - spec/requests/relationship_personas_spec.rb
   - spec/services/data_deletions/delete_ai_data_spec.rb
   - spec/services/memory_extractions/extract_spec.rb
   - spec/services/memory_extractions/open_ai_extractor_spec.rb
@@ -102,6 +109,11 @@ correction inputs stay filtered from logs. Deletion locks and resets recaps
 before deleting proposals so delayed results cannot recreate AI data;
 user-corrected memories remain.
 
+Approved `ai_inferred` canonical memory can feed relationship personas only
+after review and remains visibly inferred there regardless of confidence.
+Corrected proposals create `user_corrected` memory that personas treat as
+confirmed. Pending proposals are not persona inputs.
+
 ## Why It Matters
 
 Relationship recaps and inferred memories may contain intimate context. Keeping
@@ -122,6 +134,8 @@ changes and keeps later suggestions, reminders, and briefings explainable.
 - `spec/services/memory_extractions/review_spec.rb`
 - `spec/services/data_deletions/delete_ai_data_spec.rb`
 - `spec/requests/extracted_memories_spec.rb`
+- `app/models/relationship_persona.rb`
+- `spec/models/relationship_persona_spec.rb`
 
 ## Verification
 

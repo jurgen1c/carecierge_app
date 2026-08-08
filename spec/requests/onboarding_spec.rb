@@ -85,6 +85,13 @@ RSpec.describe "Onboarding", type: :request do
       expect(user.reload.onboarding_completed_at).to be_present
       expect(profile.first_name).to eq("Maya")
       expect(profile.relationship_preferences.first.value).to eq("Vegetable ramen")
+      expect(user.audit_events.sole).to have_attributes(
+        actor: user,
+        action: "relationship_profile.created",
+        target: profile,
+        source: "web_app",
+        metadata: {}
+      )
       expect(profile.important_dates.order(:starts_on).map(&:date_type)).to eq(%w[birthday anniversary])
       expect(profile.important_dates.order(:starts_on).first).to have_attributes(
         title: "Maya's birthday",

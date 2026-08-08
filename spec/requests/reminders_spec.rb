@@ -28,6 +28,7 @@ RSpec.describe "Reminders", type: :request do
       expect(response.body).to include("Call Elena")
       expect(response.body).to include("All reminders")
       expect(response.body).to include("Export calendar")
+      expect(response.body).to include('data-turbo-prefetch="false"')
       expect(response.body).not_to include("Private other reminder")
     end
 
@@ -570,12 +571,21 @@ RSpec.describe "Reminders", type: :request do
       reminder = create(:reminder, title: "Call Elena")
       sign_in reminder.user
 
-      get calendar_reminder_path(reminder, format: :ics)
+      expect {
+        get calendar_reminder_path(reminder, format: :ics)
+      }.to change(reminder.user.audit_events, :count).by(1)
 
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq("text/calendar")
       expect(response.headers["Content-Disposition"]).to include("carecierge-reminder.ics")
       expect(response.body).to include("SUMMARY:Call Elena")
+      expect(reminder.user.audit_events.last).to have_attributes(
+        actor: reminder.user,
+        action: "data_export.requested",
+        source: "web_app",
+        target: reminder,
+        metadata: { "request_kind" => "reminder_calendar" }
+      )
     end
 
     it "exports only the current owner's active reminders" do
@@ -584,10 +594,31 @@ RSpec.describe "Reminders", type: :request do
       create(:reminder, title: "Other reminder")
       sign_in user
 
-      get calendar_reminders_path(format: :ics)
+      expect {
+        get calendar_reminders_path(format: :ics)
+      }.to change(user.audit_events, :count).by(1)
 
       expect(response.body).to include("SUMMARY:Owned reminder")
       expect(response.body).not_to include("Other reminder")
+      expect(user.audit_events.last).to have_attributes(
+        actor: user,
+        action: "data_export.requested",
+        source: "web_app",
+        target: user,
+        metadata: { "request_kind" => "reminders_calendar" }
+      )
+    end
+
+    it "does not record calendar exports requested by Turbo prefetch" do
+      reminder = create(:reminder)
+      sign_in reminder.user
+
+      expect {
+        get calendar_reminder_path(reminder, format: :ics), headers: { "X-Sec-Purpose" => "prefetch" }
+      }.not_to change(reminder.user.audit_events, :count)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("text/calendar")
     end
   end
 

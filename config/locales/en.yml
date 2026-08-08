@@ -35,6 +35,7 @@ en:
       last_word_connector: ", and "
   date:
     formats:
+      audit_event_day: "%b %-d, %Y"
       relationship_preference_learned_on: "%b %-d, %Y"
       important_date: "%b %-d, %Y"
       desire_captured_on: "%b %-d, %Y"
@@ -43,6 +44,8 @@ en:
       memory_stale_after: "%b %-d, %Y"
   time:
     formats:
+      audit_event_admin: "%b %-d, %Y at %-l:%M %p"
+      audit_event_time: "%-l:%M %p"
       timeline_entry_day: "%b %-d, %Y"
       timeline_entry_time: "%-l:%M %p"
       reminder_day: "%b %-d"
@@ -249,7 +252,144 @@ en:
       reminders_action: "Open reminders"
       privacy_title: "Private by default"
       privacy_body: "Carecierge keeps relationship setup inside your account and prepares future approval paths before automation."
+      audit_history_action: "View activity history"
+      admin_audit_action: "Open admin ledger"
       continue_onboarding: "Continue onboarding"
+  audit_events:
+    index:
+      title: "Activity history"
+      back: "Back to dashboard"
+      kicker: "Private account history"
+      heading: "Activity history"
+      body: "See important actions taken in your account. Sensitive content is never shown here."
+      history: "Account activity"
+      today: "Today"
+      yesterday: "Yesterday"
+      source: "Source"
+      target: "Target"
+      empty_title: "No activity yet"
+      empty_body: "Important account, privacy, reminder, and automation actions will appear here."
+      filtered_empty_title: "No activity matches these filters"
+      filtered_empty_body: "Adjust or clear the filters to see more account history."
+      private_title: "Private by design"
+      private_body: "This history explains what happened without showing message, note, document, credential, or protected-vault contents."
+    filters:
+      action: "Action"
+      all_actions: "All actions"
+      source: "Source"
+      all_sources: "All sources"
+      from: "From"
+      to: "To"
+      apply: "Filter events"
+      reset: "Reset"
+    pagination:
+      aria_label: "Audit history pages"
+      info: "%{from}–%{to} of %{count} events"
+      previous: "Previous"
+      next: "Next"
+      page: "Page %{page} of %{pages}"
+    sources:
+      web_app: "Web app"
+      mobile_app: "Mobile app"
+      ai: "AI"
+      automation: "Automation"
+      system: "System"
+      support: "Support"
+    actors:
+      user: "User"
+      ai: "AI"
+      automation: "Automation"
+      system: "System"
+    targets:
+      account: "Account"
+      automation_permission: "Automation permissions"
+      deleted_resource: "Deleted resource"
+      privacy_vault: "Privacy vault"
+      relationship_profile: "Relationship profile"
+      reminder: "Reminder"
+      resource: "Account resource"
+    actions:
+      approval_granted:
+        title: "Approval granted"
+        description: "You approved an action for %{target}."
+      permission_changed:
+        title: "Automation permission changed"
+        description: "You changed an automation permission for %{target}."
+      sensitive_record_accessed:
+        title: "Sensitive record accessed"
+        description: "Protected information was accessed for %{target}."
+      data_export_requested:
+        title: "Data export requested"
+        description: "You requested an export for %{target}."
+      data_deletion_requested:
+        title: "Data deletion requested"
+        description: "You requested data deletion for %{target}."
+      automation_performed:
+        title: "Automation action completed"
+        description: "An approved automation acted on %{target}."
+      ai_memory_extracted:
+        title: "AI memory extracted"
+        description: "AI prepared a memory for review from %{target}."
+      message_drafted:
+        title: "Message drafted"
+        description: "A message draft was prepared for %{target}."
+      vendor_contacted:
+        title: "Vendor contacted"
+        description: "A vendor contact action was recorded for %{target}."
+      booking_requested:
+        title: "Booking requested"
+        description: "A booking request was recorded for %{target}."
+      purchase_approved:
+        title: "Purchase approved"
+        description: "You approved a purchase for %{target}."
+      relationship_profile_created:
+        title: "Relationship profile created"
+        description: "You created the profile for %{target}."
+      relationship_profile_updated:
+        title: "Relationship profile updated"
+        description: "You updated information for %{target}."
+      relationship_profile_archived:
+        title: "Relationship profile archived"
+        description: "You archived %{target}."
+      relationship_profile_deleted:
+        title: "Relationship profile deleted"
+        description: "You deleted a relationship profile."
+      reminder_created:
+        title: "Reminder created"
+        description: "You created a reminder for %{target}."
+      reminder_updated:
+        title: "Reminder updated"
+        description: "You updated %{target}."
+      reminder_deleted:
+        title: "Reminder deleted"
+        description: "You deleted a reminder."
+      reminder_snoozed:
+        title: "Reminder snoozed"
+        description: "You rescheduled %{target} for later."
+      reminder_completed:
+        title: "Reminder completed"
+        description: "You completed %{target}."
+      privacy_vault_opened:
+        title: "Privacy vault opened"
+        description: "You opened the privacy vault for %{target}."
+      privacy_vault_unlock_failed:
+        title: "Privacy vault unlock failed"
+        description: "An attempt to open the privacy vault for %{target} did not succeed."
+      privacy_vault_locked:
+        title: "Privacy vault locked"
+        description: "You locked the privacy vault for %{target}."
+      privacy_vault_viewed:
+        title: "Privacy vault viewed"
+        description: "You viewed protected items for %{target}."
+      privacy_vault_protected:
+        title: "Item protected"
+        description: "You moved an item into the privacy vault for %{target}."
+      privacy_vault_restored:
+        title: "Item restored"
+        description: "You restored a protected item for %{target}."
+      privacy_vault_suggestion_usage_changed:
+        title: "Vault suggestion access changed"
+        description: "You changed whether a protected item may support suggestions for %{target}."
   onboarding:
     show:
       title: "Onboarding"
@@ -1112,6 +1252,25 @@ en:
         label: "Milestones"
         prompt: "Recent or upcoming milestones"
   admin:
+    audit_events:
+      index:
+        title: "Audit ledger"
+        back: "Back to dashboard"
+        kicker: "Operations"
+        heading: "Audit ledger"
+        body: "Review metadata-only trust events across accounts without exposing sensitive contents."
+        admin_only: "Admin access only"
+        ledger: "Cross-account audit events"
+        when: "When"
+        account: "Account"
+        account_placeholder: "Email or account ID"
+        action: "Action"
+        source: "Source"
+        target: "Target"
+        empty_title: "No audit events yet"
+        empty_body: "Trust-sensitive events will appear here as supported workflows are used."
+        filtered_empty_title: "No events match these filters"
+        filtered_empty_body: "Adjust or clear the filters to review more audit history."
     feature_flags:
       index:
         title: "Feature flags"

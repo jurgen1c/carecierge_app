@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_045425) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -51,6 +51,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_120000) do
     t.uuid "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "audit_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "action", null: false
+    t.uuid "actor_id"
+    t.string "actor_kind", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "occurred_at", null: false
+    t.string "source", null: false
+    t.uuid "target_id"
+    t.string "target_type"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["action", "occurred_at"], name: "index_audit_events_on_action_and_occurred_at", order: { occurred_at: :desc }
+    t.index ["actor_id"], name: "index_audit_events_on_actor_id"
+    t.index ["occurred_at", "created_at", "id"], name: "index_audit_events_on_global_order", order: :desc
+    t.index ["source", "occurred_at"], name: "index_audit_events_on_source_and_occurred_at", order: { occurred_at: :desc }
+    t.index ["target_type", "target_id"], name: "index_audit_events_on_target_type_and_target_id"
+    t.index ["user_id", "occurred_at"], name: "index_audit_events_on_user_id_and_occurred_at", order: { occurred_at: :desc }
+    t.index ["user_id"], name: "index_audit_events_on_user_id"
+    t.check_constraint "jsonb_typeof(metadata) = 'object'::text", name: "audit_events_metadata_is_object"
   end
 
   create_table "automation_permission_changes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -693,6 +715,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_120000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "audit_events", "users", column: "actor_id", on_delete: :nullify
+  add_foreign_key "audit_events", "users", on_delete: :cascade
   add_foreign_key "automation_permission_changes", "users"
   add_foreign_key "automation_permission_changes", "users", column: "actor_id"
   add_foreign_key "automation_permissions", "relationship_profiles"

@@ -1,0 +1,78 @@
+<% content_for :title, t(".title") %>
+
+<main class="flex flex-1 flex-col gap-6 py-8">
+  <%= link_to t(".back"), dashboard_path, class: "inline-flex min-h-11 w-fit items-center text-sm font-semibold text-stone-700 hover:text-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+
+  <header class="flex flex-col gap-4 border-b border-stone-200 pb-6 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="text-sm font-semibold text-emerald-800"><%= t(".kicker") %></p>
+      <h1 class="mt-3 text-3xl font-semibold text-stone-950"><%= t(".heading") %></h1>
+      <p class="mt-3 max-w-3xl text-base leading-7 text-stone-700"><%= t(".body") %></p>
+    </div>
+    <p class="w-fit rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950"><%= t(".admin_only") %></p>
+  </header>
+
+  <%= render "audit_events/filters", url: admin_audit_events_path, query: @query, account: @account_filter %>
+
+  <section aria-labelledby="audit-ledger-heading" class="overflow-hidden rounded-xl border border-stone-200 bg-white">
+    <h2 id="audit-ledger-heading" class="sr-only"><%= t(".ledger") %></h2>
+    <% if @audit_events.any? %>
+      <div class="hidden overflow-x-auto md:block">
+        <table class="min-w-full divide-y divide-stone-200 text-left text-sm">
+          <thead class="bg-stone-50 text-xs font-semibold text-stone-700">
+            <tr>
+              <th scope="col" class="px-5 py-3"><%= t(".when") %></th>
+              <th scope="col" class="px-5 py-3"><%= t(".account") %></th>
+              <th scope="col" class="px-5 py-3"><%= t(".action") %></th>
+              <th scope="col" class="px-5 py-3"><%= t(".source") %></th>
+              <th scope="col" class="px-5 py-3"><%= t(".target") %></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-stone-200">
+            <% @audit_events.each do |event| %>
+              <% presenter = AuditEventPresenter.new(event) %>
+              <tr>
+                <td class="whitespace-nowrap px-5 py-4 align-top text-stone-700">
+                  <time datetime="<%= event.occurred_at.iso8601 %>"><%= l(event.occurred_at, format: :audit_event_admin) %></time>
+                </td>
+                <td class="px-5 py-4 align-top">
+                  <span class="block font-medium text-stone-950"><%= event.user.email %></span>
+                  <span class="mt-1 block font-mono text-xs text-stone-600"><%= event.user_id %></span>
+                </td>
+                <td class="px-5 py-4 align-top font-medium text-stone-950"><%= presenter.title %></td>
+                <td class="px-5 py-4 align-top text-stone-700"><%= presenter.source_label %></td>
+                <td class="px-5 py-4 align-top text-stone-700"><%= presenter.target_label(reveal_relationship_name: false) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <ol class="divide-y divide-stone-200 md:hidden">
+        <% @audit_events.each do |event| %>
+          <% presenter = AuditEventPresenter.new(event) %>
+          <li class="p-4">
+            <div class="flex items-start gap-3">
+              <%= component "audit_event_marker", tone: presenter.tone %>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-semibold text-stone-950"><%= presenter.title %></p>
+                <time datetime="<%= event.occurred_at.iso8601 %>" class="mt-1 block text-xs text-stone-600"><%= l(event.occurred_at, format: :audit_event_admin) %></time>
+              </div>
+            </div>
+            <dl class="mt-4 grid gap-2 text-sm">
+              <div class="grid grid-cols-[5rem_minmax(0,1fr)] gap-2"><dt class="font-semibold text-stone-700"><%= t(".account") %></dt><dd class="break-all text-stone-950"><%= event.user.email %></dd></div>
+              <div class="grid grid-cols-[5rem_minmax(0,1fr)] gap-2"><dt class="font-semibold text-stone-700"><%= t(".source") %></dt><dd class="text-stone-950"><%= presenter.source_label %></dd></div>
+              <div class="grid grid-cols-[5rem_minmax(0,1fr)] gap-2"><dt class="font-semibold text-stone-700"><%= t(".target") %></dt><dd class="text-stone-950"><%= presenter.target_label(reveal_relationship_name: false) %></dd></div>
+            </dl>
+          </li>
+        <% end %>
+      </ol>
+      <%= render "audit_events/pagination", pagy: @pagy %>
+    <% else %>
+      <div class="px-5 py-12">
+        <h3 class="text-base font-semibold text-stone-950"><%= @query.filtered? ? t(".filtered_empty_title") : t(".empty_title") %></h3>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-700"><%= @query.filtered? ? t(".filtered_empty_body") : t(".empty_body") %></p>
+      </div>
+    <% end %>
+  </section>
+</main>

@@ -26,6 +26,7 @@
 class AutomationPermission < ApplicationRecord
   belongs_to :user
   belongs_to :relationship_profile, optional: true
+  has_many :targeted_audit_events, as: :target, class_name: "AuditEvent", dependent: :nullify
 
   validates :capability,
             presence: true,

@@ -107,6 +107,18 @@ module AutomationPermissions
         previous_mode:,
         new_mode:
       )
+      AuditEvent.record!(
+        user:,
+        actor:,
+        action: "permission.changed",
+        target: permission,
+        metadata: {
+          capability: permission.capability,
+          permission_scope: permission.override? ? "relationship" : "account",
+          previous_mode:,
+          new_mode:
+        }
+      )
     end
   end
 end

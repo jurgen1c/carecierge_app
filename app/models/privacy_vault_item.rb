@@ -31,6 +31,7 @@ class PrivacyVaultItem < ApplicationRecord
   belongs_to :relationship_profile
   belongs_to :protectable, polymorphic: true
   has_many :vault_access_events, dependent: :nullify
+  has_many :targeted_audit_events, as: :target, class_name: "AuditEvent", dependent: :nullify
 
   serialize :payload, coder: JSON
   encrypts :payload

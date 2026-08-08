@@ -6,6 +6,7 @@ es:
       last_word_connector: " y "
   date:
     formats:
+      audit_event_day: "%-d/%-m/%Y"
       relationship_preference_learned_on: "%-d/%-m/%Y"
       important_date: "%-d/%-m/%Y"
       desire_captured_on: "%-d/%-m/%Y"
@@ -14,6 +15,8 @@ es:
       memory_stale_after: "%-d/%-m/%Y"
   time:
     formats:
+      audit_event_admin: "%-d/%-m/%Y a las %H:%M"
+      audit_event_time: "%H:%M"
       long: "%-d/%-m/%Y %H:%M"
       timeline_entry_day: "%-d/%-m/%Y"
       timeline_entry_time: "%H:%M"
@@ -566,7 +569,144 @@ es:
       reminders_action: "Abrir recordatorios"
       privacy_title: "Privado por defecto"
       privacy_body: "Carecierge mantiene la configuración de relaciones dentro de tu cuenta y prepara futuras rutas de aprobación antes de la automatización."
+      audit_history_action: "Ver historial de actividad"
+      admin_audit_action: "Abrir registro administrativo"
       continue_onboarding: "Continuar onboarding"
+  audit_events:
+    index:
+      title: "Historial de actividad"
+      back: "Volver al panel"
+      kicker: "Historial privado de la cuenta"
+      heading: "Historial de actividad"
+      body: "Consulta las acciones importantes realizadas en tu cuenta. El contenido sensible nunca se muestra aquí."
+      history: "Actividad de la cuenta"
+      today: "Hoy"
+      yesterday: "Ayer"
+      source: "Origen"
+      target: "Destino"
+      empty_title: "Aún no hay actividad"
+      empty_body: "Las acciones importantes de cuenta, privacidad, recordatorios y automatización aparecerán aquí."
+      filtered_empty_title: "Ninguna actividad coincide con estos filtros"
+      filtered_empty_body: "Ajusta o elimina los filtros para ver más historial de la cuenta."
+      private_title: "Privado por diseño"
+      private_body: "Este historial explica lo ocurrido sin mostrar contenido de mensajes, notas, documentos, credenciales ni elementos protegidos de la bóveda."
+    filters:
+      action: "Acción"
+      all_actions: "Todas las acciones"
+      source: "Origen"
+      all_sources: "Todos los orígenes"
+      from: "Desde"
+      to: "Hasta"
+      apply: "Filtrar eventos"
+      reset: "Restablecer"
+    pagination:
+      aria_label: "Páginas del historial de auditoría"
+      info: "%{from}–%{to} de %{count} eventos"
+      previous: "Anterior"
+      next: "Siguiente"
+      page: "Página %{page} de %{pages}"
+    sources:
+      web_app: "Aplicación web"
+      mobile_app: "Aplicación móvil"
+      ai: "IA"
+      automation: "Automatización"
+      system: "Sistema"
+      support: "Soporte"
+    actors:
+      user: "Usuario"
+      ai: "IA"
+      automation: "Automatización"
+      system: "Sistema"
+    targets:
+      account: "Cuenta"
+      automation_permission: "Permisos de automatización"
+      deleted_resource: "Recurso eliminado"
+      privacy_vault: "Bóveda de privacidad"
+      relationship_profile: "Perfil de relación"
+      reminder: "Recordatorio"
+      resource: "Recurso de la cuenta"
+    actions:
+      approval_granted:
+        title: "Aprobación concedida"
+        description: "Aprobaste una acción para %{target}."
+      permission_changed:
+        title: "Permiso de automatización modificado"
+        description: "Cambiaste un permiso de automatización para %{target}."
+      sensitive_record_accessed:
+        title: "Registro sensible consultado"
+        description: "Se accedió a información protegida de %{target}."
+      data_export_requested:
+        title: "Exportación de datos solicitada"
+        description: "Solicitaste una exportación para %{target}."
+      data_deletion_requested:
+        title: "Eliminación de datos solicitada"
+        description: "Solicitaste la eliminación de datos para %{target}."
+      automation_performed:
+        title: "Acción de automatización completada"
+        description: "Una automatización aprobada actuó sobre %{target}."
+      ai_memory_extracted:
+        title: "Memoria extraída por IA"
+        description: "La IA preparó una memoria para revisión desde %{target}."
+      message_drafted:
+        title: "Mensaje redactado"
+        description: "Se preparó un borrador de mensaje para %{target}."
+      vendor_contacted:
+        title: "Proveedor contactado"
+        description: "Se registró una acción de contacto con proveedor para %{target}."
+      booking_requested:
+        title: "Reserva solicitada"
+        description: "Se registró una solicitud de reserva para %{target}."
+      purchase_approved:
+        title: "Compra aprobada"
+        description: "Aprobaste una compra para %{target}."
+      relationship_profile_created:
+        title: "Perfil de relación creado"
+        description: "Creaste el perfil de %{target}."
+      relationship_profile_updated:
+        title: "Perfil de relación actualizado"
+        description: "Actualizaste la información de %{target}."
+      relationship_profile_archived:
+        title: "Perfil de relación archivado"
+        description: "Archivaste a %{target}."
+      relationship_profile_deleted:
+        title: "Perfil de relación eliminado"
+        description: "Eliminaste un perfil de relación."
+      reminder_created:
+        title: "Recordatorio creado"
+        description: "Creaste un recordatorio para %{target}."
+      reminder_updated:
+        title: "Recordatorio actualizado"
+        description: "Actualizaste %{target}."
+      reminder_deleted:
+        title: "Recordatorio eliminado"
+        description: "Eliminaste un recordatorio."
+      reminder_snoozed:
+        title: "Recordatorio pospuesto"
+        description: "Reprogramaste %{target} para más tarde."
+      reminder_completed:
+        title: "Recordatorio completado"
+        description: "Completaste %{target}."
+      privacy_vault_opened:
+        title: "Bóveda de privacidad abierta"
+        description: "Abriste la bóveda de privacidad de %{target}."
+      privacy_vault_unlock_failed:
+        title: "No se pudo abrir la bóveda de privacidad"
+        description: "Un intento de abrir la bóveda de privacidad de %{target} no tuvo éxito."
+      privacy_vault_locked:
+        title: "Bóveda de privacidad bloqueada"
+        description: "Bloqueaste la bóveda de privacidad de %{target}."
+      privacy_vault_viewed:
+        title: "Bóveda de privacidad consultada"
+        description: "Consultaste elementos protegidos de %{target}."
+      privacy_vault_protected:
+        title: "Elemento protegido"
+        description: "Moviste un elemento a la bóveda de privacidad de %{target}."
+      privacy_vault_restored:
+        title: "Elemento restaurado"
+        description: "Restauraste un elemento protegido de %{target}."
+      privacy_vault_suggestion_usage_changed:
+        title: "Acceso de sugerencias modificado"
+        description: "Cambiaste si un elemento protegido puede apoyar sugerencias para %{target}."
   onboarding:
     show:
       title: "Onboarding"
@@ -1429,6 +1569,25 @@ es:
         label: "Hitos"
         prompt: "Hitos recientes o próximos"
   admin:
+    audit_events:
+      index:
+        title: "Registro de auditoría"
+        back: "Volver al panel"
+        kicker: "Operaciones"
+        heading: "Registro de auditoría"
+        body: "Revisa eventos de confianza sin contenido sensible entre las cuentas."
+        admin_only: "Solo acceso administrador"
+        ledger: "Eventos de auditoría entre cuentas"
+        when: "Cuándo"
+        account: "Cuenta"
+        account_placeholder: "Correo o ID de cuenta"
+        action: "Acción"
+        source: "Origen"
+        target: "Destino"
+        empty_title: "Aún no hay eventos de auditoría"
+        empty_body: "Los eventos sensibles de confianza aparecerán aquí conforme se usen los flujos compatibles."
+        filtered_empty_title: "Ningún evento coincide con estos filtros"
+        filtered_empty_body: "Ajusta o elimina los filtros para revisar más historial de auditoría."
     feature_flags:
       index:
         title: "Feature flags"

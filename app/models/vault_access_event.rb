@@ -30,6 +30,15 @@ class VaultAccessEvent < ApplicationRecord
   EVENT_TYPES = %w[
     unlock_failed unlocked locked viewed protected restored suggestion_usage_changed
   ].freeze
+  AUDIT_ACTIONS = {
+    "unlock_failed" => "privacy_vault.unlock_failed",
+    "unlocked" => "privacy_vault.opened",
+    "locked" => "privacy_vault.locked",
+    "viewed" => "privacy_vault.viewed",
+    "protected" => "privacy_vault.protected",
+    "restored" => "privacy_vault.restored",
+    "suggestion_usage_changed" => "privacy_vault.suggestion_usage_changed"
+  }.freeze
 
   belongs_to :user
   belongs_to :relationship_profile, optional: true
@@ -41,13 +50,24 @@ class VaultAccessEvent < ApplicationRecord
   scope :recent_first, -> { order(occurred_at: :desc, created_at: :desc) }
 
   def self.record!(event_type:, user:, relationship_profile:, privacy_vault_item: nil)
-    create!(
-      event_type:,
-      user:,
-      relationship_profile:,
-      privacy_vault_item:,
-      occurred_at: Time.current
-    )
+    ApplicationRecord.transaction do
+      occurred_at = Time.current
+      event = create!(
+        event_type:,
+        user:,
+        relationship_profile:,
+        privacy_vault_item:,
+        occurred_at:
+      )
+      AuditEvent.record!(
+        user:,
+        actor: user,
+        action: AUDIT_ACTIONS.fetch(event_type),
+        target: relationship_profile,
+        occurred_at:
+      )
+      event
+    end
   end
 
   def self.record_safely(event_type:, user:, relationship_profile:, privacy_vault_item: nil)

@@ -17,6 +17,7 @@ RSpec.describe ReminderRowComponent, type: :component do
       "Export",
       href: Rails.application.routes.url_helpers.calendar_reminder_path(reminder, format: :ics)
     )
+    expect(page).to have_css('a[data-turbo-prefetch="false"]', text: "Export")
   end
 
   it "renders snoozed reminders at their effective delivery time" do

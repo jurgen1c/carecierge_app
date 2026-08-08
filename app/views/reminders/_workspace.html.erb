@@ -28,7 +28,7 @@
           <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-700"><%= t("reminders.index.body") %></p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <%= link_to t("reminders.index.export_calendar"), calendar_reminders_path(format: :ics), class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          <%= link_to t("reminders.index.export_calendar"), calendar_reminders_path(format: :ics), data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
           <%= link_to t("reminders.index.create"), new_reminder_path(relationship_profile_id: @selected_relationship_profile&.id), data: { turbo_frame: "new_reminder" }, class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
         </div>
       </header>

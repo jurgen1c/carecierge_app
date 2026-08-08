@@ -47,7 +47,14 @@ class RelationshipProfilesController < ApplicationController
     @relationship_profile.assign_attributes(relationship_profile_params)
     authorize @relationship_profile
 
-    if @relationship_profile.save
+    saved = AuditEvents::Track.call(
+      user: current_user,
+      actor: current_user,
+      action: "relationship_profile.created",
+      target: @relationship_profile
+    ) { @relationship_profile.save }
+
+    if saved
       redirect_to relationship_profile_path(@relationship_profile), notice: t(".notice")
     else
       prepare_relationship_profile_form
@@ -58,7 +65,16 @@ class RelationshipProfilesController < ApplicationController
   def update
     @relationship_profile.assign_attributes(relationship_profile_params)
 
-    if @relationship_profile.save
+    saved = AuditEvents::Track.call(
+      user: current_user,
+      actor: current_user,
+      action: "relationship_profile.updated",
+      target: @relationship_profile,
+      metadata: { changed_fields: "profile_details" },
+      record_if: @relationship_profile.changed_for_autosave?
+    ) { @relationship_profile.save }
+
+    if saved
       redirect_to relationship_profile_path(@relationship_profile), notice: t(".notice")
     else
       prepare_relationship_profile_form
@@ -67,13 +83,23 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def archive
-    @relationship_profile.archive!
+    AuditEvents::Track.call(
+      user: current_user,
+      actor: current_user,
+      action: "relationship_profile.archived",
+      target: @relationship_profile
+    ) { @relationship_profile.archive! }
 
     redirect_to relationship_profiles_path, notice: t(".notice")
   end
 
   def destroy
-    @relationship_profile.destroy!
+    AuditEvents::Track.call(
+      user: current_user,
+      actor: current_user,
+      action: "relationship_profile.deleted",
+      target: nil
+    ) { @relationship_profile.destroy! }
 
     redirect_to relationship_profiles_path, notice: t(".notice")
   end

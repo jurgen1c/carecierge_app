@@ -53,6 +53,7 @@ class Reminder < ApplicationRecord
 
   has_many :reminder_deliveries, dependent: :destroy
   has_many :noticed_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
+  has_many :targeted_audit_events, as: :target, class_name: "AuditEvent", dependent: :nullify
 
   normalizes :title, with: -> { _1.strip }
   normalizes :notes, with: -> { _1.strip.presence }

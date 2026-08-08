@@ -39,7 +39,14 @@ class RemindersController < ApplicationController
     assign_schedule(@reminder)
     authorize @reminder
 
-    if @reminder.save
+    saved = AuditEvents::Track.call(
+      user: current_user,
+      actor: current_user,
+      action: "reminder.created",
+      target: @reminder
+    ) { @reminder.save }
+
+    if saved
       params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
       refresh_workspace(t(".notice"))
     else
@@ -53,7 +60,13 @@ class RemindersController < ApplicationController
       @reminder.assign_attributes(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :scheduled_at, :time_zone))
       assign_relationship_context(@reminder)
       assign_schedule(@reminder)
-      @reminder.save
+      AuditEvents::Track.call(
+        user: current_user,
+        actor: current_user,
+        action: "reminder.updated",
+        target: @reminder,
+        record_if: @reminder.changed_for_autosave?
+      ) { @reminder.save }
     end
 
     if saved
@@ -67,26 +80,42 @@ class RemindersController < ApplicationController
 
   def destroy
     relationship_profile_id = @reminder.active_relationship_profile_id
-    @reminder.destroy!
+    AuditEvents::Track.call(
+      user: current_user,
+      actor: current_user,
+      action: "reminder.deleted",
+      target: nil
+    ) { @reminder.destroy! }
     params[:relationship_profile_id] ||= relationship_profile_id
     refresh_workspace(t(".notice"))
   end
 
   def snooze
     until_time = snooze_time(params[:snooze_for])
-    @reminder.snooze!(until_time:)
+    AuditEvents::Track.call(
+      user: current_user,
+      actor: current_user,
+      action: "reminder.snoozed",
+      target: @reminder
+    ) { @reminder.snooze!(until_time:) }
     params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
     refresh_workspace(t(".notice"))
   end
 
   def complete
-    @reminder.complete!
+    AuditEvents::Track.call(
+      user: current_user,
+      actor: current_user,
+      action: "reminder.completed",
+      target: @reminder
+    ) { @reminder.complete! }
     params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
     refresh_workspace(t(".notice"))
   end
 
   def calendar
-    reminders = if params[:id]
+    single_reminder_export = params[:id].present?
+    reminders = if single_reminder_export
       reminder = policy_scope(Reminder).find(params[:id])
       authorize reminder, :calendar?
       [ reminder ]
@@ -95,10 +124,21 @@ class RemindersController < ApplicationController
       policy_scope(Reminder).active.ordered
     end
 
-    send_data ReminderCalendarSerializer.new(reminders).to_ical,
+    calendar = ReminderCalendarSerializer.new(reminders).to_ical
+    unless request.headers["X-Sec-Purpose"] == "prefetch"
+      AuditEvent.record!(
+        user: current_user,
+        actor: current_user,
+        action: "data_export.requested",
+        target: single_reminder_export ? reminders.first : current_user,
+        metadata: { request_kind: single_reminder_export ? "reminder_calendar" : "reminders_calendar" }
+      )
+    end
+
+    send_data calendar,
       type: "text/calendar; charset=utf-8",
       disposition: "attachment",
-      filename: params[:id] ? "carecierge-reminder.ics" : "carecierge-reminders.ics"
+      filename: single_reminder_export ? "carecierge-reminder.ics" : "carecierge-reminders.ics"
   end
 
   private

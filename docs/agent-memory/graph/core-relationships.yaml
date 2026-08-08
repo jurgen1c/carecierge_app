@@ -306,3 +306,28 @@ edges:
     relation: same_area
     reason: Both settings surfaces use sparse relationship-specific overrides while owning distinct permission and delivery decisions.
     strength: 65
+  - source: audit_events.account_activity_ledger
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Account history requires authentication, and cross-account history requires the existing admin authorization boundary.
+    strength: 95
+  - source: relationship_profiles.profile_crud_owner_scope
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Profile create, update, archive, and delete actions commit with privacy-minimized generic audit events.
+    strength: 90
+  - source: relationship_profiles.privacy_vault
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Specialized vault evidence also feeds the generic account ledger through a durable relationship target without changing transactional mutation or best-effort access semantics.
+    strength: 95
+  - source: reminders.reminder_delivery_system
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Reminder mutations commit with generic audit events, and calendar exports emit privacy-minimized export evidence.
+    strength: 90
+  - source: automation_permissions.permission_decisions
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Permission changes retain specialized evidence and also commit a generic ledger event in the owner-locked transaction.
+    strength: 95

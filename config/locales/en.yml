@@ -1099,6 +1099,7 @@ en:
         reject: "Suggestion was rejected."
         correct: "Corrected memory was saved."
       invalid_correction: "Add a title and memory before saving the correction."
+      invalid_decision: "Choose approve, reject, or correct before continuing."
     timeline:
       title: "AI memory suggestions prepared"
       body:

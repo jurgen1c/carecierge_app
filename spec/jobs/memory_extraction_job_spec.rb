@@ -25,4 +25,23 @@ RSpec.describe MemoryExtractionJob, type: :job do
       extraction_error_code: "feature_disabled"
     )
   end
+
+  it "makes an interrupted processing request retryable when the rollout flag is disabled" do
+    recap = create(
+      :conversation_recap,
+      extraction_status: "processing",
+      extraction_requested_at: 2.minutes.ago,
+      extraction_started_at: 1.minute.ago
+    )
+    create(:feature_flag, key: "ai_memory_extraction", enabled: false)
+
+    described_class.perform_now(recap)
+
+    expect(recap.reload).to have_attributes(
+      extraction_status: "failed",
+      extraction_started_at: nil,
+      extraction_completed_at: be_present,
+      extraction_error_code: "feature_disabled"
+    )
+  end
 end

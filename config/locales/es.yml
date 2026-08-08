@@ -1416,6 +1416,7 @@ es:
         reject: "La sugerencia fue rechazada."
         correct: "La memoria corregida fue guardada."
       invalid_correction: "Agrega un título y una memoria antes de guardar la corrección."
+      invalid_decision: "Elige aprobar, rechazar o corregir antes de continuar."
     timeline:
       title: "Sugerencias de memoria de IA preparadas"
       body:

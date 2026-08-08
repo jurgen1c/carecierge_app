@@ -58,6 +58,7 @@ related_files:
   - app/views/data_exports/summary.html.erb
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb
+  - spec/services/data_deletions/delete_ai_data_spec.rb
   - spec/system/data_controls_spec.rb
 
 symbols:
@@ -83,7 +84,7 @@ tags:
   - account_deletion
 
 verification:
-  - bundle exec rspec spec/requests/data_controls_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
+  - bundle exec rspec spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
   - bin/rubocop
   - bin/memory validate
   - bin/memory coverage --git-diff
@@ -108,8 +109,9 @@ Permanent deletion records content-free evidence and retains only a keyed
 account digest with lifecycle timestamps. Selective AI deletion targets only
 system-originated inferred memories, extracted-memory proposals, every owned
 recap with extraction state, and AI-extraction timeline entries. Proposal and
-recap locks cancel in-flight extraction before deletion completes, preventing a
-delayed response from recreating AI data. User-corrected canonical memories remain.
+recap locks cancel in-flight extraction before deletion completes. Recaps are
+locked and reset before proposal rows are removed, preventing a delayed response
+from recreating AI data. User-corrected canonical memories remain.
 Recording purges lock each blob across the final shared-attachment check and
 storage deletion. A blob row already removed by Active Storage is successful
 cleanup after an idempotent delete of its captured storage key.
@@ -129,10 +131,11 @@ content into a second store.
 - `app/services/data_deletions/perform.rb`
 - `app/models/deletion_request.rb`
 - `spec/requests/data_controls_spec.rb`
+- `spec/services/data_deletions/delete_ai_data_spec.rb`
 
 ## Verification
 
-- `bundle exec rspec spec/requests/data_controls_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb`
+- `bundle exec rspec spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb`
 - `bin/rubocop`
 - `bin/memory validate`
 - `bin/memory coverage --git-diff`

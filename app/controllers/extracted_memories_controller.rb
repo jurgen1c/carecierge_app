@@ -15,9 +15,12 @@ class ExtractedMemoriesController < ApplicationController
 
     redirect_to relationship_profile_path(@relationship_profile, memory_proposal: next_pending_id, anchor: "memory-review"),
       notice: t(".notice.#{review_params[:decision]}")
-  rescue ActiveRecord::RecordInvalid, ArgumentError
+  rescue ActiveRecord::RecordInvalid
     redirect_to relationship_profile_path(@relationship_profile, memory_proposal: @extracted_memory.id, anchor: "memory-review"),
       alert: t(".invalid_correction")
+  rescue ArgumentError
+    redirect_to relationship_profile_path(@relationship_profile, memory_proposal: @extracted_memory.id, anchor: "memory-review"),
+      alert: t(".invalid_decision")
   end
 
   private

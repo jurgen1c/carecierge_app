@@ -4,7 +4,6 @@ module DataDeletions
       profile_scope = user.relationship_profiles.with_discarded
 
       ApplicationRecord.transaction do
-        ExtractedMemory.where(relationship_profile: profile_scope).lock.each(&:destroy!)
         ConversationRecap
           .where(relationship_profile: profile_scope)
           .where.not(extraction_status: "not_requested")
@@ -19,6 +18,7 @@ module DataDeletions
               extraction_error_code: nil
             )
           end
+        ExtractedMemory.where(relationship_profile: profile_scope).lock.each(&:destroy!)
 
         MemoryRecord.where(relationship_profile: profile_scope, source: "ai_inferred").find_each(&:destroy!)
         TimelineEntry.where(

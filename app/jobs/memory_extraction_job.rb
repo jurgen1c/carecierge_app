@@ -21,10 +21,11 @@ class MemoryExtractionJob < ApplicationJob
 
   def mark_retryable(conversation_recap)
     conversation_recap.with_lock do
-      return unless conversation_recap.extraction_status == "requested"
+      return unless conversation_recap.extraction_status.in?(%w[requested processing])
 
       conversation_recap.update!(
         extraction_status: "failed",
+        extraction_started_at: nil,
         extraction_completed_at: Time.current,
         extraction_error_code: "feature_disabled"
       )

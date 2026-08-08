@@ -1,0 +1,27 @@
+id: car_70_data_controls_shared_boundaries
+status: active
+reason: >
+  CAR-70 introduces the durable data_controls.data_portability_and_deletion
+  claim and updates the privacy-vault and audit-event claims for their changed
+  permanent-delete and evidence behavior. The profile controller, User
+  association, dashboard link, route table, and English and Spanish locale
+  files are shared wiring. Existing profile CRUD, preference metadata,
+  authentication, feature-flag authorization, and localization claims were
+  reviewed and remain current without replacement or conflict. The data
+  controls claim requires those existing atomic boundaries rather than
+  superseding them. The shared parameter-filter configuration and conversation
+  recap claim were reviewed together; recap filtering remains current while
+  deletion confirmations gain equivalent protection.
+files:
+  - app/controllers/relationship_profiles_controller.rb
+  - app/models/user.rb
+  - app/views/dashboard/index.html.erb
+  - config/locales/en.yml
+  - config/locales/es.yml
+  - config/initializers/filter_parameter_logging.rb
+  - config/routes.rb
+  - docs/agent-memory/claims/data_controls/data_portability_and_deletion.md
+  - docs/agent-memory/claims/relationship_profiles/privacy-vault.md
+  - docs/agent-memory/claims/relationship_profiles/conversation_recaps.md
+  - docs/agent-memory/claims/audit_events/account_activity_ledger.md
+expires_at: 2026-08-21

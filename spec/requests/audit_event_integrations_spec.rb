@@ -31,13 +31,18 @@ RSpec.describe "Audit event integrations", type: :request do
           relationship_profile.updated
           relationship_profile.archived
           relationship_profile.deleted
+          data_deletion.requested
         ]
       )
-      expect(user.audit_events.where.not(metadata: {}).count).to eq(1)
+      expect(user.audit_events.where.not(metadata: {}).count).to eq(2)
       expect(user.audit_events.find_by!(action: "relationship_profile.updated").metadata).to eq(
         "changed_fields" => "profile_details"
       )
       expect(user.audit_events.find_by!(action: "relationship_profile.deleted")).to have_attributes(target: nil)
+      expect(user.audit_events.find_by!(action: "data_deletion.requested").metadata).to eq(
+        "request_kind" => "relationship_profile",
+        "result" => "completed"
+      )
       expect(user.audit_events.to_a.to_json).not_to include("Maya", "Rivera")
     end
 

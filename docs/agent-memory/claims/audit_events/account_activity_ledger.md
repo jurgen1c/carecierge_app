@@ -19,7 +19,10 @@ claim: >
   generic event beside specialized evidence in the same owner lock, while vault
   events preserve existing transactional and best-effort semantics. Calendar
   exports emit privacy-minimized evidence after serialization; Turbo prefetches
-  do not. The account route scopes from current_user.audit_events; a separate
+  do not. Account and profile data exports add scope/format-only evidence after
+  successful serialization, and permanent deletion adds request-kind-only
+  evidence before owned records are destroyed. The account route scopes from
+  current_user.audit_events; a separate
   Pundit-protected admin route exposes a paginated cross-account ledger. Account
   history uses the saved notification time zone. Localized views never render
   raw metadata or sensitive content, and vault events target the owning

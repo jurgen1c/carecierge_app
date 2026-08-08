@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_07_045425) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_004436) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -168,6 +168,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_045425) do
   end
 
   create_table "data_migrations", primary_key: "version", id: :string, force: :cascade do |t|
+  end
+
+  create_table "deletion_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "account_digest", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "request_kind", null: false
+    t.datetime "requested_at", null: false
+    t.string "status", default: "pending", null: false
+    t.uuid "subject_id"
+    t.string "subject_type"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id"
+    t.index ["request_kind", "requested_at"], name: "index_deletion_requests_on_request_kind_and_requested_at"
+    t.index ["subject_type", "subject_id"], name: "index_deletion_requests_on_subject_type_and_subject_id"
+    t.index ["user_id"], name: "index_deletion_requests_on_user_id"
+    t.check_constraint "request_kind::text = ANY (ARRAY['relationship_profile'::character varying, 'privacy_vault_item'::character varying, 'ai_generated'::character varying, 'account'::character varying]::text[])", name: "deletion_requests_supported_kind"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'completed'::character varying, 'failed'::character varying]::text[])", name: "deletion_requests_supported_status"
   end
 
   create_table "desire_fulfillments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -725,6 +743,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_045425) do
   add_foreign_key "contact_cadences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"
   add_foreign_key "conversation_recaps", "relationship_profiles"
+  add_foreign_key "deletion_requests", "users", on_delete: :nullify
   add_foreign_key "desire_fulfillments", "desires"
   add_foreign_key "desires", "relationship_profiles"
   add_foreign_key "digest_deliveries", "users"

@@ -12,17 +12,17 @@ claim: >
   ConversationRecap records belong to a RelationshipProfile and are managed
   through authenticated, owner-scoped nested routes. Recaps store a title, text
   recap body, occurrence time, typed or voice-transcript capture source, optional
-  transcript text, and extraction request status for future AI workflows. Manual
-  create, edit, and delete actions refresh the profile conversation-recaps and
-  relationship-timeline sections with Turbo streams, preserve English and
-  Spanish localized labels and validation copy, create or update a linked
+  transcript text, and extraction status. Manual
+  CRUD refreshes the profile recap and timeline sections with Turbo streams,
+  preserves localized English and Spanish copy, creates or updates a linked
   system TimelineEntry with entry_type conversation_recap, delete the linked
-  timeline entry with the recap, create or update one source-backed derived
+  timeline entry with the recap, sync one source-backed derived
   Interaction for contact-cadence history, delete that interaction with the
   recap, keep those source-backed history rows protected
   from direct generic timeline edit and delete actions, and cannot access another
-  user's relationship profile. Recap bodies and transcripts are filtered from
-  Rails parameter logging. User params can request extraction review during
+  user's relationship profile. Recap bodies and transcripts remain filtered
+  from Rails parameter logging when the shared filter also protects account
+  deletion confirmations. User params can request extraction review during
   creation or a later edit while the recap remains not_requested, but cannot
   approve extracted facts or create MemoryRecord rows directly; memory mutation
   remains blocked until a later explicit approval workflow.
@@ -67,13 +67,14 @@ last_verified_commit: null
 
 ## Claim
 
-Conversation recaps are relationship-profile-owned records used to capture text
-summaries of conversations while preserving room for future voice-to-text and AI
-extraction flows. The recap stores typed or voice-transcript capture source,
+Conversation recaps are relationship-profile-owned records that capture
+conversation summaries, including voice transcript and future AI extraction.
+The recap stores typed or voice-transcript capture source,
 optional transcript text, occurrence time, extraction request status, and
 approval timestamps that cannot be set by user-facing create/update params.
-Sensitive recap bodies and transcripts are filtered from Rails parameter logs,
-and users can request extraction during creation or a later edit while the recap
+Recap bodies and transcripts remain filtered when the shared parameter filter
+adds account-deletion confirmation protection, and
+users can request extraction during creation or a later edit while the recap
 has not yet requested extraction.
 Creating or updating a recap writes a linked system TimelineEntry with
 `entry_type` `conversation_recap`, and deleting the recap deletes that linked

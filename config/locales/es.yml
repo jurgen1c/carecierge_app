@@ -570,6 +570,7 @@ es:
       privacy_title: "Privado por defecto"
       privacy_body: "Carecierge mantiene la configuración de relaciones dentro de tu cuenta y prepara futuras rutas de aprobación antes de la automatización."
       audit_history_action: "Ver historial de actividad"
+      data_controls_action: "Exportar o eliminar datos"
       admin_audit_action: "Abrir registro administrativo"
       continue_onboarding: "Continuar onboarding"
   audit_events:
@@ -1659,6 +1660,8 @@ es:
       protect: "Proteger"
       restore: "Restaurar al perfil"
       restore_confirm: "¿Restaurar este elemento al perfil normal de la relación?"
+      delete_data: "Eliminar permanentemente"
+      delete_data_confirm: "¿Eliminar permanentemente este elemento protegido? Esta acción no se puede deshacer."
       allow_suggestions: "Permitir para sugerencias"
       exclude_suggestions: "Excluir de sugerencias"
       password_title: "Ingresa tu contraseña"
@@ -1679,6 +1682,8 @@ es:
       notice: "La preferencia de sugerencias fue actualizada."
     destroy:
       notice: "El elemento fue restaurado al perfil de la relación."
+    delete_data:
+      notice: "El elemento protegido fue eliminado permanentemente."
   automation_permissions:
     edit:
       page_title: "Permisos de automatización"
@@ -1775,3 +1780,69 @@ es:
       error: "No pudimos actualizar esa excepción para la relación."
     destroy:
       notice: "Se eliminó la excepción para la relación."
+  data_controls:
+    show:
+      page_title: "Controles de datos"
+      back: "Volver al panel"
+      heading: "Exporta o elimina tus datos"
+      body: "Descarga una copia portátil de tu información de Carecierge o elimina permanentemente datos que ya no quieres conservar. El contenido protegido de la bóveda requiere tu contraseña."
+      current_password: "Contraseña actual"
+      exports:
+        title: "Descarga tus datos"
+        body: "Las exportaciones se preparan solo para tu cuenta autenticada. JSON y CSV conservan registros estructurados, PDF ofrece un resumen legible y los archivos de calendario incluyen recordatorios y fechas importantes."
+        account_title: "Todos los datos de la cuenta"
+        account_body: "Descarga la configuración de tu cuenta y todos los registros de relaciones que te pertenecen."
+        profile_title: "Un perfil de relación"
+        profile_body: "Elige una persona y descarga solo ese espacio de relación."
+        profile: "Relación"
+        format: "Formato"
+        calendar: "Calendario"
+        include_sensitive: "Incluir contenido protegido de la bóveda"
+        include_sensitive_body: "Vuelve a ingresar tu contraseña. Deja esta opción desactivada para excluir las cargas protegidas."
+        account_action: "Descargar exportación de la cuenta"
+        profile_action: "Descargar exportación del perfil"
+      delete_specific:
+        title: "Eliminar registros específicos"
+        body: "La eliminación de perfiles permanece dentro de cada relación. Desbloquea una bóveda para eliminar permanentemente una nota, memoria o detalle protegido."
+        profiles: "Gestionar perfiles de relaciones"
+        sensitive: "Abrir una bóveda de privacidad"
+      danger:
+        title: "Eliminación permanente"
+        body: "Estas acciones no se pueden deshacer. Exporta cualquier dato que quieras conservar antes de continuar."
+      confirmation: "Escribe %{email} para confirmar"
+      delete_ai:
+        title: "Eliminar datos generados por IA"
+        body: "Elimina permanentemente memorias inferidas por IA y registros de cronología de extracción por IA. Las memorias confirmadas y las entradas manuales permanecen."
+        action: "Eliminar datos generados por IA"
+        confirm: "¿Eliminar todos los datos generados por IA de esta cuenta?"
+      delete_account:
+        title: "Eliminar cuenta"
+        body: "Elimina permanentemente tu cuenta y todos los datos de relaciones. Se conserva evidencia minimizada de la eliminación sin tu correo ni contenido de relaciones."
+        oauth_password_help: "¿Iniciaste sesión con Google? Primero establece una contraseña de Carecierge y luego vuelve aquí para confirmar la eliminación."
+        set_password_action: "Establecer tu contraseña"
+        action: "Eliminar mi cuenta"
+        confirm: "¿Eliminar permanentemente tu cuenta de Carecierge y todos sus datos?"
+  data_exports:
+    errors:
+      invalid_request: "Elige un alcance y formato de exportación válidos."
+      password_required: "Ingresa tu contraseña actual para incluir contenido protegido de la bóveda."
+    pdf:
+      title: "Resumen de datos de Carecierge"
+      heading: "Resumen de datos de Carecierge"
+      generated_at: "Generado %{timestamp}"
+      account: "Cuenta"
+      email: "Correo electrónico"
+      relationships: "Relaciones"
+      timeline_entries: "Entradas de cronología"
+      important_dates: "Fechas importantes"
+      memories: "Memorias"
+      protected_items: "Elementos protegidos incluidos"
+  data_deletions:
+    errors:
+      invalid_request: "Elige una solicitud de eliminación válida."
+      confirmation: "Escribe exactamente el correo de tu cuenta para confirmar la eliminación."
+      password: "Tu contraseña actual no fue aceptada."
+    ai_generated:
+      notice: "Los datos generados por IA fueron eliminados permanentemente."
+    account:
+      notice: "Tu cuenta de Carecierge y sus datos fueron eliminados permanentemente."

@@ -58,6 +58,8 @@ class User < ApplicationRecord
   has_many :automation_permissions, dependent: :destroy
   has_many :automation_permission_changes, dependent: :delete_all
   has_many :audit_events, dependent: :delete_all
+  has_many :deletion_requests, dependent: :nullify
+  has_many :feature_flag_audit_events, foreign_key: :actor_id, dependent: :nullify, inverse_of: :actor
   has_many :actor_audit_events, class_name: "AuditEvent", foreign_key: :actor_id, dependent: :nullify, inverse_of: :actor
   has_many :targeted_audit_events, as: :target, class_name: "AuditEvent", dependent: :nullify
 

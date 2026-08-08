@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+  <head>
+    <meta charset="utf-8">
+    <title><%= t("data_exports.pdf.title") %></title>
+    <%= stylesheet_link_tag :app %>
+  </head>
+  <body class="bg-white p-8 text-stone-950">
+    <main class="mx-auto max-w-4xl">
+      <header class="border-b border-stone-300 pb-5">
+        <h1 class="text-3xl font-semibold"><%= t("data_exports.pdf.heading") %></h1>
+        <p class="mt-2 text-sm text-stone-700"><%= t("data_exports.pdf.generated_at", timestamp: l(Time.zone.parse(snapshot.fetch("exported_at")), format: :long)) %></p>
+      </header>
+
+      <section class="mt-6">
+        <h2 class="text-xl font-semibold"><%= t("data_exports.pdf.account") %></h2>
+        <dl class="mt-3 grid grid-cols-2 gap-2 text-sm">
+          <dt class="font-semibold"><%= t("data_exports.pdf.email") %></dt>
+          <dd><%= snapshot.dig("account", "email") %></dd>
+        </dl>
+      </section>
+
+      <section class="mt-8">
+        <h2 class="text-xl font-semibold"><%= t("data_exports.pdf.relationships") %></h2>
+        <div class="mt-4 grid gap-5">
+          <% snapshot.fetch("relationship_profiles").each do |profile| %>
+            <article class="border-t border-stone-200 pt-4">
+              <h3 class="text-lg font-semibold"><%= [profile["preferred_name"].presence || profile["first_name"], profile["last_name"]].compact_blank.join(" ") %></h3>
+              <p class="mt-1 text-sm text-stone-700"><%= profile.fetch("relationship_type_label") %></p>
+              <dl class="mt-3 grid grid-cols-2 gap-2 text-sm">
+                <dt class="font-semibold"><%= t("data_exports.pdf.timeline_entries") %></dt>
+                <dd><%= profile.fetch("timeline_entries").size %></dd>
+                <dt class="font-semibold"><%= t("data_exports.pdf.important_dates") %></dt>
+                <dd><%= profile.fetch("important_dates").size %></dd>
+                <dt class="font-semibold"><%= t("data_exports.pdf.memories") %></dt>
+                <dd><%= profile.fetch("memory_records").size %></dd>
+                <dt class="font-semibold"><%= t("data_exports.pdf.protected_items") %></dt>
+                <dd><%= profile.fetch("privacy_vault_items").size %></dd>
+              </dl>
+            </article>
+          <% end %>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

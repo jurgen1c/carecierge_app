@@ -3,7 +3,7 @@ class PrivacyVaultItemsController < ApplicationController
 
   before_action :set_relationship_profile
   before_action :require_privacy_vault_unlock
-  before_action :set_privacy_vault_item, only: %i[update destroy]
+  before_action :set_privacy_vault_item, only: %i[update destroy delete_data]
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
@@ -36,6 +36,13 @@ class PrivacyVaultItemsController < ApplicationController
     PrivacyVault::Restore.call(actor: current_user, item: @privacy_vault_item)
 
     redirect_to relationship_profile_privacy_vault_path(@relationship_profile), notice: t("privacy_vault_items.destroy.notice")
+  end
+
+  def delete_data
+    authorize @privacy_vault_item, :destroy?
+    PrivacyVault::Delete.call(actor: current_user, item: @privacy_vault_item)
+
+    redirect_to relationship_profile_privacy_vault_path(@relationship_profile), notice: t("privacy_vault_items.delete_data.notice")
   end
 
   private

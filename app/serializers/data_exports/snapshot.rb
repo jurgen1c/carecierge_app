@@ -41,8 +41,10 @@ module DataExports
         "notification_preference" => attributes_for(user.notification_preference),
         "relationship_tags" => records(user.relationship_tags),
         "relationship_groups" => records(user.relationship_groups),
-        "reminders" => records(user.reminders),
+        "reminders" => user.reminders.includes(:reminder_deliveries).map { |reminder| reminder_attributes(reminder) },
         "digest_deliveries" => records(user.digest_deliveries),
+        "vault_access_events" => records(user.vault_access_events, except: %w[user_id]),
+        "notifications" => records(user.notifications, except: %w[recipient_type recipient_id]),
         "automation_permissions" => records(user.automation_permissions),
         "automation_permission_changes" => records(user.automation_permission_changes),
         "audit_events" => records(user.audit_events, except: %w[user_id actor_id]),
@@ -71,7 +73,7 @@ module DataExports
         "desires" => profile.desires.map { |desire| desire_attributes(desire) },
         "contact_cadence" => attributes_for(profile.contact_cadence),
         "interactions" => records(profile.interactions),
-        "reminders" => records(profile.reminders),
+        "reminders" => profile.reminders.includes(:reminder_deliveries).map { |reminder| reminder_attributes(reminder) },
         "privacy_vault_items" => privacy_vault_items(profile)
       )
     end
@@ -105,6 +107,12 @@ module DataExports
 
     def desire_attributes(desire)
       attributes_for(desire).merge("fulfillments" => records(desire.fulfillments))
+    end
+
+    def reminder_attributes(reminder)
+      attributes_for(reminder).merge(
+        "reminder_deliveries" => records(reminder.reminder_deliveries, except: %w[lease_token error_message])
+      )
     end
 
     def privacy_vault_items(profile)

@@ -12,8 +12,9 @@ re-entered.
 - Export one owned relationship profile or the full account.
 - Include relationship details, timeline records, important dates, memories,
   AI-origin metadata, preferences, reminders, uploaded conversation recordings,
-  tag/group assignments, relationship notification overrides, and related
-  account records.
+  reminder-delivery lifecycle evidence, tag/group assignments, relationship
+  notification overrides, privacy-safe vault-access history, in-app notification
+  state, and related account records.
 - Exclude decrypted privacy-vault payloads by default; password reauthentication
   can include owned protected payloads in the same export.
 - Export reminders and important dates as a private calendar file.
@@ -51,7 +52,9 @@ auditable without retaining the account email or relationship contents.
   neutralized for spreadsheet safety.
 - PDF is a human-readable summary rendered through `FerrumPdf`.
 - PDF rendering uses the configured application origin rather than request host
-  headers, and relationship-type labels follow the active locale.
+  headers, follows the configured environment protocol, and uses HTTP for the
+  default localhost development server. Relationship-type labels follow the
+  active locale.
 - `DataExports::CalendarSerializer` combines reminder events with all-day
   important-date events while explicitly enumerating recurrences whose
   end-of-month clamping cannot be represented by a bare recurrence rule.
@@ -64,6 +67,8 @@ auditable without retaining the account email or relationship contents.
   failure leaves retryable metadata and failed evidence; blobs still attached to
   another account are preserved. A blob row lock spans the final attachment
   check and purge so concurrent attachment creation cannot race storage deletion.
+  If Active Storage already removed a blob row, the captured storage key receives
+  one final idempotent delete and the account request completes.
 - User-targeted feature-flag assignments are removed with the account, and
   Google-authenticated users receive a direct password-setup path before the
   password-gated action.

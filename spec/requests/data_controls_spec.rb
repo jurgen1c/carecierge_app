@@ -82,6 +82,45 @@ RSpec.describe "Data controls", type: :request do
       )
     end
 
+    it "includes privacy-safe account history, notifications, and reminder delivery evidence" do
+      vault_event = create(:vault_access_event, user:, relationship_profile: profile, event_type: "viewed")
+      reminder = create(:reminder, user:, relationship_profile: profile)
+      delivery = create(
+        :reminder_delivery,
+        reminder:,
+        status: "failed",
+        lease_token: SecureRandom.uuid,
+        error_message: "private transport failure"
+      )
+      ReminderInAppNotifier.with(record: reminder).deliver(user)
+      notification = user.notifications.last
+
+      post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
+
+      exported_vault_event = response.parsed_body.fetch("vault_access_events").sole
+      expect(exported_vault_event).to include("id" => vault_event.id, "event_type" => "viewed")
+      expect(exported_vault_event).not_to have_key("user_id")
+
+      exported_notification = response.parsed_body.fetch("notifications").sole
+      expect(exported_notification).to include(
+        "id" => notification.id,
+        "event_id" => notification.event_id,
+        "type" => notification.type
+      )
+      expect(exported_notification).not_to have_key("recipient_id")
+      expect(exported_notification).not_to have_key("recipient_type")
+
+      exported_reminder = response.parsed_body.fetch("reminders").find { |record| record.fetch("id") == reminder.id }
+      exported_delivery = exported_reminder.fetch("reminder_deliveries").sole
+      expect(exported_delivery).to include(
+        "id" => delivery.id,
+        "channel" => delivery.channel,
+        "status" => "failed"
+      )
+      expect(exported_delivery).not_to have_key("lease_token")
+      expect(exported_delivery).not_to have_key("error_message")
+    end
+
     it "exports only an owned relationship profile" do
       hidden_profile = create(:relationship_profile, first_name: "Hidden")
 
@@ -349,6 +388,25 @@ RSpec.describe "Data controls", type: :request do
 
       expect(DeletionRequest.order(:created_at).last).to have_attributes(status: "failed", completed_at: nil)
       expect(ActiveStorage::Blob.exists?(blob_id)).to be(true)
+    end
+
+    it "completes account deletion when Active Storage already removed the blob row" do
+      recap = create(:conversation_recap, relationship_profile: profile)
+      recap.audio_recording.attach(
+        io: StringIO.new("already purged"),
+        filename: "already-purged.webm",
+        content_type: "audio/webm"
+      )
+      blob_key = recap.audio_recording.blob.key
+      allow_any_instance_of(ActiveStorage::Blob).to receive(:with_lock).and_raise(ActiveRecord::RecordNotFound)
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(response).to redirect_to(root_path)
+      expect(DeletionRequest.order(:created_at).last).to have_attributes(status: "completed", completed_at: be_present)
+      expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
     end
 
     it "preserves a recording blob that remains attached to another account" do

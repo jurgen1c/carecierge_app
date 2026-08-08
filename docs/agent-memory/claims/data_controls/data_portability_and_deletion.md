@@ -14,7 +14,10 @@ claim: >
   private calendar containing reminders and important dates. Protected vault
   payloads are excluded unless the current password is re-entered. Portable
   JSON and CSV snapshots include uploaded conversation recordings as base64,
-  relationship assignment joins, and localized type labels. CSV cells
+  relationship assignment joins, localized type labels, privacy-safe vault
+  access and notification history, and reminder delivery lifecycle evidence.
+  Internal delivery errors, lease tokens, and notification recipient keys are
+  excluded. CSV cells
   neutralize formula-leading input, clamped date recurrences are preserved in
   calendar exports, calendar-only requests skip snapshot construction, and PDF
   rendering uses the configured application origin. Export forms use native
@@ -26,10 +29,14 @@ claim: >
   deletion removes user-targeted feature assignments and synchronously deletes
   uploaded recordings while retaining retryable blob rows on storage failure.
   Each recording purge locks its blob across the final attachment check and
-  storage deletion so a concurrent cross-account attachment cannot lose data.
+  storage deletion so a concurrent cross-account attachment cannot lose data;
+  if Active Storage already removed the row, cleanup still idempotently deletes
+  the captured storage key and completes.
   Completion leaves only a one-way account digest and nullified user reference;
   emails, credentials, and relationship contents are not retained. OAuth users
   receive an explicit password-setup path before password-gated deletion.
+  PDF asset resolution follows the configured application protocol, including
+  HTTP for the default localhost development server and HTTPS in production.
 
 source_files:
   - app/controllers/data_controls_controller.rb
@@ -88,20 +95,19 @@ last_verified_commit: null
 
 ## Claim
 
-Carecierge provides portable account and relationship-profile exports without
-turning the export endpoint into a tenant or vault bypass. The same owner scope
-feeds every format. Password reauthentication is required before decrypted
-vault payloads enter an export. Export forms bypass Turbo so attachment
-responses are handled by the browser's download manager.
+Every export format uses the same owner scope, and decrypted vault payloads
+require password reauthentication. Native form navigation lets browsers handle
+downloads. Full-account JSON and CSV include privacy-safe vault-access,
+notification, and reminder-delivery evidence, excluding internal errors,
+leases, and notification recipient keys. PDFs load assets from the configured
+application protocol.
 
-Permanent deletion uses explicit confirmation at the presentation boundary and
-records content-free lifecycle evidence. Selective AI deletion targets only
-`MemoryRecord.source = ai_inferred` and `TimelineEntry.entry_type =
-ai_extraction` records whose origin is `system`. Account deletion destroys the
-account graph while a detached deletion request retains only a keyed digest and
-lifecycle timestamps. Recording blobs are purged only when no attachment from
-another account remains, with the blob row locked across that check and purge
-to serialize concurrent attachment creation.
+Permanent deletion records content-free evidence and retains only a keyed
+account digest with lifecycle timestamps. Selective AI deletion targets only
+system-originated inferred memories and AI-extraction timeline entries.
+Recording purges lock each blob across the final shared-attachment check and
+storage deletion. A blob row already removed by Active Storage is successful
+cleanup after an idempotent delete of its captured storage key.
 
 ## Why It Matters
 

@@ -34,14 +34,18 @@ module DataDeletions
     end
 
     def delete_recording_blobs(blobs)
-      blobs.each do |blob|
-        blob.with_lock do
-          next if blob.attachments.exists?
+      blobs.each { |blob| delete_recording_blob(blob) }
+    end
 
-          blob.delete
-          blob.destroy!
-        end
+    def delete_recording_blob(blob)
+      blob.with_lock do
+        return if blob.attachments.exists?
+
+        blob.delete
+        blob.destroy!
       end
+    rescue ActiveRecord::RecordNotFound
+      blob.delete
     end
   end
 end

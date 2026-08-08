@@ -1,4 +1,4 @@
-class CreateSuggestionFeedbacks < ActiveRecord::Migration[8.0]
+class CreateSuggestionFeedbacks < ActiveRecord::Migration[8.1]
   def change
     create_table :suggestion_feedbacks, id: :uuid do |t|
       t.references :user, null: false, type: :uuid, foreign_key: { on_delete: :cascade }

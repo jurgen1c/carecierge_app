@@ -14,7 +14,9 @@ claim: >
   evidence and confirmed or inferred certainty, and fails closed for archived
   profiles and unapproved AI evidence in high-impact suggestions. Suggestion
   content is not persisted; only feedback, dismissal, and completed-action state
-  are stored by stable fingerprint. Act currently prepares a private reminder
+  are stored by stable fingerprint. Profile rendering supplies already-loaded
+  source collections to avoid repeating relationship queries, and mutation
+  responses reuse their generated suggestion set. Act currently prepares a private reminder
   and marks the suggestion acted only after the reminder saves. The stable
   action_kind is the extension boundary for future user-enabled automation,
   which must evaluate automation permissions and approval requirements before
@@ -87,7 +89,8 @@ action.
 ## Rationale
 
 This keeps explanations auditable, avoids stale duplicated relationship facts,
-preserves privacy-vault and persona uncertainty rules, and provides a narrow
+preserves privacy-vault and persona uncertainty rules, avoids duplicate source
+queries during profile rendering and mutation responses, and provides a narrow
 contract for later automation. The current action remains reversible and local:
 opening Act only prepares a reminder, and completion is recorded only in the
 successful reminder transaction.

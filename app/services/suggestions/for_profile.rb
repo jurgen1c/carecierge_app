@@ -10,14 +10,15 @@ module Suggestions
     ].freeze
     REPAIR_CATEGORIES = %w[stressed distant sad overwhelmed].freeze
 
-    def self.call(relationship_profile:, as_of: Time.current, mood_notes: nil)
-      new(relationship_profile:, as_of:, mood_notes:).call
+    def self.call(relationship_profile:, as_of: Time.current, mood_notes: nil, important_dates: nil)
+      new(relationship_profile:, as_of:, mood_notes:, important_dates:).call
     end
 
-    def initialize(relationship_profile:, as_of:, mood_notes:)
+    def initialize(relationship_profile:, as_of:, mood_notes:, important_dates:)
       @relationship_profile = relationship_profile
       @as_of = as_of
       @mood_notes = mood_notes
+      @important_dates = important_dates
     end
 
     def call
@@ -37,7 +38,7 @@ module Suggestions
 
     private
 
-    attr_reader :relationship_profile, :as_of, :mood_notes
+    attr_reader :relationship_profile, :as_of, :mood_notes, :important_dates
 
     def gift_suggestion
       desire = active_desires.find { |item| item.suggestion_contexts.include?("gift") }
@@ -78,7 +79,7 @@ module Suggestions
     end
 
     def event_suggestion
-      important_date = ImportantDate.where(relationship_profile:)
+      important_date = (important_dates || relationship_profile.important_dates.reload)
         .select { |item| item.planning_opportunity?(as_of: as_of.to_date) }
         .min_by { |item| [ item.next_occurrence_on(as_of: as_of.to_date), item.title.to_s, item.id ] }
       build("event", important_date, evidence: important_date&.display_title, reminder_type: "event_preparation", priority: "high")

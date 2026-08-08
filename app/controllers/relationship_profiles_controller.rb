@@ -29,7 +29,11 @@ class RelationshipProfilesController < ApplicationController
   def show
     @relationship_persona = RelationshipPersona.new(relationship_profile: @relationship_profile)
     @mood_notes = @relationship_profile.mood_notes.ordered.to_a
-    suggestions = Suggestions::ForProfile.call(relationship_profile: @relationship_profile, mood_notes: @mood_notes)
+    suggestions = Suggestions::ForProfile.call(
+      relationship_profile: @relationship_profile,
+      mood_notes: @mood_notes,
+      important_dates: @relationship_profile.important_dates
+    )
     @suggestion_feedbacks = current_user.suggestion_feedbacks
       .where(fingerprint: suggestions.map(&:fingerprint))
       .index_by(&:fingerprint)

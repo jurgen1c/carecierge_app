@@ -79,6 +79,29 @@ RSpec.describe Suggestions::ForProfile do
     expect(suggestion.reasons.sole).to have_attributes(source: memory, certainty: "inferred")
   end
 
+  it "reuses important dates preloaded on the relationship profile" do
+    now = Time.zone.local(2026, 8, 8, 9, 0)
+    profile = create(:relationship_profile, preferred_name: "Maya")
+    important_date = create(
+      :important_date,
+      relationship_profile: profile,
+      title: "Birthday",
+      starts_on: now.to_date + 12.days,
+      recurrence: "none"
+    )
+    preloaded_dates = profile.important_dates.reload.to_a
+    expect(ImportantDate).not_to receive(:where)
+
+    suggestion = described_class.call(
+      relationship_profile: profile,
+      as_of: now,
+      important_dates: preloaded_dates
+    )
+      .find { |item| item.suggestion_type == "event" }
+
+    expect(suggestion.reasons.sole.source).to eq(important_date)
+  end
+
   it "fails closed for archived profiles" do
     profile = create(:relationship_profile, discarded_at: Time.current)
     create(:memory_record, relationship_profile: profile)

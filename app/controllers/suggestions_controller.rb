@@ -34,7 +34,8 @@ class SuggestionsController < ApplicationController
   end
 
   def set_suggestion
-    @suggestion = Suggestions::ForProfile.call(relationship_profile: @relationship_profile)
+    @suggestions = Suggestions::ForProfile.call(relationship_profile: @relationship_profile)
+    @suggestion = @suggestions
       .find { |suggestion| suggestion.fingerprint == params[:id] }
     raise ActiveRecord::RecordNotFound unless @suggestion
   end
@@ -46,11 +47,10 @@ class SuggestionsController < ApplicationController
   end
 
   def render_suggestions
-    suggestions = Suggestions::ForProfile.call(relationship_profile: @relationship_profile)
     feedbacks = current_user.suggestion_feedbacks
-      .where(fingerprint: suggestions.map(&:fingerprint))
+      .where(fingerprint: @suggestions.map(&:fingerprint))
       .index_by(&:fingerprint)
-    visible_suggestions = suggestions.reject { |suggestion| feedbacks[suggestion.fingerprint]&.hidden? }
+    visible_suggestions = @suggestions.reject { |suggestion| feedbacks[suggestion.fingerprint]&.hidden? }
     selected_suggestion = visible_suggestions.find { |suggestion| suggestion.fingerprint == @suggestion.fingerprint } || visible_suggestions.first
 
     respond_to do |format|

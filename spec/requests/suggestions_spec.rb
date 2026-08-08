@@ -54,6 +54,36 @@ RSpec.describe "Suggestions", type: :request do
     expect(response).to have_http_status(:not_found)
   end
 
+  it "rejects unsupported feedback without persisting interaction state" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:, preferred_name: "Maya")
+    create(:relationship_preference, relationship_profile: profile, confidence: "confirmed")
+    suggestion = Suggestions::ForProfile.call(relationship_profile: profile).sole
+    sign_in user
+
+    patch feedback_relationship_profile_suggestion_path(profile, suggestion.fingerprint),
+      params: { feedback: "surprising" },
+      as: :turbo_stream
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(user.suggestion_feedbacks.where(fingerprint: suggestion.fingerprint)).not_to exist
+  end
+
+  it "generates suggestions once while recording feedback" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:, preferred_name: "Maya")
+    create(:relationship_preference, relationship_profile: profile, confidence: "confirmed")
+    suggestion = Suggestions::ForProfile.call(relationship_profile: profile).sole
+    sign_in user
+    expect(Suggestions::ForProfile).to receive(:call).once.and_call_original
+
+    patch feedback_relationship_profile_suggestion_path(profile, suggestion.fingerprint),
+      params: { feedback: "helpful" },
+      as: :turbo_stream
+
+    expect(response).to have_http_status(:ok)
+  end
+
   it "prefills a reminder and marks the suggestion acted only after the reminder saves" do
     user = create(:user)
     profile = create(:relationship_profile, user:, preferred_name: "Maya")

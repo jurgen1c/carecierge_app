@@ -17,13 +17,16 @@ claim: >
   relationship assignment joins, and localized type labels. CSV cells
   neutralize formula-leading input, clamped date recurrences are preserved in
   calendar exports, calendar-only requests skip snapshot construction, and PDF
-  rendering uses the configured application origin. Successful exports emit content-free
-  AuditEvent evidence only after serialization.
+  rendering uses the configured application origin. Export forms use native
+  browser navigation so attachment responses reach the download manager.
+  Successful exports emit content-free AuditEvent evidence only after serialization.
   Profile deletion, unlocked protected-item deletion, selective removal of
   AI-inferred memories and AI-extraction timeline records, and password-gated
   account deletion create privacy-minimized DeletionRequest evidence. Account
   deletion removes user-targeted feature assignments and synchronously deletes
   uploaded recordings while retaining retryable blob rows on storage failure.
+  Each recording purge locks its blob across the final attachment check and
+  storage deletion so a concurrent cross-account attachment cannot lose data.
   Completion leaves only a one-way account digest and nullified user reference;
   emails, credentials, and relationship contents are not retained. OAuth users
   receive an explicit password-setup path before password-gated deletion.
@@ -88,7 +91,8 @@ last_verified_commit: null
 Carecierge provides portable account and relationship-profile exports without
 turning the export endpoint into a tenant or vault bypass. The same owner scope
 feeds every format. Password reauthentication is required before decrypted
-vault payloads enter an export.
+vault payloads enter an export. Export forms bypass Turbo so attachment
+responses are handled by the browser's download manager.
 
 Permanent deletion uses explicit confirmation at the presentation boundary and
 records content-free lifecycle evidence. Selective AI deletion targets only
@@ -96,7 +100,8 @@ records content-free lifecycle evidence. Selective AI deletion targets only
 ai_extraction` records whose origin is `system`. Account deletion destroys the
 account graph while a detached deletion request retains only a keyed digest and
 lifecycle timestamps. Recording blobs are purged only when no attachment from
-another account remains.
+another account remains, with the blob row locked across that check and purge
+to serialize concurrent attachment creation.
 
 ## Why It Matters
 

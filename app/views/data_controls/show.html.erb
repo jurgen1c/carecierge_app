@@ -15,7 +15,7 @@
     </div>
 
     <div class="grid divide-y divide-stone-200 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
-      <%= form_with url: data_exports_path, scope: :data_export, namespace: :account_export, class: "grid content-start gap-4 p-5 sm:p-6" do |form| %>
+      <%= form_with url: data_exports_path, scope: :data_export, namespace: :account_export, data: { turbo: false }, class: "grid content-start gap-4 p-5 sm:p-6" do |form| %>
         <%= form.hidden_field :scope, value: "account" %>
         <div>
           <h3 class="text-base font-semibold text-stone-950"><%= t("data_controls.show.exports.account_title") %></h3>
@@ -36,7 +36,7 @@
         <%= form.submit t("data_controls.show.exports.account_action"), class: "min-h-11 w-fit cursor-pointer rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
       <% end %>
 
-      <%= form_with url: data_exports_path, scope: :data_export, namespace: :profile_export, class: "grid content-start gap-4 p-5 sm:p-6" do |form| %>
+      <%= form_with url: data_exports_path, scope: :data_export, namespace: :profile_export, data: { turbo: false }, class: "grid content-start gap-4 p-5 sm:p-6" do |form| %>
         <%= form.hidden_field :scope, value: "relationship_profile" %>
         <div>
           <h3 class="text-base font-semibold text-stone-950"><%= t("data_controls.show.exports.profile_title") %></h3>

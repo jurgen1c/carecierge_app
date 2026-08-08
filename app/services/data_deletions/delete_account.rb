@@ -35,10 +35,12 @@ module DataDeletions
 
     def delete_recording_blobs(blobs)
       blobs.each do |blob|
-        next if blob.attachments.exists?
+        blob.with_lock do
+          next if blob.attachments.exists?
 
-        blob.delete
-        blob.destroy!
+          blob.delete
+          blob.destroy!
+        end
       end
     end
   end

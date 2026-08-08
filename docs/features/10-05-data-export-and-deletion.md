@@ -62,13 +62,16 @@ auditable without retaining the account email or relationship contents.
 - Account deletion synchronously purges uploaded recordings before the request
   can be marked completed. Storage files are deleted before their blob rows so a
   failure leaves retryable metadata and failed evidence; blobs still attached to
-  another account are preserved.
+  another account are preserved. A blob row lock spans the final attachment
+  check and purge so concurrent attachment creation cannot race storage deletion.
 - User-targeted feature-flag assignments are removed with the account, and
   Google-authenticated users receive a direct password-setup path before the
   password-gated action.
 - Email confirmations and passwords are filtered from request logs.
 - Export responses and the Data controls page disable caching and Turbo
   snapshots because they expose private account context.
+- Export forms bypass Turbo and use native browser navigation so attachment
+  responses reach the browser download manager.
 - Calendar-only exports bypass full account snapshot construction.
 
 ## Verification

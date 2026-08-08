@@ -374,6 +374,23 @@ RSpec.describe "Data controls", type: :request do
       expect(other_recap.reload.audio_recording.download).to eq("shared recording")
     end
 
+    it "locks a recording blob while checking attachments and deleting storage" do
+      recap = create(:conversation_recap, relationship_profile: profile)
+      recap.audio_recording.attach(
+        io: StringIO.new("serialized purge"),
+        filename: "serialized.webm",
+        content_type: "audio/webm"
+      )
+
+      expect_any_instance_of(ActiveStorage::Blob).to receive(:with_lock).once.and_call_original
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(response).to redirect_to(root_path)
+    end
+
     it "rejects account deletion when the password is invalid" do
       post data_deletions_path, params: {
         data_deletion: { kind: "account", confirmation: user.email, current_password: "wrong-password" }

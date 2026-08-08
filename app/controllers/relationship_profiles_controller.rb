@@ -94,12 +94,14 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def destroy
-    AuditEvents::Track.call(
-      user: current_user,
-      actor: current_user,
-      action: "relationship_profile.deleted",
-      target: nil
-    ) { @relationship_profile.destroy! }
+    DataDeletions::Perform.call(user: current_user, request_kind: "relationship_profile", subject: @relationship_profile) do
+      AuditEvents::Track.call(
+        user: current_user,
+        actor: current_user,
+        action: "relationship_profile.deleted",
+        target: nil
+      ) { @relationship_profile.destroy! }
+    end
 
     redirect_to relationship_profiles_path, notice: t(".notice")
   end

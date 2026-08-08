@@ -19,8 +19,10 @@ claim: >
   pages disable Turbo snapshots, send HTTP no-store, and remove decrypted DOM
   content on a response-relative timer or a cross-tab signal from UI lease
   revocations. Password recovery signs authenticated users out and revokes the
-  lease before handing off to Devise. Unlocked users can reveal, restore, or allow
-  an item for suggestions; VaultAccessEvent stores metadata only. Access-event
+  lease before handing off to Devise. Unlocked users can reveal, restore, allow
+  an item for suggestions, or permanently delete its underlying protected
+  record through the privacy-minimized deletion-request workflow;
+  VaultAccessEvent stores metadata only. Access-event
   persistence is best-effort and reports failures without blocking password,
   lock, or view outcomes, while mutation-event persistence remains transactional.
   The vault migration refuses rollback while encrypted payloads remain.
@@ -38,6 +40,7 @@ source_files:
   - app/services/privacy_vault/protect.rb
   - app/services/privacy_vault/change_suggestion_usage.rb
   - app/services/privacy_vault/restore.rb
+  - app/services/privacy_vault/delete.rb
   - app/policies/privacy_vault_item_policy.rb
   - app/views/privacy_vaults/show.html.erb
   - app/views/privacy_vaults/_section.html.erb
@@ -59,6 +62,7 @@ symbols:
   - PrivacyVault::Payload
   - PrivacyVault::Protect
   - PrivacyVault::Restore
+  - PrivacyVault::Delete
   - PrivacyVaultItemPolicy
   - PrivacyVaultSession
   - PrivacyVaultsController
@@ -71,6 +75,7 @@ routes:
   - lock_relationship_profile_privacy_vault
   - relationship_profile_privacy_vault_items
   - relationship_profile_privacy_vault_item
+  - delete_data_relationship_profile_privacy_vault_item
 tags:
   - vault_security
   - encryption

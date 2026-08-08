@@ -253,6 +253,7 @@ en:
       privacy_title: "Private by default"
       privacy_body: "Carecierge keeps relationship setup inside your account and prepares future approval paths before automation."
       audit_history_action: "View activity history"
+      data_controls_action: "Export or delete data"
       admin_audit_action: "Open admin ledger"
       continue_onboarding: "Continue onboarding"
   audit_events:
@@ -1683,6 +1684,8 @@ en:
       protect: "Protect"
       restore: "Restore to profile"
       restore_confirm: "Restore this item to the ordinary relationship profile?"
+      delete_data: "Delete permanently"
+      delete_data_confirm: "Permanently delete this protected item? This cannot be undone."
       allow_suggestions: "Allow for suggestions"
       exclude_suggestions: "Exclude from suggestions"
       password_title: "Enter your password"
@@ -1703,6 +1706,8 @@ en:
       notice: "Suggestion preference updated."
     destroy:
       notice: "Item restored to the relationship profile."
+    delete_data:
+      notice: "Protected item permanently deleted."
   automation_permissions:
     edit:
       page_title: "Automation permissions"
@@ -1799,3 +1804,69 @@ en:
       error: "We could not update that relationship override."
     destroy:
       notice: "Relationship override removed."
+  data_controls:
+    show:
+      page_title: "Data controls"
+      back: "Back to dashboard"
+      heading: "Export or delete your data"
+      body: "Download a portable copy of your Carecierge information or permanently remove data you no longer want us to keep. Protected vault contents require your password."
+      current_password: "Current password"
+      exports:
+        title: "Download your data"
+        body: "Exports are prepared only for your signed-in account. JSON and CSV preserve structured records, PDF provides a readable summary, and calendar files include reminders and important dates."
+        account_title: "All account data"
+        account_body: "Download your account settings and every relationship record you own."
+        profile_title: "One relationship profile"
+        profile_body: "Choose one person and download only that relationship workspace."
+        profile: "Relationship"
+        format: "Format"
+        calendar: "Calendar"
+        include_sensitive: "Include protected vault contents"
+        include_sensitive_body: "Re-enter your password below. Leave this off to keep protected payloads out of the download."
+        account_action: "Download account export"
+        profile_action: "Download profile export"
+      delete_specific:
+        title: "Delete specific records"
+        body: "Profile deletion remains with each relationship. Unlock a privacy vault to permanently delete an individual protected note, memory, or relationship detail."
+        profiles: "Manage relationship profiles"
+        sensitive: "Open a privacy vault"
+      danger:
+        title: "Permanent deletion"
+        body: "These actions cannot be undone. Export anything you want to keep before continuing."
+      confirmation: "Type %{email} to confirm"
+      delete_ai:
+        title: "Delete AI-generated data"
+        body: "Permanently removes AI-inferred memories and AI-extraction timeline records. User-confirmed memories and manually created timeline entries stay in place."
+        action: "Delete AI-generated data"
+        confirm: "Delete all AI-generated data in this account?"
+      delete_account:
+        title: "Delete account"
+        body: "Permanently removes your account and all relationship data. Privacy-minimized deletion evidence remains without your email or relationship content."
+        oauth_password_help: "Signed in with Google? Set a Carecierge password first, then return here to confirm deletion."
+        set_password_action: "Set your password"
+        action: "Delete my account"
+        confirm: "Permanently delete your Carecierge account and all of its data?"
+  data_exports:
+    errors:
+      invalid_request: "Choose a valid export scope and format."
+      password_required: "Enter your current password to include protected vault contents."
+    pdf:
+      title: "Carecierge data summary"
+      heading: "Carecierge data summary"
+      generated_at: "Generated %{timestamp}"
+      account: "Account"
+      email: "Email"
+      relationships: "Relationships"
+      timeline_entries: "Timeline entries"
+      important_dates: "Important dates"
+      memories: "Memories"
+      protected_items: "Protected items included"
+  data_deletions:
+    errors:
+      invalid_request: "Choose a valid deletion request."
+      confirmation: "Type your account email exactly to confirm deletion."
+      password: "Your current password was not accepted."
+    ai_generated:
+      notice: "AI-generated data was permanently deleted."
+    account:
+      notice: "Your Carecierge account and its data were permanently deleted."

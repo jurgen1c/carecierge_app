@@ -26,6 +26,9 @@ Rails.application.routes.draw do
   resource :automation_permissions, only: %i[edit update]
   resources :automation_permission_overrides, only: %i[create update destroy]
   resources :audit_events, only: :index
+  resource :data_control, only: :show
+  resources :data_exports, only: :create
+  resources :data_deletions, only: :create
 
   resource :onboarding, only: %i[show create], controller: "onboarding" do
     post :skip
@@ -38,7 +41,9 @@ Rails.application.routes.draw do
       post :reset_password
       delete :lock
     end
-    resources :privacy_vault_items, only: %i[create update destroy]
+    resources :privacy_vault_items, only: %i[create update destroy] do
+      delete :delete_data, on: :member
+    end
     resources :important_dates, except: %i[index show]
     resources :gifts, except: %i[index show] do
       patch :mark_given, on: :member

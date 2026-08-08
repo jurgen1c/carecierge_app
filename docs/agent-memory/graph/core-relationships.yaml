@@ -331,3 +331,18 @@ edges:
     relation: requires
     reason: Permission changes retain specialized evidence and also commit a generic ledger event in the owner-locked transaction.
     strength: 95
+  - source: data_controls.data_portability_and_deletion
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Export and deletion endpoints require the authenticated account and scope every relationship lookup through its owner.
+    strength: 100
+  - source: data_controls.data_portability_and_deletion
+    target: relationship_profiles.privacy_vault
+    relation: requires
+    reason: Protected payload export requires password reauthentication, and permanent protected-item deletion requires an active vault lease.
+    strength: 100
+  - source: data_controls.data_portability_and_deletion
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Successful exports and deletions emit privacy-minimized generic evidence without copying exported or deleted content.
+    strength: 95

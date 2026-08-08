@@ -3,7 +3,7 @@ id: relationship_profiles.custom_type_metadata
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Relationship profiles store custom type metadata in JSONB

@@ -46,6 +46,9 @@ RSpec.describe "Data controls", type: :request do
     end
 
     it "exports all owned account data as JSON and records privacy-minimized evidence" do
+      recap = create(:conversation_recap, relationship_profile: profile, extraction_status: "ready_for_review")
+      create(:extracted_memory, relationship_profile: profile, conversation_recap: recap, category: "boundary", confidence: "medium")
+
       post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
 
       expect(response).to have_http_status(:ok)
@@ -55,6 +58,11 @@ RSpec.describe "Data controls", type: :request do
       expect(response.parsed_body.dig("relationship_profiles", 0, "timeline_entries", 0, "title")).to eq("First meeting")
       expect(response.parsed_body.dig("relationship_profiles", 0, "important_dates", 0, "title")).to eq("Birthday")
       expect(response.parsed_body.dig("relationship_profiles", 0, "memory_records", 0, "source")).to eq("ai_inferred")
+      expect(response.parsed_body.dig("relationship_profiles", 0, "extracted_memories", 0)).to include(
+        "category" => "boundary",
+        "confidence" => "medium",
+        "status" => "pending"
+      )
       expect(user.audit_events.reload.last).to have_attributes(
         action: "data_export.requested",
         metadata: { "request_kind" => "account_json", "result" => "completed" }
@@ -268,6 +276,8 @@ RSpec.describe "Data controls", type: :request do
     it "deletes only AI-generated memory and timeline data after explicit confirmation" do
       ai_memory = create(:memory_record, relationship_profile: profile, source: "ai_inferred")
       kept_memory = create(:memory_record, relationship_profile: profile, source: "user_confirmed")
+      recap = create(:conversation_recap, relationship_profile: profile, extraction_status: "ready_for_review")
+      proposal = create(:extracted_memory, relationship_profile: profile, conversation_recap: recap)
       ai_timeline = create(:timeline_entry, relationship_profile: profile, entry_type: "ai_extraction", origin: "system")
       manual_ai_timeline = create(:timeline_entry, relationship_profile: profile, entry_type: "ai_extraction", origin: "manual")
       kept_timeline = create(:timeline_entry, relationship_profile: profile, entry_type: "note", origin: "manual")
@@ -276,6 +286,8 @@ RSpec.describe "Data controls", type: :request do
 
       expect(response).to redirect_to(data_control_path)
       expect(MemoryRecord.exists?(ai_memory.id)).to be(false)
+      expect(ExtractedMemory.exists?(proposal.id)).to be(false)
+      expect(recap.reload).to have_attributes(extraction_status: "not_requested", extraction_requested_at: nil)
       expect(TimelineEntry.exists?(ai_timeline.id)).to be(false)
       expect(MemoryRecord.exists?(kept_memory.id)).to be(true)
       expect(TimelineEntry.exists?(manual_ai_timeline.id)).to be(true)
@@ -285,6 +297,27 @@ RSpec.describe "Data controls", type: :request do
         action: "data_deletion.requested",
         metadata: { "request_kind" => "ai_generated", "result" => "completed" }
       )
+    end
+
+    it "cancels owned extraction requests even when they have not produced proposals" do
+      requested_recap = create(
+        :conversation_recap,
+        relationship_profile: profile,
+        extraction_status: "requested",
+        extraction_requested_at: 1.minute.ago
+      )
+      processing_recap = create(
+        :conversation_recap,
+        relationship_profile: profile,
+        extraction_status: "processing",
+        extraction_requested_at: 2.minutes.ago,
+        extraction_started_at: 1.minute.ago
+      )
+
+      post data_deletions_path, params: { data_deletion: { kind: "ai_generated", confirmation: user.email } }
+
+      expect(requested_recap.reload).to have_attributes(extraction_status: "not_requested", extraction_requested_at: nil)
+      expect(processing_recap.reload).to have_attributes(extraction_status: "not_requested", extraction_started_at: nil)
     end
 
     it "rejects a mismatched confirmation without deleting data" do

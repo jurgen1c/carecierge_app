@@ -67,6 +67,7 @@ module DataExports
         "gifts" => records(profile.gifts),
         "memory_records" => profile.memory_records.map { |memory| memory_attributes(memory) },
         "conversation_recaps" => profile.conversation_recaps.map { |recap| conversation_recap_attributes(recap) },
+        "extracted_memories" => records(profile.extracted_memories, except: %w[reviewed_by_id]),
         "mood_notes" => records(profile.mood_notes),
         "timeline_entries" => records(profile.timeline_entries),
         "commitments" => records(profile.commitments),

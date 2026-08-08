@@ -24,7 +24,14 @@
   <%= render "gifts/section", relationship_profile: @relationship_profile %>
   <%= render "privacy_vaults/section", relationship_profile: @relationship_profile %>
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>
-  <%= render "conversation_recaps/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>
+  <%= render "conversation_recaps/section", relationship_profile: @relationship_profile, conversation_recaps: @conversation_recaps, selected_type: @timeline_type %>
+  <% if @memory_extraction_enabled || @extracted_memories.any? || @conversation_recaps.any? { |recap| recap.extraction_status != "not_requested" } %>
+    <%= render "extracted_memories/section",
+      relationship_profile: @relationship_profile,
+      conversation_recaps: @conversation_recaps,
+      extracted_memories: @extracted_memories,
+      selected_extracted_memory: @selected_extracted_memory %>
+  <% end %>
   <%= render "mood_notes/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>
   <%= render "timeline_entries/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>
   <%= render "reminders/section", relationship_profile: @relationship_profile, reminders: @relationship_reminders %>

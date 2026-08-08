@@ -16,10 +16,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@jurgen1c/agent-memory-cli": "0.1.9",
+    "@jurgen1c/agent-memory-cli": "0.4.0",
     "eslint": "^10.6.0"
   },
   "overrides": {
     "brace-expansion": "5.0.9"
+  },
+  "patchedDependencies": {
+    "@jurgen1c/agent-memory-cli@0.4.0": "patches/@jurgen1c%2Fagent-memory-cli@0.4.0.patch"
   }
 }

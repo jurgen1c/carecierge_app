@@ -52,7 +52,12 @@ Rails.application.routes.draw do
       patch :review, on: :member
       patch :approve_high_impact_automation, on: :member
     end
-    resources :conversation_recaps, except: %i[index show]
+    resources :conversation_recaps, except: %i[index show] do
+      patch :retry_extraction, on: :member
+    end
+    resources :extracted_memories, only: [] do
+      patch :review, on: :member
+    end
     resources :mood_notes, except: %i[index show]
     resource :contact_cadence, only: %i[new create edit update]
     resources :interactions, except: %i[index show]

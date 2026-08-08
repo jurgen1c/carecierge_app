@@ -3,7 +3,7 @@ id: agent_workflow.local_ci_signoff_gate
 type: rule
 system: agent_workflow
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Local CI signs off GitHub after the full quality gate

@@ -10,6 +10,11 @@ RSpec.describe "Parameter filtering" do
         "body" => "Private recap details",
         "transcript" => "Private transcript details"
       },
+      "extracted_memory" => {
+        "decision" => "correct",
+        "corrected_title" => "Private corrected title",
+        "corrected_body" => "Private corrected memory"
+      },
       "mood_note" => {
         "category" => "stressed",
         "observation" => "Private mood observation",
@@ -40,6 +45,9 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("conversation_recap", "body")).to eq("[FILTERED]")
     expect(filtered.dig("conversation_recap", "transcript")).to eq("[FILTERED]")
     expect(filtered.dig("conversation_recap", "title")).to eq("Lunch with David")
+    expect(filtered.dig("extracted_memory", "corrected_title")).to eq("[FILTERED]")
+    expect(filtered.dig("extracted_memory", "corrected_body")).to eq("[FILTERED]")
+    expect(filtered.dig("extracted_memory", "decision")).to eq("correct")
     expect(filtered.dig("mood_note", "observation")).to eq("[FILTERED]")
     expect(filtered.dig("mood_note", "supportive_action")).to eq("[FILTERED]")
     expect(filtered.dig("mood_note", "category")).to eq("stressed")

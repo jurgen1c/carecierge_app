@@ -3,7 +3,7 @@ id: relationship_profiles.profile_crud_owner_scope
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Relationship profile CRUD is owner scoped

@@ -7,7 +7,10 @@
 #  body                    :text             not null
 #  capture_source          :string           default("typed"), not null
 #  extraction_approved_at  :datetime
+#  extraction_completed_at :datetime
+#  extraction_error_code   :string
 #  extraction_requested_at :datetime
+#  extraction_started_at   :datetime
 #  extraction_status       :string           default("not_requested"), not null
 #  occurred_at             :datetime         not null
 #  title                   :string           not null
@@ -29,11 +32,12 @@
 #
 class ConversationRecap < ApplicationRecord
   CAPTURE_SOURCES = %w[typed voice_transcript].freeze
-  EXTRACTION_STATUSES = %w[not_requested requested ready_for_review rejected].freeze
+  EXTRACTION_STATUSES = %w[not_requested requested processing ready_for_review completed failed rejected].freeze
 
   attr_accessor :request_memory_extraction
 
   belongs_to :relationship_profile
+  has_many :extracted_memories, dependent: :destroy
   has_one :timeline_entry, as: :source_record, dependent: :destroy
   has_one :interaction, as: :source, dependent: :destroy
   has_one_attached :audio_recording

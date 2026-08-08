@@ -3,7 +3,7 @@ id: relationship_profiles.preference_metadata
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Relationship preferences store structured metadata

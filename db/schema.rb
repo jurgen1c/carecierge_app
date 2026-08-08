@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_004436) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_040856) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -154,7 +154,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004436) do
     t.string "capture_source", default: "typed", null: false
     t.datetime "created_at", null: false
     t.datetime "extraction_approved_at"
+    t.datetime "extraction_completed_at"
+    t.string "extraction_error_code"
     t.datetime "extraction_requested_at"
+    t.datetime "extraction_started_at"
     t.string "extraction_status", default: "not_requested", null: false
     t.datetime "occurred_at", null: false
     t.uuid "relationship_profile_id", null: false
@@ -233,6 +236,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004436) do
     t.check_constraint "channel::text = ANY (ARRAY['email'::character varying, 'in_app'::character varying]::text[])", name: "digest_deliveries_supported_channel"
     t.check_constraint "mode::text = ANY (ARRAY['daily'::character varying, 'weekly'::character varying]::text[])", name: "digest_deliveries_supported_mode"
     t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'dispatching'::character varying, 'dispatched'::character varying, 'skipped'::character varying, 'failed'::character varying, 'cancelled'::character varying]::text[])", name: "digest_deliveries_supported_status"
+  end
+
+  create_table "extracted_memories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "body", null: false
+    t.uuid "canonical_memory_record_id"
+    t.string "category", null: false
+    t.string "confidence", null: false
+    t.uuid "conversation_recap_id", null: false
+    t.text "corrected_body"
+    t.string "corrected_title"
+    t.datetime "created_at", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "reviewed_at"
+    t.uuid "reviewed_by_id"
+    t.text "source_excerpt", null: false
+    t.string "status", default: "pending", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["canonical_memory_record_id"], name: "index_extracted_memories_on_canonical_memory_record_id", unique: true
+    t.index ["conversation_recap_id", "status"], name: "index_extracted_memories_on_conversation_recap_id_and_status"
+    t.index ["conversation_recap_id"], name: "index_extracted_memories_on_conversation_recap_id"
+    t.index ["relationship_profile_id", "status"], name: "index_extracted_memories_on_relationship_profile_id_and_status"
+    t.index ["relationship_profile_id"], name: "index_extracted_memories_on_relationship_profile_id"
+    t.index ["reviewed_by_id"], name: "index_extracted_memories_on_reviewed_by_id"
   end
 
   create_table "feature_flag_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -747,6 +774,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_004436) do
   add_foreign_key "desire_fulfillments", "desires"
   add_foreign_key "desires", "relationship_profiles"
   add_foreign_key "digest_deliveries", "users"
+  add_foreign_key "extracted_memories", "conversation_recaps", on_delete: :cascade
+  add_foreign_key "extracted_memories", "memory_records", column: "canonical_memory_record_id", on_delete: :nullify
+  add_foreign_key "extracted_memories", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "extracted_memories", "users", column: "reviewed_by_id", on_delete: :nullify
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"

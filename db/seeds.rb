@@ -9,3 +9,9 @@
 #   end
 
 RelationshipTemplate.install_defaults!
+
+FeatureFlag.find_or_create_by!(key: "ai_memory_extraction") do |flag|
+  flag.name = "AI memory extraction"
+  flag.description = "Allows opted-in conversation recaps to produce source-backed memory proposals for owner review."
+  flag.enabled = false
+end

@@ -1300,7 +1300,10 @@ es:
     extraction_statuses:
       not_requested: "No solicitada"
       requested: "Extracción solicitada"
+      processing: "Procesando"
       ready_for_review: "Lista para revisión"
+      completed: "Revisión completa"
+      failed: "Falló la extracción"
       rejected: "Rechazada"
     section:
       kicker: "Memoria conversacional"
@@ -1357,6 +1360,68 @@ es:
       notice: "El resumen de conversación fue actualizado."
     destroy:
       notice: "El resumen de conversación fue eliminado."
+    retry_extraction:
+      notice: "La extracción de memoria fue solicitada de nuevo."
+      unavailable: "Solo se puede volver a solicitar una extracción fallida."
+      disabled: "La extracción de memoria por IA no está disponible para esta cuenta."
+  extracted_memories:
+    categories:
+      preference: "Preferencia"
+      important_date: "Fecha importante"
+      desire: "Deseo"
+      commitment: "Compromiso"
+      gift_idea: "Idea de regalo"
+      boundary: "Límite"
+      emotional_context: "Contexto emocional"
+    confidences:
+      high: "Confianza alta"
+      medium: "Confianza media"
+      low: "Confianza baja"
+      inferred: "Inferida"
+    section:
+      kicker: "Revisión de memoria"
+      title: "Sugerencias que esperan tu criterio"
+      body: "Compara cada propuesta de IA con su fuente. Apruébala, recházala o corrígela antes de que se convierta en memoria guardada."
+      pending_count:
+        one: "1 por revisar"
+        other: "%{count} por revisar"
+      queue_label: "Propuestas de memoria"
+      processing_title: "Buscando memorias útiles"
+      processing_body: "El resumen se está revisando en segundo plano. Nada se agregará automáticamente a la memoria de la relación."
+      failed_title: "No pudimos preparar sugerencias"
+      failed_body: "El resumen no cambió y no se agregó ninguna memoria. Puedes volver a solicitar la extracción cuando el servicio de IA esté disponible."
+      retry: "Intentar la extracción de nuevo"
+      complete_title: "Revisión completa"
+      complete_body: "Cada propuesta fue revisada. Los elementos aprobados y corregidos ahora aparecen en la memoria de la relación."
+      empty_title: "No hay sugerencias para revisar"
+      empty_body: "Solicita sugerencias desde un resumen de conversación. Carecierge las mantendrá separadas hasta que decidas qué conservar."
+    review:
+      confidence: "%{confidence}"
+      source_title: "Por qué se sugirió"
+      uncertainty_title: "Qué significa la confianza"
+      uncertainty:
+        high: "La fuente lo expresa directamente, pero aún necesita tu confirmación antes de convertirse en memoria."
+        medium: "La fuente lo respalda con claridad, aunque puede faltar algo de contexto."
+        low: "La fuente es tentativa. Revisa cuidadosamente la redacción antes de aprobar."
+        inferred: "Es una interpretación, no una afirmación directa. Corrígela o recházala si pierde el matiz."
+      approve: "Aprobar memoria"
+      reject: "Rechazar"
+      correct: "Corregir antes de guardar"
+      corrected_title: "Título de la memoria"
+      corrected_body: "¿Qué debería recordar Carecierge?"
+      correction_note: "La propuesta original de IA y su fuente se conservan junto con tu corrección."
+      save_correction: "Guardar memoria corregida"
+      notice:
+        approve: "La memoria fue aprobada."
+        reject: "La sugerencia fue rechazada."
+        correct: "La memoria corregida fue guardada."
+      invalid_correction: "Agrega un título y una memoria antes de guardar la corrección."
+      invalid_decision: "Elige aprobar, rechazar o corregir antes de continuar."
+    timeline:
+      title: "Sugerencias de memoria de IA preparadas"
+      body:
+        one: "Se preparó 1 sugerencia respaldada por una fuente para revisión."
+        other: "Se prepararon %{count} sugerencias respaldadas por fuentes para revisión."
   mood_notes:
     categories:
       stressed: "Estrés observado"

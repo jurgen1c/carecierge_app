@@ -3,7 +3,7 @@ id: relationship_profiles.desires
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Desires are owner-scoped relationship memory

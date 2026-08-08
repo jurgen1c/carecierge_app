@@ -3,7 +3,7 @@ id: relationship_profiles.gift_history
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Gift history is owner-scoped relationship memory

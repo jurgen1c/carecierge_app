@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, an encrypted password-gated privacy vault, associated structured preference metadata, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with approval-gated extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, an encrypted password-gated privacy vault, associated structured preference metadata, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -11,6 +11,7 @@ default_queries:
   - memory records source confidence status stale review automation approval revisions
   - privacy vault encryption password reauthentication access lease audit suggestion exclusion
   - conversation recaps timeline source links AI extraction approval gate
+  - extracted memory proposals source excerpts confidence owner approval correction rejection OpenAI
   - mood notes observations supportive actions follow-up reminders timeline visibility
   - contact cadence suggested intervals meaningful interactions derived sources overdue prompts
   - timeline entries relationship history manual system source record filtering
@@ -35,6 +36,7 @@ watched_files:
   - app/models/privacy_vault_item.rb
   - app/models/vault_access_event.rb
   - app/models/conversation_recap.rb
+  - app/models/extracted_memory.rb
   - app/models/mood_note.rb
   - app/models/contact_cadence.rb
   - app/models/interaction.rb
@@ -62,12 +64,15 @@ watched_files:
   - app/controllers/privacy_vault_items_controller.rb
   - app/controllers/concerns/privacy_vault_session.rb
   - app/controllers/conversation_recaps_controller.rb
+  - app/controllers/extracted_memories_controller.rb
   - app/controllers/mood_notes_controller.rb
   - app/controllers/contact_cadences_controller.rb
   - app/controllers/interactions_controller.rb
   - app/controllers/timeline_entries_controller.rb
   - app/controllers/commitments_controller.rb
   - app/services/commitments/**/*.rb
+  - app/services/memory_extractions/**/*.rb
+  - app/jobs/memory_extraction_job.rb
   - app/services/privacy_vault/**/*.rb
   - app/controllers/desires_controller.rb
   - app/policies/relationship_profile_policy.rb
@@ -76,6 +81,7 @@ watched_files:
   - app/policies/memory_record_policy.rb
   - app/policies/privacy_vault_item_policy.rb
   - app/policies/conversation_recap_policy.rb
+  - app/policies/extracted_memory_policy.rb
   - app/policies/mood_note_policy.rb
   - app/policies/contact_cadence_policy.rb
   - app/policies/interaction_policy.rb
@@ -87,6 +93,8 @@ watched_files:
   - app/views/memory_records/**/*.erb
   - app/views/privacy_vaults/**/*.erb
   - app/views/conversation_recaps/**/*.erb
+  - app/views/extracted_memories/**/*.erb
+  - app/views/components/extracted_memory_review_component.*
   - app/views/mood_notes/**/*.erb
   - app/views/contact_cadences/**/*.erb
   - app/views/interactions/**/*.erb
@@ -115,6 +123,7 @@ watched_files:
   - db/migrate/*contact_cadence*.rb
   - db/migrate/*interaction*.rb
   - db/data/*interaction*.rb
+  - db/data/*ai_memory*.rb
   - db/migrate/*timeline*.rb
   - db/migrate/*commitment*.rb
   - db/migrate/*desire*.rb
@@ -133,6 +142,8 @@ tags:
   - privacy_vault
   - encryption
   - conversation_recaps
+  - ai_extraction
+  - extracted_memories
   - mood_notes
   - contact_cadence
   - interactions

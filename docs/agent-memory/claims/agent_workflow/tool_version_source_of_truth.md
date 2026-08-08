@@ -13,7 +13,10 @@ claim: >
   comments and values must stay aligned with .tool-versions rather than a removed
   .ruby-version file. The agent-memory CLI is pinned in package.json and bun.lock,
   with bin/memory preferring the local node_modules binary before global or bunx
-  fallback execution. Transitive JavaScript security pins belong in explicit
+  fallback execution. The 0.4.0 package carries a narrow Bun patch that accepts
+  successful managed-sandbox Git commands even when Node also reports EPERM and
+  falls back to individual baseline blob reads when batch input stalls.
+  Transitive JavaScript security pins belong in explicit
   package.json overrides and the generated bun.lock. agent-memory.config.yaml
   owns canonical memory paths and validation defaults. GitHub Actions CI is
   intentionally absent because local bin/ci signoff is the PR quality gate.
@@ -23,6 +26,7 @@ source_files:
   - Dockerfile
   - bin/memory
   - agent-memory.config.yaml
+  - patches/@jurgen1c%2Fagent-memory-cli@0.4.0.patch
 related_files:
   - package.json
   - bun.lock
@@ -55,6 +59,9 @@ The agent-memory CLI is pinned in `package.json` and `bun.lock`. `bin/memory`
 must prefer the repository-local `node_modules/.bin/agent-memory` binary before a
 global executable or `bunx @jurgen1c/agent-memory-cli` fallback. The durable
 memory paths and validation defaults are owned by `agent-memory.config.yaml`.
+The pinned 0.4.0 package is patched narrowly so managed Codex Git inspection
+accepts a zero exit status despite its additional `EPERM` marker and falls back
+from stalled batch baseline reads to individual Git blob reads.
 Transitive JavaScript security pins must be explicit `package.json` overrides
 and reflected in `bun.lock`, rather than undeclared top-level dependencies.
 
@@ -78,12 +85,15 @@ lockfile.
 - `bun.lock`
 - `bin/memory`
 - `agent-memory.config.yaml`
+- `patches/@jurgen1c%2Fagent-memory-cli@0.4.0.patch`
 
 ## Verification
 
 - `bin/memory --version`
 - `bin/memory sync`
 - `bin/memory doctor`
+- `bin/memory context --git-diff`
+- `bin/memory coverage --git-diff`
 - `bun audit`
 - `test ! -f .github/workflows/ci.yml`
 - `rg -n RUBY_VERSION Dockerfile`

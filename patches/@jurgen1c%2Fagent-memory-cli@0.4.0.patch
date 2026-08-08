@@ -1,0 +1,60 @@
+diff --git a/dist/agent-memory.js b/dist/agent-memory.js
+--- a/dist/agent-memory.js
++++ b/dist/agent-memory.js
+@@ -1810,7 +1810,7 @@
+ }
+ function assertGitResult(error, status, stderr, args, timeoutMs) {
+   const command = `git ${args.join(" ")}`;
+-  if (error) {
++  if (error && status !== 0) {
+     const code = "code" in error ? error.code : undefined;
+     if (code === "ETIMEDOUT") {
+       throw new GitCommandError(`Git command timed out after ${timeoutMs}ms: ${command}`, {
+@@ -2014,10 +2014,13 @@
+     });
+   } catch (error) {
+     if (error instanceof GitCommandError && error.timedOut) {
+-      throw new AgentMemoryError(`Git audit baseline blob read timed out after ${timeoutMs}ms.`, {
+-        details: ["Audit will retain current-tree overlap findings when baseline blobs cannot be read."],
+-        cause: error
+-      });
++      return new Map(uniqueOids.map((oid) => [
++        oid,
++        runGitBuffer(repoRoot, ["cat-file", "blob", oid], {
++          gitBinary: options.gitBinary,
++          timeoutMs
++        }).toString("utf8")
++      ]));
+     }
+     throw new AgentMemoryError(`Git audit baseline blob reader failed: ${error instanceof Error ? error.message : String(error)}`, {
+       cause: error
+diff --git a/dist/index.js b/dist/index.js
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -360,7 +360,7 @@
+ }
+ function assertGitResult(error, status, stderr, args, timeoutMs) {
+   const command = `git ${args.join(" ")}`;
+-  if (error) {
++  if (error && status !== 0) {
+     const code = "code" in error ? error.code : undefined;
+     if (code === "ETIMEDOUT") {
+       throw new GitCommandError(`Git command timed out after ${timeoutMs}ms: ${command}`, {
+@@ -1167,10 +1167,13 @@
+     });
+   } catch (error) {
+     if (error instanceof GitCommandError && error.timedOut) {
+-      throw new AgentMemoryError(`Git audit baseline blob read timed out after ${timeoutMs}ms.`, {
+-        details: ["Audit will retain current-tree overlap findings when baseline blobs cannot be read."],
+-        cause: error
+-      });
++      return new Map(uniqueOids.map((oid) => [
++        oid,
++        runGitBuffer(repoRoot, ["cat-file", "blob", oid], {
++          gitBinary: options.gitBinary,
++          timeoutMs
++        }).toString("utf8")
++      ]));
+     }
+     throw new AgentMemoryError(`Git audit baseline blob reader failed: ${error instanceof Error ? error.message : String(error)}`, {
+       cause: error

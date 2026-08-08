@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, an encrypted password-gated privacy vault, associated structured preference metadata, evidence-backed relationship personas with explicit uncertainty, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, an encrypted password-gated privacy vault, associated structured preference metadata, evidence-backed relationship personas with explicit uncertainty, deterministic source-backed suggestions with user feedback and reminder-only actions, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -10,6 +10,7 @@ default_queries:
   - preference type category confidence learned date source notes
   - memory records source confidence status stale review automation approval revisions
   - relationship persona confirmed inferred evidence title correction suggestion inputs vault consent
+  - suggestion engine explanations feedback dismissal act reminder action kind automation permission
   - privacy vault encryption password reauthentication access lease audit suggestion exclusion
   - conversation recaps timeline source links AI extraction approval gate
   - extracted memory proposals source excerpts confidence owner approval correction rejection OpenAI
@@ -35,6 +36,8 @@ watched_files:
   - app/models/memory_record.rb
   - app/models/memory_revision.rb
   - app/models/relationship_persona.rb
+  - app/models/suggestion.rb
+  - app/models/suggestion_feedback.rb
   - app/models/privacy_vault_item.rb
   - app/models/vault_access_event.rb
   - app/models/conversation_recap.rb
@@ -58,6 +61,7 @@ watched_files:
   - app/forms/relationship_profiles/**/*.rb
   - app/queries/relationship_profile/search_query.rb
   - app/controllers/relationship_profiles_controller.rb
+  - app/controllers/suggestions_controller.rb
   - app/controllers/onboarding_controller.rb
   - app/controllers/important_dates_controller.rb
   - app/controllers/gifts_controller.rb
@@ -76,8 +80,10 @@ watched_files:
   - app/services/memory_extractions/**/*.rb
   - app/jobs/memory_extraction_job.rb
   - app/services/privacy_vault/**/*.rb
+  - app/services/suggestions/**/*.rb
   - app/controllers/desires_controller.rb
   - app/policies/relationship_profile_policy.rb
+  - app/policies/suggestion_feedback_policy.rb
   - app/policies/important_date_policy.rb
   - app/policies/gift_policy.rb
   - app/policies/memory_record_policy.rb
@@ -98,6 +104,8 @@ watched_files:
   - app/views/extracted_memories/**/*.erb
   - app/views/components/extracted_memory_review_component.*
   - app/views/components/persona_trait_component.*
+  - app/views/components/suggestion_*_component.*
+  - app/views/suggestions/**/*.erb
   - app/views/relationship_personas/**/*.erb
   - app/views/mood_notes/**/*.erb
   - app/views/contact_cadences/**/*.erb
@@ -116,6 +124,8 @@ watched_files:
   - config/locales/es.yml
   - config/locales/contact_rhythm.en.yml
   - config/locales/contact_rhythm.es.yml
+  - config/locales/suggestions.en.yml
+  - config/locales/suggestions.es.yml
   - db/migrate/*relationship*.rb
   - db/migrate/*important_date*.rb
   - db/migrate/*gift*.rb
@@ -131,6 +141,7 @@ watched_files:
   - db/migrate/*timeline*.rb
   - db/migrate/*commitment*.rb
   - db/migrate/*desire*.rb
+  - db/migrate/*suggestion*.rb
   - db/migrate/*active_storage*.rb
   - db/migrate/*action_text*.rb
 tags:
@@ -155,3 +166,4 @@ tags:
   - timeline_entries
   - commitments
   - desires
+  - suggestions

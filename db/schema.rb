@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_040856) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_08_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -675,6 +675,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_040856) do
     t.index ["retired_at"], name: "index_rollout_groups_on_retired_at"
   end
 
+  create_table "suggestion_feedbacks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "acted_at"
+    t.datetime "created_at", null: false
+    t.datetime "dismissed_at"
+    t.string "feedback"
+    t.string "fingerprint", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["relationship_profile_id", "dismissed_at"], name: "idx_on_relationship_profile_id_dismissed_at_d046df9002"
+    t.index ["relationship_profile_id"], name: "index_suggestion_feedbacks_on_relationship_profile_id"
+    t.index ["user_id", "fingerprint"], name: "index_suggestion_feedbacks_on_user_id_and_fingerprint", unique: true
+    t.index ["user_id"], name: "index_suggestion_feedbacks_on_user_id"
+    t.check_constraint "feedback IS NULL OR (feedback::text = ANY (ARRAY['helpful'::character varying, 'not_for_me'::character varying]::text[]))", name: "suggestion_feedbacks_supported_feedback"
+  end
+
   create_table "template_fields", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -809,6 +825,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_040856) do
   add_foreign_key "reminders", "important_dates", on_delete: :nullify
   add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade
   add_foreign_key "reminders", "users", on_delete: :cascade
+  add_foreign_key "suggestion_feedbacks", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "suggestion_feedbacks", "users", on_delete: :cascade
   add_foreign_key "template_fields", "relationship_templates"
   add_foreign_key "timeline_entries", "relationship_profiles"
   add_foreign_key "vault_access_events", "privacy_vault_items", on_delete: :nullify

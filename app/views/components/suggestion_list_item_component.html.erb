@@ -1,0 +1,11 @@
+<%= link_to relationship_profile_path(relationship_profile, suggestion: suggestion.fingerprint),
+  class: style(certainty: suggestion.certainty.to_sym, selected:),
+  aria: { current: selected ? "true" : nil },
+  data: { turbo_frame: "suggestions_section" } do %>
+  <span class="flex flex-wrap items-center justify-between gap-2">
+    <span class="text-xs font-semibold uppercase tracking-wide text-emerald-900"><%= type_label %></span>
+    <span class="text-xs font-medium text-stone-600"><%= t("suggestions.certainty.#{suggestion.certainty}") %></span>
+  </span>
+  <strong class="mt-2 block text-sm font-semibold text-stone-950"><%= suggestion.title %></strong>
+  <span class="mt-1 block text-sm leading-6 text-stone-700"><%= suggestion.detail %></span>
+<% end %>

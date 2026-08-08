@@ -36,6 +36,11 @@ Rails.application.routes.draw do
 
   resources :relationship_profiles do
     patch :archive, on: :member
+    resources :suggestions, only: [] do
+      patch :feedback, on: :member
+      patch :dismiss, on: :member
+      post :act, on: :member
+    end
     resource :privacy_vault, only: :show do
       post :unlock
       post :reset_password

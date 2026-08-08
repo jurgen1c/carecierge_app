@@ -1239,6 +1239,21 @@ en:
       notice: "Timeline entry was updated."
     destroy:
       notice: "Timeline entry was deleted."
+  relationship_personas:
+    section:
+      kicker: "Reviewed context"
+      title: "Relationship persona"
+      body: "A working picture of what matters to %{name}, grounded in reviewed context."
+      summary: "%{traits}."
+      empty_title: "No persona traits yet"
+      empty_body: "Add reviewed memories or structured preferences to build a careful, explainable summary over time."
+    trait:
+      confirmed: "Confirmed"
+      inferred: "Inferred"
+      inferred_statement: "Seems to suggest: %{trait}"
+      why: "Why this appears:"
+      review_evidence: "Review evidence"
+      correct: "Correct trait"
   relationship_preferences:
     preference_types:
       positive: "Positive"

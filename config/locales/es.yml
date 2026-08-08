@@ -1556,6 +1556,21 @@ es:
       notice: "La entrada de cronología fue actualizada."
     destroy:
       notice: "La entrada de cronología fue eliminada."
+  relationship_personas:
+    section:
+      kicker: "Contexto revisado"
+      title: "Perfil de la relación"
+      body: "Una imagen en evolución de lo que le importa a %{name}, basada en contexto revisado."
+      summary: "%{traits}."
+      empty_title: "Aún no hay rasgos del perfil"
+      empty_body: "Agrega memorias revisadas o preferencias estructuradas para crear con el tiempo un resumen cuidadoso y explicable."
+    trait:
+      confirmed: "Confirmado"
+      inferred: "Inferido"
+      inferred_statement: "Parece sugerir: %{trait}"
+      why: "Por qué aparece:"
+      review_evidence: "Revisar evidencia"
+      correct: "Corregir rasgo"
   relationship_preferences:
     preference_types:
       positive: "Positiva"

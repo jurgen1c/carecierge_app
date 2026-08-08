@@ -201,6 +201,71 @@ RSpec.describe "Memory records", type: :request do
       )
     end
 
+    it "marks a semantic title-only edit as a user correction without a body revision" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(
+        :memory_record,
+        relationship_profile: profile,
+        title: "Large birthday gathering",
+        body: "A recent gathering was discussed.",
+        source: "ai_inferred",
+        confidence: "medium"
+      )
+      sign_in user
+
+      expect do
+        patch relationship_profile_memory_record_path(profile, record),
+          params: { memory_record: { title: "Quiet birthday gathering", body: record.body } },
+          as: :turbo_stream
+      end.not_to change(MemoryRevision, :count)
+
+      expect(record.reload).to have_attributes(
+        title: "Quiet birthday gathering",
+        body: "A recent gathering was discussed.",
+        source: "user_corrected",
+        status: "corrected",
+        confidence: "medium"
+      )
+      expect(RelationshipPersona.new(relationship_profile: profile).traits.sole).to have_attributes(
+        statement: "Quiet birthday gathering",
+        certainty: "confirmed"
+      )
+    end
+
+    it "preserves a correction note submitted with a title-only edit" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(
+        :memory_record,
+        relationship_profile: profile,
+        title: "Large birthday gathering",
+        body: "A recent gathering was discussed.",
+        source: "ai_inferred",
+        confidence: "medium"
+      )
+      sign_in user
+
+      expect do
+        patch relationship_profile_memory_record_path(profile, record),
+          params: {
+            memory_record: {
+              title: "Quiet birthday gathering",
+              body: record.body,
+              correction_note: "They clarified that smaller plans feel better."
+            }
+          },
+          as: :turbo_stream
+      end.to change(MemoryRevision, :count).by(1)
+
+      expect(record.memory_revisions.sole).to have_attributes(
+        user_id: user.id,
+        previous_body: "A recent gathering was discussed.",
+        revised_body: "A recent gathering was discussed.",
+        note: "They clarified that smaller plans feel better."
+      )
+    end
+
     it "clears prior high-impact approval when the memory body is corrected" do
       user = create(:user)
       profile = create(:relationship_profile, user:)

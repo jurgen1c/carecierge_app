@@ -25,11 +25,14 @@ class MemoryRecordsController < ApplicationController
   end
 
   def update
+    previous_title = @memory_record.title
     previous_body = @memory_record.body
     note = memory_record_correction_note
     attrs = memory_record_params
     trust_relevant_change = trust_relevant_change?(attrs)
-    mark_corrected = attrs.key?(:body) && attrs[:body].to_s.strip != previous_body.to_s.strip
+    title_corrected = attrs.key?(:title) && normalized_memory_record_value(:title, attrs[:title]) != normalized_memory_record_value(:title, previous_title)
+    body_corrected = attrs.key?(:body) && normalized_memory_record_value(:body, attrs[:body]) != normalized_memory_record_value(:body, previous_body)
+    mark_corrected = title_corrected || body_corrected
     attrs[:source] = "user_corrected" if mark_corrected
     attrs[:status] = "corrected" if mark_corrected
     attrs[:reviewed_at] = nil if trust_relevant_change
@@ -40,7 +43,7 @@ class MemoryRecordsController < ApplicationController
     if @memory_record.invalid?
       render_form(:edit, status: :unprocessable_entity)
     else
-      update_record_with_revision!(previous_body, note, mark_corrected)
+      update_record_with_revision!(previous_body, note, body_corrected || note.present?)
       refresh_memory_records(t(".notice"))
     end
   rescue ActiveRecord::RecordInvalid
@@ -126,10 +129,10 @@ class MemoryRecordsController < ApplicationController
     )
   end
 
-  def update_record_with_revision!(previous_body, note, mark_corrected)
+  def update_record_with_revision!(previous_body, note, revision_required)
     MemoryRecord.transaction(requires_new: true) do
       @memory_record.save!
-      create_revision(previous_body, note) if mark_corrected
+      create_revision(previous_body, note) if revision_required
     end
   end
 

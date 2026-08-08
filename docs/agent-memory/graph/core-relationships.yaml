@@ -141,6 +141,36 @@ edges:
     relation: same_area
     reason: Memory records and desires are reviewable relationship-memory inputs for future suggestions and planning.
     strength: 65
+  - source: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Relationship personas are rendered only through the authenticated owner-scoped relationship profile.
+    strength: 95
+  - source: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    target: relationship_profiles.memory_records
+    relation: requires
+    reason: Persona traits reuse current memory evidence, confidence, review, correction, and source metadata rather than creating a parallel memory store.
+    strength: 95
+  - source: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    target: relationship_profiles.preference_metadata
+    relation: requires
+    reason: Structured preferences provide source-backed persona details and explicit confidence metadata.
+    strength: 90
+  - source: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    target: relationship_profiles.privacy_vault
+    relation: requires
+    reason: Rendered personas exclude vault-protected memory, while suggestion inputs decrypt a protected memory payload only after explicit per-item suggestion consent.
+    strength: 100
+  - source: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    target: relationship_profiles.ai_memory_extraction
+    relation: requires
+    reason: Approved AI memories retain inferred language and source evidence while user corrections become confirmed context.
+    strength: 90
+  - source: relationship_profiles.ai_memory_extraction
+    target: relationship_profiles.preference_metadata
+    relation: same_area
+    reason: Canonical AI memories and structured preferences both feed relationship personas while preserving distinct provenance and confidence semantics.
+    strength: 70
   - source: relationship_profiles.privacy_vault
     target: relationship_profiles.profile_crud_owner_scope
     relation: requires

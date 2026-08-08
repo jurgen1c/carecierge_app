@@ -27,6 +27,7 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def show
+    @relationship_persona = RelationshipPersona.new(relationship_profile: @relationship_profile)
     @timeline_type = params[:timeline_type].to_s.in?(TimelineEntry::ENTRY_TYPES) ? params[:timeline_type].to_s : nil
     @relationship_reminders = @relationship_profile.reminders.active.by_effective_delivery.limit(5).to_a
     @interactions = @relationship_profile.interactions.includes(:source).ordered.limit(10).to_a

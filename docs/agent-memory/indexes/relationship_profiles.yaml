@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, an encrypted password-gated privacy vault, associated structured preference metadata, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, an encrypted password-gated privacy vault, associated structured preference metadata, evidence-backed relationship personas with explicit uncertainty, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -9,6 +9,7 @@ default_queries:
   - contact details rich private notes structured preferences preference metadata
   - preference type category confidence learned date source notes
   - memory records source confidence status stale review automation approval revisions
+  - relationship persona confirmed inferred evidence title correction suggestion inputs vault consent
   - privacy vault encryption password reauthentication access lease audit suggestion exclusion
   - conversation recaps timeline source links AI extraction approval gate
   - extracted memory proposals source excerpts confidence owner approval correction rejection OpenAI
@@ -33,6 +34,7 @@ watched_files:
   - app/models/relationship_preference.rb
   - app/models/memory_record.rb
   - app/models/memory_revision.rb
+  - app/models/relationship_persona.rb
   - app/models/privacy_vault_item.rb
   - app/models/vault_access_event.rb
   - app/models/conversation_recap.rb
@@ -95,6 +97,8 @@ watched_files:
   - app/views/conversation_recaps/**/*.erb
   - app/views/extracted_memories/**/*.erb
   - app/views/components/extracted_memory_review_component.*
+  - app/views/components/persona_trait_component.*
+  - app/views/relationship_personas/**/*.erb
   - app/views/mood_notes/**/*.erb
   - app/views/contact_cadences/**/*.erb
   - app/views/interactions/**/*.erb
@@ -139,6 +143,7 @@ tags:
   - important_dates
   - gifts
   - memory_records
+  - relationship_persona
   - privacy_vault
   - encryption
   - conversation_recaps

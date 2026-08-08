@@ -10,9 +10,11 @@ title: Memory records track source, confidence, review, and automation approval
 
 claim: >
   MemoryRecord records are owner-scoped relationship-profile facts with trust,
-  review, correction, and high-impact automation approval metadata. Corrections
-  create MemoryRevision rows transactionally, archived records are not
-  reviewable, failed review transitions report errors, trust resets use
+  review, correction, and high-impact automation approval metadata. Semantic
+  title or body corrections set user-corrected provenance and corrected status;
+  body corrections and submitted correction notes also create MemoryRevision
+  rows transactionally, including notes attached to title-only corrections. Archived
+  records are not reviewable, failed review transitions report errors, trust resets use
   normalized comparisons, user forms cannot set system-managed statuses, risky
   records require explicit automation approval, edit re-renders preserve
   correction notes, and section counts use one load.
@@ -65,8 +67,10 @@ last_verified_commit: null
 
 Memory records are owner-scoped relationship-profile facts rendered through
 Turbo streams with source, confidence, lifecycle, review, correction, and
-high-impact automation metadata. Body corrections create MemoryRevision rows in
-the same transaction as the record update. Archived records are not reviewable,
+high-impact automation metadata. Semantic title or body corrections set
+user-corrected provenance and corrected status, while body corrections and
+submitted correction notes create MemoryRevision rows in the same transaction
+as the record update, including notes attached to title-only corrections. Archived records are not reviewable,
 failed review transitions report errors, trust resets use normalized
 comparisons, and user-facing forms can only manage active, needs-review, and
 archived statuses. Stale and corrected statuses remain system-managed, risky

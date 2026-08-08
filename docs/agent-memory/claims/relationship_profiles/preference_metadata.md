@@ -18,7 +18,10 @@ claim: >
   rows and capping hash-shaped crafted rows to numeric onboarding slot keys 0
   through 2, with onboarding defaults derived from those numeric slot keys;
   localized preference labels render in profile forms and shows and participate
-  in owner-scoped profile search.
+  in owner-scoped profile search. Structured preferences also feed the
+  relationship persona with their detail and source notes as evidence; only
+  explicit confirmed confidence renders as confirmed, while every other
+  confidence retains inferred language and links back to the preference editor.
 
 source_files:
   - app/controllers/onboarding_controller.rb
@@ -33,11 +36,18 @@ source_files:
   - db/migrate/20260704203217_add_structured_fields_to_relationship_preferences.rb
 
 related_files:
+  - app/models/relationship_persona.rb
+  - app/views/relationship_personas/_section.html.erb
+  - app/views/components/persona_trait_component.rb
   - spec/models/relationship_preference_spec.rb
+  - spec/models/relationship_persona_spec.rb
+  - spec/requests/relationship_personas_spec.rb
   - spec/queries/relationship_profile/search_query_spec.rb
   - spec/requests/onboarding_spec.rb
   - spec/requests/relationship_profiles_spec.rb
-symbols: []
+symbols:
+  - RelationshipPreference
+  - RelationshipPersona
 routes: []
 tags:
   - preference_metadata
@@ -45,6 +55,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/onboarding_spec.rb
   - bundle exec rspec spec/models/relationship_preference_spec.rb spec/queries/relationship_profile/search_query_spec.rb spec/requests/relationship_profiles_spec.rb
+  - bundle exec rspec spec/models/relationship_persona_spec.rb spec/requests/relationship_personas_spec.rb
 
 last_verified_commit: null
 ---
@@ -62,6 +73,9 @@ and localized onboarding source notes while rejecting blank rows and capping
 hash-shaped crafted rows to numeric onboarding slot keys 0 through 2; localized
 onboarding defaults are derived from those numeric slot keys; preference labels
 render in profile forms and shows and participate in owner-scoped profile search.
+Persona summaries reuse preference values and source notes as evidence, treat
+only explicit confirmed confidence as confirmed, and route correction back to
+the existing structured-preference form.
 
 ## Why It Matters
 
@@ -76,6 +90,8 @@ locales. Preference metadata behavior and localized preference labels remain unc
 CAR-26 updated onboarding to capture bounded initial preference rows with onboarding-safe
 confidence and source defaults, then tightened hash-shaped preference row limits to numeric
 onboarding slot keys 0 through 2 and aligned hash-shaped defaults with those slot keys.
+CAR-44 reviewed the preference boundary while adding evidence-backed persona
+traits. Persona assembly does not create or copy preference persistence.
 
 ## Evidence
 
@@ -87,6 +103,8 @@ onboarding slot keys 0 through 2 and aligned hash-shaped defaults with those slo
 - `app/views/onboarding/show.html.erb`
 - `app/views/relationship_profiles/_form.html.erb`
 - `app/views/relationship_profiles/show.html.erb`
+- `app/models/relationship_persona.rb`
+- `app/views/relationship_personas/_section.html.erb`
 - `config/locales/en.yml`
 - `config/locales/es.yml`
 
@@ -94,3 +112,4 @@ onboarding slot keys 0 through 2 and aligned hash-shaped defaults with those slo
 
 - `bundle exec rspec spec/requests/onboarding_spec.rb`
 - `bundle exec rspec spec/models/relationship_preference_spec.rb spec/queries/relationship_profile/search_query_spec.rb spec/requests/relationship_profiles_spec.rb`
+- `bundle exec rspec spec/models/relationship_persona_spec.rb spec/requests/relationship_personas_spec.rb`

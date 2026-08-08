@@ -7,7 +7,10 @@
 #  body                    :text             not null
 #  capture_source          :string           default("typed"), not null
 #  extraction_approved_at  :datetime
+#  extraction_completed_at :datetime
+#  extraction_error_code   :string
 #  extraction_requested_at :datetime
+#  extraction_started_at   :datetime
 #  extraction_status       :string           default("not_requested"), not null
 #  occurred_at             :datetime         not null
 #  title                   :string           not null

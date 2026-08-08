@@ -177,6 +177,26 @@ edges:
     reason: Timeline entries can reference important dates and other relationship milestones in later system-entry workflows.
     strength: 65
   - source: relationship_profiles.conversation_recaps
+    target: relationship_profiles.ai_memory_extraction
+    relation: requires
+    reason: Feature-flagged recap requests enqueue asynchronous extraction into source-backed proposals.
+    strength: 95
+  - source: relationship_profiles.ai_memory_extraction
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Proposal reads and review transitions remain nested under the owning relationship profile.
+    strength: 100
+  - source: relationship_profiles.ai_memory_extraction
+    target: relationship_profiles.memory_records
+    relation: constrains
+    reason: Canonical memory records are created only after individual owner approval or correction.
+    strength: 100
+  - source: relationship_profiles.ai_memory_extraction
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Proposal evidence is portable and selectively deletable as AI-generated data.
+    strength: 90
+  - source: relationship_profiles.conversation_recaps
     target: relationship_profiles.profile_crud_owner_scope
     relation: requires
     reason: Conversation recaps are nested under owner-scoped relationship profiles and reuse that privacy boundary.

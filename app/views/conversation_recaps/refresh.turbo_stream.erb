@@ -1,5 +1,13 @@
 <%= turbo_stream.replace "conversation_recaps_section" do %>
-  <%= render "conversation_recaps/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>
+  <%= render "conversation_recaps/section", relationship_profile: @relationship_profile, conversation_recaps: @conversation_recaps, selected_type: @timeline_type %>
+<% end %>
+
+<%= turbo_stream.replace "memory-review" do %>
+  <%= render "extracted_memories/section",
+    relationship_profile: @relationship_profile,
+    conversation_recaps: @conversation_recaps,
+    extracted_memories: @extracted_memories,
+    selected_extracted_memory: @selected_extracted_memory %>
 <% end %>
 
 <%= turbo_stream.replace "timeline_entries_section" do %>

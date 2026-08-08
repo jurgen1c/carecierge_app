@@ -983,7 +983,10 @@ en:
     extraction_statuses:
       not_requested: "Not requested"
       requested: "Extraction requested"
+      processing: "Processing"
       ready_for_review: "Ready for review"
+      completed: "Review complete"
+      failed: "Extraction failed"
       rejected: "Rejected"
     section:
       kicker: "Conversation memory"
@@ -1040,6 +1043,67 @@ en:
       notice: "Conversation recap was updated."
     destroy:
       notice: "Conversation recap was deleted."
+    retry_extraction:
+      notice: "Memory extraction was requested again."
+      unavailable: "Only a failed extraction can be requested again."
+      disabled: "AI memory extraction is not available for this account."
+  extracted_memories:
+    categories:
+      preference: "Preference"
+      important_date: "Important date"
+      desire: "Desire"
+      commitment: "Commitment"
+      gift_idea: "Gift idea"
+      boundary: "Boundary"
+      emotional_context: "Emotional context"
+    confidences:
+      high: "High confidence"
+      medium: "Medium confidence"
+      low: "Low confidence"
+      inferred: "Inferred"
+    section:
+      kicker: "Memory review"
+      title: "Suggestions awaiting your judgment"
+      body: "Review each AI proposal against its source. Approve, reject, or correct it before anything becomes saved relationship memory."
+      pending_count:
+        one: "1 to review"
+        other: "%{count} to review"
+      queue_label: "Memory proposals"
+      processing_title: "Looking for useful memories"
+      processing_body: "The recap is being reviewed in the background. Nothing will be added to relationship memory automatically."
+      failed_title: "We could not prepare suggestions"
+      failed_body: "The recap is unchanged and no relationship memory was added. You can request extraction again after the AI service is available."
+      retry: "Try extraction again"
+      complete_title: "Review complete"
+      complete_body: "Every proposal has been reviewed. Approved and corrected items are now visible in relationship memory."
+      empty_title: "No suggestions to review"
+      empty_body: "Request memory suggestions from a conversation recap. Carecierge will keep them separate until you decide what belongs."
+    review:
+      confidence: "%{confidence}"
+      source_title: "Why this was suggested"
+      uncertainty_title: "What the confidence means"
+      uncertainty:
+        high: "The source states this directly, but it still needs your confirmation before it becomes memory."
+        medium: "The source supports this clearly, though some context may be missing."
+        low: "The source is tentative. Check the wording carefully before approving."
+        inferred: "This is an interpretation rather than a direct statement. Correct or reject it if the nuance is off."
+      approve: "Approve memory"
+      reject: "Reject"
+      correct: "Correct before saving"
+      corrected_title: "Memory title"
+      corrected_body: "What should Carecierge remember?"
+      correction_note: "The original AI proposal and source stay preserved alongside your correction."
+      save_correction: "Save corrected memory"
+      notice:
+        approve: "Memory was approved."
+        reject: "Suggestion was rejected."
+        correct: "Corrected memory was saved."
+      invalid_correction: "Add a title and memory before saving the correction."
+    timeline:
+      title: "AI memory suggestions prepared"
+      body:
+        one: "1 source-backed suggestion was prepared for review."
+        other: "%{count} source-backed suggestions were prepared for review."
   mood_notes:
     categories:
       stressed: "Seemed stressed"

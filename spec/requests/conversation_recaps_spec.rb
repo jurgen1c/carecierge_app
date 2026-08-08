@@ -2,6 +2,8 @@ require "cgi"
 require "rails_helper"
 
 RSpec.describe "Conversation recaps", type: :request do
+  before { create(:feature_flag, key: "ai_memory_extraction", enabled: true) }
+
   describe "GET /relationship_profiles/:relationship_profile_id" do
     it "renders recaps with extraction guardrails and timeline linkage" do
       user = create(:user)
@@ -78,6 +80,47 @@ RSpec.describe "Conversation recaps", type: :request do
   end
 
   describe "POST /relationship_profiles/:relationship_profile_id/conversation_recaps" do
+    it "enqueues requested extraction when the rollout flag is enabled" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      sign_in user
+
+      expect do
+        post relationship_profile_conversation_recaps_path(profile),
+          params: {
+            conversation_recap: {
+              title: "Dinner",
+              body: "Jazz and quiet restaurants came up.",
+              occurred_at: "2026-07-08T12:30",
+              request_memory_extraction: "1"
+            }
+          }
+      end.to have_enqueued_job(MemoryExtractionJob).once
+
+      expect(profile.conversation_recaps.sole.extraction_status).to eq("requested")
+    end
+
+    it "ignores forged extraction requests while the rollout flag is disabled" do
+      FeatureFlag.find_by!(key: "ai_memory_extraction").update!(enabled: false)
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      sign_in user
+
+      expect do
+        post relationship_profile_conversation_recaps_path(profile),
+          params: {
+            conversation_recap: {
+              title: "Dinner",
+              body: "Private context.",
+              occurred_at: "2026-07-08T12:30",
+              request_memory_extraction: "1"
+            }
+          }
+      end.not_to have_enqueued_job(MemoryExtractionJob)
+
+      expect(profile.conversation_recaps.sole.extraction_status).to eq("not_requested")
+    end
+
     it "creates a text recap and linked system timeline entry through Turbo without mutating memory records" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
@@ -269,6 +312,7 @@ RSpec.describe "Conversation recaps", type: :request do
       end.not_to change(MemoryRecord, :count)
 
       expect(response).to have_http_status(:ok)
+      expect(response.body).to include(%(turbo-stream action="replace" target="memory-review"))
       expect(recap.reload.extraction_status).to eq("requested")
       expect(recap.extraction_requested_at).to be_present
     end
@@ -292,6 +336,34 @@ RSpec.describe "Conversation recaps", type: :request do
     end
   end
 
+  describe "PATCH /relationship_profiles/:relationship_profile_id/conversation_recaps/:id/retry_extraction" do
+    it "requeues a failed extraction without changing canonical memory" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      recap = create(
+        :conversation_recap,
+        relationship_profile: profile,
+        extraction_status: "failed",
+        extraction_error_code: "extraction_failed",
+        extraction_completed_at: 1.minute.ago
+      )
+      sign_in user
+
+      expect do
+        expect do
+          patch retry_extraction_relationship_profile_conversation_recap_path(profile, recap)
+        end.to have_enqueued_job(MemoryExtractionJob).with(recap)
+      end.not_to change(MemoryRecord, :count)
+
+      expect(recap.reload).to have_attributes(
+        extraction_status: "requested",
+        extraction_error_code: nil,
+        extraction_completed_at: nil
+      )
+      expect(response).to redirect_to(relationship_profile_path(profile, anchor: "memory-review"))
+    end
+  end
+
   describe "DELETE /relationship_profiles/:relationship_profile_id/conversation_recaps/:id" do
     it "deletes the recap and linked timeline entry through Turbo" do
       user = create(:user)
@@ -311,6 +383,7 @@ RSpec.describe "Conversation recaps", type: :request do
 
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       expect(response.body).to include("No conversation recaps yet")
+      expect(response.body).to include(%(turbo-stream action="replace" target="memory-review"))
     end
   end
 

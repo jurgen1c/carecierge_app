@@ -22,6 +22,8 @@ source_files:
   - db/migrate/20260705160000_add_onboarding_state_to_users.rb
 related_files:
   - AGENTS.md
+  - db/data/20260808060000_install_ai_memory_extraction_rollout.rb
+  - spec/data_migrations/install_ai_memory_extraction_rollout_spec.rb
   - spec/data_migrations/backfill_user_onboarding_completed_at_spec.rb
 symbols:
   - BackfillUserOnboardingCompletedAt

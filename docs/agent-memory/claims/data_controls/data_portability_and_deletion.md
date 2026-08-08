@@ -24,7 +24,9 @@ claim: >
   browser navigation so attachment responses reach the download manager.
   Successful exports emit content-free AuditEvent evidence only after serialization.
   Profile deletion, unlocked protected-item deletion, selective removal of
-  AI-inferred memories and AI-extraction timeline records, and password-gated
+  AI-inferred memories, extracted-memory proposals, all owned recap extraction
+  state, and AI-extraction timeline records while preserving user-corrected
+  canonical memories; password-gated
   account deletion create privacy-minimized DeletionRequest evidence. Account
   deletion removes user-targeted feature assignments and synchronously deletes
   uploaded recordings while retaining retryable blob rows on storage failure.
@@ -104,7 +106,10 @@ application protocol.
 
 Permanent deletion records content-free evidence and retains only a keyed
 account digest with lifecycle timestamps. Selective AI deletion targets only
-system-originated inferred memories and AI-extraction timeline entries.
+system-originated inferred memories, extracted-memory proposals, every owned
+recap with extraction state, and AI-extraction timeline entries. Proposal and
+recap locks cancel in-flight extraction before deletion completes, preventing a
+delayed response from recreating AI data. User-corrected canonical memories remain.
 Recording purges lock each blob across the final shared-attachment check and
 storage deletion. A blob row already removed by Active Storage is successful
 cleanup after an idempotent delete of its captured storage key.

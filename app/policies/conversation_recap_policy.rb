@@ -7,6 +7,10 @@ class ConversationRecapPolicy < ApplicationPolicy
     owns_profile?
   end
 
+  def retry_extraction?
+    update?
+  end
+
   def destroy?
     owns_profile?
   end

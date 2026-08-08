@@ -30,6 +30,11 @@ class RelationshipProfilesController < ApplicationController
     @timeline_type = params[:timeline_type].to_s.in?(TimelineEntry::ENTRY_TYPES) ? params[:timeline_type].to_s : nil
     @relationship_reminders = @relationship_profile.reminders.active.by_effective_delivery.limit(5).to_a
     @interactions = @relationship_profile.interactions.includes(:source).ordered.limit(10).to_a
+    @conversation_recaps = @relationship_profile.conversation_recaps.ordered.includes(:extracted_memories).to_a
+    @extracted_memories = @conversation_recaps.flat_map(&:extracted_memories).sort_by { |memory| [ memory.pending? ? 0 : 1, memory.created_at, memory.id ] }
+    pending_memories = @extracted_memories.select(&:pending?)
+    @selected_extracted_memory = pending_memories.find { |memory| memory.id == params[:memory_proposal] } || pending_memories.first
+    @memory_extraction_enabled = FeatureFlag.enabled?("ai_memory_extraction", user: current_user, environment: Rails.env)
   end
 
   def new

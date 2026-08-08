@@ -39,6 +39,7 @@ class MemoryRecord < ApplicationRecord
 
   belongs_to :relationship_profile
   has_many :memory_revisions, dependent: :destroy
+  has_one :extracted_memory, foreign_key: :canonical_memory_record_id, dependent: :nullify
   has_one :privacy_vault_item, as: :protectable, dependent: :destroy
 
   before_validation :normalize_text_fields

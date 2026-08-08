@@ -43,7 +43,7 @@ class MemoryRecordsController < ApplicationController
     if @memory_record.invalid?
       render_form(:edit, status: :unprocessable_entity)
     else
-      update_record_with_revision!(previous_body, note, body_corrected)
+      update_record_with_revision!(previous_body, note, body_corrected || note.present?)
       refresh_memory_records(t(".notice"))
     end
   rescue ActiveRecord::RecordInvalid
@@ -129,10 +129,10 @@ class MemoryRecordsController < ApplicationController
     )
   end
 
-  def update_record_with_revision!(previous_body, note, body_corrected)
+  def update_record_with_revision!(previous_body, note, revision_required)
     MemoryRecord.transaction(requires_new: true) do
       @memory_record.save!
-      create_revision(previous_body, note) if body_corrected
+      create_revision(previous_body, note) if revision_required
     end
   end
 

@@ -9,18 +9,16 @@ severity: important
 title: Relationship personas remain source-backed and uncertainty-aware
 
 claim: >
-  RelationshipPersona deterministically builds an owner-scoped, evidence-backed
-  summary from structured relationship preferences and current memory records.
-  Stale, review-needed, and archived memories are excluded, while protected
-  memories stay out of rendered traits. Explicitly confirmed preferences, user-confirmed or
-  user-corrected memories, and non-AI memories with confirmed confidence render
-  as confirmed; every other trait keeps localized non-absolute language and an
-  inferred label. Traits link back to their source
-  evidence and existing correction flow, and semantic title or body corrections
-  become user-confirmed context. Memory mutations refresh the persona through
-  Turbo. Suggestion inputs preserve certainty, evidence, and source identity,
-  fail closed for archived profiles, and decrypt protected memory payloads only
-  after the item's explicit suggestion consent is allowed.
+  RelationshipPersona builds a deterministic, owner-scoped summary from
+  preferences and current memories. Stale, review-needed, archived, and
+  protected memories stay out of rendered traits. Confirmed preferences and
+  qualifying user or non-AI memories render as confirmed; all others remain
+  non-absolute and inferred. Traits link to evidence and correction flows.
+  Semantic title or body corrections become confirmed, and submitted notes
+  remain in correction history even for title-only edits. Turbo refreshes the
+  persona after memory mutations. Suggestion inputs preserve certainty,
+  evidence, and source identity, fail closed for archived profiles, and decrypt
+  protected payloads only with explicit suggestion consent.
 
 source_files:
   - app/models/relationship_persona.rb
@@ -73,24 +71,20 @@ last_verified_commit: null
 
 ## Claim
 
-Relationship personas are deterministic views over existing relationship
-context rather than a second AI or persistence pipeline. Structured preferences
-and current memory records provide each trait's statement, detail, evidence,
-confidence, and correction target.
+Personas are deterministic views over structured preferences and current memory,
+not a second AI or persistence pipeline. Confirmed preferences and qualifying
+user or non-AI memories form confirmed traits; all other context remains cautious
+and inferred. Traits carry evidence and correction targets.
 
-Explicitly confirmed preferences, user-confirmed/user-corrected memories, and
-non-AI memories whose confidence has been confirmed establish confirmed traits.
-All other context remains visibly cautious, and AI-inferred memory stays
-inferred regardless of confidence. A semantic title or body edit marks memory as
-user-corrected; only a body edit creates a body-revision row. Stale,
-review-needed, and archived memories do not enter the persona. Vault-protected
-memory never enters rendered traits, while suggestion inputs may decrypt its
-payload only when the vault item is explicitly allowed for suggestions. Archived
-relationships expose no suggestion inputs.
+Semantic title or body edits mark memory as user-corrected. Body edits create
+revision rows; submitted notes are also preserved for title-only edits, while a
+title-only edit without a note creates no empty history. Stale, review-needed,
+archived, and protected memories stay out of rendered traits. Consent-gated vault
+payloads may enter suggestion inputs only, and archived profiles expose none.
 
-The persona's suggestion-input interface returns the rendered statement,
-detail, certainty, evidence, source type, and source UUID. This prepares CAR-49
-without generating suggestions or presenting inferred traits as truth.
+Suggestion inputs preserve the statement, detail, certainty, evidence, source
+type, and source UUID for CAR-49 without generating suggestions or asserting
+inferences as truth.
 
 ## Why It Matters
 

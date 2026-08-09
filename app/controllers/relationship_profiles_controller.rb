@@ -28,6 +28,17 @@ class RelationshipProfilesController < ApplicationController
 
   def show
     @relationship_persona = RelationshipPersona.new(relationship_profile: @relationship_profile)
+    @mood_notes = @relationship_profile.mood_notes.ordered.to_a
+    suggestions = Suggestions::ForProfile.call(
+      relationship_profile: @relationship_profile,
+      mood_notes: @mood_notes,
+      important_dates: @relationship_profile.important_dates
+    )
+    @suggestion_feedbacks = current_user.suggestion_feedbacks
+      .where(fingerprint: suggestions.map(&:fingerprint))
+      .index_by(&:fingerprint)
+    @suggestions = suggestions.reject { |suggestion| @suggestion_feedbacks[suggestion.fingerprint]&.hidden? }
+    @selected_suggestion = @suggestions.find { |suggestion| suggestion.fingerprint == params[:suggestion] } || @suggestions.first
     @timeline_type = params[:timeline_type].to_s.in?(TimelineEntry::ENTRY_TYPES) ? params[:timeline_type].to_s : nil
     @relationship_reminders = @relationship_profile.reminders.active.by_effective_delivery.limit(5).to_a
     @interactions = @relationship_profile.interactions.includes(:source).ordered.limit(10).to_a
@@ -122,6 +133,8 @@ class RelationshipProfilesController < ApplicationController
         :gifts,
         :important_dates,
         :contact_cadence,
+        :memory_records,
+        :privacy_vault_items,
         { commitments: :reminders },
         :relationship_preferences,
         :relationship_tags,

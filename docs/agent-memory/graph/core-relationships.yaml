@@ -396,3 +396,33 @@ edges:
     relation: requires
     reason: Successful exports and deletions emit privacy-minimized generic evidence without copying exported or deleted content.
     strength: 95
+  - source: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Suggestions and their feedback are loaded and mutated only through the authenticated owner's active relationship profile.
+    strength: 100
+  - source: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    target: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    relation: requires
+    reason: Message suggestions reuse persona evidence, certainty, vault consent, and source identity instead of inventing a parallel context pipeline.
+    strength: 100
+  - source: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: The current suggestion action only prepares and transactionally creates an existing owner-scoped reminder.
+    strength: 95
+  - source: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    target: automation_permissions.permission_decisions
+    relation: constrains
+    reason: Future action kinds with external effects must evaluate user automation permissions and approval requirements; CAR-49 performs no external effect.
+    strength: 95
+  - source: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    target: relationship_profiles.mood_notes
+    relation: requires
+    reason: Repair-focused suggestions reuse recent owner-authored mood observations and their existing source presentation.
+    strength: 90
+  - source: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    target: relationship_profiles.ai_memory_extraction
+    relation: constrains
+    reason: Approved AI-derived memories may support low-impact persona suggestions while inferred or unapproved evidence remains ineligible for high-impact suggestions.
+    strength: 90

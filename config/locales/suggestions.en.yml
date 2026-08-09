@@ -1,0 +1,73 @@
+en:
+  suggestions:
+    section:
+      eyebrow: "Relationship guidance"
+      title: "Suggested next steps"
+      body: "Private, source-backed ideas based on what you have recorded. Select one to inspect its evidence before acting."
+      list_label: "Suggestions"
+    empty:
+      title: "No suggestions right now"
+      body: "Add relationship details, preferences, dates, or commitments to build grounded next steps."
+    certainty:
+      confirmed: "Confirmed"
+      inferred: "Inferred"
+    inspector:
+      why: "Why this appears"
+      view_source: "View source: %{source}"
+      reminder_disclosure: "This creates a private reminder for you. It does not contact anyone automatically."
+    actions:
+      create_reminder: "Create reminder"
+      helpful: "Helpful"
+      not_for_me: "Not for me"
+      dismiss: "Dismiss"
+    sources:
+      important_date: "important date"
+      desire: "desire"
+      contact_cadence: "contact cadence"
+      relationship_preference: "relationship preference"
+      memory_record: "memory"
+      mood_note: "mood note"
+      commitment: "commitment"
+    reasons:
+      gift: "A recorded interest could guide a thoughtful gift"
+      message: "Your relationship context suggests a fitting message style"
+      plan: "A recorded interest could become a shared plan"
+      check_in: "The preferred contact rhythm is overdue"
+      event: "An important date is within its planning window"
+      spontaneous: "A recorded interest could inspire a small gesture"
+      repair_focused: "A recent observation suggests a gentle repair may help"
+      professional_follow_up: "An open professional commitment is overdue"
+      relationship_context: "Relationship context"
+    types:
+      gift:
+        label: "Gift"
+        title: "Choose a thoughtful gift for %{name}"
+        detail: "Use a recorded interest as a starting point, then decide what feels appropriate."
+      message:
+        label: "Message"
+        title: "Send %{name} a quick message"
+        detail: "Prepare a note in a style that matches what you know about this relationship."
+      plan:
+        label: "Plan"
+        title: "Make a simple plan with %{name}"
+        detail: "Turn a recorded interest into an invitation you can adapt."
+      check_in:
+        label: "Check-in"
+        title: "Check in with %{name}"
+        detail: "The contact rhythm you set has passed, so this may be a good moment to reconnect."
+      event:
+        label: "Event"
+        title: "Prepare for %{name}'s upcoming date"
+        detail: "Make space to plan before the recorded date arrives."
+      spontaneous:
+        label: "Spontaneous"
+        title: "Offer %{name} a small spontaneous gesture"
+        detail: "Use a known interest to inspire something low-pressure and personal."
+      repair_focused:
+        label: "Repair-focused"
+        title: "Plan a gentle repair with %{name}"
+        detail: "Consider a private reminder to approach the relationship with care; nothing is sent automatically."
+      professional_follow_up:
+        label: "Professional follow-up"
+        title: "Follow up on your commitment to %{name}"
+        detail: "Create a reminder to close the loop on an overdue professional commitment."

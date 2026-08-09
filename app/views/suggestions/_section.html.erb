@@ -1,0 +1,25 @@
+<%= turbo_frame_tag "suggestions_section" do %>
+  <section aria-labelledby="suggestions-title" class="overflow-hidden rounded-xl border border-stone-200 bg-white">
+    <header class="border-b border-stone-200 bg-stone-50 px-5 py-5 sm:px-6">
+      <p class="text-xs font-semibold uppercase tracking-wide text-emerald-900"><%= t("suggestions.section.eyebrow") %></p>
+      <h2 id="suggestions-title" class="mt-2 text-xl font-semibold text-stone-950"><%= t("suggestions.section.title") %></h2>
+      <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("suggestions.section.body") %></p>
+    </header>
+
+    <% if suggestions.any? %>
+      <div class="grid lg:grid-cols-[minmax(16rem,0.72fr)_minmax(0,1.28fr)]">
+        <nav aria-label="<%= t("suggestions.section.list_label") %>" class="border-b border-stone-200 bg-stone-50 lg:border-b-0 lg:border-r">
+          <% suggestions.each do |suggestion| %>
+            <%= component "suggestion_list_item", suggestion:, relationship_profile:, selected: suggestion == selected_suggestion %>
+          <% end %>
+        </nav>
+        <%= component "suggestion_inspector", suggestion: selected_suggestion, relationship_profile:, feedback: feedbacks[selected_suggestion.fingerprint] %>
+      </div>
+    <% else %>
+      <div class="px-5 py-8 sm:px-6">
+        <h3 class="text-base font-semibold text-stone-950"><%= t("suggestions.empty.title") %></h3>
+        <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("suggestions.empty.body") %></p>
+      </div>
+    <% end %>
+  </section>
+<% end %>

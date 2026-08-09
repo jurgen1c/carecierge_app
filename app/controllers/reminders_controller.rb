@@ -25,6 +25,8 @@ class RemindersController < ApplicationController
       time_zone: preference.time_zone,
       scheduled_at: initial_schedule_for(important_date, preference)
     )
+    @suggestion = selected_suggestion
+    @reminder.assign_attributes(@suggestion.reminder_attributes) if @suggestion
     authorize @reminder
     prepare_form_options
   end
@@ -34,6 +36,7 @@ class RemindersController < ApplicationController
   end
 
   def create
+    @suggestion = selected_suggestion
     @reminder = current_user.reminders.new(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :scheduled_at, :time_zone))
     assign_relationship_context(@reminder)
     assign_schedule(@reminder)
@@ -44,7 +47,7 @@ class RemindersController < ApplicationController
       actor: current_user,
       action: "reminder.created",
       target: @reminder
-    ) { @reminder.save }
+    ) { Suggestions::CompleteReminderAction.call(reminder: @reminder, suggestion: @suggestion, user: current_user) }
 
     if saved
       params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
@@ -154,6 +157,16 @@ class RemindersController < ApplicationController
 
     scope = action_name == "new" ? current_user.relationship_profiles.active : current_user.relationship_profiles
     scope.find(id)
+  end
+
+  def selected_suggestion
+    fingerprint = params[:suggestion].presence
+    profile = selected_relationship_profile
+    return if fingerprint.blank? || profile.blank?
+
+    Suggestions::ForProfile.call(relationship_profile: profile)
+      .find { |suggestion| suggestion.fingerprint == fingerprint }
+      .tap { |suggestion| raise ActiveRecord::RecordNotFound unless suggestion }
   end
 
   def selected_commitment

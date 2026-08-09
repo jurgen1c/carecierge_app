@@ -38,7 +38,8 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.0"
+gem "ruby-vips", "~> 2.3"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -67,7 +68,7 @@ gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]
 
 gem "capybara", "~> 3.40", group: :test
 gem "cuprite", "~> 0.17", group: :test
-gem "simplecov", "~> 0.22.0", group: :test
+gem "simplecov", "~> 1.0", group: :test
 
 gem "annotaterb", "~> 4.22", group: :development
 
@@ -77,7 +78,7 @@ gem "omniauth-rails_csrf_protection", "~> 2.0"
 gem "pundit", "~> 2.5"
 gem "pagy", "~> 43.5"
 gem "ransack", "~> 4.4"
-gem "semantic_logger", "~> 4.18"
+gem "semantic_logger", "~> 5.1"
 gem "ferrum_pdf", "~> 3.1"
 gem "view_component", "~> 4.12"
 gem "dry-initializer", "~> 3.2"

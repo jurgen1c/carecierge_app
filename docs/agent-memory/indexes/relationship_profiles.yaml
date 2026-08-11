@@ -1,11 +1,12 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, an encrypted password-gated privacy vault, associated structured preference metadata, evidence-backed relationship personas with explicit uncertainty, deterministic source-backed suggestions with user feedback and reminder-only actions, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, an encrypted password-gated privacy vault, associated structured preference metadata, evidence-backed relationship personas with explicit uncertainty, deterministic source-backed suggestions with user feedback and reminder-only actions, structured owner-scoped relationship-memory search with source, relationship, archive-status, and date filters, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
   - relationship profile owner scoped CRUD
   - relationship profiles search filter archive
+  - relationship memory search structured source relationship archive date vault exclusion instrumentation
   - contact details rich private notes structured preferences preference metadata
   - preference type category confidence learned date source notes
   - memory records source confidence status stale review automation approval revisions
@@ -30,6 +31,7 @@ watched_files:
   - app/models/user.rb
   - app/models/relationship_profile.rb
   - app/models/relationship_profiles/**/*.rb
+  - app/models/relationship_memory_search/**/*.rb
   - app/models/contact_method.rb
   - app/models/relationship_note.rb
   - app/models/relationship_preference.rb
@@ -60,7 +62,10 @@ watched_files:
   - app/models/desire_fulfillment.rb
   - app/forms/relationship_profiles/**/*.rb
   - app/queries/relationship_profile/search_query.rb
+  - app/queries/relationship_memory_search/**/*.rb
   - app/controllers/relationship_profiles_controller.rb
+  - app/controllers/relationship_searches_controller.rb
+  - app/helpers/relationship_searches_helper.rb
   - app/controllers/suggestions_controller.rb
   - app/controllers/onboarding_controller.rb
   - app/controllers/important_dates_controller.rb
@@ -114,6 +119,7 @@ watched_files:
   - app/views/commitments/**/*.erb
   - app/views/desires/**/*.erb
   - app/views/relationship_profiles/**/*.erb
+  - app/views/relationship_searches/**/*.erb
   - app/views/onboarding/**/*.erb
   - app/javascript/controllers/relationship_template_fields_controller.js
   - app/javascript/controllers/privacy_vault_controller.js
@@ -167,3 +173,4 @@ tags:
   - commitments
   - desires
   - suggestions
+  - relationship_search

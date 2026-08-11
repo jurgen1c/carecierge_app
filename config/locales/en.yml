@@ -462,6 +462,75 @@ en:
       notice: "Your first relationship profile was created."
     skip:
       notice: "Onboarding is saved for later."
+  relationship_searches:
+    note_categories:
+      general: "Note"
+      private: "Private note"
+    interaction_types:
+      call: "Call"
+      message: "Message"
+      in_person: "In person"
+      video: "Video call"
+      other: "Interaction"
+      conversation_recap: "Conversation recap"
+      mood_note: "Mood note"
+    source_types:
+      profiles: "Profile"
+      notes: "Note"
+      preferences: "Preference"
+      timeline: "Timeline and interactions"
+      interactions: "Interaction"
+      commitments: "Commitment"
+      gifts: "Gift"
+      important_dates: "Important date"
+    show:
+      title: "Search relationship memory"
+      back: "Back to relationships"
+      heading: "Search relationship memory"
+      body: "Find the relationship details, notes, preferences, promises, gifts, and moments you have already captured. Combine a search word with filters when you need a narrower answer."
+      filters_title: "Search and filters"
+      search_label: "Search words"
+      search_placeholder: "Search names, notes, preferences, commitments, or gifts"
+      relationship_label: "Relationship"
+      all_relationships: "All relationships"
+      source_label: "Source"
+      all_sources: "All sources"
+      date_label: "Date"
+      date_ranges:
+        all: "Any time"
+        next_30_days: "Next 30 days"
+        next_month: "Next month"
+        past_year: "Past year"
+      status_label: "Relationship status"
+      statuses:
+        active: "Active"
+        archived: "Archived"
+        all: "Active and archived"
+      search_action: "Search memory"
+      clear_filters: "Clear filters"
+      privacy_label: "Search privacy"
+      vault_notice: "Protected privacy-vault items are excluded from search results."
+      initial_title: "Start with what you remember"
+      initial_body: "Enter a word or choose a relationship, source, date, or archived status. For example, select Important dates and Next month to find upcoming birthdays."
+      empty_title: "No relationship memory matches these filters"
+      empty_body: "Try a broader word, another source, or a wider date range. Protected privacy-vault items will stay excluded."
+      results_title: "Search results"
+      results_count:
+        one: "%{count} result across %{relationships}"
+        other: "%{count} results across %{relationships}"
+      relationship_count:
+        one: "1 relationship"
+        other: "%{count} relationships"
+      relationship_result_count:
+        one: "1 result on this page"
+        other: "%{count} results on this page"
+      date_not_available: "No date"
+      open_result: "Open %{title}"
+      pagination:
+        label: "Search result pages"
+        previous: "Previous"
+        next: "Next"
+        page: "Page %{page} of %{pages}"
   relationship_profiles:
     index:
       title: "Relationships"
@@ -469,6 +538,7 @@ en:
       heading: "People you care for"
       body: "Keep core details, contact context, notes, and preferences in one private place before reminders or automation are added."
       new_profile: "Add relationship"
+      search_memory: "Search memory"
       filters_title: "Find a relationship"
       search_label: "Search"
       search_placeholder: "Search names, notes, preferences, or relationship type"

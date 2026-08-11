@@ -1,7 +1,7 @@
 module PrivacyVaultSession
   extend ActiveSupport::Concern
 
-  LEASE_DURATION = 10.minutes
+  LEASE_DURATION = PrivacyVault::Lease::DURATION
   SESSION_KEY = "privacy_vault_lease".freeze
 
   included do
@@ -11,27 +11,14 @@ module PrivacyVaultSession
   private
 
   def privacy_vault_unlocked?
-    lease = session[SESSION_KEY]
-    return false unless lease.is_a?(Hash)
-    return clear_privacy_vault_lease unless lease["user_id"] == current_user.id
-    return clear_privacy_vault_lease unless lease["password_fingerprint"] == privacy_vault_password_fingerprint
-    return clear_privacy_vault_lease unless lease["version"] == current_user.reload.privacy_vault_lease_version
+    lease = privacy_vault_lease
+    return true if lease&.active_for?(current_user.reload)
 
-    last_activity_at = Time.zone.at(lease.fetch("last_activity_at"))
-    return true if last_activity_at >= LEASE_DURATION.ago
-
-    clear_privacy_vault_lease
-  rescue KeyError, TypeError, ArgumentError
     clear_privacy_vault_lease
   end
 
   def unlock_privacy_vault!
-    session[SESSION_KEY] = {
-      "user_id" => current_user.id,
-      "password_fingerprint" => privacy_vault_password_fingerprint,
-      "version" => current_user.privacy_vault_lease_version,
-      "last_activity_at" => Time.current.to_i
-    }
+    session[SESSION_KEY] = PrivacyVault::Lease.issue_for(current_user).to_session
   end
 
   def touch_privacy_vault_lease!
@@ -41,13 +28,12 @@ module PrivacyVaultSession
     true
   end
 
-  def privacy_vault_lease_expires_at
-    last_activity_at = session.dig(SESSION_KEY, "last_activity_at")
-    return if last_activity_at.blank?
+  def privacy_vault_lease
+    PrivacyVault::Lease.from_session(session[SESSION_KEY])
+  end
 
-    Time.zone.at(last_activity_at) + LEASE_DURATION
-  rescue TypeError, ArgumentError
-    nil
+  def privacy_vault_lease_expires_at
+    privacy_vault_lease&.expires_at
   end
 
   def clear_privacy_vault_lease
@@ -59,9 +45,5 @@ module PrivacyVaultSession
     return if touch_privacy_vault_lease!
 
     redirect_to relationship_profile_privacy_vault_path(@relationship_profile), alert: t("privacy_vaults.access_required")
-  end
-
-  def privacy_vault_password_fingerprint
-    OpenSSL::HMAC.hexdigest("SHA256", Rails.application.secret_key_base, current_user.encrypted_password)
   end
 end

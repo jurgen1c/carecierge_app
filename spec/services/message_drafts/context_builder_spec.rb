@@ -1,0 +1,163 @@
+require "rails_helper"
+
+RSpec.describe MessageDrafts::ContextBuilder do
+  it "uses current non-protected relationship context and excludes private context by default" do
+    profile = create(:relationship_profile, preferred_name: "Maya", pronouns: "she/her")
+    create(:relationship_preference, relationship_profile: profile, key: "Message style", value: "Short and sincere")
+    create(:important_date, relationship_profile: profile, title: "Birthday")
+    create(:relationship_note, relationship_profile: profile, body: "Enjoys quiet garden walks.")
+    create(:relationship_note, relationship_profile: profile, private: true, body: "Private family situation.")
+    create(:memory_record, relationship_profile: profile, title: "Favorite drink", body: "Jasmine tea")
+    create(:memory_record, relationship_profile: profile, status: "archived", title: "Old context", body: "Do not include this")
+    create(:privacy_vault_item, relationship_profile: profile, payload: { "title" => "Vault", "body" => "Protected context" })
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text).to include("Maya", "she/her", "Short and sincere", "quiet garden walks", "Jasmine tea", "Birthday")
+    expect(result.text).not_to include("Private family situation", "Protected context", "Do not include this")
+    expect(result.categories).to include("profile", "preferences", "important_dates", "public_notes", "memories")
+    expect(result.categories).not_to include("private_notes", "vault")
+  end
+
+  it "preserves uncertainty and source metadata for preferences and memories" do
+    profile = create(:relationship_profile)
+    create(
+      :relationship_preference,
+      relationship_profile: profile,
+      key: "Message style",
+      value: "Short and sincere",
+      confidence: "inferred",
+      source_notes: "Observed from recent conversations"
+    )
+    create(
+      :memory_record,
+      relationship_profile: profile,
+      title: "Possible favorite tea",
+      body: "Jasmine tea",
+      source: "ai_inferred",
+      confidence: "low"
+    )
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text).to include(
+      "Message style: [confidence: inferred; source: Observed from recent conversations] Short and sincere",
+      "Possible favorite tea: [source: ai_inferred; confidence: low] Jasmine tea"
+    )
+  end
+
+  it "retains uncertainty metadata when a source value is truncated" do
+    profile = create(:relationship_profile)
+    create(
+      :relationship_preference,
+      relationship_profile: profile,
+      key: "Long inferred preference",
+      value: "A" * 2_000,
+      confidence: "inferred"
+    )
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text).to include("Long inferred preference: [confidence: inferred]")
+    expect(result.text.length).to be <= described_class::MAX_CHARACTERS
+  end
+
+  it "reserves room for uncertainty metadata when preference and memory labels are long" do
+    profile = create(:relationship_profile)
+    create(
+      :relationship_preference,
+      relationship_profile: profile,
+      key: "Preference " + ("P" * 990),
+      value: "Short and sincere",
+      confidence: "inferred",
+      source_notes: "Observed from recent conversations"
+    )
+    create(
+      :memory_record,
+      relationship_profile: profile,
+      title: "Memory " + ("M" * 990),
+      body: "Jasmine tea",
+      source: "ai_inferred",
+      confidence: "low"
+    )
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text).to include(
+      "[confidence: inferred; source: Observed from recent conversations] Short and sincere",
+      "[source: ai_inferred; confidence: low] Jasmine tea"
+    )
+    expect(result.text.lines.map { |line| line.chomp.length }.max).to be <= described_class::MAX_ENTRY_CHARACTERS
+  end
+
+  it "caps complete entries so a long label cannot displace later context" do
+    profile = create(:relationship_profile)
+    create(:important_date, relationship_profile: profile, title: "X" * 7_000)
+    create(
+      :relationship_preference,
+      relationship_profile: profile,
+      key: "Message style",
+      value: "Short and sincere"
+    )
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text.lines.map { |line| line.chomp.length }.max).to be <= described_class::MAX_ENTRY_CHARACTERS
+    expect(result.text).to include("Message style", "Short and sincere")
+  end
+
+  it "adds private notes and vault payloads only when each source is explicitly allowed" do
+    profile = create(:relationship_profile)
+    create(:relationship_note, relationship_profile: profile, private: true, body: "Prefers a gentle opening.")
+    create(:privacy_vault_item, relationship_profile: profile, payload: { "title" => "Protected boundary", "body" => "Avoid discussing work." })
+
+    result = described_class.new(
+      relationship_profile: profile,
+      include_private_notes: true,
+      include_vault_context: true
+    ).call
+
+    expect(result.text).to include("Prefers a gentle opening", "Protected boundary", "Avoid discussing work")
+    expect(result.categories).to include("private_notes", "vault")
+  end
+
+  it "reserves context for each explicitly allowed sensitive source" do
+    profile = create(:relationship_profile)
+    create(:relationship_preference, relationship_profile: profile, key: "Long preference", value: "A" * 7_000)
+    create(:relationship_note, relationship_profile: profile, private: true, body: "Private family boundary.")
+    create(:privacy_vault_item, relationship_profile: profile, payload: { "title" => "Protected boundary", "body" => "Avoid discussing work." })
+
+    result = described_class.new(
+      relationship_profile: profile,
+      include_private_notes: true,
+      include_vault_context: true
+    ).call
+
+    expect(result.text).to include("Private family boundary", "Protected boundary", "Avoid discussing work")
+    expect(result.categories).to include("private_notes", "vault")
+    expect(result.text.length).to be <= described_class::MAX_CHARACTERS
+  end
+
+  it "applies the memory limit after excluding date-stale records" do
+    profile = create(:relationship_profile)
+
+    Timecop.freeze(Time.zone.local(2026, 8, 11, 12)) do
+      create_list(:memory_record, 10, relationship_profile: profile, stale_after: Date.new(2026, 8, 10))
+      create(:memory_record, relationship_profile: profile, title: "Current memory", body: "Still useful", stale_after: Date.new(2026, 8, 11))
+
+      result = described_class.new(relationship_profile: profile).call
+
+      expect(result.text).to include("Current memory", "Still useful")
+      expect(result.categories).to include("memories")
+    end
+  end
+
+  it "bounds the context sent to the provider" do
+    profile = create(:relationship_profile)
+    create(:relationship_note, relationship_profile: profile, body: "A" * 10_000)
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text.length).to be <= described_class::MAX_CHARACTERS
+  end
+end

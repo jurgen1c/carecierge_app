@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-11T11:05:07Z",
+  "title": "Design System: Carecierge",
+  "extensions": {
+    "colorMeta": {
+      "canvas": { "role": "neutral", "displayName": "Clear Desk White", "canonical": "#ffffff", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#e7e5e4", "#f5f5f4", "#ffffff"] },
+      "surface": { "role": "neutral", "displayName": "Soft Ledger Surface", "canonical": "#fafaf9", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#e7e5e4", "#f5f5f4", "#fafaf9"] },
+      "private-line": { "role": "neutral", "displayName": "Private Line", "canonical": "#e7e5e4", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#e7e5e4", "#f5f5f4", "#fafaf9"] },
+      "quiet-note": { "role": "neutral", "displayName": "Quiet Note", "canonical": "#44403c", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#f5f5f4"] },
+      "ink": { "role": "neutral", "displayName": "Trusted Ink", "canonical": "#0c0a09", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#f5f5f4"] },
+      "primary": { "role": "primary", "displayName": "Concierge Moss", "canonical": "#065f46", "tonalRamp": ["#022c22", "#064e3b", "#065f46", "#047857", "#059669", "#34d399", "#a7f3d0", "#ecfdf5"] },
+      "primary-hover": { "role": "primary", "displayName": "Moss Hover", "canonical": "#064e3b", "tonalRamp": ["#022c22", "#064e3b", "#065f46", "#047857", "#059669", "#34d399", "#a7f3d0", "#ecfdf5"] },
+      "danger-surface": { "role": "danger", "displayName": "Danger Surface", "canonical": "#fef2f2", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#ef4444", "#fca5a5", "#fee2e2", "#fef2f2"] },
+      "danger-border": { "role": "danger", "displayName": "Danger Border", "canonical": "#fca5a5", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#ef4444", "#fca5a5", "#fee2e2", "#fef2f2"] },
+      "danger-ink": { "role": "danger", "displayName": "Danger Ink", "canonical": "#991b1b", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#ef4444", "#fca5a5", "#fee2e2", "#fef2f2"] }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Page titles and primary workflow headings." },
+      "title": { "displayName": "Title", "purpose": "Section and panel headings." },
+      "body": { "displayName": "Body", "purpose": "Readable product copy and relationship context." },
+      "label": { "displayName": "Label", "purpose": "Controls, fields, metadata, and navigation." }
+    },
+    "shadows": [
+      { "name": "interactive-lift", "value": "0 1px 2px rgb(28 25 23 / 0.08)", "purpose": "Hoverable panels only when the whole panel is actionable." },
+      { "name": "overlay-lift", "value": "0 10px 30px rgb(28 25 23 / 0.14)", "purpose": "Menus, dialogs, popovers, and live guidance surfaces." }
+    ],
+    "motion": [
+      { "name": "state-change", "value": "200ms cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Hover, focus, selection, and disclosure transitions." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single main action in a decision area.",
+      "html": "<button class=\"ds-btn-primary\">Save changes</button>",
+      "css": ".ds-btn-primary { min-height: 44px; border: 0; border-radius: 8px; background: var(--color-primary, #065f46); color: var(--color-canvas, #ffffff); padding: 12px 20px; font: 600 14px/1.25 ui-sans-serif, system-ui, sans-serif; transition: background 200ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-primary:hover { background: var(--color-primary-hover, #064e3b); } .ds-btn-primary:focus-visible { outline: 2px solid #047857; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "description": "A lower-priority action with familiar neutral treatment.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { min-height: 44px; border: 1px solid #d6d3d1; border-radius: 8px; background: var(--color-canvas, #ffffff); color: var(--color-ink, #0c0a09); padding: 12px 20px; font: 600 14px/1.25 ui-sans-serif, system-ui, sans-serif; transition: background 200ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-secondary:hover { background: #f5f5f4; } .ds-btn-secondary:focus-visible { outline: 2px solid #047857; outline-offset: 2px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Destructive or irreversible actions only.",
+      "html": "<button class=\"ds-btn-danger\">Delete</button>",
+      "css": ".ds-btn-danger { min-height: 44px; border: 1px solid var(--color-danger-border, #fca5a5); border-radius: 8px; background: var(--color-canvas, #ffffff); color: var(--color-danger-ink, #991b1b); padding: 12px 20px; font: 600 14px/1.25 ui-sans-serif, system-ui, sans-serif; transition: background 200ms cubic-bezier(0.25, 1, 0.5, 1); } .ds-btn-danger:hover { background: var(--color-danger-surface, #fef2f2); } .ds-btn-danger:focus-visible { outline: 2px solid #b91c1c; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "description": "A clear, generous form control for sensitive personal context.",
+      "html": "<label class=\"ds-field\">Message subject<input class=\"ds-input\" placeholder=\"Add a subject\"></label>",
+      "css": ".ds-field { display: grid; gap: 8px; color: var(--color-ink, #0c0a09); font: 600 14px/1.25 ui-sans-serif, system-ui, sans-serif; } .ds-input { min-height: 44px; border: 1px solid #d6d3d1; border-radius: 8px; background: var(--color-canvas, #ffffff); color: var(--color-ink, #0c0a09); padding: 8px 12px; font: 400 16px/1.5 ui-sans-serif, system-ui, sans-serif; } .ds-input:focus { border-color: #047857; outline: 2px solid rgb(4 120 87 / 0.2); outline-offset: 0; }"
+    },
+    {
+      "name": "Section Container",
+      "kind": "card",
+      "description": "A flat major feature section separated by border and spacing.",
+      "html": "<section class=\"ds-section\"><h2>Relationship context</h2><p>Private by default, useful when allowed.</p></section>",
+      "css": ".ds-section { border: 1px solid var(--color-private-line, #e7e5e4); border-radius: 16px; background: var(--color-canvas, #ffffff); color: var(--color-ink, #0c0a09); padding: 20px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-section h2 { margin: 0; font-size: 20px; line-height: 1.4; } .ds-section p { margin: 8px 0 0; max-width: 65ch; color: var(--color-quiet-note, #44403c); font-size: 16px; line-height: 1.5; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Trusted Concierge Desk",
+    "overview": "Carecierge should feel like the quiet desk in a well-run boutique hotel: warm, discreet, capable, human, and organized. The product is friendly and familiar, but it never turns relationship care into performance, surveillance, or sentimentality.",
+    "keyCharacteristics": ["Quietly capable", "Warm but unsentimental", "Familiar controls", "Discreet guidance", "Human cadence"],
+    "rules": [
+      { "name": "The Ten Percent Accent Rule", "body": "Concierge Moss is rare by default. If more than 10% of a working screen is accented, the product starts to feel decorative instead of trustworthy.", "section": "colors" },
+      { "name": "The Semantic Red Rule", "body": "Red stays under 5% of a working screen and appears only for destructive actions, irreversible decisions, or critical errors.", "section": "colors" },
+      { "name": "The Clean Surface Rule", "body": "Warmth comes from guidance, rhythm, and accent choices, not from beige body backgrounds.", "section": "colors" },
+      { "name": "The Discreet Depth Rule", "body": "If the shadow is the first thing a user notices, it is too heavy.", "section": "elevation" }
+    ],
+    "dos": ["Do reuse the semantic palette before considering any new color.", "Do keep primary actions clear, rare, and visually trustworthy.", "Do make automation explainable, reversible, and visibly in service of the user's intent."],
+    "donts": ["Don't use red as a decorative accent.", "Don't use generic chatbot scaffolding as the product's main visual metaphor.", "Don't use hearts, pink gradients, cheesy intimacy language, or couple-tracking aesthetics."]
+  }
+}

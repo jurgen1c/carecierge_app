@@ -10,13 +10,16 @@ title: Frontend policy uses product and design docs plus StyleVariants
 
 claim: >
   Frontend work must treat PRODUCT.md and DESIGN.md as the UI source-of-truth documents, use
-  app/helpers/style_variants_helper.rb for reusable component class variants, and avoid relying
-  on nonexistent STYLE_GUIDE.md or .impeccable/design.json files.
+  the semantic Tailwind palette in app/assets/stylesheets/application.tailwind.css, consume
+  app/helpers/style_variants_helper.rb for reusable component class variants, and keep
+  .impeccable/design.json regenerated with DESIGN.md. STYLE_GUIDE.md is not authoritative.
 
 source_files:
   - AGENTS.md
   - PRODUCT.md
   - DESIGN.md
+  - .impeccable/design.json
+  - app/assets/stylesheets/application.tailwind.css
   - app/helpers/style_variants_helper.rb
 
 related_files:
@@ -30,7 +33,7 @@ tags:
   - design-system
 
 verification:
-  - test -f PRODUCT.md && test -f DESIGN.md && test -f app/helpers/style_variants_helper.rb && test ! -e STYLE_GUIDE.md && test ! -e .impeccable/design.json
+  - test -f PRODUCT.md && test -f DESIGN.md && test -f .impeccable/design.json && test -f app/assets/stylesheets/application.tailwind.css && test -f app/helpers/style_variants_helper.rb && test ! -e STYLE_GUIDE.md
 last_verified_commit: null
 ---
 
@@ -39,21 +42,25 @@ last_verified_commit: null
 ## Claim
 
 Frontend work must treat `PRODUCT.md` and `DESIGN.md` as the UI source-of-truth documents, use
-`app/helpers/style_variants_helper.rb` for reusable component class variants, and avoid relying
-on nonexistent `STYLE_GUIDE.md` or `.impeccable/design.json` files.
+the semantic Tailwind palette in `app/assets/stylesheets/application.tailwind.css`, consume
+`app/helpers/style_variants_helper.rb` for reusable component class variants, and keep
+`.impeccable/design.json` regenerated with `DESIGN.md`. `STYLE_GUIDE.md` is not authoritative.
 
 ## Why It Matters
 
-Agents should not block on missing style-guide artifacts or invent styling workflows when the
-repo already has product/design docs and a StyleVariants helper.
+Agents should not reopen settled palette choices or invent styling workflows when the repository
+already has product/design docs, reusable semantic tokens, a machine-readable design sidecar,
+and a StyleVariants helper.
 
 ## Evidence
 
 - `AGENTS.md`
 - `PRODUCT.md`
 - `DESIGN.md`
+- `.impeccable/design.json`
+- `app/assets/stylesheets/application.tailwind.css`
 - `app/helpers/style_variants_helper.rb`
 
 ## Verification
 
-- `test -f PRODUCT.md && test -f DESIGN.md && test -f app/helpers/style_variants_helper.rb && test ! -e STYLE_GUIDE.md && test ! -e .impeccable/design.json`
+- `test -f PRODUCT.md && test -f DESIGN.md && test -f .impeccable/design.json && test -f app/assets/stylesheets/application.tailwind.css && test -f app/helpers/style_variants_helper.rb && test ! -e STYLE_GUIDE.md`

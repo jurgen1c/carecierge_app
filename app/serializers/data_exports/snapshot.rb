@@ -53,7 +53,7 @@ module DataExports
     end
 
     def profile_attributes(profile)
-      attributes_for(profile, except: %w[user_id type]).merge(
+      attributes_for(profile, except: %w[user_id type message_draft_generation_version]).merge(
         "relationship_type" => profile.type,
         "relationship_type_label" => profile.relationship_type_label,
         "contact_methods" => records(profile.contact_methods),
@@ -66,6 +66,7 @@ module DataExports
         "important_dates" => records(profile.important_dates),
         "gifts" => records(profile.gifts),
         "memory_records" => profile.memory_records.map { |memory| memory_attributes(memory) },
+        "message_draft" => message_draft_attributes(profile.message_draft),
         "conversation_recaps" => profile.conversation_recaps.map { |recap| conversation_recap_attributes(recap) },
         "extracted_memories" => records(profile.extracted_memories, except: %w[reviewed_by_id]),
         "mood_notes" => records(profile.mood_notes),
@@ -85,6 +86,14 @@ module DataExports
 
     def memory_attributes(memory)
       attributes_for(memory).merge("memory_revisions" => records(memory.memory_revisions, except: %w[user_id]))
+    end
+
+    def message_draft_attributes(draft)
+      return unless draft
+
+      attributes_for(draft, except: %w[user_id relationship_profile_id]).merge(
+        "draft_revisions" => records(draft.draft_revisions.reorder(:position), except: %w[message_draft_id])
+      )
     end
 
     def conversation_recap_attributes(recap)

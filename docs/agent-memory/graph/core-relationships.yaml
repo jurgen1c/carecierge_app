@@ -341,6 +341,21 @@ edges:
     relation: requires
     reason: Each commitment creates and controls a source-backed system promise timeline entry.
     strength: 90
+  - source: relationship_profiles.relationship_memory_search_is_structured_owner_scoped_and_privacy_preserving
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Relationship-memory search starts from the authenticated owner's Pundit-scoped profile relation before querying any source family.
+    strength: 100
+  - source: relationship_profiles.privacy_vault
+    target: relationship_profiles.relationship_memory_search_is_structured_owner_scoped_and_privacy_preserving
+    relation: constrains
+    reason: Ordinary search must exclude privacy-vault-backed notes and must not expose protected content through results or instrumentation.
+    strength: 100
+  - source: relationship_profiles.relationship_memory_search_is_structured_owner_scoped_and_privacy_preserving
+    target: relationship_profiles.timeline_entries
+    relation: same_area
+    reason: Timeline entries and interactions are normalized as one explicitly identified search source family.
+    strength: 70
   - source: automation_permissions.permission_decisions
     target: authentication.account_access_boundary
     relation: requires

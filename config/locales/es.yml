@@ -779,6 +779,75 @@ es:
       notice: "Tu primer perfil de relación fue creado."
     skip:
       notice: "Onboarding quedó guardado para después."
+  relationship_searches:
+    note_categories:
+      general: "Nota"
+      private: "Nota privada"
+    interaction_types:
+      call: "Llamada"
+      message: "Mensaje"
+      in_person: "En persona"
+      video: "Videollamada"
+      other: "Interacción"
+      conversation_recap: "Resumen de conversación"
+      mood_note: "Nota de ánimo"
+    source_types:
+      profiles: "Perfil"
+      notes: "Nota"
+      preferences: "Preferencia"
+      timeline: "Cronología e interacciones"
+      interactions: "Interacción"
+      commitments: "Compromiso"
+      gifts: "Regalo"
+      important_dates: "Fecha importante"
+    show:
+      title: "Buscar en la memoria de relaciones"
+      back: "Volver a relaciones"
+      heading: "Buscar en la memoria de relaciones"
+      body: "Encuentra detalles, notas, preferencias, promesas, regalos y momentos que ya registraste. Combina una palabra con los filtros cuando necesites una respuesta más precisa."
+      filters_title: "Búsqueda y filtros"
+      search_label: "Palabras de búsqueda"
+      search_placeholder: "Buscar nombres, notas, preferencias, compromisos o regalos"
+      relationship_label: "Relación"
+      all_relationships: "Todas las relaciones"
+      source_label: "Fuente"
+      all_sources: "Todas las fuentes"
+      date_label: "Fecha"
+      date_ranges:
+        all: "Cualquier fecha"
+        next_30_days: "Próximos 30 días"
+        next_month: "Próximo mes"
+        past_year: "Último año"
+      status_label: "Estado de la relación"
+      statuses:
+        active: "Activa"
+        archived: "Archivada"
+        all: "Activas y archivadas"
+      search_action: "Buscar en memoria"
+      clear_filters: "Limpiar filtros"
+      privacy_label: "Privacidad de la búsqueda"
+      vault_notice: "Los elementos protegidos en la bóveda de privacidad se excluyen de los resultados."
+      initial_title: "Empieza con lo que recuerdas"
+      initial_body: "Escribe una palabra o elige una relación, fuente, fecha o estado archivado. Por ejemplo, selecciona Fechas importantes y Próximo mes para encontrar cumpleaños cercanos."
+      empty_title: "Ningún recuerdo coincide con estos filtros"
+      empty_body: "Prueba una palabra más amplia, otra fuente o un rango de fechas mayor. Los elementos protegidos en la bóveda seguirán excluidos."
+      results_title: "Resultados de búsqueda"
+      results_count:
+        one: "%{count} resultado en %{relationships}"
+        other: "%{count} resultados en %{relationships}"
+      relationship_count:
+        one: "1 relación"
+        other: "%{count} relaciones"
+      relationship_result_count:
+        one: "1 resultado en esta página"
+        other: "%{count} resultados en esta página"
+      date_not_available: "Sin fecha"
+      open_result: "Abrir %{title}"
+      pagination:
+        label: "Páginas de resultados"
+        previous: "Anterior"
+        next: "Siguiente"
+        page: "Página %{page} de %{pages}"
   relationship_profiles:
     index:
       title: "Relaciones"
@@ -786,6 +855,7 @@ es:
       heading: "Personas que cuidas"
       body: "Mantén detalles principales, contexto de contacto, notas y preferencias en un lugar privado antes de agregar recordatorios o automatización."
       new_profile: "Agregar relación"
+      search_memory: "Buscar en memoria"
       filters_title: "Encontrar una relación"
       search_label: "Buscar"
       search_placeholder: "Buscar nombres, notas, preferencias o tipo de relación"

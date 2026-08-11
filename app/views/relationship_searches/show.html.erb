@@ -1,0 +1,121 @@
+<% content_for :title, t(".title") %>
+<% disable_turbo_cache %>
+
+<main class="flex flex-1 flex-col gap-8 py-8">
+  <header class="border-b border-stone-200 pb-6">
+    <%= link_to t(".back"), relationship_profiles_path, class: "inline-flex min-h-11 items-center text-sm font-semibold text-emerald-800 hover:text-emerald-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    <h1 class="mt-3 text-3xl font-semibold text-stone-950"><%= t(".heading") %></h1>
+    <p class="mt-3 max-w-2xl text-base leading-7 text-stone-700"><%= t(".body") %></p>
+  </header>
+
+  <section aria-labelledby="relationship-search-filters" class="rounded-xl border border-stone-200 bg-white p-5">
+    <h2 id="relationship-search-filters" class="text-base font-semibold text-stone-950"><%= t(".filters_title") %></h2>
+    <%= form_with url: relationship_search_path, method: :post, data: { turbo: false }, class: "mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-5" do %>
+      <div class="md:col-span-2 lg:col-span-5">
+        <%= label_tag :memory_query, t(".search_label"), class: "block text-sm font-medium text-stone-800" %>
+        <%= search_field_tag :memory_query, @query.q, placeholder: t(".search_placeholder"), autocomplete: "off", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 placeholder:text-stone-600 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+
+      <div>
+        <%= label_tag :relationship_id, t(".relationship_label"), class: "block text-sm font-medium text-stone-800" %>
+        <%= select_tag :relationship_id, options_from_collection_for_select(@relationship_profiles, :id, :display_name, @query.relationship_id), include_blank: t(".all_relationships"), class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+
+      <div>
+        <%= label_tag :source, t(".source_label"), class: "block text-sm font-medium text-stone-800" %>
+        <%= select_tag :source, options_for_select([[t(".all_sources"), "all"]] + RelationshipMemorySearch::SearchQuery::SOURCES.map { |source| [t("relationship_searches.source_types.#{source}"), source] }, @query.source), class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+
+      <div>
+        <%= label_tag :date_range, t(".date_label"), class: "block text-sm font-medium text-stone-800" %>
+        <%= select_tag :date_range, options_for_select(RelationshipMemorySearch::SearchQuery::DATE_RANGES.map { |range| [t(".date_ranges.#{range}"), range] }, @query.date_range), class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+
+      <div>
+        <%= label_tag :status, t(".status_label"), class: "block text-sm font-medium text-stone-800" %>
+        <%= select_tag :status, options_for_select(RelationshipMemorySearch::SearchQuery::STATUSES.map { |status| [t(".statuses.#{status}"), status] }, @query.status), class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-base text-stone-950 focus:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700/20" %>
+      </div>
+
+      <div class="flex items-end gap-3 md:col-span-2 lg:col-span-1">
+        <%= submit_tag t(".search_action"), class: "inline-flex min-h-11 flex-1 items-center justify-center rounded-lg bg-emerald-800 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+      </div>
+    <% end %>
+
+    <% if @query.searching? %>
+      <div class="mt-4 flex justify-end">
+        <%= link_to t(".clear_filters"), relationship_search_path, class: "inline-flex min-h-11 items-center text-sm font-semibold text-stone-700 hover:text-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+      </div>
+    <% end %>
+  </section>
+
+  <aside class="flex items-start gap-3 border-y border-stone-200 py-4 text-sm leading-6 text-stone-700" aria-label="<%= t(".privacy_label") %>">
+    <span aria-hidden="true" class="font-semibold text-emerald-800">●</span>
+    <p><%= t(".vault_notice") %></p>
+  </aside>
+
+  <% if !@query.searching? %>
+    <section class="rounded-xl border border-dashed border-stone-300 bg-white p-8">
+      <h2 class="text-lg font-semibold text-stone-950"><%= t(".initial_title") %></h2>
+      <p class="mt-3 max-w-2xl text-sm leading-6 text-stone-700"><%= t(".initial_body") %></p>
+    </section>
+  <% elsif @results.empty? %>
+    <section class="rounded-xl border border-dashed border-stone-300 bg-white p-8">
+      <h2 class="text-lg font-semibold text-stone-950"><%= t(".empty_title") %></h2>
+      <p class="mt-3 max-w-2xl text-sm leading-6 text-stone-700"><%= t(".empty_body") %></p>
+      <%= link_to t(".clear_filters"), relationship_search_path, class: "mt-5 inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-900 hover:bg-stone-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+    </section>
+  <% else %>
+    <section aria-labelledby="relationship-search-results" class="grid gap-7">
+      <div class="flex flex-col gap-2 border-b border-stone-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+        <h2 id="relationship-search-results" class="text-lg font-semibold text-stone-950"><%= t(".results_title") %></h2>
+        <p class="text-sm text-stone-700"><%= t(".results_count", count: @pagy.count, relationships: t(".relationship_count", count: @result_relationship_count)) %></p>
+      </div>
+
+      <% @grouped_results.each do |relationship_profile, results| %>
+        <section data-relationship-id="<%= relationship_profile.id %>" aria-labelledby="relationship-<%= relationship_profile.id %>" class="overflow-hidden rounded-xl border border-stone-200 bg-white">
+          <header class="flex flex-col gap-1 border-b border-stone-200 bg-stone-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <h3 id="relationship-<%= relationship_profile.id %>" class="text-lg font-semibold text-stone-950">
+              <%= link_to relationship_profile.display_name, relationship_profile_path(relationship_profile), class: "rounded-sm hover:text-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+            </h3>
+            <p class="text-sm text-stone-700"><%= t(".relationship_result_count", count: results.size) %></p>
+          </header>
+
+          <div role="list" class="divide-y divide-stone-200">
+            <% results.each do |result| %>
+              <article role="listitem" class="grid gap-4 px-5 py-5 lg:grid-cols-12 lg:items-center">
+                <div class="lg:col-span-2">
+                  <p class="text-sm font-semibold text-stone-950"><%= t("relationship_searches.source_types.#{result.source_type}") %></p>
+                  <p class="mt-1 text-xs text-stone-700"><%= relationship_search_result_status(result) %></p>
+                </div>
+                <div class="min-w-0 lg:col-span-6">
+                  <h4 class="text-base font-semibold text-stone-950"><%= result.title %></h4>
+                  <p class="mt-1 text-sm leading-6 text-stone-700"><%= truncate(result.excerpt, length: 220) %></p>
+                </div>
+                <p class="text-sm text-stone-700 lg:col-span-2"><%= result.occurred_on ? l(result.occurred_on, format: :important_date) : t(".date_not_available") %></p>
+                <%= link_to relationship_search_result_path(result), class: "inline-flex min-h-11 w-11 items-center justify-center justify-self-start rounded-lg border border-stone-300 text-lg font-semibold text-emerald-800 hover:border-emerald-300 hover:bg-emerald-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 lg:col-span-2 lg:justify-self-end", aria: { label: t(".open_result", title: result.title) } do %>
+                  <span aria-hidden="true">→</span>
+                <% end %>
+              </article>
+            <% end %>
+          </div>
+        </section>
+      <% end %>
+
+      <% if @pagy.last > 1 %>
+        <nav aria-label="<%= t(".pagination.label") %>" class="flex items-center justify-between border-t border-stone-200 pt-5">
+          <% if @pagy.previous %>
+            <%= button_to t(".pagination.previous"), relationship_search_path, method: :post, params: relationship_search_pagination_params(@query, page: @pagy.previous), form: { data: { turbo: false } }, class: "inline-flex min-h-11 items-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-stone-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          <% else %>
+            <span></span>
+          <% end %>
+          <span class="text-sm font-medium text-stone-700"><%= t(".pagination.page", page: @pagy.page, pages: @pagy.last) %></span>
+          <% if @pagy.next %>
+            <%= button_to t(".pagination.next"), relationship_search_path, method: :post, params: relationship_search_pagination_params(@query, page: @pagy.next), form: { data: { turbo: false } }, class: "inline-flex min-h-11 items-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-stone-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+          <% else %>
+            <span></span>
+          <% end %>
+        </nav>
+      <% end %>
+    </section>
+  <% end %>
+</main>

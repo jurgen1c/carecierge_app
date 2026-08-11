@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   get "dashboard" => "dashboard#index", as: :dashboard
+  resource :relationship_search, only: :show
+  post "relationship_search" => "relationship_searches#show"
 
   resources :reminders, except: :show do
     get :calendar, on: :collection

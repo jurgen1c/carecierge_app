@@ -19,6 +19,18 @@
     </div>
   </header>
 
+  <% unless @relationship_profile.archived? %>
+    <%= component "message_draft_workspace",
+      relationship_profile: @relationship_profile,
+      message_draft: @message_draft,
+      revisions: @message_draft_revisions,
+      revisions_pagy: @message_draft_revisions_pagy,
+      context_categories: @message_context_categories,
+      private_notes_available: @message_private_notes_available,
+      vault_items_available: @message_vault_items_available,
+      vault_unlocked: @message_vault_unlocked %>
+  <% end %>
+
   <%= render "important_dates/section", relationship_profile: @relationship_profile %>
   <%= render "contact_cadences/section", relationship_profile: @relationship_profile, interactions: @interactions %>
   <%= render "gifts/section", relationship_profile: @relationship_profile %>

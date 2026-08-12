@@ -1,4 +1,8 @@
 class RelationshipProfilesController < ApplicationController
+  include PrivacyVaultSession
+
+  MESSAGE_DRAFT_REVISION_PAGE_SIZE = 10
+
   before_action :set_relationship_profile, only: %i[show edit update archive destroy]
   around_action :serialize_profile_update_with_privacy_vault, only: :update
 
@@ -27,6 +31,7 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def show
+    prepare_message_draft_workspace unless @relationship_profile.archived?
     @relationship_persona = RelationshipPersona.new(relationship_profile: @relationship_profile)
     @mood_notes = @relationship_profile.mood_notes.ordered.to_a
     suggestions = Suggestions::ForProfile.call(
@@ -124,6 +129,28 @@ class RelationshipProfilesController < ApplicationController
   end
 
   private
+
+  def prepare_message_draft_workspace
+    @message_draft = @relationship_profile.message_draft
+    if @message_draft
+      @message_draft_revisions_pagy, @message_draft_revisions = pagy(
+        :offset,
+        @message_draft.draft_revisions,
+        limit: MESSAGE_DRAFT_REVISION_PAGE_SIZE,
+        page_key: "draft_page"
+      )
+    else
+      @message_draft_revisions = []
+      @message_draft_revisions_pagy = nil
+    end
+    @message_context_categories = MessageDrafts::ContextBuilder.new(relationship_profile: @relationship_profile).call.categories
+    @message_private_notes_available = @relationship_profile.relationship_notes
+      .where(private: true)
+      .where.missing(:privacy_vault_item)
+      .exists?
+    @message_vault_items_available = @relationship_profile.privacy_vault_items.exists?
+    @message_vault_unlocked = privacy_vault_unlocked?
+  end
 
   def set_relationship_profile
     @relationship_profile = current_user

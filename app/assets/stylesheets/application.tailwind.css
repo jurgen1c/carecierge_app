@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+@theme {
+  --color-canvas: #ffffff;
+  --color-surface: #fafaf9;
+  --color-private-line: #e7e5e4;
+  --color-quiet-note: #44403c;
+  --color-ink: #0c0a09;
+  --color-primary: #065f46;
+  --color-primary-hover: #064e3b;
+  --color-danger-surface: #fef2f2;
+  --color-danger-border: #fca5a5;
+  --color-danger-ink: #991b1b;
+}

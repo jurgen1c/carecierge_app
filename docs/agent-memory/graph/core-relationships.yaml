@@ -441,3 +441,38 @@ edges:
     relation: constrains
     reason: Approved AI-derived memories may support low-impact persona suggestions while inferred or unapproved evidence remains ineligible for high-impact suggestions.
     strength: 90
+  - source: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Draft workspaces and every mutation are loaded through the authenticated owner's active relationship profile.
+    strength: 100
+  - source: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    target: relationship_profiles.privacy_vault
+    relation: requires
+    reason: Vault context requires explicit per-generation selection and a server-validated password-backed lease before decrypted data loads.
+    strength: 100
+  - source: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    target: relationship_profiles.memory_records
+    relation: constrains
+    reason: Default AI context admits only current reviewed non-protected memories and excludes stale, archived, or vault-protected records.
+    strength: 95
+  - source: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    target: automation_permissions.permission_decisions
+    relation: constrains
+    reason: CAR-50 is review-only and performs no send or external effect; any future communication action must cross the automation permission and approval boundary.
+    strength: 100
+  - source: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Draft workspaces and immutable revision history participate in the owner's portable snapshot and cascade with profile or account deletion.
+    strength: 95
+  - source: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    target: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    relation: same_area
+    reason: Suggestions and message drafts share owner-scoped relationship evidence, but drafts add provider generation, explicit sensitive-context gates, and immutable text history.
+    strength: 80
+  - source: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    target: relationship_profiles.ai_memory_extraction
+    relation: same_area
+    reason: Both features call OpenAI with provider storage disabled, but message drafting consumes only reviewed memory and does not propose canonical memory changes.
+    strength: 75

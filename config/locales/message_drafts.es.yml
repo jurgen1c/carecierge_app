@@ -1,0 +1,87 @@
+es:
+  message_drafts:
+    workspace:
+      title: "Escribe con contexto"
+      body: "Usa el contexto de la relación que autorices para crear un mensaje considerado que puedas revisar."
+      draft_only: "Solo borrador — no se enviará nada"
+      setup: "Configuración del mensaje"
+      placeholder: "Genera un borrador y luego ajústalo a tu manera de expresarte."
+      word_count:
+        one: "%{count} palabra"
+        other: "%{count} palabras"
+    fields:
+      draft_type: "Tipo de mensaje"
+      tone: "Tono"
+      content: "Borrador"
+    types:
+      birthday: "Cumpleaños"
+      apology: "Disculpa"
+      thank_you: "Agradecimiento"
+      check_in: "Mensaje para saber cómo está"
+      congratulations: "Felicitación"
+      condolence: "Condolencia"
+      professional_follow_up: "Seguimiento profesional"
+      invitation: "Invitación"
+      boundary_setting: "Establecer límites"
+    tones:
+      warm: "Cálido"
+      funny: "Divertido"
+      romantic: "Romántico"
+      professional: "Profesional"
+      concise: "Conciso"
+      emotional: "Emotivo"
+      apologetic: "De disculpa"
+      casual: "Casual"
+      formal: "Formal"
+      encouraging: "Alentador"
+    context:
+      title: "Contexto de la relación"
+      body: "Estas fuentes actuales y no protegidas pueden orientar tu borrador."
+      categories:
+        profile: "Detalles del perfil"
+        important_dates: "Fechas importantes"
+        preferences: "Preferencias"
+        public_notes: "Notas compartidas"
+        memories: "Recuerdos actuales"
+    private_context:
+      title: "Contexto privado"
+      body: "Las notas privadas y los elementos de la bóveda quedan excluidos a menos que los autorices para este borrador."
+      private_notes: "Usar notas privadas para este borrador"
+      private_notes_hint: "Incluye notas privadas de este perfil que no están en la bóveda."
+      vault_items: "Usar elementos de la bóveda para este borrador"
+      vault_items_hint: "Requiere que la bóveda de privacidad esté desbloqueada."
+      unlock_vault: "Desbloquear la bóveda de privacidad"
+    actions:
+      generate: "Generar borrador"
+      generate_revision: "Generar una nueva revisión"
+      generating: "Generando…"
+      save: "Guardar cambios"
+      saving: "Guardando…"
+      restore: "Restaurar"
+      delete: "Eliminar borrador"
+      delete_confirm: "¿Eliminar este borrador y todo su historial de revisiones?"
+    history:
+      title: "Historial de revisiones"
+      current: "Actual"
+      empty: "Las revisiones generadas y editadas aparecerán aquí."
+      pagination:
+        aria_label: "Páginas del historial de revisiones"
+        info: "Mostrando %{from}–%{to} de %{count} revisiones"
+        previous: "Anterior"
+        next: "Siguiente"
+        page: "Página %{page} de %{pages}"
+    origins:
+      generated: "Generado"
+      edited: "Editado"
+      restored: "Restaurado"
+    generate:
+      notice: "Borrador generado. Revísalo y edítalo antes de usarlo."
+      provider_error: "El servicio de redacción no está disponible ahora. Tu borrador existente no cambió."
+      invalid: "Elige un tipo de mensaje y un tono compatibles."
+    update:
+      notice: "Tus cambios se guardaron como una nueva revisión."
+      invalid: "Agrega contenido al borrador antes de guardarlo."
+    restore:
+      notice: "La versión seleccionada se restauró como una nueva revisión."
+    destroy:
+      notice: "El borrador y su historial de revisiones se eliminaron."

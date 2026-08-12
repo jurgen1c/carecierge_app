@@ -15,6 +15,9 @@ claim: >
   serializes against stale plaintext writes. Opening requires a fresh password and
   grants a rate-limited, password-bound 10-minute inactivity lease; the
   authoritative lease check-and-touch must succeed before decrypted data loads.
+  Sensitive downstream context consumers revalidate the issued lease owner,
+  password fingerprint, revocation version, and inactivity deadline under the
+  account lock and serialize reads with vault mutations under the relationship-profile lock.
   Explicit lock uses a server-checked per-user version to revoke issued cookie leases. Sensitive
   pages disable Turbo snapshots, send HTTP no-store, and remove decrypted DOM
   content on a response-relative timer or a cross-tab signal from UI lease
@@ -41,6 +44,7 @@ source_files:
   - app/services/privacy_vault/change_suggestion_usage.rb
   - app/services/privacy_vault/restore.rb
   - app/services/privacy_vault/delete.rb
+  - app/services/privacy_vault/lease.rb
   - app/policies/privacy_vault_item_policy.rb
   - app/views/privacy_vaults/show.html.erb
   - app/views/privacy_vaults/_section.html.erb
@@ -53,13 +57,16 @@ related_files:
   - docs/features/10-01-privacy-vault.md
   - spec/models/privacy_vault_item_spec.rb
   - spec/services/privacy_vault/protect_spec.rb
+  - spec/services/privacy_vault/lease_spec.rb
   - spec/policies/privacy_vault_item_policy_spec.rb
   - spec/requests/privacy_vaults_spec.rb
+  - spec/services/message_drafts/generate_spec.rb
   - spec/system/privacy_vault_spec.rb
 symbols:
   - PrivacyVaultItem
   - VaultAccessEvent
   - PrivacyVault::Payload
+  - PrivacyVault::Lease
   - PrivacyVault::Protect
   - PrivacyVault::Restore
   - PrivacyVault::Delete
@@ -115,7 +122,10 @@ remains deferred to CAR-82.
 Relationship context can be deeply personal. Redacting ordinary sources and
 requiring password reauthentication prevent an unattended signed-in session,
 ordinary search, or future suggestion query from silently crossing the stronger
-vault boundary. Encryption ensures PostgreSQL receives ciphertext rather than
+vault boundary. Message drafting revalidates the complete password-backed lease
+under the account lock and assembles context under the same relationship-profile lock used by
+vault protection, so completed revocation and redaction win before decryption.
+Encryption ensures PostgreSQL receives ciphertext rather than
 the protected payload. A populated vault migration cannot roll back until its
 items are restored, preventing deletion of the only recoverable encrypted copy.
 

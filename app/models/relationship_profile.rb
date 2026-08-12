@@ -3,19 +3,20 @@
 # Table name: relationship_profiles
 # Database name: primary
 #
-#  id                 :uuid             not null, primary key
-#  birthday           :date
-#  discarded_at       :datetime
-#  first_name         :string           not null
-#  last_name          :string
-#  preferred_name     :string
-#  profile_attributes :jsonb            not null
-#  pronouns           :string
-#  slug               :string
-#  type               :string           not null
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
-#  user_id            :uuid             not null
+#  id                               :uuid             not null, primary key
+#  birthday                         :date
+#  discarded_at                     :datetime
+#  first_name                       :string           not null
+#  last_name                        :string
+#  message_draft_generation_version :bigint           default(0), not null
+#  preferred_name                   :string
+#  profile_attributes               :jsonb            not null
+#  pronouns                         :string
+#  slug                             :string
+#  type                             :string           not null
+#  created_at                       :datetime         not null
+#  updated_at                       :datetime         not null
+#  user_id                          :uuid             not null
 #
 # Indexes
 #
@@ -124,6 +125,7 @@ class RelationshipProfile < ApplicationRecord
   has_one :contact_cadence, dependent: :destroy
   has_many :interactions, dependent: :destroy
   has_many :privacy_vault_items, dependent: :destroy
+  has_one :message_draft, dependent: :destroy
   has_many :vault_access_events, dependent: :nullify
   has_many :automation_permissions, dependent: :destroy
   has_many :automation_permission_changes

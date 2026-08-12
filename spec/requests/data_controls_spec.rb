@@ -90,6 +90,31 @@ RSpec.describe "Data controls", type: :request do
       )
     end
 
+    it "includes message drafts and their immutable revision history" do
+      draft = create(:message_draft, user:, relationship_profile: profile, draft_type: "birthday", tone: "warm")
+      create(:draft_revision, message_draft: draft, position: 1, origin: "generated", content: "Happy birthday, Maya!")
+      create(:draft_revision, message_draft: draft, position: 2, origin: "edited", content: "Have a wonderful birthday, Maya!")
+
+      post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
+
+      exported_draft = response.parsed_body.dig("relationship_profiles", 0, "message_draft")
+      expect(exported_draft).to include("draft_type" => "birthday", "tone" => "warm")
+      expect(exported_draft.fetch("draft_revisions").pluck("position", "origin", "content")).to contain_exactly(
+        [ 1, "generated", "Happy birthday, Maya!" ],
+        [ 2, "edited", "Have a wonderful birthday, Maya!" ]
+      )
+      expect(exported_draft).not_to have_key("user_id")
+    end
+
+    it "excludes the internal message-draft generation fence from portable profile data" do
+      profile.update!(message_draft_generation_version: 7)
+
+      post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
+
+      exported_profile = response.parsed_body.fetch("relationship_profiles").sole
+      expect(exported_profile).not_to have_key("message_draft_generation_version")
+    end
+
     it "includes privacy-safe account history, notifications, and reminder delivery evidence" do
       vault_event = create(:vault_access_event, user:, relationship_profile: profile, event_type: "viewed")
       reminder = create(:reminder, user:, relationship_profile: profile)

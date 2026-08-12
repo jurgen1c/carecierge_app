@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_08_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_11_111117) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -238,6 +238,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_120000) do
     t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'dispatching'::character varying, 'dispatched'::character varying, 'skipped'::character varying, 'failed'::character varying, 'cancelled'::character varying]::text[])", name: "digest_deliveries_supported_status"
   end
 
+  create_table "draft_revisions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "content", null: false
+    t.jsonb "context_categories", default: [], null: false
+    t.datetime "created_at", null: false
+    t.uuid "message_draft_id", null: false
+    t.string "origin", null: false
+    t.integer "position", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_draft_id", "position"], name: "index_draft_revisions_on_message_draft_id_and_position", unique: true
+    t.index ["message_draft_id"], name: "index_draft_revisions_on_message_draft_id"
+    t.check_constraint "\"position\" > 0", name: "draft_revisions_position_positive"
+  end
+
   create_table "extracted_memories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "body", null: false
     t.uuid "canonical_memory_record_id"
@@ -398,6 +411,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_120000) do
     t.index ["memory_record_id", "created_at"], name: "index_memory_revisions_on_memory_record_id_and_created_at"
     t.index ["memory_record_id"], name: "index_memory_revisions_on_memory_record_id"
     t.index ["user_id"], name: "index_memory_revisions_on_user_id"
+  end
+
+  create_table "message_drafts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "draft_type", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.string "tone", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["relationship_profile_id"], name: "index_message_drafts_on_relationship_profile_id", unique: true
+    t.index ["user_id"], name: "index_message_drafts_on_user_id"
   end
 
   create_table "mood_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -567,6 +591,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_120000) do
     t.datetime "discarded_at"
     t.string "first_name", null: false
     t.string "last_name"
+    t.bigint "message_draft_generation_version", default: 0, null: false
     t.string "preferred_name"
     t.jsonb "profile_attributes", default: {}, null: false
     t.string "pronouns"
@@ -790,6 +815,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_120000) do
   add_foreign_key "desire_fulfillments", "desires"
   add_foreign_key "desires", "relationship_profiles"
   add_foreign_key "digest_deliveries", "users"
+  add_foreign_key "draft_revisions", "message_drafts", on_delete: :cascade
   add_foreign_key "extracted_memories", "conversation_recaps", on_delete: :cascade
   add_foreign_key "extracted_memories", "memory_records", column: "canonical_memory_record_id", on_delete: :nullify
   add_foreign_key "extracted_memories", "relationship_profiles", on_delete: :cascade
@@ -803,6 +829,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_08_120000) do
   add_foreign_key "memory_records", "relationship_profiles"
   add_foreign_key "memory_revisions", "memory_records"
   add_foreign_key "memory_revisions", "users"
+  add_foreign_key "message_drafts", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "message_drafts", "users", on_delete: :cascade
   add_foreign_key "mood_notes", "relationship_profiles"
   add_foreign_key "notification_preferences", "users", on_delete: :cascade
   add_foreign_key "privacy_vault_items", "relationship_profiles", on_delete: :cascade

@@ -8,6 +8,7 @@ Rails.application.config.filter_parameters += [
   :memory_query,
   "conversation_recap.body", "conversation_recap.transcript",
   "extracted_memory.corrected_title", "extracted_memory.corrected_body",
+  "message_draft.content",
   "mood_note.observation", "mood_note.supportive_action",
   "reminder.notes", "commitment.notes", "interaction.notes",
   "data_deletion.confirmation"

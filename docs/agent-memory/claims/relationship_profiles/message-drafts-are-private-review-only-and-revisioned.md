@@ -10,10 +10,13 @@ title: Message drafts are private, review-only, and revisioned
 
 claim: >
   Each active, owner-scoped relationship profile has at most one draft workspace whose
-  generated, edited, and restored text is retained as immutable revisions. The
+  generated, edited, and restored text is retained as immutable revisions; saved
+  edits also persist the selected message type and tone. The workspace consumes
+  the shared semantic primary and danger palette. The
   synchronous OpenAI Responses request uses store false, aggregates all ordered
   output-text parts, and uses bounded, JSON-serialized
-  untrusted context: current non-protected profile facts, dates, uncertainty-marked preferences,
+  untrusted context: current non-protected profile facts and visible structured relationship
+  fields, dates, uncertainty-marked preferences,
   public notes, and uncertainty-marked reviewed memories are eligible by default; private notes require
   explicit per-generation selection, and vault context additionally requires
   an active password-backed vault lease revalidated under the account lock while
@@ -26,6 +29,7 @@ claim: >
 source_files:
   - app/models/message_draft.rb
   - app/models/draft_revision.rb
+  - app/models/relationship_field_value.rb
   - app/services/message_drafts/context_builder.rb
   - app/services/message_drafts/generate.rb
   - app/services/message_drafts/open_ai_generator.rb
@@ -33,6 +37,7 @@ source_files:
   - app/services/privacy_vault/lease.rb
   - app/controllers/concerns/privacy_vault_session.rb
   - app/controllers/message_drafts_controller.rb
+  - app/views/components/message_draft_workspace_component.rb
   - app/views/components/message_draft_workspace_component.html.erb
   - app/serializers/data_exports/snapshot.rb
   - config/initializers/filter_parameter_logging.rb
@@ -48,6 +53,7 @@ related_files:
   - db/migrate/20260811111117_add_message_draft_generation_version_to_relationship_profiles.rb
   - docs/features/04-04-message-drafting-assistant.md
   - spec/services/message_drafts/context_builder_spec.rb
+  - spec/services/message_drafts/open_ai_generator_spec.rb
   - spec/services/message_drafts/generate_spec.rb
   - spec/requests/message_drafts_spec.rb
   - spec/config/filter_parameter_logging_spec.rb
@@ -94,11 +100,16 @@ last_verified_commit: null
 
 Message drafting is an owner-scoped, review-only workspace. One profile can
 have one `MessageDraft`, while every generation, saved edit, and restore appends
-a new `DraftRevision`. Earlier revision rows cannot be updated.
+a new `DraftRevision`. A saved edit persists the type and tone selected in the
+shared drafting form along with its new revision. Earlier revision rows cannot
+be updated. The reusable workspace styles use the documented semantic primary
+and danger tokens instead of raw color utilities.
 
 ## Constraint
 
 Ordinary generation is limited to current non-protected relationship context.
+Visible structured relationship fields are eligible profile context; hidden and
+vault-protected field values remain excluded.
 Preference confidence and available source notes, plus memory confidence and
 source, remain visible to the provider; inferred, low-confidence, and AI-inferred
 facts are explicitly tentative. The provider input is JSON-serialized so relationship

@@ -41,8 +41,9 @@ AI helps users draft thoughtful messages.
 ## Context and Privacy
 
 The assistant is profile-first. By default it can use only current,
-owner-scoped, non-protected profile details, important dates, preferences,
-public notes, and reviewed memory records. Contact details, archived or stale
+owner-scoped, non-protected profile details, including visible structured
+relationship fields, important dates, preferences, public notes, and reviewed
+memory records. Hidden relationship fields, contact details, archived or stale
 memory, protected records, and vault contents are excluded.
 
 Preference and memory context carries its confidence and available source

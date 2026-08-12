@@ -110,7 +110,8 @@ module MessageDrafts
         read_timeout: REQUEST_TIMEOUT,
         write_timeout: REQUEST_TIMEOUT
       ) { |http| http.request(request) }
-    rescue Timeout::Error, SocketError, SystemCallError, IOError, OpenSSL::SSL::SSLError, Net::HTTPBadResponse
+    rescue Timeout::Error, SocketError, SystemCallError, IOError, OpenSSL::SSL::SSLError,
+      Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError
       raise GenerationError, "Message drafting provider was unavailable"
     end
   end

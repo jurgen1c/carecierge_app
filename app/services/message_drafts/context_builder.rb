@@ -63,7 +63,13 @@ module MessageDrafts
         [ "profile", "Relationship", relationship_profile.relationship_type_label ],
         [ "profile", "Pronouns", relationship_profile.pronouns ],
         [ "profile", "Birthday", relationship_profile.birthday ]
-      ].select { |entry| entry.last.present? }
+      ].select { |entry| entry.last.present? } + relationship_detail_entries
+    end
+
+    def relationship_detail_entries
+      relationship_profile.visible_relationship_field_values.first(MAX_PER_CATEGORY).map do |field_value|
+        [ "profile", field_value.display_label, field_value.value ]
+      end
     end
 
     def important_date_entries

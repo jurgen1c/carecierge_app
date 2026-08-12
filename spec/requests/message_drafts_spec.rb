@@ -142,11 +142,12 @@ RSpec.describe "Message drafts", type: :request do
     sign_in user
 
     patch relationship_profile_message_draft_path(profile), params: {
-      message_draft: { draft_type: "birthday", tone: "warm", content: "Edited" }
+      message_draft: { draft_type: "check_in", tone: "concise", content: "Edited" }
     }
     post restore_revision_relationship_profile_message_draft_path(profile, revision_id: original.id)
 
     expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+    expect(draft.reload).to have_attributes(draft_type: "check_in", tone: "concise")
     expect(draft.reload.draft_revisions.pluck(:position, :origin, :content)).to include(
       [ 2, "edited", "Edited" ],
       [ 3, "restored", "Original" ]
@@ -176,6 +177,21 @@ RSpec.describe "Message drafts", type: :request do
     expect(response.body).not_to include("Revision content 03")
     expect(response.body.scan("Restore").size).to eq(2)
     expect(response.body).not_to include(">Current<")
+  end
+
+  it "normalizes malformed revision page input" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    draft = create(:message_draft, user:, relationship_profile: profile)
+    create(:draft_revision, message_draft: draft, content: "Current revision")
+    sign_in user
+
+    %w[abc 0 -1].each do |draft_page|
+      get relationship_profile_path(profile), params: { draft_page: }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Current revision")
+    end
   end
 
   it "deletes the retained draft and all of its revisions" do

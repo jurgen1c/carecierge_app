@@ -19,6 +19,67 @@ RSpec.describe MessageDrafts::ContextBuilder do
     expect(result.categories).not_to include("private_notes", "vault")
   end
 
+  it "includes visible relationship details while excluding hidden and vault-protected values" do
+    profile = create(:relationship_profile)
+    current_template = create(:relationship_template, relationship_type: profile.type)
+    current_field = create(:template_field, relationship_template: current_template, label: "Current shared interest")
+    prior_template = create(:relationship_template, relationship_type: "RelationshipProfiles::Spouse")
+    prior_field = create(:template_field, relationship_template: prior_template, label: "Prior anniversary")
+    create(
+      :relationship_field_value,
+      relationship_profile: profile,
+      template_field: current_field,
+      label: current_field.label,
+      value: "Gardening"
+    )
+    create(
+      :relationship_field_value,
+      relationship_profile: profile,
+      template_field: prior_field,
+      label: prior_field.label,
+      value: "June 1"
+    )
+    create(
+      :relationship_field_value,
+      relationship_profile: profile,
+      template_field: nil,
+      custom: true,
+      label: "Preferred language",
+      value: "Spanish"
+    )
+    create(
+      :relationship_field_value,
+      relationship_profile: profile,
+      template_field: nil,
+      custom: true,
+      hidden: true,
+      label: "Hidden workplace",
+      value: "Do not include"
+    )
+    protected_detail = create(
+      :relationship_field_value,
+      relationship_profile: profile,
+      template_field: nil,
+      custom: true,
+      label: "Private family context",
+      value: "Keep this protected"
+    )
+    PrivacyVault::Protect.call(actor: profile.user, protectable: protected_detail)
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text).to include("Current shared interest: Gardening", "Preferred language: Spanish")
+    expect(result.text).not_to include(
+      "Prior anniversary",
+      "June 1",
+      "Hidden workplace",
+      "Do not include",
+      "Private family context",
+      "Keep this protected"
+    )
+    expect(result.categories).to include("profile")
+  end
+
   it "preserves uncertainty and source metadata for preferences and memories" do
     profile = create(:relationship_profile)
     create(

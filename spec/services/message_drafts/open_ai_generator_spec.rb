@@ -146,7 +146,7 @@ RSpec.describe MessageDrafts::OpenAiGenerator do
   end
 
   it "normalizes expected TLS and HTTP protocol failures" do
-    [ OpenSSL::SSL::SSLError, Net::HTTPBadResponse ].each do |error_class|
+    [ OpenSSL::SSL::SSLError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError ].each do |error_class|
       allow(Net::HTTP).to receive(:start).and_raise(error_class, "provider details")
 
       expect do

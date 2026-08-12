@@ -36,8 +36,8 @@ class MessageDraftsController < ApplicationController
     authorize @message_draft
     @message_draft.save_edit!(
       content: update_params[:content],
-      draft_type: @message_draft.draft_type,
-      tone: @message_draft.tone
+      draft_type: update_params[:draft_type],
+      tone: update_params[:tone]
     )
 
     redirect_to workspace_path, notice: t("message_drafts.update.notice")
@@ -76,7 +76,7 @@ class MessageDraftsController < ApplicationController
   end
 
   def update_params
-    params.require(:message_draft).permit(:content)
+    params.require(:message_draft).permit(:content, :draft_type, :tone)
   end
 
   def use_private_notes?

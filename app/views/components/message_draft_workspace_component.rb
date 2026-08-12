@@ -17,7 +17,7 @@ class MessageDraftWorkspaceComponent < ApplicationViewComponent
       %w[
         inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3
         text-sm font-semibold text-canvas transition hover:bg-primary-hover
-        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700
+        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
         disabled:cursor-not-allowed disabled:bg-stone-300 disabled:text-stone-600
       ]
     end
@@ -28,7 +28,7 @@ class MessageDraftWorkspaceComponent < ApplicationViewComponent
       %w[
         inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-canvas px-5 py-3
         text-sm font-semibold text-ink transition hover:bg-stone-100
-        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700
+        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary
         disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-500
       ]
     end
@@ -39,7 +39,7 @@ class MessageDraftWorkspaceComponent < ApplicationViewComponent
       %w[
         inline-flex min-h-11 items-center justify-center rounded-lg border border-danger-border bg-canvas px-4 py-2
         text-sm font-semibold text-danger-ink transition hover:bg-danger-surface
-        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700
+        focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-ink
       ]
     end
   end

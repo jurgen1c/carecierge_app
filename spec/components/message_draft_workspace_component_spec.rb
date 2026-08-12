@@ -29,6 +29,21 @@ RSpec.describe MessageDraftWorkspaceComponent, type: :component do
     expect(page).to have_unchecked_field("Use private notes for this draft")
     expect(page).to have_unchecked_field("Use vault items for this draft", disabled: true)
     expect(page).to have_no_button("Send")
+    expect(page).to have_css("form#message-draft-generation-form select[name='message_draft[draft_type]']")
+    expect(page).to have_css("textarea[form='message-draft-generation-form']")
+    expect(page).to have_css(
+      "button[form='message-draft-generation-form']" \
+      "[formaction='/relationship_profiles/#{profile.to_param}/message_draft']" \
+      "[name='_method'][value='patch']",
+      text: "Save edits"
+    )
+    expect(rendered_content).to include(
+      "focus-visible:outline-primary",
+      "focus-visible:outline-danger-ink",
+      "focus:ring-primary/20",
+      "border-primary/30"
+    )
+    expect(rendered_content).not_to match(/(?:emerald|red)-\d/)
   end
 
   it "renders bounded revision navigation without labeling an older page as current" do

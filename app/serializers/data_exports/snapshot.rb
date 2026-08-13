@@ -92,6 +92,8 @@ module DataExports
       return unless draft
 
       attributes_for(draft, except: %w[user_id relationship_profile_id]).merge(
+        "tone" => draft.effective_tone,
+        "formality" => draft.effective_formality,
         "draft_revisions" => records(draft.draft_revisions.reorder(:position), except: %w[message_draft_id])
       )
     end

@@ -12,8 +12,11 @@ claim: >
   Authenticated users can export one owner-scoped profile or their account as
   JSON, CSV, PDF, or a private calendar. Portable snapshots include recordings,
   relationship assignments, localized labels, privacy-safe audit history,
-  reminder delivery evidence, and message-draft settings with immutable
-  revisions; internal errors, leases, recipient keys, and ownership foreign
+  reminder delivery evidence, and message-draft purpose, tone, response length,
+  formality, bounded situation, and immutable revisions. Message-draft exports
+  normalize late rolling-deploy tone writes into coherent effective tone and
+  formality values; internal errors,
+  leases, recipient keys, and ownership foreign
   keys remain excluded. Vault payloads require password reauthentication.
   CSV cells neutralize formulas, calendar recurrences preserve clamping, PDFs
   use the configured application origin, and attachment exports use native
@@ -87,7 +90,10 @@ Every export format uses the same owner scope, and decrypted vault payloads
 require password reauthentication. Native form navigation lets browsers handle
 downloads. Full-account JSON and CSV include privacy-safe vault-access,
 notification, reminder-delivery evidence, and each profile's message-draft
-settings and immutable revision history without ownership foreign keys. Internal
+purpose, tone, response length, formality, bounded situation, and immutable
+revision history without ownership foreign keys. Late rolling-deploy writes of
+legacy casual or formal tone values export as warm tone with the matching
+formality. Internal
 errors, leases, concurrency fences, and notification recipient keys stay excluded. Permanent
 deletion records content-free evidence, preserves user-corrected memories during
 selective AI cleanup, prevents in-flight extraction from recreating deleted

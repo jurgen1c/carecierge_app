@@ -34,6 +34,7 @@ RSpec.describe "Parameter filtering" do
       },
       "message_draft" => {
         "content" => "Private personal message",
+        "situation" => "Private incoming message",
         "tone" => "warm"
       },
       "privacy_vault_unlock" => {
@@ -63,6 +64,7 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("interaction", "notes")).to eq("[FILTERED]")
     expect(filtered.dig("interaction", "interaction_type")).to eq("call")
     expect(filtered.dig("message_draft", "content")).to eq("[FILTERED]")
+    expect(filtered.dig("message_draft", "situation")).to eq("[FILTERED]")
     expect(filtered.dig("message_draft", "tone")).to eq("warm")
     expect(filtered.dig("privacy_vault_unlock", "password")).to eq("[FILTERED]")
     expect(filtered["memory_query"]).to eq("[FILTERED]")
@@ -71,5 +73,6 @@ RSpec.describe "Parameter filtering" do
     expect(filtered["observation"]).to eq("Unrelated observation")
     expect(filtered["supportive_action"]).to eq("Unrelated support plan")
     expect(filtered["notes"]).to eq("Unrelated notes")
+    expect(filter.filter_param("situation", "Private incoming message")).to eq("[FILTERED]")
   end
 end

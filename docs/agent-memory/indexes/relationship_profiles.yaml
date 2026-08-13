@@ -12,7 +12,7 @@ default_queries:
   - memory records source confidence status stale review automation approval revisions
   - relationship persona confirmed inferred evidence title correction suggestion inputs vault consent
   - suggestion engine explanations feedback dismissal act reminder action kind automation permission
-  - message drafts tone context private notes vault lease immutable revisions draft only OpenAI
+  - message drafts response suggestions situation purpose tone length formality private notes vault lease immutable revisions review only OpenAI
   - privacy vault encryption password reauthentication access lease audit suggestion exclusion
   - conversation recaps timeline source links AI extraction approval gate
   - extracted memory proposals source excerpts confidence owner approval correction rejection OpenAI

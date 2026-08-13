@@ -7,6 +7,9 @@ require "rails_helper"
 #
 #  id                      :uuid             not null, primary key
 #  draft_type              :string           not null
+#  formality               :string           default("balanced"), not null
+#  response_length         :string           default("medium"), not null
+#  situation               :text             default(""), not null
 #  tone                    :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
@@ -24,7 +27,7 @@ require "rails_helper"
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 RSpec.describe MessageDraft, type: :model do
-  it "supports the documented draft types and tones" do
+  it "supports the documented purposes, tones, response lengths, and formalities" do
     expect(described_class::DRAFT_TYPES).to contain_exactly(
       "birthday",
       "apology",
@@ -44,10 +47,57 @@ RSpec.describe MessageDraft, type: :model do
       "concise",
       "emotional",
       "apologetic",
-      "casual",
-      "formal",
       "encouraging"
     )
+    expect(described_class::RESPONSE_LENGTHS).to contain_exactly("short", "medium", "long")
+    expect(described_class::FORMALITIES).to contain_exactly("casual", "balanced", "formal")
+  end
+
+  it "keeps late legacy formality tones valid during the rolling-deploy compatibility window" do
+    draft = create(:message_draft)
+    draft.update_column(:tone, "casual")
+
+    expect(draft.reload).to be_valid
+    expect(draft.effective_tone).to eq("warm")
+    expect(draft.effective_formality).to eq("casual")
+  end
+
+  it "does not retain inferred formality after an old process changes its tone" do
+    draft = create(:message_draft, tone: "formal", formality: "balanced")
+
+    expect(draft.effective_formality).to eq("formal")
+
+    draft.update_column(:tone, "encouraging")
+
+    expect(draft.reload.effective_tone).to eq("encouraging")
+    expect(draft.effective_formality).to eq("balanced")
+  end
+
+  it "preserves response settings omitted by a stale edit client under the draft lock" do
+    draft = create(:message_draft, situation: "Earlier message", response_length: "short", formality: "casual")
+    create(:draft_revision, message_draft: draft, position: 1)
+    stale_draft = described_class.find(draft.id)
+    draft.update!(situation: "New message", response_length: "long", formality: "formal")
+
+    stale_draft.save_edit!(content: "Edited response", draft_type: "check_in", tone: "warm")
+
+    expect(draft.reload).to have_attributes(
+      situation: "New message",
+      response_length: "long",
+      formality: "formal"
+    )
+  end
+
+  it "normalizes and bounds the private message or situation" do
+    draft = build(:message_draft, situation: "  Maya asked whether I can attend.  ")
+
+    expect(draft).to be_valid
+    expect(draft.situation).to eq("Maya asked whether I can attend.")
+
+    draft.situation = "x" * (described_class::MAX_SITUATION_LENGTH + 1)
+
+    expect(draft).not_to be_valid
+    expect(draft.errors.of_kind?(:situation, :too_long)).to be(true)
   end
 
   it "rejects a relationship profile owned by another account" do
@@ -87,10 +137,41 @@ RSpec.describe MessageDraft, type: :model do
     profile.archive!
 
     expect do
-      stale_draft.save_edit!(content: "Written after archive", draft_type: "birthday", tone: "warm")
+      stale_draft.save_edit!(
+        content: "Written after archive",
+        draft_type: "birthday",
+        tone: "warm",
+        situation: "A birthday reply",
+        response_length: "short",
+        formality: "casual"
+      )
     end.to raise_error(ActiveRecord::RecordNotFound)
 
     expect(draft.draft_revisions.count).to eq(1)
+  end
+
+
+  it "persists response settings when an edit becomes a new revision" do
+    draft = create(:message_draft)
+    create(:draft_revision, message_draft: draft, position: 1)
+
+    draft.save_edit!(
+      content: "I would be glad to join you.",
+      draft_type: "invitation",
+      tone: "warm",
+      situation: "Maya invited me to dinner.",
+      response_length: "short",
+      formality: "casual"
+    )
+
+    expect(draft.reload).to have_attributes(
+      draft_type: "invitation",
+      tone: "warm",
+      situation: "Maya invited me to dinner.",
+      response_length: "short",
+      formality: "casual"
+    )
+    expect(draft.current_revision).to have_attributes(origin: "edited", content: "I would be glad to join you.")
   end
 
   it "rejects a stale restore after the relationship profile is archived" do

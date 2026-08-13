@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_111117) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_12_123218) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -416,12 +416,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_111117) do
   create_table "message_drafts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "draft_type", null: false
+    t.string "formality", default: "balanced", null: false
     t.uuid "relationship_profile_id", null: false
+    t.string "response_length", default: "medium", null: false
+    t.text "situation", default: "", null: false
     t.string "tone", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["relationship_profile_id"], name: "index_message_drafts_on_relationship_profile_id", unique: true
     t.index ["user_id"], name: "index_message_drafts_on_user_id"
+    t.check_constraint "char_length(situation) <= 4000", name: "message_drafts_situation_length"
+    t.check_constraint "formality::text = ANY (ARRAY['casual'::character varying, 'balanced'::character varying, 'formal'::character varying]::text[])", name: "message_drafts_formality"
+    t.check_constraint "response_length::text = ANY (ARRAY['short'::character varying, 'medium'::character varying, 'long'::character varying]::text[])", name: "message_drafts_response_length"
   end
 
   create_table "mood_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

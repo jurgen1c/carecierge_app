@@ -5,6 +5,9 @@
 #
 #  id                      :uuid             not null, primary key
 #  draft_type              :string           not null
+#  formality               :string           default("balanced"), not null
+#  response_length         :string           default("medium"), not null
+#  situation               :text             default(""), not null
 #  tone                    :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
@@ -33,6 +36,7 @@ class MessageDraft < ApplicationRecord
     invitation
     boundary_setting
   ].freeze
+  LEGACY_FORMALITY_TONES = %w[casual formal].freeze
   TONES = %w[
     warm
     funny
@@ -41,17 +45,23 @@ class MessageDraft < ApplicationRecord
     concise
     emotional
     apologetic
-    casual
-    formal
     encouraging
   ].freeze
+  RESPONSE_LENGTHS = %w[short medium long].freeze
+  FORMALITIES = %w[casual balanced formal].freeze
+  MAX_SITUATION_LENGTH = 4_000
 
   belongs_to :user
   belongs_to :relationship_profile
   has_many :draft_revisions, -> { order(position: :desc) }, dependent: :destroy, inverse_of: :message_draft
 
+  normalizes :situation, with: -> { _1.to_s.strip }
+
   validates :draft_type, inclusion: { in: DRAFT_TYPES }
-  validates :tone, inclusion: { in: TONES }
+  validates :tone, inclusion: { in: TONES + LEGACY_FORMALITY_TONES }
+  validates :response_length, inclusion: { in: RESPONSE_LENGTHS }
+  validates :formality, inclusion: { in: FORMALITIES }
+  validates :situation, length: { maximum: MAX_SITUATION_LENGTH }
   validates :relationship_profile_id, uniqueness: true
   validate :relationship_profile_belongs_to_user
 
@@ -59,6 +69,14 @@ class MessageDraft < ApplicationRecord
 
   def current_revision
     draft_revisions.first
+  end
+
+  def effective_tone
+    LEGACY_FORMALITY_TONES.include?(tone) ? "warm" : tone
+  end
+
+  def effective_formality
+    LEGACY_FORMALITY_TONES.include?(tone) ? tone : formality
   end
 
   def append_revision!(content:, origin:, context_categories: [])
@@ -72,16 +90,18 @@ class MessageDraft < ApplicationRecord
     end
   end
 
-  def save_edit!(content:, draft_type:, tone:)
+  def save_edit!(content:, draft_type:, tone:, **response_settings)
     with_active_profile_lock do
       with_lock do
-        update!(draft_type:, tone:)
-        draft_revisions.create!(
+        update!(draft_type:, tone:, **response_settings)
+        revision = draft_revisions.create!(
           position: next_revision_position,
           content:,
           origin: "edited",
           context_categories: current_revision&.context_categories || []
         )
+        advance_generation_fence!
+        revision
       end
     end
   end
@@ -90,11 +110,13 @@ class MessageDraft < ApplicationRecord
     raise ActiveRecord::RecordNotFound unless revision.message_draft_id == id
 
     with_active_profile_lock do
-      append_revision!(
+      restored_revision = append_revision!(
         content: revision.content,
         origin: "restored",
         context_categories: revision.context_categories
       )
+      advance_generation_fence!
+      restored_revision
     end
   end
 
@@ -105,6 +127,10 @@ class MessageDraft < ApplicationRecord
   end
 
   def cancel_in_flight_generations
+    advance_generation_fence!
+  end
+
+  def advance_generation_fence!
     relationship_profile.increment!(:message_draft_generation_version)
   end
 

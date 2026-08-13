@@ -91,19 +91,49 @@ RSpec.describe "Data controls", type: :request do
     end
 
     it "includes message drafts and their immutable revision history" do
-      draft = create(:message_draft, user:, relationship_profile: profile, draft_type: "birthday", tone: "warm")
+      draft = create(
+        :message_draft,
+        user:,
+        relationship_profile: profile,
+        draft_type: "birthday",
+        tone: "warm",
+        situation: "Maya shared a birthday post.",
+        response_length: "short",
+        formality: "casual"
+      )
       create(:draft_revision, message_draft: draft, position: 1, origin: "generated", content: "Happy birthday, Maya!")
       create(:draft_revision, message_draft: draft, position: 2, origin: "edited", content: "Have a wonderful birthday, Maya!")
 
       post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
 
       exported_draft = response.parsed_body.dig("relationship_profiles", 0, "message_draft")
-      expect(exported_draft).to include("draft_type" => "birthday", "tone" => "warm")
+      expect(exported_draft).to include(
+        "draft_type" => "birthday",
+        "tone" => "warm",
+        "situation" => "Maya shared a birthday post.",
+        "response_length" => "short",
+        "formality" => "casual"
+      )
       expect(exported_draft.fetch("draft_revisions").pluck("position", "origin", "content")).to contain_exactly(
         [ 1, "generated", "Happy birthday, Maya!" ],
         [ 2, "edited", "Have a wonderful birthday, Maya!" ]
       )
       expect(exported_draft).not_to have_key("user_id")
+    end
+
+    it "normalizes late legacy message-draft tone values in portable exports" do
+      create(
+        :message_draft,
+        user:,
+        relationship_profile: profile,
+        tone: "formal",
+        formality: "balanced"
+      )
+
+      post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
+
+      exported_draft = response.parsed_body.dig("relationship_profiles", 0, "message_draft")
+      expect(exported_draft).to include("tone" => "warm", "formality" => "formal")
     end
 
     it "excludes the internal message-draft generation fence from portable profile data" do

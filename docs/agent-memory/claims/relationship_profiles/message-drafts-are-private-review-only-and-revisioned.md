@@ -11,18 +11,25 @@ title: Message drafts are private, review-only, and revisioned
 claim: >
   Each active, owner-scoped relationship profile has at most one draft workspace whose
   generated, edited, and restored text is retained as immutable revisions; saved
-  edits also persist the selected message type and tone. The workspace consumes
+  edits also persist the selected purpose, tone, response length, formality, and
+  bounded message-or-situation input. The workspace consumes
   the shared semantic primary and danger palette. The
   synchronous OpenAI Responses request uses store false, aggregates all ordered
-  output-text parts, and uses bounded, JSON-serialized
-  untrusted context: current non-protected profile facts and visible structured relationship
+  output-text parts, and uses separately bounded, JSON-serialized
+  untrusted user-supplied situation and relationship context: current non-protected profile facts and visible structured relationship
   fields, dates, uncertainty-marked preferences,
   public notes, and uncertainty-marked reviewed memories are eligible by default; private notes require
   explicit per-generation selection, and vault context additionally requires
   an active password-backed vault lease revalidated under the account lock while
   context reads serialize with vault mutations under the profile lock. Profile rendering bounds newest-first
   revision history to pages of ten while the editor remains on the current
-  revision. The feature records metadata-only
+  revision. Validated settings persist before provider generation, and each
+  request advances a profile-scoped fence so only the latest overlapping request
+  may append its response; saving an edit or restoring history advances the same
+  fence. Edit clients that omit response-only settings preserve the values read
+  from the draft row under its lock. New workspaces default to the existing
+  check-in purpose so submissions remain valid across rolling application deploys.
+  The feature records metadata-only
   audit evidence, participates in data export and cascading deletion, and has
   no send, recipient, delivery, scheduling, or external-action path.
 
@@ -32,6 +39,7 @@ source_files:
   - app/models/relationship_field_value.rb
   - app/services/message_drafts/context_builder.rb
   - app/services/message_drafts/generate.rb
+  - app/services/message_drafts/generation_superseded_error.rb
   - app/services/message_drafts/open_ai_generator.rb
   - app/services/message_drafts/vault_access_error.rb
   - app/services/privacy_vault/lease.rb
@@ -51,7 +59,9 @@ related_files:
   - config/locales/message_drafts.es.yml
   - db/migrate/20260811111116_create_message_drafts.rb
   - db/migrate/20260811111117_add_message_draft_generation_version_to_relationship_profiles.rb
+  - db/migrate/20260812123218_add_response_preferences_to_message_drafts.rb
   - docs/features/04-04-message-drafting-assistant.md
+  - docs/features/09-01-response-suggestion-assistant.md
   - spec/services/message_drafts/context_builder_spec.rb
   - spec/services/message_drafts/open_ai_generator_spec.rb
   - spec/services/message_drafts/generate_spec.rb
@@ -99,11 +109,19 @@ last_verified_commit: null
 ## Claim
 
 Message drafting is an owner-scoped, review-only workspace. One profile can
-have one `MessageDraft`, while every generation, saved edit, and restore appends
-a new `DraftRevision`. A saved edit persists the type and tone selected in the
-shared drafting form along with its new revision. Earlier revision rows cannot
-be updated. The reusable workspace styles use the documented semantic primary
-and danger tokens instead of raw color utilities.
+have one `MessageDraft`; generation, edits, and restores append immutable
+`DraftRevision` rows. Edits persist purpose, tone, length, formality, and the
+bounded message or situation. The workspace uses semantic design tokens.
+Tone and formality are non-overlapping axes. Legacy casual and formal tone
+values remain intact for old processes and rollback; they are not copied during
+the rolling window, so later old-process tone changes cannot leave stale
+formality behind. The new application maps legacy values to warm tone and their
+corresponding formality across rendering, providers, and exports until old
+processes drain. Check-in is the rolling-safe new-workspace default. Valid settings
+persist before provider generation without appending a failed response.
+Generations, edits, and restores advance one profile fence so only the latest
+work can append. Compatibility edits update only submitted response settings
+under lock, preventing stale omitted values from overwriting newer settings.
 
 ## Constraint
 
@@ -112,8 +130,9 @@ Visible structured relationship fields are eligible profile context; hidden and
 vault-protected field values remain excluded.
 Preference confidence and available source notes, plus memory confidence and
 source, remain visible to the provider; inferred, low-confidence, and AI-inferred
-facts are explicitly tentative. The provider input is JSON-serialized so relationship
-context remains a data value even when it contains prompt-like delimiters.
+facts are explicitly tentative. The provider input is JSON-serialized so the
+user-supplied situation and relationship context remain separate data values
+even when either contains prompt-like delimiters.
 Private notes cross the boundary only after explicit selection for that request;
 vault data also requires the service to revalidate the controller-touched lease's
 owner, password fingerprint, revocation version, and inactivity deadline under
@@ -129,8 +148,10 @@ Spanish output. Context is prompt-injection resistant, the Responses request
 disables provider storage, aggregates all ordered output-text parts, and allows
 only completed well-formed responses to become revisions; incomplete, malformed, TLS-failed, and protocol-failed responses
 follow the localized provider-error path. Audit metadata never includes the
-draft or source content, and submitted edits are
-filtered from parameter logs. Archived profile pages omit the workspace, and
+draft or source content, and submitted situations and edits are filtered from
+parameter logs. Provider instructions prohibit manipulative, coercive,
+pressuring, guilt-based, and deceptive language while keeping the user
+responsible for the final response. Archived profile pages omit the workspace, and
 generation, edit, and restore recheck active state under the profile lock before
 appending a revision. Deleting a draft advances a profile-scoped generation
 version so provider responses from older in-flight requests cannot recreate the

@@ -15,7 +15,9 @@ AI helps users draft thoughtful messages.
 - Generate professional follow-ups.
 - Generate invitations.
 - Generate boundary-setting messages.
+- Suggest a response to a pasted message or described situation.
 - Let user select tone.
+- Let user select response length and formality independently from tone.
 - Let user edit before use.
 - Keep generated, edited, and restored revisions as an immutable history.
 - Restore an earlier revision by creating a new current revision.
@@ -29,8 +31,6 @@ AI helps users draft thoughtful messages.
 - Concise
 - Emotional
 - Apologetic
-- Casual
-- Formal
 - Encouraging
 
 ## Data Objects
@@ -77,11 +77,28 @@ JSON-serialized as a distinct untrusted data value, and treated so embedded
 instructions cannot override the drafting prompt. Completed responses aggregate
 all output-text parts in provider order; only well-formed results can become
 revisions.
-Incomplete or malformed successful responses and expected TLS or HTTP protocol
-failures leave existing draft state unchanged and use the same safe, localized
-provider error. Submitted draft content is filtered from Rails parameter logs.
+Validated purpose, tone, response length, formality, and message-or-situation
+settings are saved before the provider request so a provider failure does not
+discard the user's private input. Incomplete or malformed successful responses
+and expected TLS or HTTP protocol failures do not append a revision and use the
+same safe, localized provider error. Submitted draft content is filtered from
+Rails parameter logs. Tone describes emotional character and excludes the
+casual/formal values owned by the independent formality setting; existing
+casual/formal tones remain intact for older application processes and rollback
+safety. The new application treats those rows as warm tone and interprets the
+legacy value as formality through its effective-value compatibility mapping.
+Rows are not copied during the rolling-deploy window, so a later old-process tone
+change cannot leave a stale formality value behind. A later cleanup can migrate
+the legacy values after old processes are fully drained.
+Each request advances the profile generation fence after saving its settings,
+so a newer request supersedes any older in-flight provider response. Only the
+latest request can append a revision, keeping its response and settings aligned.
+Saving an edit or restoring a revision also advances the fence, so late provider
+responses cannot displace a newer user-selected current revision.
 
-Each relationship profile has at most one draft workspace. Generating, saving
+Each relationship profile has at most one draft workspace. The workspace keeps
+the current purpose, tone, response length, formality, and a bounded optional
+message-or-situation input. Generating, saving
 an edit, or restoring history appends a new immutable `DraftRevision`; it never
 rewrites an earlier version. The profile page renders revision history in
 newest-first pages of ten while keeping the editor bound to the current revision.
@@ -98,4 +115,6 @@ Production can override the drafting model with
 
 The assistant is draft-only. It has no send, delivery, recipient, scheduling,
 or external-action path. The user must review and edit the text before copying
-or otherwise using it.
+or otherwise using it. Provider instructions reject manipulative, coercive,
+pressuring, guilt-based, and deceptive language, and the interface keeps the
+user responsible for the final message.

@@ -45,11 +45,23 @@ class MessageDraftWorkspaceComponent < ApplicationViewComponent
   end
 
   def draft_type
-    message_draft&.draft_type || "birthday"
+    message_draft&.draft_type || "check_in"
   end
 
   def tone
-    message_draft&.tone || "warm"
+    message_draft&.effective_tone || "warm"
+  end
+
+  def situation
+    message_draft&.situation.to_s
+  end
+
+  def response_length
+    message_draft&.response_length || "medium"
+  end
+
+  def formality
+    message_draft&.effective_formality || "balanced"
   end
 
   def content

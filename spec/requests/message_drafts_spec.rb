@@ -9,7 +9,11 @@ RSpec.describe "Message drafts", type: :request do
     get relationship_profile_path(profile)
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("Write with context", "Draft only — nothing will be sent")
+    expect(response.body).to include(
+      "Suggest a thoughtful response",
+      "Review and edit before you use this",
+      "Nothing is sent automatically"
+    )
     expect(response.body).not_to match(/>\s*Send\s*</)
   end
 
@@ -22,17 +26,31 @@ RSpec.describe "Message drafts", type: :request do
     expect(generator).to receive(:generate).with(
       draft_type: "birthday",
       tone: "warm",
+      situation: "Maya shared a birthday post.",
+      response_length: "short",
+      formality: "casual",
       context: a_string_including("Maya", "Short and sincere"),
       locale: :en
     ).and_return("Happy birthday, Maya!")
     sign_in user
 
     post generate_relationship_profile_message_draft_path(profile), params: {
-      message_draft: { draft_type: "birthday", tone: "warm" }
+      message_draft: {
+        draft_type: "birthday",
+        tone: "warm",
+        situation: "Maya shared a birthday post.",
+        response_length: "short",
+        formality: "casual"
+      }
     }
 
     expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
-    expect(profile.reload.message_draft.current_revision.content).to eq("Happy birthday, Maya!")
+    expect(profile.reload.message_draft).to have_attributes(
+      situation: "Maya shared a birthday post.",
+      response_length: "short",
+      formality: "casual"
+    )
+    expect(profile.message_draft.current_revision.content).to eq("Happy birthday, Maya!")
   end
 
   it "includes private notes only after explicit permission" do
@@ -44,6 +62,9 @@ RSpec.describe "Message drafts", type: :request do
     expect(generator).to receive(:generate).with(
       draft_type: "check_in",
       tone: "warm",
+      situation: "",
+      response_length: "medium",
+      formality: "balanced",
       context: a_string_including("Use a gentle opening"),
       locale: :en
     ).and_return("Just checking in gently.")
@@ -59,6 +80,51 @@ RSpec.describe "Message drafts", type: :request do
 
     expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
     expect(profile.reload.message_draft.current_revision.context_categories).to include("private_notes")
+  end
+
+  it "retains private input and explains that no revision was added when the provider fails" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    generator = instance_double(MessageDrafts::OpenAiGenerator)
+    allow(MessageDrafts::OpenAiGenerator).to receive(:new).and_return(generator)
+    allow(generator).to receive(:generate).and_raise(MessageDrafts::GenerationError, "provider details")
+    sign_in user
+
+    post generate_relationship_profile_message_draft_path(profile), params: {
+      message_draft: {
+        draft_type: "check_in",
+        tone: "warm",
+        situation: "They asked if I can talk tonight.",
+        response_length: "short",
+        formality: "casual"
+      }
+    }
+    follow_redirect!
+
+    flash_text = Nokogiri::HTML(response.body).at_css("#flash").text.squish
+    expect(flash_text).to include(
+      "We couldn't suggest a response. Your message and settings are saved, but no response was added. Try again."
+    )
+    expect(profile.reload.message_draft).to have_attributes(
+      situation: "They asked if I can talk tonight.",
+      response_length: "short",
+      formality: "casual"
+    )
+    expect(profile.message_draft.draft_revisions).to be_empty
+  end
+
+  it "explains when newer saved work supersedes an in-flight generation" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    allow(MessageDrafts::Generate).to receive(:call).and_raise(MessageDrafts::GenerationSupersededError)
+    sign_in user
+
+    post generate_relationship_profile_message_draft_path(profile), params: {
+      message_draft: { draft_type: "check_in", tone: "warm" }
+    }
+    follow_redirect!
+
+    expect(response.body).to include("Newer saved work replaced this response. Review the latest draft and revision.")
   end
 
   it "requires an active vault lease before vault context can be granted" do
@@ -114,6 +180,9 @@ RSpec.describe "Message drafts", type: :request do
     expect(generator).to receive(:generate).with(
       draft_type: "boundary_setting",
       tone: "concise",
+      situation: "",
+      response_length: "medium",
+      formality: "balanced",
       context: a_string_including("Protected boundary", "Avoid discussing work"),
       locale: :en
     ).and_return("I need us to leave work out of this conversation.")
@@ -142,16 +211,58 @@ RSpec.describe "Message drafts", type: :request do
     sign_in user
 
     patch relationship_profile_message_draft_path(profile), params: {
-      message_draft: { draft_type: "check_in", tone: "concise", content: "Edited" }
+      message_draft: {
+        draft_type: "check_in",
+        tone: "concise",
+        situation: "Maya said work has been difficult.",
+        response_length: "short",
+        formality: "casual",
+        content: "Edited"
+      }
     }
     post restore_revision_relationship_profile_message_draft_path(profile, revision_id: original.id)
 
     expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
-    expect(draft.reload).to have_attributes(draft_type: "check_in", tone: "concise")
+    expect(draft.reload).to have_attributes(
+      draft_type: "check_in",
+      tone: "concise",
+      situation: "Maya said work has been difficult.",
+      response_length: "short",
+      formality: "casual"
+    )
     expect(draft.reload.draft_revisions.pluck(:position, :origin, :content)).to include(
       [ 2, "edited", "Edited" ],
       [ 3, "restored", "Original" ]
     )
+  end
+
+  it "preserves response settings omitted by an existing edit client" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    draft = create(
+      :message_draft,
+      user:,
+      relationship_profile: profile,
+      situation: "Maya asked whether I can talk tonight.",
+      response_length: "short",
+      formality: "casual"
+    )
+    create(:draft_revision, message_draft: draft, position: 1, content: "Original")
+    sign_in user
+
+    patch relationship_profile_message_draft_path(profile), params: {
+      message_draft: { draft_type: "check_in", tone: "concise", content: "Edited by an existing client" }
+    }
+
+    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+    expect(draft.reload).to have_attributes(
+      draft_type: "check_in",
+      tone: "concise",
+      situation: "Maya asked whether I can talk tonight.",
+      response_length: "short",
+      formality: "casual"
+    )
+    expect(draft.current_revision).to have_attributes(origin: "edited", content: "Edited by an existing client")
   end
 
   it "paginates immutable history while keeping the editor on the current revision" do

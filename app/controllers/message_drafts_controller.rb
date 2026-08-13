@@ -17,6 +17,9 @@ class MessageDraftsController < ApplicationController
       relationship_profile: @relationship_profile,
       draft_type: generation_params[:draft_type],
       tone: generation_params[:tone],
+      situation: generation_params[:situation],
+      response_length: generation_params[:response_length],
+      formality: generation_params[:formality],
       include_private_notes: use_private_notes?,
       include_vault_context: use_vault_context?,
       vault_lease: privacy_vault_lease,
@@ -26,6 +29,8 @@ class MessageDraftsController < ApplicationController
     redirect_to workspace_path, notice: t("message_drafts.generate.notice")
   rescue MessageDrafts::VaultAccessError
     require_vault_unlock
+  rescue MessageDrafts::GenerationSupersededError
+    redirect_to workspace_path, alert: t("message_drafts.generate.superseded")
   rescue MessageDrafts::GenerationError
     redirect_to workspace_path, alert: t("message_drafts.generate.provider_error")
   rescue ActiveRecord::RecordInvalid
@@ -34,10 +39,12 @@ class MessageDraftsController < ApplicationController
 
   def update
     authorize @message_draft
+    attributes = update_params
     @message_draft.save_edit!(
-      content: update_params[:content],
-      draft_type: update_params[:draft_type],
-      tone: update_params[:tone]
+      content: attributes[:content],
+      draft_type: attributes[:draft_type],
+      tone: attributes[:tone],
+      **attributes.slice(:situation, :response_length, :formality).to_h.symbolize_keys
     )
 
     redirect_to workspace_path, notice: t("message_drafts.update.notice")
@@ -72,11 +79,19 @@ class MessageDraftsController < ApplicationController
   end
 
   def generation_params
-    params.require(:message_draft).permit(:draft_type, :tone, :use_private_notes, :use_vault_context)
+    params.require(:message_draft).permit(
+      :draft_type,
+      :tone,
+      :situation,
+      :response_length,
+      :formality,
+      :use_private_notes,
+      :use_vault_context
+    )
   end
 
   def update_params
-    params.require(:message_draft).permit(:content, :draft_type, :tone)
+    params.require(:message_draft).permit(:content, :draft_type, :tone, :situation, :response_length, :formality)
   end
 
   def use_private_notes?

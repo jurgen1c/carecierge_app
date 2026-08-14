@@ -94,7 +94,11 @@ class SocialContextNotesController < ApplicationController
       :lock_version,
       suggested_uses: []
     )
-    permitted[:lock_version] = Integer(permitted[:lock_version], 10) if permitted.key?(:lock_version)
+    if action_name == "update"
+      permitted[:lock_version] = Integer(permitted.require(:lock_version), 10)
+    elsif permitted.key?(:lock_version)
+      permitted[:lock_version] = Integer(permitted[:lock_version], 10)
+    end
     permitted[:suggested_uses] = Array(permitted[:suggested_uses]).compact_blank.uniq if permitted.key?(:suggested_uses)
     permitted
   rescue ArgumentError, TypeError

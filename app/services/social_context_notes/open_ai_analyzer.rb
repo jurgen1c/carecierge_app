@@ -92,6 +92,8 @@ module SocialContextNotes
     def image_blobs(input)
       blobs_by_id = ActiveStorage::Blob.where(id: input.image_blob_ids).index_by { |blob| blob.id.to_s }
       input.image_blob_ids.map { |id| blobs_by_id.fetch(id) }
+    rescue KeyError
+      raise AnalysisError, "Social context screenshot could not be read"
     end
 
     def image_input(blob)

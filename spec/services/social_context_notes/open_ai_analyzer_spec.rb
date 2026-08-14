@@ -110,4 +110,20 @@ RSpec.describe SocialContextNotes::OpenAiAnalyzer do
       described_class.new(api_key: "key", transport:).analyze(input:)
     end.to raise_error(SocialContextNotes::AnalysisError, "Social context screenshot could not be read")
   end
+
+  it "classifies a deleted screenshot row as a recoverable screenshot error" do
+    image = ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new("deleted image"),
+      filename: "deleted.png",
+      content_type: "image/png"
+    )
+    input = SocialContextNotes::AnalysisInput.new(text: "Bookstore context", image_blob_ids: [ image.id ])
+    image.destroy!
+    transport = double
+    expect(transport).not_to receive(:call)
+
+    expect do
+      described_class.new(api_key: "key", transport:).analyze(input:)
+    end.to raise_error(SocialContextNotes::AnalysisError, "Social context screenshot could not be read")
+  end
 end

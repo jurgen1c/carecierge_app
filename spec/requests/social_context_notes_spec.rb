@@ -62,7 +62,8 @@ RSpec.describe "Social context notes", type: :request do
         interpretation: "This may be a gentle conversation topic.",
         suggested_uses: %w[message],
         allow_suggestions: "1",
-        approve_interpretation: "1"
+        approve_interpretation: "1",
+        lock_version: note.lock_version
       }
     }
 
@@ -74,7 +75,11 @@ RSpec.describe "Social context notes", type: :request do
     )
 
     patch relationship_profile_social_context_note_path(profile, note), params: {
-      social_context_note: { body: "A materially different source note.", allow_suggestions: "1" }
+      social_context_note: {
+        body: "A materially different source note.",
+        allow_suggestions: "1",
+        lock_version: note.lock_version
+      }
     }
 
     expect(note.reload).to have_attributes(
@@ -99,7 +104,10 @@ RSpec.describe "Social context notes", type: :request do
     expect(response.body).to include("role=\"alert\"")
 
     patch relationship_profile_social_context_note_path(profile, note), params: {
-      social_context_note: { body: "B" * (SocialContextNote::MAX_BODY_CHARACTERS + 1) }
+      social_context_note: {
+        body: "B" * (SocialContextNote::MAX_BODY_CHARACTERS + 1),
+        lock_version: note.lock_version
+      }
     }
 
     expect(response).to have_http_status(:unprocessable_content)
@@ -147,7 +155,8 @@ RSpec.describe "Social context notes", type: :request do
       social_context_note: {
         interpretation: note.interpretation,
         suggested_uses: %w[message message conversation_topic],
-        approve_interpretation: "1"
+        approve_interpretation: "1",
+        lock_version: note.lock_version
       }
     }
 
@@ -170,6 +179,21 @@ RSpec.describe "Social context notes", type: :request do
     expect(flash[:alert]).to eq("The note changed before your update was saved. Review it and try again.")
     expect(note.reload.body.to_plain_text).to include("A newer saved revision")
     expect(note.body.to_plain_text).not_to include("Stale overwrite")
+  end
+
+  it "rejects an update without optimistic-lock evidence" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    note = create(:social_context_note, relationship_profile: profile, body: "Original context")
+    sign_in user
+
+    patch relationship_profile_social_context_note_path(profile, note), params: {
+      social_context_note: { body: "Unversioned overwrite" }
+    }
+
+    expect(response).to have_http_status(:bad_request)
+    expect(note.reload.body.to_plain_text).to include("Original context")
+    expect(note.body.to_plain_text).not_to include("Unversioned overwrite")
   end
 
   it "requires the configured automation permission before explicit analysis" do

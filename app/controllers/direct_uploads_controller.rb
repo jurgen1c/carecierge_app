@@ -14,6 +14,8 @@ class DirectUploadsController < ApplicationController
         .perform_later(blob.id, current_user.id)
       render json: direct_upload_json(blob)
     end
+  rescue ActionController::ParameterMissing
+    head :unprocessable_content
   rescue ActiveRecord::RecordNotFound
     head :not_found
   end

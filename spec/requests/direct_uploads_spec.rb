@@ -94,6 +94,17 @@ RSpec.describe "Authenticated direct uploads", type: :request do
     expect(response).to have_http_status(:unprocessable_content)
   end
 
+  it "rejects malformed grant payloads without creating a blob" do
+    user = create(:user)
+    sign_in user
+
+    expect do
+      post social_context_direct_uploads_path, params: { filename: "missing-blob-wrapper.png" }
+    end.not_to change(ActiveStorage::Blob, :count)
+
+    expect(response).to have_http_status(:unprocessable_content)
+  end
+
   it "rejects bytes that do not match the upload grant" do
     user = create(:user)
     sign_in user

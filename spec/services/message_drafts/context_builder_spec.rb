@@ -19,6 +19,26 @@ RSpec.describe MessageDrafts::ContextBuilder do
     expect(result.categories).not_to include("private_notes", "vault")
   end
 
+  it "selects only the ten newest opted-in social-context notes" do
+    profile = create(:relationship_profile)
+    base_time = Time.zone.local(2026, 8, 13, 9)
+    11.times do |index|
+      create(
+        :social_context_note,
+        relationship_profile: profile,
+        body: "Social context #{index}",
+        allow_suggestions: true,
+        created_at: base_time + index.minutes
+      )
+    end
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text).to include("Social context 10")
+    expect(result.text).not_to include("Social context 0\n")
+    expect(result.text.scan("User-provided social context").size).to eq(10)
+  end
+
   it "includes visible relationship details while excluding hidden and vault-protected values" do
     profile = create(:relationship_profile)
     current_template = create(:relationship_template, relationship_type: profile.type)
@@ -220,5 +240,58 @@ RSpec.describe MessageDrafts::ContextBuilder do
     result = described_class.new(relationship_profile: profile).call
 
     expect(result.text.length).to be <= described_class::MAX_CHARACTERS
+  end
+
+  it "includes only explicitly enabled social context and excludes draft interpretations" do
+    profile = create(:relationship_profile)
+    create(:social_context_note, relationship_profile: profile, body: "Do not include this social note.")
+    create(
+      :social_context_note,
+      relationship_profile: profile,
+      body: "Maya posted about a bookstore event.",
+      allow_suggestions: true,
+      interpretation: "This may be a comfortable message topic.",
+      interpretation_status: "draft",
+      suggested_uses: %w[message]
+    )
+    approved = create(
+      :social_context_note,
+      relationship_profile: profile,
+      body: "Maya shared a neighborhood gathering.",
+      allow_suggestions: true,
+      interpretation: "A low-pressure check-in may fit.",
+      interpretation_status: "approved",
+      suggested_uses: %w[message]
+    )
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text).to include(
+      "Maya posted about a bookstore event",
+      "Maya shared a neighborhood gathering",
+      "[source: ai_inferred; review_status: approved] A low-pressure check-in may fit"
+    )
+    expect(result.text).to include("[source: user_provided] Maya shared a neighborhood gathering")
+    expect(result.text).not_to include("Do not include this social note", "comfortable message topic")
+    expect(result.categories).to include("social_context")
+    expect(approved.downstream_context).to include("low-pressure check-in")
+  end
+
+  it "excludes an approved AI interpretation when message drafting was not selected" do
+    profile = create(:relationship_profile)
+    create(
+      :social_context_note,
+      relationship_profile: profile,
+      body: "Maya shared a neighborhood gathering.",
+      allow_suggestions: true,
+      interpretation: "A gift may be timely.",
+      interpretation_status: "approved",
+      suggested_uses: %w[gift]
+    )
+
+    result = described_class.new(relationship_profile: profile).call
+
+    expect(result.text).to include("[source: user_provided] Maya shared a neighborhood gathering")
+    expect(result.text).not_to include("A gift may be timely")
   end
 end

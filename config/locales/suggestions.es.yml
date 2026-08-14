@@ -28,9 +28,12 @@ es:
       memory_record: "memoria"
       mood_note: "nota de ánimo"
       commitment: "compromiso"
+      social_context_note: "nota de contexto social"
     reasons:
       gift: "Un interés registrado puede orientar un regalo considerado"
       message: "El contexto de la relación sugiere un estilo de mensaje apropiado"
+      conversation_topic: "El contexto social revisado puede ofrecer un tema de conversación"
+      social_reminder: "Puede ser útil recordar el contexto social revisado"
       plan: "Un interés registrado puede convertirse en un plan compartido"
       check_in: "La frecuencia de contacto preferida está atrasada"
       event: "Una fecha importante está dentro de su período de planificación"
@@ -47,6 +50,14 @@ es:
         label: "Mensaje"
         title: "Envía un mensaje breve a %{name}"
         detail: "Prepara una nota con un estilo acorde a lo que sabes de esta relación."
+      conversation_topic:
+        label: "Conversación"
+        title: "Considera un tema de conversación para %{name}"
+        detail: "Usa el contexto social que revisaste como una sugerencia cuidadosa y decide qué resulta apropiado."
+      social_reminder:
+        label: "Recordatorio"
+        title: "Recuerda este contexto sobre %{name}"
+        detail: "Crea un recordatorio privado a partir del contexto social que revisaste; nada se envía automáticamente."
       plan:
         label: "Plan"
         title: "Haz un plan sencillo con %{name}"

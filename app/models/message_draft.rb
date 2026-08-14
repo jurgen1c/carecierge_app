@@ -105,7 +105,7 @@ class MessageDraft < ApplicationRecord
   end
 
   def cancel_in_flight_generations
-    relationship_profile.increment!(:message_draft_generation_version)
+    relationship_profile.cancel_in_flight_message_draft_generations!
   end
 
   def relationship_profile_belongs_to_user

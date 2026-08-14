@@ -42,6 +42,7 @@ en:
         important_dates: "Key dates"
         preferences: "Preferences"
         public_notes: "Shared notes"
+        social_context: "User-provided social context"
         memories: "Current memories"
     private_context:
       title: "Private context"

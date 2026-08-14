@@ -1,0 +1,85 @@
+en:
+  social_context_notes:
+    section:
+      eyebrow: "Context you control"
+      title: "Social context"
+      body: "Keep your own notes or screenshots from social spaces so you can remember what may matter to this relationship."
+      provenance: "Added by you"
+      added_by_you: "Added by you"
+      trust: "Only context you add appears here. Carecierge does not monitor or connect to social accounts."
+    new:
+      title: "Add social context"
+    fields:
+      body: "Note or screenshots"
+      body_hint: "Write what you noticed and optionally add up to 3 PNG, JPEG, or WebP screenshots (10 MB each)."
+      interpretation: "Interpretation"
+      allow_suggestions: "Use in suggestions and message drafts"
+      allow_suggestions_hint: "Off by default. You can turn this off again at any time."
+    interpretation:
+      title: "Carecierge interpretation draft"
+      body: "This cautious reading may be incomplete or wrong. Edit it before saving; it is not treated as fact."
+      approval_hint: "Saving approves this edited interpretation for the uses shown in your note."
+    suggested_uses:
+      legend: "Where this interpretation may help"
+      hint: "Review these AI-suggested uses. Uncheck any that do not fit before approving."
+      options:
+        gift: "Gift idea"
+        message: "Message draft"
+        conversation_topic: "Conversation topic"
+        reminder: "Social reminder"
+    errors:
+      title: "Check this social context note"
+    pagination:
+      aria_label: "Social context pages"
+      info: "Showing %{from}–%{to} of %{count} notes"
+      previous: "Previous"
+      next: "Next"
+      page: "Page %{page} of %{pages}"
+    statuses:
+      not_requested: "Not analyzed"
+      draft: "Review needed"
+      approved: "Approved by you"
+    actions:
+      add: "Add context"
+      adding: "Adding…"
+      save: "Save note"
+      saving: "Saving…"
+      analyze: "Save and analyze"
+      analyzing: "Saving and analyzing…"
+      review_permission: "Review analysis permission"
+      delete: "Delete note"
+      delete_confirm: "Permanently delete this social context note and its uploaded screenshots?"
+    create:
+      notice: "Social context was added."
+      invalid: "Add a note and use only supported image uploads."
+    update:
+      notice: "Social context was updated."
+      invalid: "The social context could not be updated. Check the note and uploads."
+      changed: "The note changed before your update was saved. Review it and try again."
+    destroy:
+      notice: "Social context and its unshared uploads were permanently deleted."
+    analyze:
+      disclosure: "Save and analyze first saves these edits, then sends that saved note and its screenshots to Carecierge's AI provider for this request. Provider safety retention may apply."
+      notice: "An interpretation draft is ready for your review."
+      permission_required: "Enable social context analysis before asking Carecierge to analyze this note."
+      provider_error: "The analysis service is unavailable right now. An interpretation was not created."
+      changed: "The note changed during analysis. Review it and try again."
+  activerecord:
+    models:
+      social_context_note: "Social context note"
+    attributes:
+      social_context_note:
+        body: "Note or screenshots"
+        interpretation: "Interpretation"
+        allow_suggestions: "Use in suggestions and message drafts"
+        suggested_uses: "Suggested uses"
+    errors:
+      models:
+        social_context_note:
+          attributes:
+            body:
+              too_many_attachments: "can include at most %{count} screenshots"
+              unsupported_attachment: "can include only PNG, JPEG, or WebP screenshots"
+              attachment_too_large: "includes a screenshot larger than %{count} bytes"
+              html_too_large: "contains more than %{count} bytes of formatted content"
+              unmanaged_image: "can include only screenshots uploaded through the editor"

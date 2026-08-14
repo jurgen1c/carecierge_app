@@ -28,6 +28,7 @@ class DraftRevision < ApplicationRecord
     important_dates
     preferences
     public_notes
+    social_context
     memories
     private_notes
     vault

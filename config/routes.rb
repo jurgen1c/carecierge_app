@@ -42,6 +42,9 @@ Rails.application.routes.draw do
       post :generate
       post "revisions/:revision_id/restore", action: :restore, as: :restore_revision
     end
+    resources :social_context_notes, only: %i[create update destroy] do
+      post :analyze, on: :member
+    end
     resources :suggestions, only: [] do
       patch :feedback, on: :member
       patch :dismiss, on: :member

@@ -117,6 +117,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :commitments, -> { ordered }, dependent: :destroy
   has_many :gifts, dependent: :destroy
   has_many :memory_records, dependent: :destroy
+  has_many :social_context_notes, dependent: :destroy
   has_many :conversation_recaps, dependent: :destroy
   has_many :extracted_memories, dependent: :destroy
   has_many :mood_notes, dependent: :destroy
@@ -206,6 +207,10 @@ class RelationshipProfile < ApplicationRecord
 
   def archive!
     discard!
+  end
+
+  def cancel_in_flight_message_draft_generations!
+    increment!(:message_draft_generation_version)
   end
 
   def email

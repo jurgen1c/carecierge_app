@@ -15,6 +15,7 @@ es:
       memory_stale_after: "%-d/%-m/%Y"
   time:
     formats:
+      social_context_note: "%-d/%-m/%Y a las %H:%M"
       audit_event_admin: "%-d/%-m/%Y a las %H:%M"
       audit_event_time: "%H:%M"
       long: "%-d/%-m/%Y %H:%M"

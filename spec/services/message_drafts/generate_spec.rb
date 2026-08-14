@@ -239,4 +239,50 @@ RSpec.describe MessageDrafts::Generate do
 
     expect(profile.reload.message_draft).to be_nil
   end
+
+  it "does not persist provider output after opted-in social context is revoked in flight" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    note = create(:social_context_note, relationship_profile: profile, allow_suggestions: true)
+    generator = double
+    allow(generator).to receive(:generate) do
+      note.update_from_user!({ allow_suggestions: false })
+      "A response built from revoked context"
+    end
+
+    expect do
+      described_class.call(
+        actor: user,
+        relationship_profile: profile,
+        draft_type: "check_in",
+        tone: "warm",
+        generator:
+      )
+    end.to raise_error(ActiveRecord::RecordNotFound)
+
+    expect(profile.reload.message_draft).to be_nil
+  end
+
+  it "does not persist provider output after opted-in social context is deleted in flight" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    note = create(:social_context_note, relationship_profile: profile, allow_suggestions: true)
+    generator = double
+    allow(generator).to receive(:generate) do
+      note.destroy_from_user!
+      "A response built from deleted context"
+    end
+
+    expect do
+      described_class.call(
+        actor: user,
+        relationship_profile: profile,
+        draft_type: "check_in",
+        tone: "warm",
+        generator:
+      )
+    end.to raise_error(ActiveRecord::RecordNotFound)
+
+    expect(profile.reload.message_draft).to be_nil
+  end
 end

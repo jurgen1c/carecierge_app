@@ -476,3 +476,33 @@ edges:
     relation: same_area
     reason: Both features call OpenAI with provider storage disabled, but message drafting consumes only reviewed memory and does not propose canonical memory changes.
     strength: 75
+  - source: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Social-context notes and every mutation remain nested beneath the authenticated owner's active relationship profile.
+    strength: 100
+  - source: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    target: automation_permissions.permission_decisions
+    relation: requires
+    reason: Each provider analysis requires the configured social-content capability and any explicit approval required by its effective mode.
+    strength: 100
+  - source: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: constrains
+    reason: Only opted-in owner text and owner-approved interpretation may enter bounded message-draft context; eligible mutations advance the profile-scoped in-flight generation fence.
+    strength: 100
+  - source: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    target: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    relation: constrains
+    reason: Social-context suggestions require both revocable downstream consent and an owner-approved interpretation, with inferred source evidence.
+    strength: 100
+  - source: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Notes and screenshots participate in owner exports and unshared blob cleanup for note, profile, and account deletion.
+    strength: 100
+  - source: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Analysis and permanent deletion retain metadata-only evidence without copying social content into the audit ledger.
+    strength: 95

@@ -1,0 +1,85 @@
+es:
+  social_context_notes:
+    section:
+      eyebrow: "Contexto bajo tu control"
+      title: "Contexto social"
+      body: "Guarda tus propias notas o capturas de espacios sociales para recordar lo que podría importar en esta relación."
+      provenance: "Agregado por ti"
+      added_by_you: "Agregado por ti"
+      trust: "Solo aparece el contexto que agregas. Carecierge no monitorea ni se conecta a cuentas sociales."
+    new:
+      title: "Agregar contexto social"
+    fields:
+      body: "Nota o capturas"
+      body_hint: "Escribe lo que notaste y, si quieres, agrega hasta 3 capturas PNG, JPEG o WebP (10 MB cada una)."
+      interpretation: "Interpretación"
+      allow_suggestions: "Usar en sugerencias y borradores de mensajes"
+      allow_suggestions_hint: "Está desactivado de forma predeterminada. Puedes volver a desactivarlo en cualquier momento."
+    interpretation:
+      title: "Borrador de interpretación de Carecierge"
+      body: "Esta lectura cuidadosa puede estar incompleta o equivocada. Edítala antes de guardarla; no se trata como un hecho."
+      approval_hint: "Al guardar, apruebas esta interpretación editada para los usos indicados en tu nota."
+    suggested_uses:
+      legend: "Dónde puede ayudar esta interpretación"
+      hint: "Revisa estos usos sugeridos por IA. Desmarca los que no correspondan antes de aprobar."
+      options:
+        gift: "Regalo"
+        message: "Borrador de mensaje"
+        conversation_topic: "Tema de conversación"
+        reminder: "Recordatorio social"
+    errors:
+      title: "Revisa esta nota de contexto social"
+    pagination:
+      aria_label: "Páginas de contexto social"
+      info: "Mostrando %{from}–%{to} de %{count} notas"
+      previous: "Anterior"
+      next: "Siguiente"
+      page: "Página %{page} de %{pages}"
+    statuses:
+      not_requested: "Sin analizar"
+      draft: "Requiere revisión"
+      approved: "Aprobado por ti"
+    actions:
+      add: "Agregar contexto"
+      adding: "Agregando…"
+      save: "Guardar nota"
+      saving: "Guardando…"
+      analyze: "Guardar y analizar"
+      analyzing: "Guardando y analizando…"
+      review_permission: "Revisar permiso de análisis"
+      delete: "Eliminar nota"
+      delete_confirm: "¿Eliminar permanentemente esta nota de contexto social y sus capturas?"
+    create:
+      notice: "Se agregó el contexto social."
+      invalid: "Agrega una nota y usa solo imágenes compatibles."
+    update:
+      notice: "Se actualizó el contexto social."
+      invalid: "No se pudo actualizar el contexto social. Revisa la nota y las imágenes."
+      changed: "La nota cambió antes de guardar tu actualización. Revísala e inténtalo de nuevo."
+    destroy:
+      notice: "El contexto social y sus cargas no compartidas se eliminaron permanentemente."
+    analyze:
+      disclosure: "Guardar y analizar primero guarda estos cambios y luego envía esa nota guardada y sus capturas al proveedor de IA de Carecierge para esta solicitud. Puede aplicarse la retención de seguridad del proveedor."
+      notice: "Hay un borrador de interpretación listo para tu revisión."
+      permission_required: "Activa el análisis de contexto social antes de pedirle a Carecierge que analice esta nota."
+      provider_error: "El servicio de análisis no está disponible ahora. No se creó una interpretación."
+      changed: "La nota cambió durante el análisis. Revísala e inténtalo de nuevo."
+  activerecord:
+    models:
+      social_context_note: "Nota de contexto social"
+    attributes:
+      social_context_note:
+        body: "Nota o capturas"
+        interpretation: "Interpretación"
+        allow_suggestions: "Usar en sugerencias y borradores de mensajes"
+        suggested_uses: "Usos sugeridos"
+    errors:
+      models:
+        social_context_note:
+          attributes:
+            body:
+              too_many_attachments: "puede incluir hasta %{count} capturas"
+              unsupported_attachment: "solo puede incluir capturas PNG, JPEG o WebP"
+              attachment_too_large: "incluye una captura de más de %{count} bytes"
+              html_too_large: "contiene más de %{count} bytes de contenido con formato"
+              unmanaged_image: "solo puede incluir capturas cargadas mediante el editor"

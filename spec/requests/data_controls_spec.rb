@@ -90,6 +90,31 @@ RSpec.describe "Data controls", type: :request do
       )
     end
 
+    it "includes user-provided social context and uploaded screenshots in portable exports" do
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: StringIO.new("portable screenshot"),
+        filename: "social-context.png",
+        content_type: "image/png"
+      )
+      create(
+        :social_context_note,
+        relationship_profile: profile,
+        body: "<p>Bookshop post</p>#{ActionText::Attachment.from_attachable(blob).to_html}",
+        allow_suggestions: true
+      )
+
+      post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
+
+      exported = response.parsed_body.dig("relationship_profiles", 0, "social_context_notes", 0)
+      expect(exported).to include("body" => include("Bookshop post"), "allow_suggestions" => true)
+      expect(exported.fetch("uploaded_images").sole).to include(
+        "filename" => "social-context.png",
+        "content_type" => "image/png",
+        "encoding" => "base64",
+        "data" => Base64.strict_encode64("portable screenshot")
+      )
+    end
+
     it "includes message drafts and their immutable revision history" do
       draft = create(:message_draft, user:, relationship_profile: profile, draft_type: "birthday", tone: "warm")
       create(:draft_revision, message_draft: draft, position: 1, origin: "generated", content: "Happy birthday, Maya!")
@@ -426,6 +451,57 @@ RSpec.describe "Data controls", type: :request do
       expect(FeatureFlagAssignment.exists?(user_assignment.id)).to be(false)
       expect(ActiveStorage::Blob.exists?(blob.id)).to be(false)
       expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
+    end
+
+    it "permanently deletes social context screenshots with the account" do
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: StringIO.new("delete this screenshot"),
+        filename: "delete-me.png",
+        content_type: "image/png"
+      )
+      create(
+        :social_context_note,
+        relationship_profile: profile,
+        body: "<p>Social post</p>#{ActionText::Attachment.from_attachable(blob).to_html}"
+      )
+      blob_key = blob.key
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(response).to redirect_to(root_path)
+      expect(ActiveStorage::Blob.exists?(blob.id)).to be(false)
+      expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
+    end
+
+    it "locks owned relationship profiles before snapshotting account screenshots" do
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: StringIO.new("account lock screenshot"),
+        filename: "account-lock.png",
+        content_type: "image/png"
+      )
+      create(
+        :social_context_note,
+        relationship_profile: profile,
+        body: "<p>Social post</p>#{ActionText::Attachment.from_attachable(blob).to_html}"
+      )
+      sql = []
+      subscriber = lambda do |_name, _started, _finished, _id, payload|
+        sql << payload[:sql] unless payload[:name] == "SCHEMA" || payload[:cached]
+      end
+
+      ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
+        post data_deletions_path, params: {
+          data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+        }
+      end
+
+      profile_lock = sql.index { |statement| statement.include?('FROM "relationship_profiles"') && statement.include?("FOR UPDATE") }
+      social_snapshot = sql.index { |statement| statement.include?('FROM "social_context_notes"') }
+      expect(profile_lock).to be_present
+      expect(social_snapshot).to be_present
+      expect(profile_lock).to be < social_snapshot
     end
 
     it "does not mark account deletion complete when recording purge fails" do

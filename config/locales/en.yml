@@ -44,6 +44,7 @@ en:
       memory_stale_after: "%b %-d, %Y"
   time:
     formats:
+      social_context_note: "%b %-d, %Y at %-l:%M %p"
       audit_event_admin: "%b %-d, %Y at %-l:%M %p"
       audit_event_time: "%-l:%M %p"
       timeline_entry_day: "%b %-d, %Y"

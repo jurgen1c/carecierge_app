@@ -11,6 +11,7 @@ title: Data exports and permanent deletion stay owner-scoped and privacy-minimiz
 claim: >
   Authenticated users can export one owner-scoped profile or their account as
   JSON, CSV, PDF, or a private calendar. Portable snapshots include recordings,
+  user-provided social context and its uploaded screenshots,
   relationship assignments, localized labels, privacy-safe audit history,
   reminder delivery evidence, and message-draft settings with immutable
   revisions; internal errors, leases, recipient keys, and ownership foreign
@@ -19,8 +20,10 @@ claim: >
   use the configured application origin, and attachment exports use native
   navigation. Successful exports emit content-free audit evidence only after
   serialization. Owner-scoped deletion records privacy-minimized evidence;
-  selective AI deletion preserves user-corrected memories, while profile and
-  account deletion cascade through their owned content. Recording cleanup locks
+  selective AI deletion preserves user-corrected memories and owner-authored
+  social notes while clearing their AI analysis and fencing delayed results.
+  Profile and account deletion cascade through their owned content. Recording
+  and social screenshot snapshots occur under owned profile locks; cleanup locks
   blobs against concurrent attachments and remains retryable and idempotent.
   Completed account deletion retains only a one-way account digest and
   nullified user reference; OAuth users receive a password-setup path first.
@@ -33,16 +36,18 @@ source_files:
   - app/serializers/data_exports/snapshot.rb
   - app/services/data_deletions/perform.rb
   - app/services/data_deletions/delete_account.rb
+  - app/services/data_deletions/delete_ai_data.rb
+  - app/services/data_deletions/delete_blobs.rb
   - db/migrate/20260808004436_create_deletion_requests.rb
 
 related_files:
   - app/serializers/data_exports/csv_serializer.rb
   - app/serializers/data_exports/calendar_serializer.rb
-  - app/services/data_deletions/delete_ai_data.rb
   - app/views/data_controls/show.html.erb
   - app/views/data_exports/summary.html.erb
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb
+  - spec/requests/social_context_notes_spec.rb
   - spec/services/data_deletions/delete_ai_data_spec.rb
   - spec/system/data_controls_spec.rb
 
@@ -88,10 +93,16 @@ require password reauthentication. Native form navigation lets browsers handle
 downloads. Full-account JSON and CSV include privacy-safe vault-access,
 notification, reminder-delivery evidence, and each profile's message-draft
 settings and immutable revision history without ownership foreign keys. Internal
-errors, leases, concurrency fences, and notification recipient keys stay excluded. Permanent
-deletion records content-free evidence, preserves user-corrected memories during
-selective AI cleanup, prevents in-flight extraction from recreating deleted
-state, and safely serializes recording removal against shared attachments.
+errors remain excluded, while social-context notes include portable plain text,
+review state, consent state, and uploaded image bytes.
+Leases, concurrency fences, and notification recipient keys stay excluded.
+Permanent deletion records content-free evidence, preserves user-corrected memories during
+selective AI cleanup, clears AI-generated social interpretations without deleting
+owner-authored notes, and prevents in-flight extraction or analysis from
+recreating deleted state. Note deletion captures screenshots inside its profile
+lock; profile and account deletion lock the owned profiles before snapshotting.
+The final blob-locking cleanup safely serializes recording and social-context
+removal against shared attachments.
 
 ## Why It Matters
 

@@ -1,11 +1,10 @@
 module DataDeletions
   class DeleteAiData
     def self.call(user:)
-      profile_scope = user.relationship_profiles.with_discarded
-
       ApplicationRecord.transaction do
+        profiles = user.relationship_profiles.with_discarded.order(:id).lock.to_a
         ConversationRecap
-          .where(relationship_profile: profile_scope)
+          .where(relationship_profile: profiles)
           .where.not(extraction_status: "not_requested")
           .lock
           .each do |recap|
@@ -18,15 +17,34 @@ module DataDeletions
               extraction_error_code: nil
             )
           end
-        ExtractedMemory.where(relationship_profile: profile_scope).lock.each(&:destroy!)
+        ExtractedMemory.where(relationship_profile: profiles).lock.each(&:destroy!)
 
-        MemoryRecord.where(relationship_profile: profile_scope, source: "ai_inferred").find_each(&:destroy!)
+        reset_social_context_analysis(profiles)
+
+        MemoryRecord.where(relationship_profile: profiles, source: "ai_inferred").find_each(&:destroy!)
         TimelineEntry.where(
-          relationship_profile: profile_scope,
+          relationship_profile: profiles,
           entry_type: "ai_extraction",
           origin: "system"
         ).find_each(&:destroy!)
       end
     end
+
+    def self.reset_social_context_analysis(profiles)
+      notes_by_profile = SocialContextNote
+        .where(relationship_profile: profiles)
+        .order(:relationship_profile_id, :id)
+        .lock
+        .group_by(&:relationship_profile_id)
+
+      profiles.each do |profile|
+        message_context_changed = false
+        notes_by_profile.fetch(profile.id, []).each do |note|
+          message_context_changed = note.clear_ai_analysis_for_deletion! || message_context_changed
+        end
+        profile.cancel_in_flight_message_draft_generations! if message_context_changed
+      end
+    end
+    private_class_method :reset_social_context_analysis
   end
 end

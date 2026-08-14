@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_11_111117) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_13_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -187,7 +187,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_111117) do
     t.index ["request_kind", "requested_at"], name: "index_deletion_requests_on_request_kind_and_requested_at"
     t.index ["subject_type", "subject_id"], name: "index_deletion_requests_on_subject_type_and_subject_id"
     t.index ["user_id"], name: "index_deletion_requests_on_user_id"
-    t.check_constraint "request_kind::text = ANY (ARRAY['relationship_profile'::character varying, 'privacy_vault_item'::character varying, 'ai_generated'::character varying, 'account'::character varying]::text[])", name: "deletion_requests_supported_kind"
+    t.check_constraint "request_kind::text = ANY (ARRAY['relationship_profile'::character varying, 'privacy_vault_item'::character varying, 'social_context_note'::character varying, 'ai_generated'::character varying, 'account'::character varying]::text[])", name: "deletion_requests_supported_kind"
     t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'completed'::character varying, 'failed'::character varying]::text[])", name: "deletion_requests_supported_status"
   end
 
@@ -700,6 +700,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_111117) do
     t.index ["retired_at"], name: "index_rollout_groups_on_retired_at"
   end
 
+  create_table "social_context_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "allow_suggestions", default: false, null: false
+    t.datetime "analyzed_at"
+    t.datetime "created_at", null: false
+    t.text "interpretation"
+    t.string "interpretation_status", default: "not_requested", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.uuid "relationship_profile_id", null: false
+    t.jsonb "suggested_uses", default: [], null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id", "allow_suggestions"], name: "index_social_context_notes_on_profile_and_suggestion_usage"
+    t.index ["relationship_profile_id", "created_at"], name: "idx_on_relationship_profile_id_created_at_71f3ad1154"
+    t.index ["relationship_profile_id"], name: "index_social_context_notes_on_relationship_profile_id"
+    t.check_constraint "interpretation_status::text = ANY (ARRAY['not_requested'::character varying, 'draft'::character varying, 'approved'::character varying]::text[])", name: "social_context_notes_interpretation_status"
+    t.check_constraint "jsonb_typeof(suggested_uses) = 'array'::text", name: "social_context_notes_suggested_uses_array"
+  end
+
   create_table "suggestion_feedbacks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "acted_at"
     t.datetime "created_at", null: false
@@ -853,6 +870,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_11_111117) do
   add_foreign_key "reminders", "important_dates", on_delete: :nullify
   add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade
   add_foreign_key "reminders", "users", on_delete: :cascade
+  add_foreign_key "social_context_notes", "relationship_profiles", on_delete: :cascade
   add_foreign_key "suggestion_feedbacks", "relationship_profiles", on_delete: :cascade
   add_foreign_key "suggestion_feedbacks", "users", on_delete: :cascade
   add_foreign_key "template_fields", "relationship_templates"

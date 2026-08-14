@@ -32,6 +32,12 @@ RSpec.describe DraftRevision, type: :model do
     expect(revision.errors[:context_categories]).to be_present
   end
 
+  it "retains the social-context provenance category" do
+    revision = build(:draft_revision, context_categories: %w[profile social_context])
+
+    expect(revision).to be_valid
+  end
+
   it "cannot be changed after persistence" do
     revision = create(:draft_revision)
 

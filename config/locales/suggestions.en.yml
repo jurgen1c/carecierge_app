@@ -28,9 +28,12 @@ en:
       memory_record: "memory"
       mood_note: "mood note"
       commitment: "commitment"
+      social_context_note: "social context note"
     reasons:
       gift: "A recorded interest could guide a thoughtful gift"
       message: "Your relationship context suggests a fitting message style"
+      conversation_topic: "Reviewed social context may offer a conversation topic"
+      social_reminder: "Reviewed social context may be worth remembering"
       plan: "A recorded interest could become a shared plan"
       check_in: "The preferred contact rhythm is overdue"
       event: "An important date is within its planning window"
@@ -47,6 +50,14 @@ en:
         label: "Message"
         title: "Send %{name} a quick message"
         detail: "Prepare a note in a style that matches what you know about this relationship."
+      conversation_topic:
+        label: "Conversation"
+        title: "Consider a conversation topic for %{name}"
+        detail: "Use the social context you reviewed as a gentle prompt, then decide what feels appropriate."
+      social_reminder:
+        label: "Reminder"
+        title: "Remember this context about %{name}"
+        detail: "Create a private reminder from the social context you reviewed; nothing is sent automatically."
       plan:
         label: "Plan"
         title: "Make a simple plan with %{name}"

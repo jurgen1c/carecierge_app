@@ -1,6 +1,6 @@
 class Suggestion
   TYPES = %w[
-    gift message plan check_in event spontaneous repair_focused professional_follow_up
+    gift message conversation_topic plan check_in social_reminder event spontaneous repair_focused professional_follow_up
   ].freeze
   HIGH_IMPACT_TYPES = %w[repair_focused professional_follow_up].freeze
   ACTION_KINDS = %w[create_reminder].freeze

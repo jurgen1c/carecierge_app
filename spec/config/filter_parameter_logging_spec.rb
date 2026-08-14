@@ -36,6 +36,11 @@ RSpec.describe "Parameter filtering" do
         "content" => "Private personal message",
         "tone" => "warm"
       },
+      "social_context_note" => {
+        "body" => "Private social context",
+        "interpretation" => "Private AI interpretation",
+        "allow_suggestions" => "1"
+      },
       "privacy_vault_unlock" => {
         "password" => "vault-password"
       },
@@ -64,6 +69,9 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("interaction", "interaction_type")).to eq("call")
     expect(filtered.dig("message_draft", "content")).to eq("[FILTERED]")
     expect(filtered.dig("message_draft", "tone")).to eq("warm")
+    expect(filtered.dig("social_context_note", "body")).to eq("[FILTERED]")
+    expect(filtered.dig("social_context_note", "interpretation")).to eq("[FILTERED]")
+    expect(filtered.dig("social_context_note", "allow_suggestions")).to eq("1")
     expect(filtered.dig("privacy_vault_unlock", "password")).to eq("[FILTERED]")
     expect(filtered["memory_query"]).to eq("[FILTERED]")
     expect(filtered["body"]).to eq("Unrelated body")

@@ -62,6 +62,10 @@ auditable without retaining the account email or relationship contents.
   scope/format and completion result.
 - `DataDeletions::Perform` writes `data_deletion.requested` and the durable
   deletion request around each successful destructive operation.
+- Selective AI deletion preserves user-authored social notes and uploads while
+  clearing their interpretations, proposed uses, review state, and analysis
+  timestamps. It advances note versions and the shared message-generation fence
+  so delayed provider output cannot recreate deleted AI state.
 - Account deletion synchronously purges uploaded recordings before the request
   can be marked completed. Storage files are deleted before their blob rows so a
   failure leaves retryable metadata and failed evidence; blobs still attached to
@@ -69,6 +73,9 @@ auditable without retaining the account email or relationship contents.
   check and purge so concurrent attachment creation cannot race storage deletion.
   If Active Storage already removed a blob row, the captured storage key receives
   one final idempotent delete and the account request completes.
+- Note deletion captures its screenshot blobs while holding the relationship
+  lock. Profile and account deletion lock the owned relationship rows before
+  snapshotting screenshots, closing the gap between snapshot and cascade.
 - User-targeted feature-flag assignments are removed with the account, and
   Google-authenticated users receive a direct password-setup path before the
   password-gated action.

@@ -6,10 +6,11 @@ module MessageDrafts
     MAX_PER_CATEGORY = 10
     Result = Data.define(:text, :categories)
 
-    def initialize(relationship_profile:, include_private_notes: false, include_vault_context: false)
+    def initialize(relationship_profile:, include_private_notes: false, include_vault_context: false, social_context_notes: nil)
       @relationship_profile = relationship_profile
       @include_private_notes = include_private_notes
       @include_vault_context = include_vault_context
+      @social_context_notes = social_context_notes
     end
 
     def call
@@ -32,7 +33,7 @@ module MessageDrafts
 
     private
 
-    attr_reader :relationship_profile, :include_private_notes, :include_vault_context
+    attr_reader :relationship_profile, :include_private_notes, :include_vault_context, :social_context_notes
 
     def bounded_entry(label, value)
       bounded_label = label.to_s.squish.first(MAX_LABEL_CHARACTERS)
@@ -51,6 +52,7 @@ module MessageDrafts
         important_date_entries +
         preference_entries +
         note_entries(notes(private: false), "public_notes", "Public note") +
+        social_context_entries +
         memory_entries +
         private_entries.drop(1) +
         protected_entries.drop(1)
@@ -105,6 +107,31 @@ module MessageDrafts
           metadata = "source: #{memory.source}; confidence: #{memory.confidence}"
           [ "memories", memory.title, "[#{metadata}] #{memory.body}" ]
         end
+    end
+
+    def social_context_entries
+      social_context_sources.flat_map do |note|
+        entries = [
+          [ "social_context", "User-provided social context", "[source: user_provided] #{note.body.to_plain_text.squish}" ]
+        ]
+        if note.approved_suggested_uses.include?("message") && note.interpretation.present?
+          entries << [
+            "social_context",
+            "Approved social context interpretation",
+            "[source: ai_inferred; review_status: approved] #{note.interpretation.to_s.squish}"
+          ]
+        end
+        entries
+      end
+    end
+
+    def social_context_sources
+      sources = social_context_notes ||
+        relationship_profile.social_context_notes
+          .downstream_sources
+          .to_a
+
+      SocialContextNote.select_downstream_sources(sources)
     end
 
     def private_note_entries

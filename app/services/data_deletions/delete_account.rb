@@ -17,7 +17,7 @@ module DataDeletions
         after_commit: -> { DeleteBlobs.call(blobs) }
       ) do
         profiles = locked_profiles
-        blobs = attached_blobs(profiles)
+        blobs = deletion_blobs(profiles)
         FeatureFlagAssignment.where(target_kind: "user", target_value: user.id).delete_all
         user.destroy!
       end
@@ -31,8 +31,8 @@ module DataDeletions
       user.relationship_profiles.with_discarded.order(:id).lock.to_a
     end
 
-    def attached_blobs(profiles)
-      (recording_blobs(profiles) + social_context_blobs(profiles)).uniq(&:id)
+    def deletion_blobs(profiles)
+      (recording_blobs(profiles) + social_context_blobs(profiles) + owner_stamped_blobs).uniq(&:id)
     end
 
     def recording_blobs(profiles)
@@ -48,6 +48,10 @@ module DataDeletions
         .where(relationship_profile: profiles)
         .with_rich_text_body_and_embeds
         .flat_map(&:image_blobs)
+    end
+
+    def owner_stamped_blobs
+      ActiveStorage::Blob.where(uploaded_by_user_id: user.id).to_a
     end
   end
 end

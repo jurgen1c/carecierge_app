@@ -50,6 +50,7 @@
               <%= form.rich_text_area :body,
                 id: social_context_field_id(note, :body),
                 aria: ({ describedby: error_summary_id(note) } if note.errors.any?),
+                data: social_context_editor_data,
                 class: "lexxy-content mt-2 min-h-32 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20",
                 disabled: !editable %>
             </div>
@@ -155,6 +156,7 @@
             <%= form.rich_text_area :body,
               id: social_context_field_id(new_note, :body),
               aria: ({ describedby: error_summary_id(new_note) } if new_note.errors.any?),
+              data: social_context_editor_data,
               class: "lexxy-content mt-2 min-h-32 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
           </div>
           <label class="flex min-h-11 items-start gap-3 text-sm text-ink">

@@ -71,13 +71,22 @@ auditable without retaining the account email or relationship contents.
   so delayed provider output cannot recreate deleted AI state. Clearing this AI
   state does not reread unchanged screenshot storage, so missing or temporarily
   unavailable uploads cannot block the privacy control.
-- Account deletion synchronously purges uploaded recordings before the request
-  can be marked completed. Storage files are deleted before their blob rows so a
-  failure leaves retryable metadata and failed evidence; blobs still attached to
-  another account are preserved. A blob row lock spans the final attachment
-  check and purge so concurrent attachment creation cannot race storage deletion.
-  If Active Storage already removed a blob row, the captured storage key receives
-  one final idempotent delete and the account request completes.
+- Account deletion synchronously purges uploaded recordings, attached social
+  screenshots, and owner-stamped uploads that never reached a saved note before
+  the request can be marked completed. Upload grants are short-lived and storage
+  writes pass through an authenticated account lock, so deletion revokes an
+  outstanding grant instead of allowing a late orphaned write. A retrying job
+  also removes uploads that remain unattached for one hour on active accounts,
+  and owner identifiers live only in the nullifying foreign key. Storage files are
+  deleted before their blob rows so a failure leaves retryable metadata and
+  failed evidence; blobs still attached to another account are preserved. A blob
+  row lock spans the final attachment check and purge so concurrent attachment
+  creation cannot race storage deletion. If Active Storage already removed a
+  blob row, the captured storage key receives one final idempotent delete and the
+  account request completes.
+- Social-context screenshot reads are owner-authorized and returned with
+  `no-store`, including previews before a note is saved. Reads return stored,
+  lazy-loaded variants bounded to 1024 by 768 rather than original screenshots.
 - Note deletion captures its screenshot blobs while holding the relationship
   lock. Profile and account deletion lock the owned relationship rows before
   snapshotting screenshots, closing the gap between snapshot and cascade.

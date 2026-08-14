@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  post "#{ActiveStorage.routes_prefix}/direct_uploads" => "direct_uploads#create"
+  post "social_context/direct_uploads" => "direct_uploads#create", as: :social_context_direct_uploads
+  put "social_context/direct_uploads/:signed_id" => "direct_uploads#update", as: :social_context_direct_upload
+  get "social_context/screenshots/:signed_id/:filename" => "social_context_screenshots#show",
+    as: :social_context_screenshot
 
   devise_for :users, controllers: {
     omniauth_callbacks: "users/omniauth_callbacks",

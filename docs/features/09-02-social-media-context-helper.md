@@ -11,10 +11,18 @@ Carecierge does not connect to or monitor social accounts.
 - Keep manually provided relationship-scoped notes and screenshots.
 - Bound stored rich-text HTML to 64 KiB and accept images only as PNG, JPEG, or
   WebP Active Storage attachments; reject raw remote and data-URL images.
-- Require authentication when issuing direct-upload credentials, stamp each
-  upload with its server-resolved owner, and accept a screenshot only when that
-  owner matches the relationship account. Detect PNG, JPEG, or WebP from the
-  stored bytes instead of trusting client-declared filenames or MIME metadata.
+- Require authentication when issuing and using short-lived direct-upload
+  credentials, proxy storage writes through the owner-locked application
+  endpoint, stamp each upload only in its server-resolved owner column, and
+  accept a screenshot only when that owner matches the relationship account.
+  Schedule retrying cleanup for uploads still unattached after one hour. Detect PNG,
+  JPEG, or WebP from the stored bytes instead of trusting client-declared
+  filenames or MIME metadata. Keep this bounded endpoint specific to social
+  context so existing Lexxy attachment types retain their prior upload contract.
+- Render saved screenshots and unattached editor previews only through an
+  authenticated, owner-authorized, no-store response. Use a stored 1024-by-768
+  bounded variant and lazy browser loading; never expose permanent Active Storage
+  blob URLs or duplicate owner identifiers in blob metadata.
 - Recheck stored image bytes when a note source is created or changed. Consent
   revocation and selective AI-data clearing keep enforcing saved ownership and
   size metadata without rereading unchanged storage, so an unavailable
@@ -56,9 +64,10 @@ Carecierge does not connect to or monitor social accounts.
   while clearing interpretation text, review state, proposed uses, and analysis
   timestamps; advance note and message-generation fences before delayed AI output
   can return.
-- Snapshot note, profile, and account screenshot blobs while the relevant owned
-  relationship profiles are locked, then synchronously remove unshared storage
-  before marking deletion evidence complete.
+- Snapshot note, profile, account screenshot, and unattached owner-stamped upload
+  blobs while the relevant account and relationship profiles are locked, revoke
+  outstanding grants with account deletion, then synchronously remove unshared
+  storage before marking deletion evidence complete.
 
 ## Possible Data Objects
 

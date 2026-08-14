@@ -69,6 +69,7 @@ RSpec.describe SocialContextNote do
       content_type: "image/png",
       metadata: { uploaded_by_user_id: user.id }
     )
+    image.update!(uploaded_by_user_id: user.id)
     note.body = "<p>Bookshop post</p>#{ActionText::Attachment.from_attachable(image).to_html}"
 
     expect(note).to be_valid
@@ -94,6 +95,7 @@ RSpec.describe SocialContextNote do
       content_type: "image/png",
       metadata: { uploaded_by_user_id: other_user.id }
     )
+    blob.update!(uploaded_by_user_id: other_user.id)
     note = build(
       :social_context_note,
       relationship_profile: create(:relationship_profile, user: owner),
@@ -113,6 +115,7 @@ RSpec.describe SocialContextNote do
       identify: false,
       metadata: { uploaded_by_user_id: user.id }
     )
+    blob.update!(uploaded_by_user_id: user.id)
     note = build(
       :social_context_note,
       relationship_profile: create(:relationship_profile, user:),
@@ -134,6 +137,7 @@ RSpec.describe SocialContextNote do
       identify: false,
       metadata: { uploaded_by_user_id: user.id }
     )
+    blob.update!(uploaded_by_user_id: user.id)
 
     expect do
       note.update_from_user!(

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_120001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_13_120002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -44,7 +44,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_120001) do
     t.string "key", null: false
     t.text "metadata"
     t.string "service_name", null: false
+    t.uuid "uploaded_by_user_id"
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+    t.index ["uploaded_by_user_id"], name: "index_active_storage_blobs_on_uploaded_by_user_id"
   end
 
   create_table "active_storage_variant_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -823,6 +825,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_120001) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "active_storage_blobs", "users", column: "uploaded_by_user_id", on_delete: :nullify
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "audit_events", "users", column: "actor_id", on_delete: :nullify
   add_foreign_key "audit_events", "users", on_delete: :cascade

@@ -220,7 +220,7 @@ class SocialContextNote < ApplicationRecord
 
   def blob_belongs_to_relationship_owner?(blob)
     relationship_profile&.user_id.present? &&
-      blob.metadata["uploaded_by_user_id"].to_s == relationship_profile.user_id.to_s
+      blob.uploaded_by_user_id == relationship_profile.user_id
   end
 
   def detected_content_type(blob)

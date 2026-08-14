@@ -10,9 +10,12 @@ title: Social context is user-provided, review-gated, and revocable
 
 claim: >
   Active owners can retain bounded Lexxy notes and managed screenshots without
-  social-account monitoring. Authenticated uploads are server-stamped with their
-  owner; notes reject cross-account blobs and detect image types from stored
-  bytes for new or changed sources. Downstream use is off by default and
+  social-account monitoring. Short-lived uploads are authenticated and
+  owner-locked for both grant and storage writes, then stamped only in an indexed
+  owner column. Expired unattached uploads receive scheduled cleanup.
+  Authenticated no-store reads return bounded, lazy previews without narrowing
+  other editors; notes reject cross-account blobs and detect image types from
+  stored bytes for new or changed sources. Downstream use is off by default and
   revocable even when unchanged screenshot storage is unavailable.
   Permission-gated, non-stored analysis stays reviewable. Account-to-profile
   lock ordering and version fences prevent deadlocks and stale outputs. Selective
@@ -22,6 +25,9 @@ claim: >
 
 source_files:
   - app/controllers/direct_uploads_controller.rb
+  - app/controllers/social_context_screenshots_controller.rb
+  - app/jobs/purge_abandoned_social_context_upload_job.rb
+  - app/policies/social_context_screenshot_policy.rb
   - app/models/social_context_note.rb
   - app/models/relationship_profile.rb
   - app/models/draft_revision.rb
@@ -33,7 +39,10 @@ source_files:
   - app/services/social_context_notes/open_ai_analyzer.rb
   - app/views/components/social_context_ledger_component.rb
   - app/views/components/social_context_ledger_component.html.erb
+  - app/views/active_storage/blobs/_blob.html.erb
+  - config/initializers/action_text_image_loading.rb
   - db/migrate/20260813120000_create_social_context_notes.rb
+  - db/migrate/20260813120002_add_uploaded_by_user_to_active_storage_blobs.rb
 
 related_files:
   - app/models/automation_capability.rb
@@ -52,7 +61,9 @@ related_files:
   - db/migrate/20260813120001_add_social_context_note_deletion_kind.rb
   - docs/features/09-02-social-media-context-helper.md
   - spec/models/social_context_note_spec.rb
+  - spec/jobs/purge_abandoned_social_context_upload_job_spec.rb
   - spec/requests/direct_uploads_spec.rb
+  - spec/requests/social_context_screenshots_spec.rb
   - spec/services/social_context_notes/analyze_spec.rb
   - spec/services/social_context_notes/open_ai_analyzer_spec.rb
   - spec/requests/social_context_notes_spec.rb
@@ -61,13 +72,18 @@ symbols:
   - SocialContextNote
   - SocialContextNotesController
   - SocialContextNotePolicy
+  - SocialContextScreenshotsController
+  - SocialContextScreenshotPolicy
+  - PurgeAbandonedSocialContextUploadJob
   - SocialContextNotes::Analyze
   - SocialContextNotes::AnalysisInput
   - SocialContextNotes::OpenAiAnalyzer
   - SocialContextLedgerComponent
 
 routes:
-  - rails_direct_uploads
+  - social_context_direct_uploads
+  - social_context_direct_upload
+  - social_context_screenshot
   - relationship_profile_social_context_notes
   - relationship_profile_social_context_note
   - analyze_relationship_profile_social_context_note
@@ -82,7 +98,7 @@ tags:
   - privacy
 
 verification:
-  - bundle exec rspec spec/models/social_context_note_spec.rb spec/services/social_context_notes spec/policies/social_context_note_policy_spec.rb spec/components/social_context_ledger_component_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/social_context_notes_spec.rb spec/models/draft_revision_spec.rb spec/services/message_drafts/context_builder_spec.rb spec/services/message_drafts/generate_spec.rb spec/services/suggestions/for_profile_spec.rb spec/requests/data_controls_spec.rb spec/config/filter_parameter_logging_spec.rb spec/config/ai_memory_deploy_spec.rb
+  - bundle exec rspec spec/models/social_context_note_spec.rb spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/services/social_context_notes spec/policies/social_context_note_policy_spec.rb spec/components/social_context_ledger_component_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/social_context_screenshots_spec.rb spec/requests/social_context_notes_spec.rb spec/models/draft_revision_spec.rb spec/services/message_drafts/context_builder_spec.rb spec/services/message_drafts/generate_spec.rb spec/services/suggestions/for_profile_spec.rb spec/requests/data_controls_spec.rb spec/config/filter_parameter_logging_spec.rb spec/config/ai_memory_deploy_spec.rb
   - bin/rubocop
   - bin/memory validate
   - bin/memory coverage --git-diff
@@ -96,21 +112,22 @@ last_verified_commit: null
 
 ## Claim
 
-Owners add bounded relationship notes and supported images; Carecierge does not
-monitor social accounts. Direct-upload credentials require an authenticated
-account and stamp the server-resolved owner onto the blob. A note accepts only
-blobs owned by its relationship account and detects supported image types from
-the stored bytes rather than client-declared metadata whenever its source is new
-or changed. Saved ownership, count, and size constraints remain enforced on
-later updates without rereading unchanged storage, keeping consent revocation and
-selective AI deletion available during attachment-storage failures. Downstream
-use starts off and remains revocable.
-Permission-gated analysis snapshots saved content before a non-stored request,
-and its output remains a draft until review. Reanalysis clears prior AI output
-and advances its fences before provider I/O. Completion then locks the account,
-profile, and note in that order. Only opted-in owner text and approved message
-interpretations can enter drafting. Selective AI deletion preserves owner text
-and uploads while clearing AI state and fencing delayed results.
+Owners add bounded notes and images; Carecierge does not monitor social accounts.
+Ten-minute upload grants and proxied writes require the same locked account and
+stamp only an indexed owner column; no owner identifier is copied into blob
+metadata. A retrying job removes uploads still unattached after one hour, while
+account deletion captures attached and unattached blobs under its lock and
+revokes grants. Saved embeds and previews use owner-authorized, no-store,
+resized, lazy reads; other Lexxy editors retain their standard upload contract.
+Notes accept only owner-matched supported image bytes.
+Saved ownership, count, and size checks remain enforceable without rereading
+unchanged storage, so consent revocation and selective AI deletion survive
+storage failures. Downstream use starts off and stays revocable. Permission-gated
+analysis snapshots saved content before non-stored provider I/O and stays draft
+until review. Reanalysis clears prior output and advances fences first; completion
+locks account, profile, then note. Only opted-in owner text and approved
+interpretations enter drafting. Selective deletion preserves owner content while
+clearing AI state and fencing delayed results.
 
 ## Why It Matters
 
@@ -129,7 +146,7 @@ and downstream use revocable prevents covert monitoring and silent profiling.
 
 ## Verification
 
-- `bundle exec rspec spec/models/social_context_note_spec.rb spec/services/social_context_notes spec/policies/social_context_note_policy_spec.rb spec/components/social_context_ledger_component_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/social_context_notes_spec.rb spec/models/draft_revision_spec.rb spec/services/message_drafts/context_builder_spec.rb spec/services/message_drafts/generate_spec.rb spec/services/suggestions/for_profile_spec.rb spec/requests/data_controls_spec.rb spec/config/filter_parameter_logging_spec.rb spec/config/ai_memory_deploy_spec.rb`
+- `bundle exec rspec spec/models/social_context_note_spec.rb spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/services/social_context_notes spec/policies/social_context_note_policy_spec.rb spec/components/social_context_ledger_component_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/social_context_screenshots_spec.rb spec/requests/social_context_notes_spec.rb spec/models/draft_revision_spec.rb spec/services/message_drafts/context_builder_spec.rb spec/services/message_drafts/generate_spec.rb spec/services/suggestions/for_profile_spec.rb spec/requests/data_controls_spec.rb spec/config/filter_parameter_logging_spec.rb spec/config/ai_memory_deploy_spec.rb`
 - `bin/rubocop`
 - `bin/memory validate`
 - `bin/memory coverage --git-diff`

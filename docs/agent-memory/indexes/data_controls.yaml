@@ -7,11 +7,15 @@ default_queries:
   - data export JSON CSV PDF calendar protected vault password
   - delete account profile sensitive note AI generated data
   - social context export screenshot deletion blob cleanup
+  - social context abandoned upload cleanup owner metadata foreign key
   - deletion request account digest audit evidence
 watched_files:
   - app/controllers/data_controls_controller.rb
   - app/controllers/data_exports_controller.rb
   - app/controllers/data_deletions_controller.rb
+  - app/controllers/direct_uploads_controller.rb
+  - app/controllers/social_context_screenshots_controller.rb
+  - app/jobs/purge_abandoned_social_context_upload_job.rb
   - app/controllers/privacy_vault_items_controller.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/models/deletion_request.rb

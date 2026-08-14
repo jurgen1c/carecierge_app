@@ -1,4 +1,5 @@
 class SocialContextLedgerComponent < ApplicationViewComponent
+  include ActionText::ContentHelper
   include Lexxy::TagHelper
 
   option :relationship_profile
@@ -104,6 +105,13 @@ class SocialContextLedgerComponent < ApplicationViewComponent
 
   def current_page
     notes_pagy&.page
+  end
+
+  def social_context_editor_data
+    {
+      direct_upload_url: social_context_direct_uploads_path,
+      blob_url_template: social_context_screenshot_path(signed_id: ":signed_id", filename: ":filename")
+    }
   end
 
   def main_app

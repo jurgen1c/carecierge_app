@@ -18,7 +18,9 @@ claim: >
   origin, and audits only successful exports. Selective AI deletion preserves
   corrected memories and authored notes, clears note analysis without rereading
   unchanged screenshots, and fences delayed results. Profile and account
-  deletion lock snapshots and idempotently clean shared blobs. Completed account
+  deletion lock snapshots, revokes outstanding authenticated upload grants, and
+  idempotently cleans attached or abandoned owner blobs. Ownership stays in the
+  nullifying foreign key rather than retained blob metadata. Completed account
   deletion retains only a one-way digest; OAuth users receive password setup.
 
 source_files:
@@ -31,7 +33,11 @@ source_files:
   - app/services/data_deletions/delete_account.rb
   - app/services/data_deletions/delete_ai_data.rb
   - app/services/data_deletions/delete_blobs.rb
+  - app/controllers/direct_uploads_controller.rb
+  - app/controllers/social_context_screenshots_controller.rb
+  - app/jobs/purge_abandoned_social_context_upload_job.rb
   - db/migrate/20260808004436_create_deletion_requests.rb
+  - db/migrate/20260813120002_add_uploaded_by_user_to_active_storage_blobs.rb
 
 related_files:
   - app/serializers/data_exports/csv_serializer.rb
@@ -41,10 +47,14 @@ related_files:
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb
   - spec/requests/social_context_notes_spec.rb
+  - spec/jobs/purge_abandoned_social_context_upload_job_spec.rb
   - spec/services/data_deletions/delete_ai_data_spec.rb
   - spec/system/data_controls_spec.rb
 
 symbols:
+  - DirectUploadsController
+  - SocialContextScreenshotsController
+  - PurgeAbandonedSocialContextUploadJob
   - DataControlsController
   - DataExportsController
   - DataDeletionsController
@@ -57,6 +67,8 @@ symbols:
   - DeletionRequest
 
 routes:
+  - social_context_direct_upload
+  - social_context_screenshot
   - data_control
   - data_exports
   - data_deletions
@@ -67,7 +79,7 @@ tags:
   - account_deletion
 
 verification:
-  - bundle exec rspec spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
+  - bundle exec rspec spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
   - bin/rubocop
   - bin/memory validate
   - bin/memory coverage --git-diff
@@ -82,18 +94,15 @@ last_verified_commit: null
 ## Claim
 
 Every export format uses the same owner scope, and decrypted vault payloads
-require password reauthentication. Full-account JSON and CSV include
-privacy-safe access and reminder evidence, effective message-draft response
-settings and revisions, and social-note text, review state, consent state, and
-screenshot bytes. They exclude ownership keys, lock versions, internal errors,
-leases, fences, and recipient keys. Legacy casual or formal tones export as a
-coherent warm tone and matching formality. Native navigation handles downloads,
-and only successful serialization emits content-free audit evidence. Selective
-AI deletion uses a non-key-changing profile lock, preserves corrected memories
-and authored notes, clears note analysis without rereading unchanged screenshot
-storage, and fences delayed extraction and message-draft results. Note, profile,
-and account deletion snapshot under owned profile locks; blob cleanup serializes
-shared recording and screenshot removal.
+require password reauthentication. JSON and CSV include privacy-safe evidence,
+message revisions, social notes, consent state, and screenshot bytes while
+excluding internal keys, errors, leases, and fences. Serialization neutralizes
+formulas, preserves recurrences, and audits only success. Selective AI deletion
+preserves authored content while clearing and fencing inferred state. Profile and
+account deletion snapshot under owned locks; upload writes share the account lock,
+and cleanup includes attached or abandoned owner-stamped blobs. Ownership lives
+only in a nullifying foreign key, and a retrying expiry job cleans abandoned
+uploads without retaining owner UUIDs in metadata.
 
 ## Why It Matters
 
@@ -114,7 +123,7 @@ content into a second store.
 
 ## Verification
 
-- `bundle exec rspec spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb`
+- `bundle exec rspec spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb`
 - `bin/rubocop`
 - `bin/memory validate`
 - `bin/memory coverage --git-diff`

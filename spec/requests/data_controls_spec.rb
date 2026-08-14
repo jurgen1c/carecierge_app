@@ -508,6 +508,32 @@ RSpec.describe "Data controls", type: :request do
       expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
     end
 
+    it "revokes and purges an unattached direct-upload grant with the account" do
+      post social_context_direct_uploads_path, params: {
+        blob: {
+          filename: "abandoned.png",
+          byte_size: 8,
+          checksum: Digest::MD5.base64digest("\x89PNG\r\n\x1A\n".b),
+          content_type: "image/png"
+        }
+      }
+      upload_url = response.parsed_body.dig("direct_upload", "url")
+      blob = ActiveStorage::Blob.order(:created_at).last
+      blob_key = blob.key
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(ActiveStorage::Blob.exists?(blob.id)).to be(false)
+      expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
+
+      put upload_url, params: "\x89PNG\r\n\x1A\n".b, headers: { "CONTENT_TYPE" => "image/png" }
+
+      expect(response).to redirect_to(new_user_session_path)
+      expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
+    end
+
     it "locks owned relationship profiles before snapshotting account screenshots" do
       blob = create_social_context_image_blob(user:, filename: "account-lock.png", payload: "account lock screenshot")
       create(

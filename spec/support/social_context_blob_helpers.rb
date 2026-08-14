@@ -9,9 +9,8 @@ module SocialContextBlobHelpers
     ActiveStorage::Blob.create_and_upload!(
       io: StringIO.new(social_context_png_bytes(payload)),
       filename:,
-      content_type: "image/png",
-      metadata: { uploaded_by_user_id: user.id }
-    )
+      content_type: "image/png"
+    ).tap { |blob| blob.update!(uploaded_by_user_id: user.id) }
   end
 end
 

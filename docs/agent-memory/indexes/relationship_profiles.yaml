@@ -14,6 +14,7 @@ default_queries:
   - suggestion engine explanations feedback dismissal act reminder action kind automation permission
   - message drafts response suggestions situation purpose tone length formality private notes vault lease immutable revisions review only OpenAI
   - social context user provided screenshots analysis permission interpretation review consent suggestions message drafts
+  - social context direct upload abandoned cleanup authorized bounded preview owner column
   - privacy vault encryption password reauthentication access lease audit suggestion exclusion
   - conversation recaps timeline source links AI extraction approval gate
   - extracted memory proposals source excerpts confidence owner approval correction rejection OpenAI
@@ -74,6 +75,9 @@ watched_files:
   - app/controllers/suggestions_controller.rb
   - app/controllers/message_drafts_controller.rb
   - app/controllers/social_context_notes_controller.rb
+  - app/controllers/direct_uploads_controller.rb
+  - app/controllers/social_context_screenshots_controller.rb
+  - app/jobs/purge_abandoned_social_context_upload_job.rb
   - app/controllers/onboarding_controller.rb
   - app/controllers/important_dates_controller.rb
   - app/controllers/gifts_controller.rb
@@ -101,6 +105,7 @@ watched_files:
   - app/policies/suggestion_feedback_policy.rb
   - app/policies/message_draft_policy.rb
   - app/policies/social_context_note_policy.rb
+  - app/policies/social_context_screenshot_policy.rb
   - app/policies/important_date_policy.rb
   - app/policies/gift_policy.rb
   - app/policies/memory_record_policy.rb
@@ -124,6 +129,7 @@ watched_files:
   - app/views/components/suggestion_*_component.*
   - app/views/components/message_draft_workspace_component.*
   - app/views/components/social_context_ledger_component.*
+  - app/views/active_storage/blobs/_blob.html.erb
   - app/views/suggestions/**/*.erb
   - app/views/relationship_personas/**/*.erb
   - app/views/mood_notes/**/*.erb
@@ -139,6 +145,7 @@ watched_files:
   - app/javascript/controllers/privacy_vault_controller.js
   - config/routes.rb
   - config/initializers/filter_parameter_logging.rb
+  - config/initializers/action_text_image_loading.rb
   - config/initializers/active_record_encryption.rb
   - config/locales/en.yml
   - config/locales/es.yml

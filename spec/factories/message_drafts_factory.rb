@@ -5,6 +5,9 @@
 #
 #  id                      :uuid             not null, primary key
 #  draft_type              :string           not null
+#  formality               :string           default("balanced"), not null
+#  response_length         :string           default("medium"), not null
+#  situation               :text             default(""), not null
 #  tone                    :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
@@ -27,6 +30,9 @@ FactoryBot.define do
     relationship_profile { association(:relationship_profile, user:) }
     draft_type { "birthday" }
     tone { "warm" }
+    situation { "" }
+    response_length { "medium" }
+    formality { "balanced" }
   end
 
   factory :draft_revision do

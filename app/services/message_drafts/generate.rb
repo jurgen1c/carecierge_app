@@ -5,6 +5,9 @@ module MessageDrafts
       relationship_profile:,
       draft_type:,
       tone:,
+      situation: "",
+      response_length: "medium",
+      formality: "balanced",
       include_private_notes: false,
       include_vault_context: false,
       vault_lease: nil,
@@ -16,6 +19,9 @@ module MessageDrafts
         relationship_profile:,
         draft_type:,
         tone:,
+        situation:,
+        response_length:,
+        formality:,
         include_private_notes:,
         include_vault_context:,
         vault_lease:,
@@ -29,6 +35,9 @@ module MessageDrafts
       relationship_profile:,
       draft_type:,
       tone:,
+      situation:,
+      response_length:,
+      formality:,
       include_private_notes:,
       include_vault_context:,
       vault_lease:,
@@ -38,7 +47,9 @@ module MessageDrafts
       @actor = actor
       @relationship_profile = relationship_profile
       @draft_type = draft_type
-      @tone = tone
+      @tone, @formality = normalized_tone_and_formality(tone, formality)
+      @situation = situation.to_s.strip
+      @response_length = response_length.presence || "medium"
       @include_private_notes = include_private_notes
       @include_vault_context = include_vault_context
       @vault_lease = vault_lease
@@ -47,17 +58,23 @@ module MessageDrafts
     end
 
     def call
-      generation_version, context = prepare_generation!
+      generation_version, context, draft_id = prepare_generation!
       record_sensitive_access(context.categories)
-      content = generator.generate(draft_type:, tone:, context: context.text, locale:)
+      content = generator.generate(
+        draft_type:,
+        tone:,
+        situation:,
+        response_length:,
+        formality:,
+        context: context.text,
+        locale:
+      )
 
       relationship_profile.with_lock do
         raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
-        raise ActiveRecord::RecordNotFound unless relationship_profile.message_draft_generation_version == generation_version
+        reject_stale_generation!(generation_version:, draft_id:)
 
-        draft = MessageDraft.find_or_initialize_by(relationship_profile:)
-        draft.assign_attributes(user: actor, draft_type:, tone:)
-        draft.save!
+        draft = MessageDraft.find_by!(id: draft_id, relationship_profile:)
         revision = draft.append_revision!(
           content:,
           origin: "generated",
@@ -76,10 +93,19 @@ module MessageDrafts
 
     private
 
+    def normalized_tone_and_formality(tone, formality)
+      return [ "warm", tone ] if MessageDraft::LEGACY_FORMALITY_TONES.include?(tone)
+
+      [ tone, formality.presence || "balanced" ]
+    end
+
     attr_reader :actor,
       :relationship_profile,
       :draft_type,
       :tone,
+      :situation,
+      :response_length,
+      :formality,
       :include_private_notes,
       :include_vault_context,
       :vault_lease,
@@ -99,7 +125,10 @@ module MessageDrafts
             include_vault_context:
           ).call
 
-          [ relationship_profile.message_draft_generation_version, context ]
+          draft = persist_draft_settings!
+          relationship_profile.increment!(:message_draft_generation_version)
+
+          [ relationship_profile.message_draft_generation_version, context, draft.id ]
         end
       end
     end
@@ -132,8 +161,37 @@ module MessageDrafts
 
     def validate_draft_settings!
       draft = MessageDraft.find_by(relationship_profile:) || MessageDraft.new
-      draft.assign_attributes(user: actor, relationship_profile:, draft_type:, tone:)
+      draft.assign_attributes(
+        user: actor,
+        relationship_profile:,
+        draft_type:,
+        tone:,
+        situation:,
+        response_length:,
+        formality:
+      )
       raise ActiveRecord::RecordInvalid, draft unless draft.valid?
+    end
+
+    def persist_draft_settings!
+      draft = MessageDraft.find_or_initialize_by(relationship_profile:)
+      draft.assign_attributes(
+        user: actor,
+        draft_type:,
+        tone:,
+        situation:,
+        response_length:,
+        formality:
+      )
+      draft.save!
+      draft
+    end
+
+    def reject_stale_generation!(generation_version:, draft_id:)
+      return if relationship_profile.message_draft_generation_version == generation_version
+      raise ActiveRecord::RecordNotFound unless MessageDraft.exists?(id: draft_id, relationship_profile_id: relationship_profile.id)
+
+      raise GenerationSupersededError, "A newer message drafting request superseded this generation"
     end
   end
 end

@@ -1,23 +1,30 @@
 en:
   message_drafts:
     workspace:
-      title: "Write with context"
-      body: "Use the relationship context you allow to shape a thoughtful message you can revise."
-      draft_only: "Draft only — nothing will be sent"
-      setup: "Message setup"
-      placeholder: "Generate a draft, then make it sound like you."
+      title: "Suggest a thoughtful response"
+      body: "Describe what happened or paste a message, then shape a response with the relationship context you allow."
+      review_required: "Review required"
+      setup: "Response setup"
+      situation_placeholder: "Paste the message or describe the situation and what you want your response to accomplish."
+      situation_hint: "This is saved in your private draft workspace, filtered from request logs, and shared with our AI provider when you request a suggestion."
+      placeholder: "Generate a suggestion, then make it sound like you."
+      review_title: "Review and edit before you use this"
+      review_body: "Nothing is sent automatically. You remain responsible for the final message."
       word_count:
         one: "%{count} word"
         other: "%{count} words"
     fields:
-      draft_type: "Message type"
+      situation: "Message or situation"
+      draft_type: "Purpose"
       tone: "Tone"
-      content: "Draft"
+      response_length: "Length"
+      formality: "Formality"
+      content: "Suggested response"
     types:
       birthday: "Birthday"
       apology: "Apology"
       thank_you: "Thank-you note"
-      check_in: "Check-in"
+      check_in: "General reply or check-in"
       congratulations: "Congratulations"
       condolence: "Condolence"
       professional_follow_up: "Professional follow-up"
@@ -31,9 +38,15 @@ en:
       concise: "Concise"
       emotional: "Emotional"
       apologetic: "Apologetic"
-      casual: "Casual"
-      formal: "Formal"
       encouraging: "Encouraging"
+    response_lengths:
+      short: "Short"
+      medium: "Medium"
+      long: "Long"
+    formalities:
+      casual: "Casual"
+      balanced: "Balanced"
+      formal: "Formal"
     context:
       title: "Relationship context"
       body: "These current, non-protected sources can shape your draft."
@@ -53,9 +66,9 @@ en:
       vault_items_hint: "Requires a currently unlocked privacy vault."
       unlock_vault: "Unlock the privacy vault"
     actions:
-      generate: "Generate draft"
-      generate_revision: "Generate new revision"
-      generating: "Generating…"
+      generate: "Suggest a response"
+      generate_revision: "Suggest another response"
+      generating: "Drafting response…"
       save: "Save edits"
       saving: "Saving…"
       restore: "Restore"
@@ -76,9 +89,10 @@ en:
       edited: "Edited"
       restored: "Restored"
     generate:
-      notice: "Draft generated. Review and edit it before using it."
-      provider_error: "The drafting service is unavailable right now. Your existing draft was not changed."
-      invalid: "Choose a supported message type and tone."
+      notice: "Response suggested. Review and edit it before using it."
+      provider_error: "We couldn't suggest a response. Your message and settings are saved, but no response was added. Try again."
+      superseded: "Newer saved work replaced this response. Review the latest draft and revision."
+      invalid: "Choose supported response settings and keep the message or situation within 4,000 characters."
     update:
       notice: "Your edits were saved as a new revision."
       invalid: "Add draft content before saving."

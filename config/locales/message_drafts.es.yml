@@ -1,23 +1,30 @@
 es:
   message_drafts:
     workspace:
-      title: "Escribe con contexto"
-      body: "Usa el contexto de la relación que autorices para crear un mensaje considerado que puedas revisar."
-      draft_only: "Solo borrador — no se enviará nada"
-      setup: "Configuración del mensaje"
-      placeholder: "Genera un borrador y luego ajústalo a tu manera de expresarte."
+      title: "Sugiere una respuesta considerada"
+      body: "Describe lo que pasó o pega un mensaje y luego adapta una respuesta con el contexto de la relación que autorices."
+      review_required: "Revisión requerida"
+      setup: "Configuración de la respuesta"
+      situation_placeholder: "Pega el mensaje o describe la situación y lo que quieres lograr con tu respuesta."
+      situation_hint: "Esto se guarda en tu espacio privado de borradores, se filtra de los registros de solicitudes y se comparte con nuestro proveedor de IA cuando solicitas una sugerencia."
+      placeholder: "Genera una sugerencia y luego ajústala a tu manera de expresarte."
+      review_title: "Revisa y edita antes de usar esta respuesta"
+      review_body: "Nada se envía automáticamente. Tú eres responsable del mensaje final."
       word_count:
         one: "%{count} palabra"
         other: "%{count} palabras"
     fields:
-      draft_type: "Tipo de mensaje"
+      situation: "Mensaje o situación"
+      draft_type: "Propósito"
       tone: "Tono"
-      content: "Borrador"
+      response_length: "Extensión"
+      formality: "Formalidad"
+      content: "Respuesta sugerida"
     types:
       birthday: "Cumpleaños"
       apology: "Disculpa"
       thank_you: "Agradecimiento"
-      check_in: "Mensaje para saber cómo está"
+      check_in: "Respuesta general o para saber cómo está"
       congratulations: "Felicitación"
       condolence: "Condolencia"
       professional_follow_up: "Seguimiento profesional"
@@ -31,9 +38,15 @@ es:
       concise: "Conciso"
       emotional: "Emotivo"
       apologetic: "De disculpa"
-      casual: "Casual"
-      formal: "Formal"
       encouraging: "Alentador"
+    response_lengths:
+      short: "Corta"
+      medium: "Media"
+      long: "Larga"
+    formalities:
+      casual: "Casual"
+      balanced: "Equilibrada"
+      formal: "Formal"
     context:
       title: "Contexto de la relación"
       body: "Estas fuentes actuales y no protegidas pueden orientar tu borrador."
@@ -53,9 +66,9 @@ es:
       vault_items_hint: "Requiere que la bóveda de privacidad esté desbloqueada."
       unlock_vault: "Desbloquear la bóveda de privacidad"
     actions:
-      generate: "Generar borrador"
-      generate_revision: "Generar una nueva revisión"
-      generating: "Generando…"
+      generate: "Sugerir una respuesta"
+      generate_revision: "Sugerir otra respuesta"
+      generating: "Redactando respuesta…"
       save: "Guardar cambios"
       saving: "Guardando…"
       restore: "Restaurar"
@@ -76,9 +89,10 @@ es:
       edited: "Editado"
       restored: "Restaurado"
     generate:
-      notice: "Borrador generado. Revísalo y edítalo antes de usarlo."
-      provider_error: "El servicio de redacción no está disponible ahora. Tu borrador existente no cambió."
-      invalid: "Elige un tipo de mensaje y un tono compatibles."
+      notice: "Respuesta sugerida. Revísala y edítala antes de usarla."
+      provider_error: "No pudimos sugerir una respuesta. Tu mensaje y configuración se guardaron, pero no se agregó ninguna respuesta. Inténtalo de nuevo."
+      superseded: "Un cambio guardado más reciente reemplazó esta respuesta. Revisa el borrador y la revisión más recientes."
+      invalid: "Elige opciones de respuesta compatibles y limita el mensaje o la situación a 4.000 caracteres."
     update:
       notice: "Tus cambios se guardaron como una nueva revisión."
       invalid: "Agrega contenido al borrador antes de guardarlo."

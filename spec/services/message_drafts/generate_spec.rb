@@ -4,13 +4,25 @@ RSpec.describe MessageDrafts::Generate do
   it "creates the profile workspace, an immutable generated revision, and privacy-minimized audit evidence" do
     user = create(:user)
     profile = create(:relationship_profile, user:, preferred_name: "Maya")
-    generator = double(generate: "Happy birthday, Maya!")
+    generator = double
+    expect(generator).to receive(:generate).with(
+      draft_type: "birthday",
+      tone: "warm",
+      situation: "Maya shared a birthday post.",
+      response_length: "short",
+      formality: "casual",
+      context: a_string_including("Maya"),
+      locale: :en
+    ).and_return("Happy birthday, Maya!")
 
     revision = described_class.call(
       actor: user,
       relationship_profile: profile,
       draft_type: "birthday",
       tone: "warm",
+      situation: "Maya shared a birthday post.",
+      response_length: "short",
+      formality: "casual",
       generator:
     )
 
@@ -19,9 +31,50 @@ RSpec.describe MessageDrafts::Generate do
       user:,
       relationship_profile_id: profile.id,
       draft_type: "birthday",
-      tone: "warm"
+      tone: "warm",
+      situation: "Maya shared a birthday post.",
+      response_length: "short",
+      formality: "casual"
     )
     expect(AuditEvent.where(user:, action: "message.drafted", target: profile)).to exist
+  end
+
+  it "normalizes the untrusted situation before validating and sending it to the provider" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    generator = double
+    expect(generator).to receive(:generate).with(hash_including(situation: "A short message")).and_return("A reply")
+
+    revision = described_class.call(
+      actor: user,
+      relationship_profile: profile,
+      draft_type: "check_in",
+      tone: "warm",
+      situation: " #{" " * MessageDraft::MAX_SITUATION_LENGTH}A short message ",
+      generator:
+    )
+
+    expect(revision.message_draft.situation).to eq("A short message")
+  end
+
+  it "normalizes a rolling-deploy legacy tone into the independent provider axes" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    generator = double
+    expect(generator).to receive(:generate).with(
+      hash_including(tone: "warm", formality: "formal")
+    ).and_return("A formal reply")
+
+    revision = described_class.call(
+      actor: user,
+      relationship_profile: profile,
+      draft_type: "check_in",
+      tone: "formal",
+      formality: "balanced",
+      generator:
+    )
+
+    expect(revision.message_draft).to have_attributes(tone: "warm", formality: "formal")
   end
 
   it "reuses the profile workspace and appends a revision" do
@@ -44,7 +97,113 @@ RSpec.describe MessageDrafts::Generate do
     expect(draft.current_revision.position).to eq(2)
   end
 
-  it "records sensitive-context access even when generation fails" do
+  it "lets the latest overlapping request own both settings and the current revision" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    latest_revision = nil
+    first_generator = double
+    allow(first_generator).to receive(:generate) do
+      latest_revision = described_class.call(
+        actor: user,
+        relationship_profile: profile,
+        draft_type: "boundary_setting",
+        tone: "concise",
+        situation: "Please stop calling during work.",
+        response_length: "short",
+        formality: "formal",
+        generator: double(generate: "Please avoid calling me during work hours.")
+      )
+      "A stale response"
+    end
+
+    expect do
+      described_class.call(
+        actor: user,
+        relationship_profile: profile,
+        draft_type: "check_in",
+        tone: "warm",
+        situation: "How was your week?",
+        response_length: "long",
+        formality: "casual",
+        generator: first_generator
+      )
+    end.to raise_error(MessageDrafts::GenerationSupersededError)
+
+    draft = profile.reload.message_draft
+    expect(draft).to have_attributes(
+      draft_type: "boundary_setting",
+      tone: "concise",
+      situation: "Please stop calling during work.",
+      response_length: "short",
+      formality: "formal"
+    )
+    expect(draft.current_revision).to eq(latest_revision)
+    expect(draft.draft_revisions.count).to eq(1)
+  end
+
+  it "does not let a late provider response supersede a newer manual edit" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    edited_revision = nil
+    generator = double
+    allow(generator).to receive(:generate) do
+      edited_revision = profile.reload.message_draft.save_edit!(
+        content: "I can talk tomorrow instead.",
+        draft_type: "boundary_setting",
+        tone: "concise",
+        situation: "They asked if I can talk tonight.",
+        response_length: "short",
+        formality: "casual"
+      )
+      "A stale generated response"
+    end
+
+    expect do
+      described_class.call(
+        actor: user,
+        relationship_profile: profile,
+        draft_type: "check_in",
+        tone: "warm",
+        situation: "How was your week?",
+        generator:
+      )
+    end.to raise_error(MessageDrafts::GenerationSupersededError)
+
+    draft = profile.reload.message_draft
+    expect(draft.current_revision).to eq(edited_revision)
+    expect(draft.current_revision.content).to eq("I can talk tomorrow instead.")
+    expect(draft.situation).to eq("They asked if I can talk tonight.")
+  end
+
+  it "does not let a late provider response supersede a newer restore" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    draft = create(:message_draft, user:, relationship_profile: profile)
+    original = create(:draft_revision, message_draft: draft, position: 1, content: "Original response")
+    create(:draft_revision, message_draft: draft, position: 2, content: "Current response")
+    restored_revision = nil
+    generator = double
+    allow(generator).to receive(:generate) do
+      restored_revision = draft.reload.restore_revision!(original)
+      "A stale generated response"
+    end
+
+    expect do
+      described_class.call(
+        actor: user,
+        relationship_profile: profile,
+        draft_type: "check_in",
+        tone: "warm",
+        generator:
+      )
+    end.to raise_error(MessageDrafts::GenerationSupersededError)
+
+    expect(draft.reload.current_revision).to eq(restored_revision)
+    expect(draft.current_revision.content).to eq("Original response")
+    expect(draft.draft_revisions.count).to eq(3)
+  end
+
+  it "preserves validated private workspace settings and records sensitive access when generation fails" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
     create(:relationship_note, relationship_profile: profile, private: true, body: "Sensitive note")
@@ -57,13 +216,21 @@ RSpec.describe MessageDrafts::Generate do
         relationship_profile: profile,
         draft_type: "check_in",
         tone: "warm",
+        situation: "They asked whether I am available this weekend.",
+        response_length: "short",
+        formality: "casual",
         include_private_notes: true,
         generator:
       )
     end.to raise_error(MessageDrafts::GenerationError)
 
     expect(AuditEvent.where(user:, action: "sensitive_record.accessed", target: profile)).to exist
-    expect(MessageDraft.where(relationship_profile: profile)).not_to exist
+    expect(profile.reload.message_draft).to have_attributes(
+      situation: "They asked whether I am available this weekend.",
+      response_length: "short",
+      formality: "casual"
+    )
+    expect(profile.message_draft.draft_revisions).to be_empty
   end
 
   it "rejects vault context unless the caller supplies the active password-backed lease" do
@@ -194,7 +361,7 @@ RSpec.describe MessageDrafts::Generate do
     end.to raise_error(ActiveRecord::RecordNotFound)
   end
 
-  it "does not persist when the profile is archived while the provider request is in flight" do
+  it "does not append a revision when the profile is archived while the provider request is in flight" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
     generator = double
@@ -213,7 +380,8 @@ RSpec.describe MessageDrafts::Generate do
       )
     end.to raise_error(ActiveRecord::RecordNotFound)
 
-    expect(profile.reload.message_draft).to be_nil
+    expect(profile.reload.message_draft).to be_present
+    expect(profile.message_draft.draft_revisions).to be_empty
   end
 
   it "does not recreate a draft deleted while the provider request is in flight" do
@@ -258,9 +426,11 @@ RSpec.describe MessageDrafts::Generate do
         tone: "warm",
         generator:
       )
-    end.to raise_error(ActiveRecord::RecordNotFound)
+    end.to raise_error(MessageDrafts::GenerationSupersededError)
 
-    expect(profile.reload.message_draft).to be_nil
+    draft = profile.reload.message_draft
+    expect(draft).to be_present
+    expect(draft.draft_revisions).to be_empty
   end
 
   it "does not persist provider output after opted-in social context is deleted in flight" do
@@ -281,8 +451,10 @@ RSpec.describe MessageDrafts::Generate do
         tone: "warm",
         generator:
       )
-    end.to raise_error(ActiveRecord::RecordNotFound)
+    end.to raise_error(MessageDrafts::GenerationSupersededError)
 
-    expect(profile.reload.message_draft).to be_nil
+    draft = profile.reload.message_draft
+    expect(draft).to be_present
+    expect(draft.draft_revisions).to be_empty
   end
 end

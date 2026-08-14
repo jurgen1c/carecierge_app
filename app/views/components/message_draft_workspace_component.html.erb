@@ -6,7 +6,7 @@
         <p class="mt-2 max-w-3xl text-sm leading-6 text-quiet-note"><%= t("message_drafts.workspace.body") %></p>
       </div>
       <p class="inline-flex min-h-11 items-center rounded-lg border border-primary/30 bg-surface px-4 py-2 text-sm font-semibold text-primary">
-        <%= t("message_drafts.workspace.draft_only") %>
+        <%= t("message_drafts.workspace.review_required") %>
       </p>
     </div>
   </header>
@@ -18,23 +18,52 @@
         method: :post,
         html: { id: "message-draft-generation-form" },
         class: "space-y-6" do |form| %>
-        <fieldset class="space-y-4">
+        <fieldset class="space-y-5">
           <legend class="text-base font-semibold text-ink"><%= t("message_drafts.workspace.setup") %></legend>
 
           <div>
-            <%= form.label :draft_type, t("message_drafts.fields.draft_type"), class: "block text-sm font-semibold text-ink" %>
-            <%= form.select :draft_type,
-              MessageDraft::DRAFT_TYPES.map { |value| [ t("message_drafts.types.#{value}"), value ] },
-              { selected: draft_type },
-              class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+            <%= form.label :situation, t("message_drafts.fields.situation"), class: "block text-sm font-semibold text-ink" %>
+            <%= form.text_area :situation,
+              value: situation,
+              rows: 6,
+              maxlength: MessageDraft::MAX_SITUATION_LENGTH,
+              placeholder: t("message_drafts.workspace.situation_placeholder"),
+              class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-4 py-3 text-base leading-6 text-ink placeholder:text-stone-600 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+            <p class="mt-2 text-sm leading-5 text-quiet-note"><%= t("message_drafts.workspace.situation_hint") %></p>
           </div>
 
-          <div>
-            <%= form.label :tone, t("message_drafts.fields.tone"), class: "block text-sm font-semibold text-ink" %>
-            <%= form.select :tone,
-              MessageDraft::TONES.map { |value| [ t("message_drafts.tones.#{value}"), value ] },
-              { selected: tone },
-              class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <%= form.label :draft_type, t("message_drafts.fields.draft_type"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.select :draft_type,
+                MessageDraft::DRAFT_TYPES.map { |value| [ t("message_drafts.types.#{value}"), value ] },
+                { selected: draft_type },
+                class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+            </div>
+
+            <div>
+              <%= form.label :tone, t("message_drafts.fields.tone"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.select :tone,
+                MessageDraft::TONES.map { |value| [ t("message_drafts.tones.#{value}"), value ] },
+                { selected: tone },
+                class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+            </div>
+
+            <div>
+              <%= form.label :response_length, t("message_drafts.fields.response_length"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.select :response_length,
+                MessageDraft::RESPONSE_LENGTHS.map { |value| [ t("message_drafts.response_lengths.#{value}"), value ] },
+                { selected: response_length },
+                class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+            </div>
+
+            <div>
+              <%= form.label :formality, t("message_drafts.fields.formality"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.select :formality,
+                MessageDraft::FORMALITIES.map { |value| [ t("message_drafts.formalities.#{value}"), value ] },
+                { selected: formality },
+                class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+            </div>
           </div>
         </fieldset>
 
@@ -100,7 +129,7 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-          <%= button_tag message_draft ? t("message_drafts.actions.generate_revision") : t("message_drafts.actions.generate"),
+          <%= button_tag message_draft&.current_revision ? t("message_drafts.actions.generate_revision") : t("message_drafts.actions.generate"),
             type: "submit",
             form: "message-draft-generation-form",
             class: style(:primary_button),
@@ -118,6 +147,11 @@
             <span class="ml-auto text-xs text-quiet-note"><%= t("message_drafts.workspace.word_count", count: content.split.size) %></span>
           <% end %>
         </div>
+
+        <aside class="rounded-xl border border-primary/30 bg-surface px-4 py-4" aria-labelledby="message-draft-review-title">
+          <h3 id="message-draft-review-title" class="text-sm font-semibold text-ink"><%= t("message_drafts.workspace.review_title") %></h3>
+          <p class="mt-1 text-sm leading-6 text-quiet-note"><%= t("message_drafts.workspace.review_body") %></p>
+        </aside>
       </div>
 
       <section class="mt-8 border-t border-private-line pt-6" aria-labelledby="message-draft-history-title">

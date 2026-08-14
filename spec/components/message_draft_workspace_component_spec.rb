@@ -19,10 +19,15 @@ RSpec.describe MessageDraftWorkspaceComponent, type: :component do
 
     expect(page).to have_css("#message-drafting")
     expect(page).to have_css("[class*='lg:grid-cols']")
-    expect(page).to have_field("Message type", with: "birthday")
+    expect(page).to have_field("Message or situation", with: "")
+    expect(page).to have_field("Purpose", with: "birthday")
     expect(page).to have_field("Tone", with: "warm")
-    expect(page).to have_field("Draft", with: "Wishing you a calm birthday, Maya!")
-    expect(page).to have_content("Draft only — nothing will be sent")
+    expect(page).to have_field("Length", with: "medium")
+    expect(page).to have_field("Formality", with: "balanced")
+    expect(page).to have_field("Suggested response", with: "Wishing you a calm birthday, Maya!")
+    expect(page).to have_content("Review and edit before you use this")
+    expect(page).to have_content("Nothing is sent automatically")
+    expect(page).to have_content("shared with our AI provider when you request a suggestion")
     expect(page).to have_content("Revision history")
     expect(page).to have_button("Restore", count: 2)
     expect(page).to have_link("Unlock the privacy vault")
@@ -30,6 +35,7 @@ RSpec.describe MessageDraftWorkspaceComponent, type: :component do
     expect(page).to have_unchecked_field("Use vault items for this draft", disabled: true)
     expect(page).to have_no_button("Send")
     expect(page).to have_css("form#message-draft-generation-form select[name='message_draft[draft_type]']")
+    expect(page).to have_css("textarea[name='message_draft[situation]'][maxlength='4000']")
     expect(page).to have_css("textarea[form='message-draft-generation-form']")
     expect(page).to have_css(
       "button[form='message-draft-generation-form']" \
@@ -84,8 +90,38 @@ RSpec.describe MessageDraftWorkspaceComponent, type: :component do
       )
     end
 
-    expect(page).to have_content("Escribe con contexto")
-    expect(page).to have_button("Generar borrador")
+    expect(page).to have_content("Sugiere una respuesta considerada")
+    expect(page).to have_field("Propósito", with: "check_in")
+    expect(page).to have_button("Sugerir una respuesta")
     expect(page).to have_no_content("Translation missing")
+  end
+
+  it "presents late legacy formality tones through the new independent controls" do
+    profile = create(:relationship_profile)
+    draft = create(:message_draft, user: profile.user, relationship_profile: profile)
+    draft.update_column(:tone, "formal")
+
+    render_inline described_class.new(
+      relationship_profile: profile,
+      message_draft: draft,
+      revisions: []
+    )
+
+    expect(page).to have_field("Tone", with: "warm")
+    expect(page).to have_field("Formality", with: "formal")
+  end
+
+  it "keeps first-response copy when saved settings have no revision" do
+    profile = create(:relationship_profile)
+    draft = create(:message_draft, user: profile.user, relationship_profile: profile)
+
+    render_inline described_class.new(
+      relationship_profile: profile,
+      message_draft: draft,
+      revisions: []
+    )
+
+    expect(page).to have_button("Suggest a response")
+    expect(page).to have_no_button("Suggest another response")
   end
 end

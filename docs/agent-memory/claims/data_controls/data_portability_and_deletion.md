@@ -9,26 +9,17 @@ severity: critical
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
 
 claim: >
-  Authenticated users can export one owner-scoped profile or their account as
-  JSON, CSV, PDF, or a private calendar. Portable snapshots include recordings,
-  user-provided social context and its uploaded screenshots,
-  relationship assignments, localized labels, privacy-safe audit history,
-  reminder delivery evidence, and message-draft settings with immutable
-  revisions; internal errors, leases, concurrency fences, recipient keys, and
-  ownership foreign keys remain excluded. Vault payloads require password
-  reauthentication.
-  CSV cells neutralize formulas, calendar recurrences preserve clamping, PDFs
-  use the configured application origin, and attachment exports use native
-  navigation. Successful exports emit content-free audit evidence only after
-  serialization. Owner-scoped deletion records privacy-minimized evidence;
-  selective AI deletion preserves user-corrected memories and owner-authored
-  social notes while clearing their AI analysis without rereading unchanged
-  screenshot storage and fencing delayed results.
-  Profile and account deletion cascade through their owned content. Recording
-  and social screenshot snapshots occur under owned profile locks; cleanup locks
-  blobs against concurrent attachments and remains retryable and idempotent.
-  Completed account deletion retains only a one-way account digest and
-  nullified user reference; OAuth users receive a password-setup path first.
+  Owner-scoped JSON, CSV, PDF, and private-calendar exports include recordings,
+  social context and screenshots, relationships, localized labels, privacy-safe
+  audit and reminder evidence, and effective message-draft response settings and
+  revisions. Vault payloads require reauthentication; internal errors, leases,
+  fences, recipient keys, and ownership keys stay excluded. Serialization
+  neutralizes CSV formulas, preserves recurrences, uses the configured PDF
+  origin, and audits only successful exports. Selective AI deletion preserves
+  corrected memories and authored notes, clears note analysis without rereading
+  unchanged screenshots, and fences delayed results. Profile and account
+  deletion lock snapshots and idempotently clean shared blobs. Completed account
+  deletion retains only a one-way digest; OAuth users receive password setup.
 
 source_files:
   - app/controllers/data_controls_controller.rb
@@ -91,21 +82,18 @@ last_verified_commit: null
 ## Claim
 
 Every export format uses the same owner scope, and decrypted vault payloads
-require password reauthentication. Native form navigation lets browsers handle
-downloads. Full-account JSON and CSV include privacy-safe vault-access,
-notification, reminder-delivery evidence, and each profile's message-draft
-settings and immutable revision history without ownership foreign keys. Internal
-errors remain excluded, while social-context notes include portable plain text,
-review state, consent state, and uploaded image bytes without their optimistic
-lock versions.
-Leases, concurrency fences, and notification recipient keys stay excluded.
-Permanent deletion records content-free evidence. Selective AI cleanup uses a
-non-key-changing profile lock compatible with extraction foreign-key checks,
-preserves user-corrected memories and owner-authored social notes, clears their AI
-interpretations without rereading unchanged screenshot storage, and fences
-delayed results. Note deletion captures screenshots inside its profile lock;
-profile and account deletion lock owned profiles before snapshotting. Blob cleanup
-serializes recording and social-context removal against shared attachments.
+require password reauthentication. Full-account JSON and CSV include
+privacy-safe access and reminder evidence, effective message-draft response
+settings and revisions, and social-note text, review state, consent state, and
+screenshot bytes. They exclude ownership keys, lock versions, internal errors,
+leases, fences, and recipient keys. Legacy casual or formal tones export as a
+coherent warm tone and matching formality. Native navigation handles downloads,
+and only successful serialization emits content-free audit evidence. Selective
+AI deletion uses a non-key-changing profile lock, preserves corrected memories
+and authored notes, clears note analysis without rereading unchanged screenshot
+storage, and fences delayed extraction and message-draft results. Note, profile,
+and account deletion snapshot under owned profile locks; blob cleanup serializes
+shared recording and screenshot removal.
 
 ## Why It Matters
 

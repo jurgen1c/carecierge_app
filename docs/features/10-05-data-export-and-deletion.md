@@ -21,8 +21,9 @@ re-entered.
 - Delete profiles from their existing owner-scoped profile surface.
 - Permanently delete a protected note, memory, or relationship detail only from
   an unlocked privacy vault.
-- Delete only AI-inferred memories and AI-extraction timeline records without
-  removing user-confirmed or manually-created records.
+- Delete AI-inferred memories, AI-extraction timeline records, and social-context
+  interpretations with their review state and proposed uses, without removing
+  owner-authored social notes and uploads or user-confirmed/manual records.
 - Delete the full account only after exact email confirmation and current
   password verification.
 
@@ -45,7 +46,9 @@ auditable without retaining the account email or relationship contents.
 ## Implementation
 
 - `DataExports::Snapshot` creates an explicit portable representation instead
-  of exposing authentication secrets or arbitrary database columns.
+  of exposing authentication secrets or arbitrary database columns. Internal
+  concurrency fences, including social-note optimistic-lock versions, remain
+  excluded.
 - `DataExports::CsvSerializer` flattens the same snapshot; the JSON and CSV
   outputs therefore cover the same records. Uploaded recordings use base64
   content with filename and media metadata, and formula-leading cells are
@@ -65,7 +68,9 @@ auditable without retaining the account email or relationship contents.
 - Selective AI deletion preserves user-authored social notes and uploads while
   clearing their interpretations, proposed uses, review state, and analysis
   timestamps. It advances note versions and the shared message-generation fence
-  so delayed provider output cannot recreate deleted AI state.
+  so delayed provider output cannot recreate deleted AI state. Clearing this AI
+  state does not reread unchanged screenshot storage, so missing or temporarily
+  unavailable uploads cannot block the privacy control.
 - Account deletion synchronously purges uploaded recordings before the request
   can be marked completed. Storage files are deleted before their blob rows so a
   failure leaves retryable metadata and failed evidence; blobs still attached to

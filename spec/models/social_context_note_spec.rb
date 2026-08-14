@@ -61,11 +61,13 @@ RSpec.describe SocialContextNote do
   end
 
   it "accepts a bounded screenshot and rejects unsupported embedded files" do
-    note = build(:social_context_note)
+    user = create(:user)
+    note = build(:social_context_note, relationship_profile: create(:relationship_profile, user:))
     image = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("small image"),
+      io: StringIO.new("\x89PNG\r\n\x1A\n".b),
       filename: "social-context.png",
-      content_type: "image/png"
+      content_type: "image/png",
+      metadata: { uploaded_by_user_id: user.id }
     )
     note.body = "<p>Bookshop post</p>#{ActionText::Attachment.from_attachable(image).to_html}"
 
@@ -81,6 +83,82 @@ RSpec.describe SocialContextNote do
 
     expect(note).not_to be_valid
     expect(note.errors[:body]).to be_present
+  end
+
+  it "rejects screenshots uploaded by another account" do
+    owner = create(:user)
+    other_user = create(:user)
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new("\x89PNG\r\n\x1A\n".b),
+      filename: "other-account.png",
+      content_type: "image/png",
+      metadata: { uploaded_by_user_id: other_user.id }
+    )
+    note = build(
+      :social_context_note,
+      relationship_profile: create(:relationship_profile, user: owner),
+      body: "<p>Bookshop post</p>#{ActionText::Attachment.from_attachable(blob).to_html}"
+    )
+
+    expect(note).not_to be_valid
+    expect(note.errors.details[:body]).to include(error: :unsupported_attachment)
+  end
+
+  it "rejects non-image bytes mislabeled by a direct-upload client" do
+    user = create(:user)
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new("%PDF-1.4 untrusted upload"),
+      filename: "spoofed.png",
+      content_type: "image/png",
+      identify: false,
+      metadata: { uploaded_by_user_id: user.id }
+    )
+    note = build(
+      :social_context_note,
+      relationship_profile: create(:relationship_profile, user:),
+      body: "<p>Bookshop post</p>#{ActionText::Attachment.from_attachable(blob).to_html}"
+    )
+
+    expect(note).not_to be_valid
+    expect(note.errors.details[:body]).to include(error: :unsupported_attachment)
+  end
+
+  it "revalidates image bytes when the user changes the note source" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    note = create(:social_context_note, relationship_profile: profile)
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new("%PDF-1.4 untrusted replacement"),
+      filename: "spoofed.png",
+      content_type: "image/png",
+      identify: false,
+      metadata: { uploaded_by_user_id: user.id }
+    )
+
+    expect do
+      note.update_from_user!(
+        { body: "<p>Replacement context</p>#{ActionText::Attachment.from_attachable(blob).to_html}" }
+      )
+    end.to raise_error(ActiveRecord::RecordInvalid)
+
+    expect(note.reload.body.to_plain_text).not_to include("Replacement context")
+  end
+
+  it "revokes downstream consent without rereading unchanged screenshots" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    blob = create_social_context_image_blob(user:, filename: "unavailable.png")
+    note = create(
+      :social_context_note,
+      relationship_profile: profile,
+      body: "<p>Bookshop post</p>#{ActionText::Attachment.from_attachable(blob).to_html}",
+      allow_suggestions: true
+    )
+    allow(ActiveStorage::Blob.service).to receive(:download).and_raise(ActiveStorage::FileNotFoundError)
+
+    expect { note.update_from_user!({ allow_suggestions: false }) }.not_to raise_error
+
+    expect(note.reload.allow_suggestions).to be(false)
   end
 
   it "rejects images that are not managed Active Storage attachments" do

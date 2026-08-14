@@ -26,6 +26,16 @@ RSpec.describe "Data controls", type: :request do
       expect(response.body).to include(I18n.t("data_controls.show.delete_account.title", locale: :es))
     end
 
+    it "discloses social-analysis deletion in English and Spanish" do
+      sign_in user
+
+      I18n.with_locale(:en) { get data_control_path }
+      expect(response.body).to include("social-context interpretations")
+
+      I18n.with_locale(:es) { get data_control_path }
+      expect(response.body).to include("interpretaciones de contexto social")
+    end
+
     it "gives OAuth users an explicit password setup path before account deletion" do
       user.update!(provider: "google_oauth2", uid: "google-owner")
       sign_in user
@@ -91,11 +101,7 @@ RSpec.describe "Data controls", type: :request do
     end
 
     it "includes user-provided social context and uploaded screenshots in portable exports" do
-      blob = ActiveStorage::Blob.create_and_upload!(
-        io: StringIO.new("portable screenshot"),
-        filename: "social-context.png",
-        content_type: "image/png"
-      )
+      blob = create_social_context_image_blob(user:, filename: "social-context.png", payload: "portable screenshot")
       create(
         :social_context_note,
         relationship_profile: profile,
@@ -107,11 +113,12 @@ RSpec.describe "Data controls", type: :request do
 
       exported = response.parsed_body.dig("relationship_profiles", 0, "social_context_notes", 0)
       expect(exported).to include("body" => include("Bookshop post"), "allow_suggestions" => true)
+      expect(exported).not_to have_key("lock_version")
       expect(exported.fetch("uploaded_images").sole).to include(
         "filename" => "social-context.png",
         "content_type" => "image/png",
         "encoding" => "base64",
-        "data" => Base64.strict_encode64("portable screenshot")
+        "data" => Base64.strict_encode64(social_context_png_bytes("portable screenshot"))
       )
     end
 
@@ -454,11 +461,7 @@ RSpec.describe "Data controls", type: :request do
     end
 
     it "permanently deletes social context screenshots with the account" do
-      blob = ActiveStorage::Blob.create_and_upload!(
-        io: StringIO.new("delete this screenshot"),
-        filename: "delete-me.png",
-        content_type: "image/png"
-      )
+      blob = create_social_context_image_blob(user:, filename: "delete-me.png", payload: "delete this screenshot")
       create(
         :social_context_note,
         relationship_profile: profile,
@@ -476,11 +479,7 @@ RSpec.describe "Data controls", type: :request do
     end
 
     it "locks owned relationship profiles before snapshotting account screenshots" do
-      blob = ActiveStorage::Blob.create_and_upload!(
-        io: StringIO.new("account lock screenshot"),
-        filename: "account-lock.png",
-        content_type: "image/png"
-      )
+      blob = create_social_context_image_blob(user:, filename: "account-lock.png", payload: "account lock screenshot")
       create(
         :social_context_note,
         relationship_profile: profile,

@@ -146,7 +146,7 @@ class SocialContextNote < ApplicationRecord
     end
   end
 
-  def clear_ai_analysis_for_deletion!
+  def clear_ai_analysis!
     previous_message_draft_context = message_draft_context_signature
     reset_interpretation
     has_changes_to_save? ? save! : touch
@@ -207,11 +207,26 @@ class SocialContextNote < ApplicationRecord
     errors.add(:body, :unsupported_attachment) unless attachables.all?(ActiveStorage::Blob)
     blobs = attachables.grep(ActiveStorage::Blob)
     errors.add(:body, :too_many_attachments, count: MAX_IMAGES) if blobs.size > MAX_IMAGES
+    verify_image_bytes = body.new_record? || body.will_save_change_to_body?
 
     blobs.each do |blob|
-      errors.add(:body, :unsupported_attachment) unless blob.content_type.in?(IMAGE_CONTENT_TYPES)
+      errors.add(:body, :unsupported_attachment) unless blob_belongs_to_relationship_owner?(blob)
       errors.add(:body, :attachment_too_large, count: MAX_IMAGE_BYTES) if blob.byte_size > MAX_IMAGE_BYTES
+      next if blob.byte_size > MAX_IMAGE_BYTES || !verify_image_bytes
+
+      errors.add(:body, :unsupported_attachment) unless detected_content_type(blob).in?(IMAGE_CONTENT_TYPES)
     end
+  end
+
+  def blob_belongs_to_relationship_owner?(blob)
+    relationship_profile&.user_id.present? &&
+      blob.metadata["uploaded_by_user_id"].to_s == relationship_profile.user_id.to_s
+  end
+
+  def detected_content_type(blob)
+    Marcel::MimeType.for(StringIO.new(blob.download), name: nil, declared_type: nil)
+  rescue ActiveStorage::FileNotFoundError, ActiveStorage::IntegrityError
+    nil
   end
 
   def suggested_uses_are_supported

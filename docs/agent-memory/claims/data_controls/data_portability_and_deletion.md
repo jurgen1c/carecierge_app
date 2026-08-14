@@ -14,14 +14,16 @@ claim: >
   user-provided social context and its uploaded screenshots,
   relationship assignments, localized labels, privacy-safe audit history,
   reminder delivery evidence, and message-draft settings with immutable
-  revisions; internal errors, leases, recipient keys, and ownership foreign
-  keys remain excluded. Vault payloads require password reauthentication.
+  revisions; internal errors, leases, concurrency fences, recipient keys, and
+  ownership foreign keys remain excluded. Vault payloads require password
+  reauthentication.
   CSV cells neutralize formulas, calendar recurrences preserve clamping, PDFs
   use the configured application origin, and attachment exports use native
   navigation. Successful exports emit content-free audit evidence only after
   serialization. Owner-scoped deletion records privacy-minimized evidence;
   selective AI deletion preserves user-corrected memories and owner-authored
-  social notes while clearing their AI analysis and fencing delayed results.
+  social notes while clearing their AI analysis without rereading unchanged
+  screenshot storage and fencing delayed results.
   Profile and account deletion cascade through their owned content. Recording
   and social screenshot snapshots occur under owned profile locks; cleanup locks
   blobs against concurrent attachments and remains retryable and idempotent.
@@ -94,15 +96,16 @@ downloads. Full-account JSON and CSV include privacy-safe vault-access,
 notification, reminder-delivery evidence, and each profile's message-draft
 settings and immutable revision history without ownership foreign keys. Internal
 errors remain excluded, while social-context notes include portable plain text,
-review state, consent state, and uploaded image bytes.
+review state, consent state, and uploaded image bytes without their optimistic
+lock versions.
 Leases, concurrency fences, and notification recipient keys stay excluded.
-Permanent deletion records content-free evidence, preserves user-corrected memories during
-selective AI cleanup, clears AI-generated social interpretations without deleting
-owner-authored notes, and prevents in-flight extraction or analysis from
-recreating deleted state. Note deletion captures screenshots inside its profile
-lock; profile and account deletion lock the owned profiles before snapshotting.
-The final blob-locking cleanup safely serializes recording and social-context
-removal against shared attachments.
+Permanent deletion records content-free evidence. Selective AI cleanup uses a
+non-key-changing profile lock compatible with extraction foreign-key checks,
+preserves user-corrected memories and owner-authored social notes, clears their AI
+interpretations without rereading unchanged screenshot storage, and fences
+delayed results. Note deletion captures screenshots inside its profile lock;
+profile and account deletion lock owned profiles before snapshotting. Blob cleanup
+serializes recording and social-context removal against shared attachments.
 
 ## Why It Matters
 

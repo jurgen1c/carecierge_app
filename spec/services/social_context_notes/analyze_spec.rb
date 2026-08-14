@@ -29,6 +29,33 @@ RSpec.describe SocialContextNotes::Analyze do
     expect(event.to_json).not_to include("conversation topic")
   end
 
+  it "uses account-to-profile lock order only while persisting the provider result" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    note = create(:social_context_note, relationship_profile: profile)
+    phase = :before_provider
+    lock_sql = Hash.new { |hash, key| hash[key] = [] }
+    analyzer = double
+    subscriber = lambda do |*, payload|
+      sql = payload.fetch(:sql)
+      lock_sql[phase] << sql if sql.include?("FOR UPDATE")
+    end
+    allow(analyzer).to receive(:analyze) do |**|
+      phase = :after_provider
+      { interpretation: "A cautious interpretation.", suggested_uses: %w[message] }
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
+      described_class.call(actor: user, note:, expected_lock_version: note.lock_version, analyzer:)
+    end
+
+    expect(lock_sql[:before_provider]).not_to include(a_string_including('FROM "users"'))
+    user_lock = lock_sql[:after_provider].index { |sql| sql.include?('FROM "users"') }
+    profile_lock = lock_sql[:after_provider].index { |sql| sql.include?('FROM "relationship_profiles"') }
+    expect(user_lock).to be_present
+    expect(profile_lock).to be > user_lock
+  end
+
   it "does not persist a stale result after the note changes during analysis" do
     user = create(:user)
     note = create(:social_context_note, relationship_profile: create(:relationship_profile, user:))
@@ -44,6 +71,40 @@ RSpec.describe SocialContextNotes::Analyze do
     end.to raise_error(ActiveRecord::StaleObjectError)
 
     expect(note.reload.interpretation).to be_nil
+  end
+
+  it "revokes approved message context and advances its fence before provider I/O" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    note = create(
+      :social_context_note,
+      relationship_profile: profile,
+      allow_suggestions: true,
+      interpretation: "An approved message interpretation.",
+      interpretation_status: "approved",
+      suggested_uses: %w[message],
+      analyzed_at: Time.current
+    )
+    generation_version = profile.message_draft_generation_version
+    analyzer = double
+    allow(analyzer).to receive(:analyze) do |**|
+      expect(note.reload).to have_attributes(
+        interpretation: nil,
+        interpretation_status: "not_requested",
+        suggested_uses: [],
+        analyzed_at: nil
+      )
+      expect(profile.reload.message_draft_generation_version).to eq(generation_version + 1)
+      { interpretation: "A replacement draft.", suggested_uses: %w[message] }
+    end
+
+    described_class.call(actor: user, note:, expected_lock_version: note.lock_version, analyzer:)
+
+    expect(note.reload).to have_attributes(
+      interpretation: "A replacement draft.",
+      interpretation_status: "draft"
+    )
+    expect(profile.reload.message_draft_generation_version).to eq(generation_version + 1)
   end
 
   it "fails closed when the profile is archived while analysis is in flight" do
@@ -67,16 +128,8 @@ RSpec.describe SocialContextNotes::Analyze do
   it "analyzes the immutable source revision explicitly submitted by the user" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
-    original_image = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("original image"),
-      filename: "original.png",
-      content_type: "image/png"
-    )
-    replacement_image = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("replacement image"),
-      filename: "replacement.png",
-      content_type: "image/png"
-    )
+    original_image = create_social_context_image_blob(user:, filename: "original.png", payload: "original image")
+    replacement_image = create_social_context_image_blob(user:, filename: "replacement.png", payload: "replacement image")
     note = create(
       :social_context_note,
       relationship_profile: profile,

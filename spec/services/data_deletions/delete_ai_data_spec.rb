@@ -1,6 +1,23 @@
 require "rails_helper"
 
 RSpec.describe DataDeletions::DeleteAiData do
+  it "uses a profile lock compatible with extraction foreign-key checks" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    create(:conversation_recap, relationship_profile: profile, extraction_status: "processing")
+    profile_lock_sql = []
+    subscriber = lambda do |*, payload|
+      sql = payload.fetch(:sql)
+      profile_lock_sql << sql if sql.include?('FROM "relationship_profiles"') && sql.include?("FOR")
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
+      described_class.call(user:)
+    end
+
+    expect(profile_lock_sql).to include(a_string_including("FOR NO KEY UPDATE"))
+  end
+
   it "locks and resets extraction state before deleting proposals" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
@@ -71,5 +88,32 @@ RSpec.describe DataDeletions::DeleteAiData do
     expect(note.lock_version).to be > note_version
     expect(pending_note.reload.lock_version).to be > pending_note_version
     expect(profile.reload.message_draft_generation_version).to eq(generation_version + 1)
+  end
+
+  it "clears social analysis without rereading unchanged screenshot storage" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    blob = create_social_context_image_blob(user:, filename: "unavailable.png")
+    note = create(
+      :social_context_note,
+      relationship_profile: profile,
+      body: "<p>Bookshop post</p>#{ActionText::Attachment.from_attachable(blob).to_html}",
+      allow_suggestions: true,
+      interpretation: "A bookstore message may be timely.",
+      interpretation_status: "approved",
+      suggested_uses: %w[message],
+      analyzed_at: Time.current
+    )
+    allow(ActiveStorage::Blob.service).to receive(:download).and_raise(ActiveStorage::FileNotFoundError)
+
+    expect { described_class.call(user:) }.not_to raise_error
+
+    expect(note.reload).to have_attributes(
+      allow_suggestions: true,
+      interpretation: nil,
+      interpretation_status: "not_requested",
+      suggested_uses: [],
+      analyzed_at: nil
+    )
   end
 end

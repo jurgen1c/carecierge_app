@@ -11,6 +11,14 @@ Carecierge does not connect to or monitor social accounts.
 - Keep manually provided relationship-scoped notes and screenshots.
 - Bound stored rich-text HTML to 64 KiB and accept images only as PNG, JPEG, or
   WebP Active Storage attachments; reject raw remote and data-URL images.
+- Require authentication when issuing direct-upload credentials, stamp each
+  upload with its server-resolved owner, and accept a screenshot only when that
+  owner matches the relationship account. Detect PNG, JPEG, or WebP from the
+  stored bytes instead of trusting client-declared filenames or MIME metadata.
+- Recheck stored image bytes when a note source is created or changed. Consent
+  revocation and selective AI-data clearing keep enforcing saved ownership and
+  size metadata without rereading unchanged storage, so an unavailable
+  screenshot cannot leave downstream use or AI analysis stuck on.
 - Keep the editor-heavy ledger bounded to five notes per page while reusing a
   ten-note opted-in source collection for downstream drafting and suggestions.
 - Analyze only after an explicit save-and-analyze action and the configured
@@ -33,6 +41,11 @@ Carecierge does not connect to or monitor social accounts.
 - Fence message generation with the relationship-profile lock and generation
   version so revoking, editing, adding, reanalyzing, or deleting eligible social
   context prevents an older in-flight provider result from being persisted.
+  Reanalysis clears the prior interpretation and advances its note and message
+  fences before provider I/O begins.
+- Persist completed analysis under the account, relationship-profile, and note
+  locks in that order, without holding those locks across provider I/O, so it
+  remains compatible with account and selective-AI deletion.
 - Recheck that the relationship profile remains active while holding its lock for
   every note mutation, and surface provider or attachment-read failures as
   localized analysis errors without exposing storage details.

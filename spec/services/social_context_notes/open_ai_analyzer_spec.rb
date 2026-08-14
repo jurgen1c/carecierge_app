@@ -3,10 +3,10 @@ require "rails_helper"
 RSpec.describe SocialContextNotes::OpenAiAnalyzer do
   it "sends bounded user text and embedded images in a non-stored structured Responses request" do
     note = create(:social_context_note, body: "Maya shared a screenshot about a bookstore event.")
-    image = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("image bytes"),
+    image = create_social_context_image_blob(
+      user: note.relationship_profile.user,
       filename: "event.png",
-      content_type: "image/png"
+      payload: "image bytes"
     )
     note.body = "<p>Maya shared a screenshot about a bookstore event.</p>#{ActionText::Attachment.from_attachable(image).to_html}"
     note.save!
@@ -49,7 +49,7 @@ RSpec.describe SocialContextNotes::OpenAiAnalyzer do
     expect(content.first).to include("type" => "input_text", "text" => a_string_including("bookstore event"))
     expect(content.second).to include(
       "type" => "input_image",
-      "image_url" => "data:image/png;base64,#{Base64.strict_encode64('image bytes')}",
+      "image_url" => "data:image/png;base64,#{Base64.strict_encode64(social_context_png_bytes('image bytes'))}",
       "detail" => "low"
     )
     expect(result).to eq(

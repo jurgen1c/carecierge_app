@@ -90,7 +90,7 @@ module DataExports
     end
 
     def social_context_note_attributes(note)
-      attributes_for(note).merge(
+      attributes_for(note, except: %w[lock_version]).merge(
         "body" => note.body.to_plain_text,
         "uploaded_images" => note.image_blobs.map { |blob| blob_attributes(blob) }
       )

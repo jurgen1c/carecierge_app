@@ -1987,9 +1987,9 @@ en:
       confirmation: "Type %{email} to confirm"
       delete_ai:
         title: "Delete AI-generated data"
-        body: "Permanently removes AI-inferred memories and AI-extraction timeline records. User-confirmed memories and manually created timeline entries stay in place."
+        body: "Permanently removes AI-inferred memories, AI-extraction timeline records, and social-context interpretations with their review state and proposed uses. Your social notes and uploads, user-confirmed memories, and manually created timeline entries stay in place."
         action: "Delete AI-generated data"
-        confirm: "Delete all AI-generated data in this account?"
+        confirm: "Delete all AI-generated data, including social-context interpretations, in this account?"
       delete_account:
         title: "Delete account"
         body: "Permanently removes your account and all relationship data. Privacy-minimized deletion evidence remains without your email or relationship content."

@@ -322,11 +322,7 @@ RSpec.describe "Social context notes", type: :request do
   it "permanently deletes the note and its unshared uploaded screenshots" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
-    blob = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("screenshot bytes"),
-      filename: "social-context.png",
-      content_type: "image/png"
-    )
+    blob = create_social_context_image_blob(user:, filename: "social-context.png", payload: "screenshot bytes")
     note = create(
       :social_context_note,
       relationship_profile: profile,
@@ -345,16 +341,8 @@ RSpec.describe "Social context notes", type: :request do
   it "captures a replacement screenshot inside the same lock as note deletion" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
-    original_blob = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("original screenshot"),
-      filename: "original.png",
-      content_type: "image/png"
-    )
-    replacement_blob = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("replacement screenshot"),
-      filename: "replacement.png",
-      content_type: "image/png"
-    )
+    original_blob = create_social_context_image_blob(user:, filename: "original.png", payload: "original screenshot")
+    replacement_blob = create_social_context_image_blob(user:, filename: "replacement.png", payload: "replacement screenshot")
     note = create(
       :social_context_note,
       relationship_profile: profile,
@@ -433,11 +421,7 @@ RSpec.describe "Social context notes", type: :request do
   it "purges unshared screenshots when the relationship profile is permanently deleted" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
-    blob = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("profile screenshot"),
-      filename: "profile-context.png",
-      content_type: "image/png"
-    )
+    blob = create_social_context_image_blob(user:, filename: "profile-context.png", payload: "profile screenshot")
     create(
       :social_context_note,
       relationship_profile: profile,
@@ -455,11 +439,7 @@ RSpec.describe "Social context notes", type: :request do
   it "captures profile screenshots while the relationship lock is held" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
-    blob = ActiveStorage::Blob.create_and_upload!(
-      io: StringIO.new("locked profile screenshot"),
-      filename: "locked-profile.png",
-      content_type: "image/png"
-    )
+    blob = create_social_context_image_blob(user:, filename: "locked-profile.png", payload: "locked profile screenshot")
     create(
       :social_context_note,
       relationship_profile: profile,

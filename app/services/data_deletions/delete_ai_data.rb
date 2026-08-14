@@ -2,7 +2,7 @@ module DataDeletions
   class DeleteAiData
     def self.call(user:)
       ApplicationRecord.transaction do
-        profiles = user.relationship_profiles.with_discarded.order(:id).lock.to_a
+        profiles = user.relationship_profiles.with_discarded.order(:id).lock("FOR NO KEY UPDATE").to_a
         ConversationRecap
           .where(relationship_profile: profiles)
           .where.not(extraction_status: "not_requested")
@@ -40,7 +40,7 @@ module DataDeletions
       profiles.each do |profile|
         message_context_changed = false
         notes_by_profile.fetch(profile.id, []).each do |note|
-          message_context_changed = note.clear_ai_analysis_for_deletion! || message_context_changed
+          message_context_changed = note.clear_ai_analysis! || message_context_changed
         end
         profile.cancel_in_flight_message_draft_generations! if message_context_changed
       end

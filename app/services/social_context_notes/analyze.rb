@@ -23,45 +23,50 @@ module SocialContextNotes
     attr_reader :actor, :note, :expected_lock_version, :locale, :analyzer
 
     def prepare_analysis!
-      note.with_lock do
-        raise ActiveRecord::RecordNotFound unless note.relationship_profile.user_id == actor.id
-        raise ActiveRecord::RecordNotFound if note.relationship_profile.discarded?
-        raise ActiveRecord::StaleObjectError.new(note, "analyze") unless note.lock_version == expected_lock_version
+      note.relationship_profile.with_lock do
+        note.with_lock do
+          raise ActiveRecord::RecordNotFound unless note.relationship_profile.user_id == actor.id
+          raise ActiveRecord::RecordNotFound if note.relationship_profile.discarded?
+          raise ActiveRecord::StaleObjectError.new(note, "analyze") unless note.lock_version == expected_lock_version
 
-        [
-          note.lock_version,
-          AnalysisInput.new(
+          input = AnalysisInput.new(
             text: note.body.to_plain_text,
             image_blob_ids: note.image_blobs.map(&:id)
           )
-        ]
+          message_context_changed = note.clear_ai_analysis!
+          note.relationship_profile.cancel_in_flight_message_draft_generations! if message_context_changed
+
+          [ note.lock_version, input ]
+        end
       end
     end
 
     def persist_draft!(version:, result:)
-      note.relationship_profile.with_lock do
-        note.with_lock do
-          raise ActiveRecord::RecordNotFound if note.relationship_profile.discarded?
-          raise ActiveRecord::StaleObjectError.new(note, "analyze") unless note.lock_version == version
+      actor.with_lock do
+        note.relationship_profile.with_lock do
+          note.with_lock do
+            raise ActiveRecord::RecordNotFound if note.relationship_profile.discarded?
+            raise ActiveRecord::StaleObjectError.new(note, "analyze") unless note.lock_version == version
 
-          previous_message_draft_context = note.message_draft_context_signature
-          note.update!(
-            interpretation: result.fetch(:interpretation),
-            interpretation_status: "draft",
-            suggested_uses: result.fetch(:suggested_uses),
-            analyzed_at: Time.current
-          )
-          if previous_message_draft_context != note.message_draft_context_signature
-            note.relationship_profile.cancel_in_flight_message_draft_generations!
+            previous_message_draft_context = note.message_draft_context_signature
+            note.update!(
+              interpretation: result.fetch(:interpretation),
+              interpretation_status: "draft",
+              suggested_uses: result.fetch(:suggested_uses),
+              analyzed_at: Time.current
+            )
+            if previous_message_draft_context != note.message_draft_context_signature
+              note.relationship_profile.cancel_in_flight_message_draft_generations!
+            end
+            AuditEvent.record!(
+              user: actor,
+              actor:,
+              action: "automation.performed",
+              target: note.relationship_profile,
+              metadata: { capability: "analyze_uploaded_social_content", result: "draft_created" }
+            )
+            note
           end
-          AuditEvent.record!(
-            user: actor,
-            actor:,
-            action: "automation.performed",
-            target: note.relationship_profile,
-            metadata: { capability: "analyze_uploaded_social_content", result: "draft_created" }
-          )
-          note
         end
       end
     end

@@ -55,6 +55,7 @@ es:
         important_dates: "Fechas importantes"
         preferences: "Preferencias"
         public_notes: "Notas compartidas"
+        social_context: "Contexto social proporcionado por ti"
         memories: "Recuerdos actuales"
     private_context:
       title: "Contexto privado"

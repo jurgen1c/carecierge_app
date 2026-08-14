@@ -9,7 +9,7 @@ severity: critical
 title: Suggestions are source-backed and user-initiated
 
 claim: >
-  The relationship-profile suggestion engine deterministically derives eight
+  The relationship-profile suggestion engine deterministically derives up to ten
   supported suggestion types from current owner-scoped source records, retains
   evidence and confirmed or inferred certainty, and fails closed for archived
   profiles and unapproved AI evidence in high-impact suggestions. Suggestion
@@ -21,11 +21,18 @@ claim: >
   action_kind is the extension boundary for future user-enabled automation,
   which must evaluate automation permissions and approval requirements before
   external side effects.
+  Social context can add gift, message, conversation-topic, and reminder ideas
+  only when the owner enabled downstream use, approved the AI interpretation,
+  and left that specific proposed use selected during review; these reasons
+  remain inferred and link back to the user-provided note.
+  Profile rendering shares a bounded collection of the ten most recent opted-in
+  social notes between message-context display and suggestion assembly.
 
 source_files:
   - app/services/suggestions/for_profile.rb
   - app/models/suggestion.rb
   - app/models/suggestion_feedback.rb
+  - app/models/social_context_note.rb
   - app/controllers/suggestions_controller.rb
   - app/services/suggestions/complete_reminder_action.rb
   - app/controllers/reminders_controller.rb
@@ -34,6 +41,7 @@ source_files:
 
 related_files:
   - app/controllers/relationship_profiles_controller.rb
+  - app/controllers/concerns/relationship_profile_show_workspace.rb
   - app/policies/suggestion_feedback_policy.rb
   - app/views/suggestions/_section.html.erb
   - app/views/components/suggestion_list_item_component.rb
@@ -42,6 +50,7 @@ related_files:
   - config/locales/suggestions.en.yml
   - config/locales/suggestions.es.yml
   - spec/services/suggestions/for_profile_spec.rb
+  - spec/requests/social_context_notes_spec.rb
   - spec/requests/suggestions_spec.rb
 
 symbols:
@@ -85,6 +94,10 @@ a parallel recommendation database. Each suggestion carries a stable
 fingerprint, localized copy keys, typed source evidence, and explicit certainty.
 Persisted state is limited to the user's feedback, dismissal, or completed
 action.
+Social-context reasons additionally require a reviewed interpretation, an
+individually approved use category, and an enabled per-note downstream setting;
+raw disabled notes and unapproved drafts or use categories cannot create
+suggestions.
 
 ## Rationale
 

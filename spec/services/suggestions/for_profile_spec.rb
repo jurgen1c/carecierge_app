@@ -108,4 +108,100 @@ RSpec.describe Suggestions::ForProfile do
 
     expect(described_class.call(relationship_profile: profile)).to be_empty
   end
+
+  it "derives low-impact reminder, gift, message, and conversation suggestions from reviewed opted-in social context" do
+    profile = create(:relationship_profile, preferred_name: "Maya")
+    note = create(
+      :social_context_note,
+      relationship_profile: profile,
+      body: "Maya shared a bookstore event and a new hiking interest.",
+      allow_suggestions: true,
+      interpretation: "A bookstore visit or hiking conversation may feel timely.",
+      interpretation_status: "approved",
+      suggested_uses: %w[gift message conversation_topic reminder]
+    )
+
+    suggestions = described_class.call(relationship_profile: profile)
+    social_suggestions = suggestions.select { |suggestion| suggestion.reasons.any? { |reason| reason.source == note } }
+
+    expect(social_suggestions.map(&:suggestion_type)).to contain_exactly(
+      "gift",
+      "message",
+      "conversation_topic",
+      "social_reminder"
+    )
+    expect(social_suggestions).to all(satisfy { |suggestion| suggestion.reasons.sole.certainty == "inferred" })
+    expect(social_suggestions).to all(satisfy { |suggestion| suggestion.action_kind == "create_reminder" })
+  end
+
+  it "does not derive suggestions from disabled or unreviewed social context" do
+    profile = create(:relationship_profile)
+    create(
+      :social_context_note,
+      relationship_profile: profile,
+      allow_suggestions: false,
+      interpretation: "Could support a gift.",
+      interpretation_status: "approved",
+      suggested_uses: %w[gift]
+    )
+    create(
+      :social_context_note,
+      relationship_profile: profile,
+      allow_suggestions: true,
+      interpretation: "Could support a conversation.",
+      interpretation_status: "draft",
+      suggested_uses: %w[conversation_topic]
+    )
+
+    suggestions = described_class.call(relationship_profile: profile)
+
+    expect(suggestions.flat_map(&:reasons).map(&:source)).to all(satisfy { |source| !source.is_a?(SocialContextNote) })
+  end
+
+  it "reuses a supplied social context collection" do
+    profile = create(:relationship_profile)
+    note = create(
+      :social_context_note,
+      relationship_profile: profile,
+      allow_suggestions: true,
+      interpretation: "A conversation may be timely.",
+      interpretation_status: "approved",
+      suggested_uses: %w[conversation_topic]
+    )
+
+    expect(profile).not_to receive(:social_context_notes)
+
+    suggestions = described_class.call(relationship_profile: profile, social_context_notes: [ note ])
+
+    expect(suggestions.find { |item| item.suggestion_type == "conversation_topic" }).to be_present
+  end
+
+  it "bounds fallback social-context sources to the ten newest opted-in notes" do
+    profile = create(:relationship_profile)
+    base_time = Time.zone.local(2026, 8, 13, 9)
+    notes = 11.times.map do |index|
+      create(
+        :social_context_note,
+        relationship_profile: profile,
+        body: "Social context #{index}",
+        allow_suggestions: true,
+        interpretation: "Conversation context #{index}",
+        interpretation_status: "approved",
+        suggested_uses: %w[conversation_topic],
+        created_at: base_time + index.minutes
+      )
+    end
+    sql = []
+    subscriber = lambda do |_name, _started, _finished, _id, payload|
+      sql << payload[:sql] unless payload[:name] == "SCHEMA"
+    end
+
+    suggestions = ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
+      described_class.call(relationship_profile: profile)
+    end
+
+    social_context_query = sql.find { |statement| statement.include?('FROM "social_context_notes"') }
+    expect(social_context_query).to include("LIMIT")
+    expect(suggestions.find { |item| item.suggestion_type == "conversation_topic" }.reasons.sole.source).to eq(notes.last)
+  end
 end

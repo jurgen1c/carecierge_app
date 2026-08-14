@@ -32,18 +32,28 @@ claim: >
   The feature records metadata-only
   audit evidence, participates in data export and cascading deletion, and has
   no send, recipient, delivery, scheduling, or external-action path.
+  User-provided social context enters only when its per-note downstream setting
+  is enabled; owner-authored text is eligible immediately, but an AI
+  interpretation remains excluded until the owner approves it and remains
+  explicitly marked as AI-inferred when supplied to the drafting provider;
+  approval without the message-draft use category keeps it excluded. Eligible
+  social-context mutations share the profile lock and generation-version fence,
+  preventing output built from revoked or deleted context from being persisted.
 
 source_files:
+  - app/models/relationship_profile.rb
   - app/models/message_draft.rb
   - app/models/draft_revision.rb
   - app/models/relationship_field_value.rb
   - app/services/message_drafts/context_builder.rb
+  - app/models/social_context_note.rb
   - app/services/message_drafts/generate.rb
   - app/services/message_drafts/generation_superseded_error.rb
   - app/services/message_drafts/open_ai_generator.rb
   - app/services/message_drafts/vault_access_error.rb
   - app/services/privacy_vault/lease.rb
   - app/controllers/concerns/privacy_vault_session.rb
+  - app/controllers/concerns/relationship_profile_show_workspace.rb
   - app/controllers/message_drafts_controller.rb
   - app/views/components/message_draft_workspace_component.rb
   - app/views/components/message_draft_workspace_component.html.erb
@@ -63,6 +73,7 @@ related_files:
   - docs/features/04-04-message-drafting-assistant.md
   - docs/features/09-01-response-suggestion-assistant.md
   - spec/services/message_drafts/context_builder_spec.rb
+  - spec/requests/social_context_notes_spec.rb
   - spec/services/message_drafts/open_ai_generator_spec.rb
   - spec/services/message_drafts/generate_spec.rb
   - spec/requests/message_drafts_spec.rb
@@ -137,7 +148,10 @@ Private notes cross the boundary only after explicit selection for that request;
 vault data also requires the service to revalidate the controller-touched lease's
 owner, password fingerprint, revocation version, and inactivity deadline under
 the account lock immediately before decryption. Context assembly
-holds the same profile lock used by vault protection, so a completed protection
+also admits owner-authored social context only after that note's revocable
+downstream setting is enabled. A saved AI interpretation supplements the source
+only after owner approval; analysis drafts remain excluded.
+It holds the same profile lock used by vault protection, so a completed protection
 cannot leave previously loaded plaintext eligible for the provider. Context has both an overall bound and
 a complete label-and-value per-entry bound, with the first eligible explicitly selected sensitive entry
 from each category prioritized ahead of ordinary long-form sources so access
@@ -155,7 +169,9 @@ responsible for the final response. Archived profile pages omit the workspace, a
 generation, edit, and restore recheck active state under the profile lock before
 appending a revision. Deleting a draft advances a profile-scoped generation
 version so provider responses from older in-flight requests cannot recreate the
-workspace. No route or operation can send the result.
+workspace. Mutating eligible social context uses that same lock and generation
+version, so provider output based on a subsequently revoked, edited, reanalyzed,
+or deleted source also fails closed. No route or operation can send the result.
 The profile page loads immutable history newest-first in bounded pages of ten;
 the editor continues to show the current revision on every history page.
 

@@ -9,6 +9,7 @@ Rails.application.config.filter_parameters += [
   "conversation_recap.body", "conversation_recap.transcript",
   "extracted_memory.corrected_title", "extracted_memory.corrected_body",
   "message_draft.content", "message_draft.situation",
+  "social_context_note.body", "social_context_note.interpretation",
   "mood_note.observation", "mood_note.supportive_action",
   "reminder.notes", "commitment.notes", "interaction.notes",
   "data_deletion.confirmation"

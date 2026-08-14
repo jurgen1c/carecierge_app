@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  post "social_context/direct_uploads" => "direct_uploads#create", as: :social_context_direct_uploads
+  put "social_context/direct_uploads/:signed_id" => "direct_uploads#update", as: :social_context_direct_upload
+  get "social_context/screenshots/:signed_id/:filename" => "social_context_screenshots#show",
+    as: :social_context_screenshot
+
   devise_for :users, controllers: {
     omniauth_callbacks: "users/omniauth_callbacks",
     sessions: "users/sessions"
@@ -41,6 +46,9 @@ Rails.application.routes.draw do
     resource :message_draft, only: %i[update destroy] do
       post :generate
       post "revisions/:revision_id/restore", action: :restore, as: :restore_revision
+    end
+    resources :social_context_notes, only: %i[create update destroy] do
+      post :analyze, on: :member
     end
     resources :suggestions, only: [] do
       patch :feedback, on: :member

@@ -8,7 +8,8 @@ RSpec.describe "AI deployment configuration" do
     expect(deploy_config.dig("env", "secret")).to include("OPENAI_API_KEY")
     expect(deploy_config.dig("env", "clear")).to include(
       "CARECIERGE_MEMORY_EXTRACTION_MODEL",
-      "CARECIERGE_MESSAGE_DRAFTING_MODEL"
+      "CARECIERGE_MESSAGE_DRAFTING_MODEL",
+      "CARECIERGE_SOCIAL_CONTEXT_MODEL"
     )
     expect(secrets).to include("OPENAI_API_KEY=$OPENAI_API_KEY")
   end

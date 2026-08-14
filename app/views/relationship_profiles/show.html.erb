@@ -29,6 +29,13 @@
       private_notes_available: @message_private_notes_available,
       vault_items_available: @message_vault_items_available,
       vault_unlocked: @message_vault_unlocked %>
+
+    <%= component "social_context_ledger",
+      relationship_profile: @relationship_profile,
+      notes: @social_context_notes,
+      notes_pagy: @social_context_notes_pagy,
+      new_note: @new_social_context_note,
+      analysis_permission: @social_context_analysis_permission %>
   <% end %>
 
   <%= render "important_dates/section", relationship_profile: @relationship_profile %>

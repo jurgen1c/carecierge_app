@@ -10,15 +10,16 @@ module Suggestions
     ].freeze
     REPAIR_CATEGORIES = %w[stressed distant sad overwhelmed].freeze
 
-    def self.call(relationship_profile:, as_of: Time.current, mood_notes: nil, important_dates: nil)
-      new(relationship_profile:, as_of:, mood_notes:, important_dates:).call
+    def self.call(relationship_profile:, as_of: Time.current, mood_notes: nil, important_dates: nil, social_context_notes: nil)
+      new(relationship_profile:, as_of:, mood_notes:, important_dates:, social_context_notes:).call
     end
 
-    def initialize(relationship_profile:, as_of:, mood_notes:, important_dates:)
+    def initialize(relationship_profile:, as_of:, mood_notes:, important_dates:, social_context_notes:)
       @relationship_profile = relationship_profile
       @as_of = as_of
       @mood_notes = mood_notes
       @important_dates = important_dates
+      @provided_social_context_notes = social_context_notes
     end
 
     def call
@@ -27,8 +28,10 @@ module Suggestions
       [
         gift_suggestion,
         message_suggestion,
+        social_context_suggestion("conversation_topic", reminder_type: "custom"),
         plan_suggestion,
         check_in_suggestion,
+        social_context_suggestion("reminder", suggestion_type: "social_reminder", reminder_type: "check_in"),
         event_suggestion,
         spontaneous_suggestion,
         repair_suggestion,
@@ -38,19 +41,21 @@ module Suggestions
 
     private
 
-    attr_reader :relationship_profile, :as_of, :mood_notes, :important_dates
+    attr_reader :relationship_profile, :as_of, :mood_notes, :important_dates, :provided_social_context_notes
 
     def gift_suggestion
       desire = active_desires.find { |item| item.suggestion_contexts.include?("gift") }
-      build("gift", desire, evidence: desire&.title, reminder_type: "gift_planning")
+      return build("gift", desire, evidence: desire.title, reminder_type: "gift_planning") if desire
+
+      social_context_suggestion("gift", reminder_type: "gift_planning")
     end
 
     def message_suggestion
       input = RelationshipPersona.new(relationship_profile:).suggestion_inputs.first
-      return unless input
+      return social_context_suggestion("message", reminder_type: "check_in") unless input
 
       source = persona_source(input)
-      return unless source
+      return social_context_suggestion("message", reminder_type: "check_in") unless source
 
       build(
         "message",
@@ -58,6 +63,19 @@ module Suggestions
         evidence: input.fetch(:evidence),
         certainty: input.fetch(:certainty),
         reminder_type: "check_in"
+      )
+    end
+
+    def social_context_suggestion(use, suggestion_type: use, reminder_type:)
+      note = social_context_notes.find { |item| item.approved_suggested_uses.include?(use) }
+      return unless note
+
+      build(
+        suggestion_type,
+        note,
+        evidence: note.suggestion_evidence,
+        certainty: note.suggestion_certainty,
+        reminder_type:
       )
     end
 
@@ -110,6 +128,18 @@ module Suggestions
       @active_desires ||= relationship_profile.desires
         .select { |desire| desire.status.in?(Desire::EDITABLE_STATUSES) }
         .sort_by { |desire| [ desire.status == "active" ? 0 : 1, desire.title.downcase, desire.id ] }
+    end
+
+    def social_context_notes
+      return @social_context_notes if defined?(@social_context_notes)
+
+      @social_context_notes = if provided_social_context_notes
+        SocialContextNote.select_downstream_sources(provided_social_context_notes)
+      else
+        relationship_profile.social_context_notes
+          .downstream_sources
+          .to_a
+      end
     end
 
     def persona_source(input)

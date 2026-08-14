@@ -9,13 +9,15 @@ module DataDeletions
     end
 
     def call
-      blobs = attached_recording_blobs
+      blobs = []
 
       Perform.call(
         user:,
         request_kind: "account",
-        after_commit: -> { delete_recording_blobs(blobs) }
+        after_commit: -> { DeleteBlobs.call(blobs) }
       ) do
+        profiles = locked_profiles
+        blobs = deletion_blobs(profiles)
         FeatureFlagAssignment.where(target_kind: "user", target_value: user.id).delete_all
         user.destroy!
       end
@@ -25,27 +27,31 @@ module DataDeletions
 
     attr_reader :user
 
-    def attached_recording_blobs
+    def locked_profiles
+      user.relationship_profiles.with_discarded.order(:id).lock.to_a
+    end
+
+    def deletion_blobs(profiles)
+      (recording_blobs(profiles) + social_context_blobs(profiles) + owner_stamped_blobs).uniq(&:id)
+    end
+
+    def recording_blobs(profiles)
       ConversationRecap
-        .where(relationship_profile: user.relationship_profiles.with_discarded)
+        .where(relationship_profile: profiles)
         .with_attached_audio_recording
         .filter_map { |recap| recap.audio_recording.blob if recap.audio_recording.attached? }
         .uniq(&:id)
     end
 
-    def delete_recording_blobs(blobs)
-      blobs.each { |blob| delete_recording_blob(blob) }
+    def social_context_blobs(profiles)
+      SocialContextNote
+        .where(relationship_profile: profiles)
+        .with_rich_text_body_and_embeds
+        .flat_map(&:image_blobs)
     end
 
-    def delete_recording_blob(blob)
-      blob.with_lock do
-        return if blob.attachments.exists?
-
-        blob.delete
-        blob.destroy!
-      end
-    rescue ActiveRecord::RecordNotFound
-      blob.delete
+    def owner_stamped_blobs
+      ActiveStorage::Blob.where(uploaded_by_user_id: user.id).to_a
     end
   end
 end

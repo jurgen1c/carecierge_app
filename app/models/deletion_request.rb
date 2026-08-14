@@ -26,7 +26,7 @@
 #  fk_rails_...  (user_id => users.id) ON DELETE => nullify
 #
 class DeletionRequest < ApplicationRecord
-  REQUEST_KINDS = %w[relationship_profile privacy_vault_item ai_generated account].freeze
+  REQUEST_KINDS = %w[relationship_profile privacy_vault_item social_context_note ai_generated account].freeze
   STATUSES = %w[pending completed failed].freeze
 
   belongs_to :user, optional: true

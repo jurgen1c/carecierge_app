@@ -26,6 +26,16 @@ RSpec.describe "Data controls", type: :request do
       expect(response.body).to include(I18n.t("data_controls.show.delete_account.title", locale: :es))
     end
 
+    it "discloses social-analysis deletion in English and Spanish" do
+      sign_in user
+
+      I18n.with_locale(:en) { get data_control_path }
+      expect(response.body).to include("social-context interpretations")
+
+      I18n.with_locale(:es) { get data_control_path }
+      expect(response.body).to include("interpretaciones de contexto social")
+    end
+
     it "gives OAuth users an explicit password setup path before account deletion" do
       user.update!(provider: "google_oauth2", uid: "google-owner")
       sign_in user
@@ -87,6 +97,28 @@ RSpec.describe "Data controls", type: :request do
         "byte_size" => 19,
         "encoding" => "base64",
         "data" => Base64.strict_encode64("portable voice note")
+      )
+    end
+
+    it "includes user-provided social context and uploaded screenshots in portable exports" do
+      blob = create_social_context_image_blob(user:, filename: "social-context.png", payload: "portable screenshot")
+      create(
+        :social_context_note,
+        relationship_profile: profile,
+        body: "<p>Bookshop post</p>#{ActionText::Attachment.from_attachable(blob).to_html}",
+        allow_suggestions: true
+      )
+
+      post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
+
+      exported = response.parsed_body.dig("relationship_profiles", 0, "social_context_notes", 0)
+      expect(exported).to include("body" => include("Bookshop post"), "allow_suggestions" => true)
+      expect(exported).not_to have_key("lock_version")
+      expect(exported.fetch("uploaded_images").sole).to include(
+        "filename" => "social-context.png",
+        "content_type" => "image/png",
+        "encoding" => "base64",
+        "data" => Base64.strict_encode64(social_context_png_bytes("portable screenshot"))
       )
     end
 
@@ -456,6 +488,75 @@ RSpec.describe "Data controls", type: :request do
       expect(FeatureFlagAssignment.exists?(user_assignment.id)).to be(false)
       expect(ActiveStorage::Blob.exists?(blob.id)).to be(false)
       expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
+    end
+
+    it "permanently deletes social context screenshots with the account" do
+      blob = create_social_context_image_blob(user:, filename: "delete-me.png", payload: "delete this screenshot")
+      create(
+        :social_context_note,
+        relationship_profile: profile,
+        body: "<p>Social post</p>#{ActionText::Attachment.from_attachable(blob).to_html}"
+      )
+      blob_key = blob.key
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(response).to redirect_to(root_path)
+      expect(ActiveStorage::Blob.exists?(blob.id)).to be(false)
+      expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
+    end
+
+    it "revokes and purges an unattached direct-upload grant with the account" do
+      post social_context_direct_uploads_path, params: {
+        blob: {
+          filename: "abandoned.png",
+          byte_size: 8,
+          checksum: Digest::MD5.base64digest("\x89PNG\r\n\x1A\n".b),
+          content_type: "image/png"
+        }
+      }
+      upload_url = response.parsed_body.dig("direct_upload", "url")
+      blob = ActiveStorage::Blob.order(:created_at).last
+      blob_key = blob.key
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(ActiveStorage::Blob.exists?(blob.id)).to be(false)
+      expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
+
+      put upload_url, params: "\x89PNG\r\n\x1A\n".b, headers: { "CONTENT_TYPE" => "image/png" }
+
+      expect(response).to redirect_to(new_user_session_path)
+      expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
+    end
+
+    it "locks owned relationship profiles before snapshotting account screenshots" do
+      blob = create_social_context_image_blob(user:, filename: "account-lock.png", payload: "account lock screenshot")
+      create(
+        :social_context_note,
+        relationship_profile: profile,
+        body: "<p>Social post</p>#{ActionText::Attachment.from_attachable(blob).to_html}"
+      )
+      sql = []
+      subscriber = lambda do |_name, _started, _finished, _id, payload|
+        sql << payload[:sql] unless payload[:name] == "SCHEMA" || payload[:cached]
+      end
+
+      ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
+        post data_deletions_path, params: {
+          data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+        }
+      end
+
+      profile_lock = sql.index { |statement| statement.include?('FROM "relationship_profiles"') && statement.include?("FOR UPDATE") }
+      social_snapshot = sql.index { |statement| statement.include?('FROM "social_context_notes"') }
+      expect(profile_lock).to be_present
+      expect(social_snapshot).to be_present
+      expect(profile_lock).to be < social_snapshot
     end
 
     it "does not mark account deletion complete when recording purge fails" do

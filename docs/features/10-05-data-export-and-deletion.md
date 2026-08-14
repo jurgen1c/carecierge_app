@@ -21,8 +21,9 @@ re-entered.
 - Delete profiles from their existing owner-scoped profile surface.
 - Permanently delete a protected note, memory, or relationship detail only from
   an unlocked privacy vault.
-- Delete only AI-inferred memories and AI-extraction timeline records without
-  removing user-confirmed or manually-created records.
+- Delete AI-inferred memories, AI-extraction timeline records, and social-context
+  interpretations with their review state and proposed uses, without removing
+  owner-authored social notes and uploads or user-confirmed/manual records.
 - Delete the full account only after exact email confirmation and current
   password verification.
 
@@ -45,7 +46,9 @@ auditable without retaining the account email or relationship contents.
 ## Implementation
 
 - `DataExports::Snapshot` creates an explicit portable representation instead
-  of exposing authentication secrets or arbitrary database columns.
+  of exposing authentication secrets or arbitrary database columns. Internal
+  concurrency fences, including social-note optimistic-lock versions, remain
+  excluded.
 - `DataExports::CsvSerializer` flattens the same snapshot; the JSON and CSV
   outputs therefore cover the same records. Uploaded recordings use base64
   content with filename and media metadata, and formula-leading cells are
@@ -62,13 +65,31 @@ auditable without retaining the account email or relationship contents.
   scope/format and completion result.
 - `DataDeletions::Perform` writes `data_deletion.requested` and the durable
   deletion request around each successful destructive operation.
-- Account deletion synchronously purges uploaded recordings before the request
-  can be marked completed. Storage files are deleted before their blob rows so a
-  failure leaves retryable metadata and failed evidence; blobs still attached to
-  another account are preserved. A blob row lock spans the final attachment
-  check and purge so concurrent attachment creation cannot race storage deletion.
-  If Active Storage already removed a blob row, the captured storage key receives
-  one final idempotent delete and the account request completes.
+- Selective AI deletion preserves user-authored social notes and uploads while
+  clearing their interpretations, proposed uses, review state, and analysis
+  timestamps. It advances note versions and the shared message-generation fence
+  so delayed provider output cannot recreate deleted AI state. Clearing this AI
+  state does not reread unchanged screenshot storage, so missing or temporarily
+  unavailable uploads cannot block the privacy control.
+- Account deletion synchronously purges uploaded recordings, attached social
+  screenshots, and owner-stamped uploads that never reached a saved note before
+  the request can be marked completed. Upload grants are short-lived and storage
+  writes pass through an authenticated account lock, so deletion revokes an
+  outstanding grant instead of allowing a late orphaned write. A retrying job
+  also removes uploads that remain unattached for one hour on active accounts,
+  and owner identifiers live only in the nullifying foreign key. Storage files are
+  deleted before their blob rows so a failure leaves retryable metadata and
+  failed evidence; blobs still attached to another account are preserved. A blob
+  row lock spans the final attachment check and purge so concurrent attachment
+  creation cannot race storage deletion. If Active Storage already removed a
+  blob row, the captured storage key receives one final idempotent delete and the
+  account request completes.
+- Social-context screenshot reads are owner-authorized and returned with
+  `no-store`, including previews before a note is saved. Reads return stored,
+  lazy-loaded variants bounded to 1024 by 768 rather than original screenshots.
+- Note deletion captures its screenshot blobs while holding the relationship
+  lock. Profile and account deletion lock the owned relationship rows before
+  snapshotting screenshots, closing the gap between snapshot and cascade.
 - User-targeted feature-flag assignments are removed with the account, and
   Google-authenticated users receive a direct password-setup path before the
   password-gated action.

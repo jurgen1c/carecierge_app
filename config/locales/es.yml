@@ -15,6 +15,7 @@ es:
       memory_stale_after: "%-d/%-m/%Y"
   time:
     formats:
+      social_context_note: "%-d/%-m/%Y a las %H:%M"
       audit_event_admin: "%-d/%-m/%Y a las %H:%M"
       audit_event_time: "%H:%M"
       long: "%-d/%-m/%Y %H:%M"
@@ -1962,9 +1963,9 @@ es:
       confirmation: "Escribe %{email} para confirmar"
       delete_ai:
         title: "Eliminar datos generados por IA"
-        body: "Elimina permanentemente memorias inferidas por IA y registros de cronología de extracción por IA. Las memorias confirmadas y las entradas manuales permanecen."
+        body: "Elimina permanentemente memorias inferidas por IA, registros de cronología de extracción por IA e interpretaciones de contexto social con su estado de revisión y usos propuestos. Tus notas sociales y archivos subidos, las memorias confirmadas y las entradas manuales permanecen."
         action: "Eliminar datos generados por IA"
-        confirm: "¿Eliminar todos los datos generados por IA de esta cuenta?"
+        confirm: "¿Eliminar todos los datos generados por IA, incluidas las interpretaciones de contexto social, de esta cuenta?"
       delete_account:
         title: "Eliminar cuenta"
         body: "Elimina permanentemente tu cuenta y todos los datos de relaciones. Se conserva evidencia minimizada de la eliminación sin tu correo ni contenido de relaciones."

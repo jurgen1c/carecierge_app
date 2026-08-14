@@ -1,7 +1,6 @@
 class RelationshipProfilesController < ApplicationController
   include PrivacyVaultSession
-
-  MESSAGE_DRAFT_REVISION_PAGE_SIZE = 10
+  include RelationshipProfileShowWorkspace
 
   before_action :set_relationship_profile, only: %i[show edit update archive destroy]
   around_action :serialize_profile_update_with_privacy_vault, only: :update
@@ -31,27 +30,7 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def show
-    prepare_message_draft_workspace unless @relationship_profile.archived?
-    @relationship_persona = RelationshipPersona.new(relationship_profile: @relationship_profile)
-    @mood_notes = @relationship_profile.mood_notes.ordered.to_a
-    suggestions = Suggestions::ForProfile.call(
-      relationship_profile: @relationship_profile,
-      mood_notes: @mood_notes,
-      important_dates: @relationship_profile.important_dates
-    )
-    @suggestion_feedbacks = current_user.suggestion_feedbacks
-      .where(fingerprint: suggestions.map(&:fingerprint))
-      .index_by(&:fingerprint)
-    @suggestions = suggestions.reject { |suggestion| @suggestion_feedbacks[suggestion.fingerprint]&.hidden? }
-    @selected_suggestion = @suggestions.find { |suggestion| suggestion.fingerprint == params[:suggestion] } || @suggestions.first
-    @timeline_type = params[:timeline_type].to_s.in?(TimelineEntry::ENTRY_TYPES) ? params[:timeline_type].to_s : nil
-    @relationship_reminders = @relationship_profile.reminders.active.by_effective_delivery.limit(5).to_a
-    @interactions = @relationship_profile.interactions.includes(:source).ordered.limit(10).to_a
-    @conversation_recaps = @relationship_profile.conversation_recaps.ordered.includes(:extracted_memories).to_a
-    @extracted_memories = @conversation_recaps.flat_map(&:extracted_memories).sort_by { |memory| [ memory.pending? ? 0 : 1, memory.created_at, memory.id ] }
-    pending_memories = @extracted_memories.select(&:pending?)
-    @selected_extracted_memory = pending_memories.find { |memory| memory.id == params[:memory_proposal] } || pending_memories.first
-    @memory_extraction_enabled = FeatureFlag.enabled?("ai_memory_extraction", user: current_user, environment: Rails.env)
+    prepare_relationship_profile_show
   end
 
   def new
@@ -116,41 +95,30 @@ class RelationshipProfilesController < ApplicationController
   end
 
   def destroy
-    DataDeletions::Perform.call(user: current_user, request_kind: "relationship_profile", subject: @relationship_profile) do
-      AuditEvents::Track.call(
-        user: current_user,
-        actor: current_user,
-        action: "relationship_profile.deleted",
-        target: nil
-      ) { @relationship_profile.destroy! }
+    social_context_blobs = []
+    DataDeletions::Perform.call(
+      user: current_user,
+      request_kind: "relationship_profile",
+      subject: @relationship_profile,
+      after_commit: -> { DataDeletions::DeleteBlobs.call(social_context_blobs) }
+    ) do
+      @relationship_profile.with_lock do
+        social_context_blobs = @relationship_profile.social_context_notes
+          .with_rich_text_body_and_embeds
+          .flat_map(&:image_blobs)
+        AuditEvents::Track.call(
+          user: current_user,
+          actor: current_user,
+          action: "relationship_profile.deleted",
+          target: nil
+        ) { @relationship_profile.destroy! }
+      end
     end
 
     redirect_to relationship_profiles_path, notice: t(".notice")
   end
 
   private
-
-  def prepare_message_draft_workspace
-    @message_draft = @relationship_profile.message_draft
-    if @message_draft
-      @message_draft_revisions_pagy, @message_draft_revisions = pagy(
-        :offset,
-        @message_draft.draft_revisions,
-        limit: MESSAGE_DRAFT_REVISION_PAGE_SIZE,
-        page_key: "draft_page"
-      )
-    else
-      @message_draft_revisions = []
-      @message_draft_revisions_pagy = nil
-    end
-    @message_context_categories = MessageDrafts::ContextBuilder.new(relationship_profile: @relationship_profile).call.categories
-    @message_private_notes_available = @relationship_profile.relationship_notes
-      .where(private: true)
-      .where.missing(:privacy_vault_item)
-      .exists?
-    @message_vault_items_available = @relationship_profile.privacy_vault_items.exists?
-    @message_vault_unlocked = privacy_vault_unlocked?
-  end
 
   def set_relationship_profile
     @relationship_profile = current_user

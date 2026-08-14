@@ -66,6 +66,7 @@ module DataExports
         "important_dates" => records(profile.important_dates),
         "gifts" => records(profile.gifts),
         "memory_records" => profile.memory_records.map { |memory| memory_attributes(memory) },
+        "social_context_notes" => profile.social_context_notes.with_rich_text_body_and_embeds.map { |note| social_context_note_attributes(note) },
         "message_draft" => message_draft_attributes(profile.message_draft),
         "conversation_recaps" => profile.conversation_recaps.map { |recap| conversation_recap_attributes(recap) },
         "extracted_memories" => records(profile.extracted_memories, except: %w[reviewed_by_id]),
@@ -88,6 +89,13 @@ module DataExports
       attributes_for(memory).merge("memory_revisions" => records(memory.memory_revisions, except: %w[user_id]))
     end
 
+    def social_context_note_attributes(note)
+      attributes_for(note, except: %w[lock_version]).merge(
+        "body" => note.body.to_plain_text,
+        "uploaded_images" => note.image_blobs.map { |blob| blob_attributes(blob) }
+      )
+    end
+
     def message_draft_attributes(draft)
       return unless draft
 
@@ -105,7 +113,10 @@ module DataExports
     def attachment_attributes(attachment)
       return unless attachment.attached?
 
-      blob = attachment.blob
+      blob_attributes(attachment.blob)
+    end
+
+    def blob_attributes(blob)
       metadata = {
         "filename" => blob.filename.to_s,
         "content_type" => blob.content_type,

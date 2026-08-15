@@ -30,6 +30,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class MemoryRecord < ApplicationRecord
+  include FeedItemStateSource
+
   SOURCES = %w[user_confirmed ai_inferred imported user_corrected].freeze
   CONFIDENCES = %w[confirmed high medium low inferred].freeze
   STATUSES = %w[active needs_review stale corrected archived].freeze

@@ -216,6 +216,19 @@ RSpec.describe "Data controls", type: :request do
       expect(exported_delivery).not_to have_key("error_message")
     end
 
+    it "includes feed-only dismissal and snooze state in account exports" do
+      state = create(:feed_item_state, user:, item_key: "reminder:owned")
+
+      post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
+
+      expect(response.parsed_body.fetch("feed_item_states").sole).to include(
+        "id" => state.id,
+        "item_key" => "reminder:owned",
+        "dismissed_at" => state.dismissed_at.iso8601(3)
+      )
+      expect(response.parsed_body.fetch("feed_item_states").sole).not_to have_key("user_id")
+    end
+
     it "exports only an owned relationship profile" do
       hidden_profile = create(:relationship_profile, first_name: "Hidden")
 

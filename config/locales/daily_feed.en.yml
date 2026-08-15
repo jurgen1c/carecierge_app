@@ -1,0 +1,72 @@
+en:
+  daily_feed:
+    title: "Concierge queue"
+    heading: "Concierge queue"
+    body: "Your daily priorities, organized with the relationship context behind each next step."
+    navigation:
+      label: "Carecierge navigation"
+      mobile_label: "Carecierge mobile navigation"
+      menu: "Menu"
+      queue: "Queue"
+      people: "People"
+      reminders: "Reminders"
+      open_reminders: "Open reminders"
+      activity: "Activity"
+      data_controls: "Data controls"
+      admin_activity: "Admin activity"
+      add_relationship: "Add relationship"
+      settings: "Settings"
+      sign_out: "Sign out"
+    sections:
+      needs_attention: "Needs attention"
+      later_today: "Later today"
+      coming_up: "Coming up"
+      none_needs_attention: "Nothing needs immediate attention. Your later items are still here when you are ready."
+      none_later_today: "Nothing else is waiting for later today."
+      none_coming_up: "No upcoming items in the next 30 days."
+    relationship:
+      account: "Account"
+    urgency:
+      needs_attention: "Needs attention"
+    certainty:
+      confirmed: "Confirmed"
+      inferred: "Inferred"
+    actions:
+      complete: "Complete"
+      act: "Act"
+      plan: "Plan"
+      plan_gift: "Plan gift"
+      open_draft: "Open draft"
+      continue_plan: "Continue plan"
+      review_goal: "Review goal"
+      snooze: "Snooze"
+      dismiss: "Dismiss"
+    source_context:
+      summary: "Source context"
+      open_profile: "Open %{name}'s profile"
+    sources:
+      reminder: "Reminder"
+      commitment: "Commitment"
+      important_date: "Important date"
+      gift: "Gift idea"
+      message_draft: "Message draft"
+      plan_continuation: "Plan continuation"
+      relationship_goal: "Relationship goal"
+      suggestion: "Suggestion"
+    items:
+      important_date:
+        detail: "Plan ahead for %{name}."
+      message_draft:
+        title: "Continue message draft for %{name}"
+      plan_continuation:
+        unscheduled: "No due date"
+    notices:
+      dismissed: "The item was removed from your queue. Its source was not changed."
+      snoozed: "The item will return tomorrow morning."
+    onboarding:
+      body: "Finish onboarding to add the relationship context that makes this queue useful."
+      action: "Continue onboarding"
+    empty:
+      title: "Your queue is clear"
+      body: "New reminders, commitments, dates, suggestions, drafts, gifts, plans, and goals will appear here when they need your attention."
+      action: "Create a reminder"

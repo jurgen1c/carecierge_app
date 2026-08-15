@@ -1,6 +1,7 @@
 class RelationshipPersona
   CONFIRMED_MEMORY_SOURCES = %w[user_confirmed user_corrected].freeze
   INCLUDED_MEMORY_STATUSES = %w[active corrected].freeze
+  SUGGESTION_SOURCE_LIMIT = 8
 
   class Trait < Data.define(:statement, :detail, :certainty, :evidence, :source)
     def inferred?
@@ -19,8 +20,9 @@ class RelationshipPersona
     end
   end
 
-  def initialize(relationship_profile:)
+  def initialize(relationship_profile:, use_preloaded_associations: false)
     @relationship_profile = relationship_profile
+    @use_preloaded_associations = use_preloaded_associations
   end
 
   def traits
@@ -39,10 +41,10 @@ class RelationshipPersona
 
   private
 
-  attr_reader :relationship_profile
+  attr_reader :relationship_profile, :use_preloaded_associations
 
   def preference_traits
-    relationship_profile.relationship_preferences.order(Arel.sql("lower(key) ASC"), :id).map do |preference|
+    preference_records.map do |preference|
       build_trait(
         source: preference,
         statement: preference.key,
@@ -53,10 +55,7 @@ class RelationshipPersona
   end
 
   def memory_traits
-    relationship_profile.memory_records
-      .unprotected
-      .where(status: INCLUDED_MEMORY_STATUSES)
-      .to_a
+    unprotected_memory_records
       .reject(&:review_required?)
       .map do |memory_record|
         build_trait(
@@ -69,12 +68,9 @@ class RelationshipPersona
   end
 
   def protected_memory_suggestion_traits
-    relationship_profile.privacy_vault_items
-      .suggestion_allowed
-      .where(protectable_type: "MemoryRecord")
-      .includes(:protectable)
-      .filter_map do |item|
-        memory_record = item.protectable
+    protected_memory_items.filter_map do |item|
+        memory_record = protected_memory_record(item)
+        next unless memory_record
         next unless memory_record.status.in?(INCLUDED_MEMORY_STATUSES)
         next if memory_record.review_required?
 
@@ -85,6 +81,59 @@ class RelationshipPersona
           evidence: item.payload.fetch("body")
         )
       end
+  end
+
+  def preference_records
+    association = relationship_profile.association(:relationship_preferences)
+    if use_preloaded_associations && association.loaded?
+      return association.target.sort_by { |preference| [ preference.key.downcase, preference.id ] }
+    end
+
+    relationship_profile.relationship_preferences.order(Arel.sql("lower(key) ASC"), :id).to_a
+  end
+
+  def unprotected_memory_records
+    memories = relationship_profile.association(:memory_records)
+    vault_items = relationship_profile.association(:privacy_vault_items)
+    unless use_preloaded_associations && memories.loaded? && vault_items.loaded?
+      return relationship_profile.memory_records.unprotected.where(status: INCLUDED_MEMORY_STATUSES).to_a
+    end
+
+    protected_ids = vault_items.target.filter_map do |item|
+      item.protectable_id if item.protectable_type == "MemoryRecord"
+    end.to_set
+    memories.target.select { |memory| memory.status.in?(INCLUDED_MEMORY_STATUSES) && !protected_ids.include?(memory.id) }
+  end
+
+  def protected_memory_items
+    association = relationship_profile.association(:privacy_vault_items)
+    if use_preloaded_associations && association.loaded?
+      return association.target.select { |item| item.suggestion_allowed? && item.protectable_type == "MemoryRecord" }
+    end
+
+    relationship_profile.privacy_vault_items
+      .suggestion_allowed
+      .where(protectable_type: "MemoryRecord", protectable_id: eligible_protected_memory_ids)
+      .order(protected_at: :desc, id: :desc)
+      .limit(SUGGESTION_SOURCE_LIMIT)
+      .includes(:protectable)
+      .to_a
+  end
+
+  def eligible_protected_memory_ids
+    relationship_profile.memory_records
+      .where(status: INCLUDED_MEMORY_STATUSES)
+      .where("stale_after IS NULL OR stale_after >= ?", Date.current)
+      .select(:id)
+  end
+
+  def protected_memory_record(item)
+    memories = relationship_profile.association(:memory_records)
+    if use_preloaded_associations && memories.loaded?
+      return memories.target.find { |memory| memory.id == item.protectable_id }
+    end
+
+    item.protectable
   end
 
   def build_trait(source:, statement:, detail:, evidence:)

@@ -36,3 +36,5 @@ The system builds an evolving relationship persona for each person based on know
 ## Implementation Notes
 
 Personas should not be presented as absolute truth. Use "seems to prefer" language where appropriate.
+Consent-gated protected suggestion inputs are bounded to the eight most recently
+protected eligible memories before deterministic certainty and title ordering.

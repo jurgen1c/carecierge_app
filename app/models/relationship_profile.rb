@@ -33,6 +33,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class RelationshipProfile < ApplicationRecord
+  include FeedItemStateSource
+
   extend FriendlyId
   include Discard::Model
 

@@ -19,6 +19,7 @@ watched_files:
   - app/controllers/privacy_vault_items_controller.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/models/deletion_request.rb
+  - app/models/feed_item_state.rb
   - app/models/social_context_note.rb
   - app/models/user.rb
   - app/policies/data_control_policy.rb
@@ -33,6 +34,7 @@ watched_files:
   - config/locales/es.yml
   - config/initializers/filter_parameter_logging.rb
   - db/migrate/*deletion_requests*.rb
+  - db/migrate/*feed_item_states*.rb
   - db/migrate/*social_context*.rb
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb

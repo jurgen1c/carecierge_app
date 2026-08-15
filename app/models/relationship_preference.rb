@@ -28,6 +28,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class RelationshipPreference < ApplicationRecord
+  include FeedItemStateSource
+
   enum :preference_type, {
     positive: "positive",
     negative: "negative",

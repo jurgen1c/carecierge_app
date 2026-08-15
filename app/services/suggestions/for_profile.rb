@@ -10,16 +10,25 @@ module Suggestions
     ].freeze
     REPAIR_CATEGORIES = %w[stressed distant sad overwhelmed].freeze
 
-    def self.call(relationship_profile:, as_of: Time.current, mood_notes: nil, important_dates: nil, social_context_notes: nil)
-      new(relationship_profile:, as_of:, mood_notes:, important_dates:, social_context_notes:).call
+    def self.call(relationship_profile:, as_of: Time.current, mood_notes: nil, important_dates: nil, social_context_notes: nil,
+      use_preloaded_persona_sources: false)
+      new(
+        relationship_profile:,
+        as_of:,
+        mood_notes:,
+        important_dates:,
+        social_context_notes:,
+        use_preloaded_persona_sources:
+      ).call
     end
 
-    def initialize(relationship_profile:, as_of:, mood_notes:, important_dates:, social_context_notes:)
+    def initialize(relationship_profile:, as_of:, mood_notes:, important_dates:, social_context_notes:, use_preloaded_persona_sources:)
       @relationship_profile = relationship_profile
       @as_of = as_of
       @mood_notes = mood_notes
       @important_dates = important_dates
       @provided_social_context_notes = social_context_notes
+      @use_preloaded_persona_sources = use_preloaded_persona_sources
     end
 
     def call
@@ -41,7 +50,8 @@ module Suggestions
 
     private
 
-    attr_reader :relationship_profile, :as_of, :mood_notes, :important_dates, :provided_social_context_notes
+    attr_reader :relationship_profile, :as_of, :mood_notes, :important_dates, :provided_social_context_notes,
+      :use_preloaded_persona_sources
 
     def gift_suggestion
       desire = active_desires.find { |item| item.suggestion_contexts.include?("gift") }
@@ -51,7 +61,10 @@ module Suggestions
     end
 
     def message_suggestion
-      input = RelationshipPersona.new(relationship_profile:).suggestion_inputs.first
+      input = RelationshipPersona.new(
+        relationship_profile:,
+        use_preloaded_associations: use_preloaded_persona_sources
+      ).suggestion_inputs.first
       return social_context_suggestion("message", reminder_type: "check_in") unless input
 
       source = persona_source(input)
@@ -146,7 +159,23 @@ module Suggestions
       source_class = input.fetch(:source_type).safe_constantize
       return unless source_class&.reflect_on_association(:relationship_profile)
 
+      loaded_source = loaded_persona_source(source_class, input.fetch(:source_id)) if use_preloaded_persona_sources
+      return loaded_source if loaded_source
+
       source_class.find_by(id: input.fetch(:source_id), relationship_profile_id: relationship_profile.id)
+    end
+
+    def loaded_persona_source(source_class, source_id)
+      association_name = {
+        "MemoryRecord" => :memory_records,
+        "RelationshipPreference" => :relationship_preferences
+      }[source_class.base_class.name]
+      return unless association_name
+
+      association = relationship_profile.association(association_name)
+      return unless association.loaded?
+
+      association.target.find { |record| record.id == source_id }
     end
 
     def build(type, source, evidence:, certainty: "confirmed", reminder_type:, priority: "normal")
@@ -159,8 +188,11 @@ module Suggestions
         certainty:,
         source:
       )
-      fingerprint = Digest::SHA256.hexdigest(
-        [ "v1", relationship_profile.id, type, source.class.base_class.name, source.id ].join(":"),
+      fingerprint = Suggestion.fingerprint_for(
+        relationship_profile_id: relationship_profile.id,
+        suggestion_type: type,
+        source_type: source.class.base_class.name,
+        source_id: source.id
       )
 
       Suggestion.new(

@@ -22,9 +22,11 @@ claim: >
   archived relationship profile. Conversation recaps and mood notes reject future
   source timestamps before derived-interaction synchronization. The latest
   recorded interaction, or cadence acceptance time when history is empty,
-  determines the next check-in window. Overdue UI copy explicitly treats missing
-  history as uncertain and can link to the existing Reminder form, but cadence
-  never creates reminders or claims that contact did not happen.
+  determines the next check-in window. Owner-scoped aggregate consumers may
+  preload that latest timestamp to avoid one interaction query per relationship.
+  Overdue UI copy explicitly treats missing history as uncertain and can link to
+  the existing Reminder form, but cadence never creates reminders or claims that
+  contact did not happen.
 
 source_files:
   - app/models/contact_cadence.rb
@@ -87,6 +89,8 @@ The historical backfill includes only source timestamps that have already
 occurred, so legacy future-dated rows cannot postpone cadence prompts.
 
 Cadence uses the most recent interaction to calculate a next check-in window.
+Owner-scoped aggregate surfaces can preload that timestamp without changing the
+calculation or the meaning of missing history.
 When the window passes, Carecierge explains that a recent contact may simply be
 missing, offers manual logging, and links to the existing reminder workflow. It
 does not automatically schedule or deliver anything.

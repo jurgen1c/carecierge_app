@@ -26,6 +26,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class Desire < ApplicationRecord
+  include FeedItemStateSource
+
   CATEGORIES = %w[gift activity experience help travel food wellness other].freeze
   STATUSES = %w[active planned fulfilled archived].freeze
   EDITABLE_STATUSES = %w[active planned].freeze

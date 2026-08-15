@@ -1,0 +1,15 @@
+id: car_46_copilot_review_cleanup
+status: active
+reason: >
+  Follow-up Copilot review cleanup after CAR-46 introduced the durable
+  daily_feed.concierge_queue_is_derived_and_owner_scoped claim. The component
+  change corrects initials extraction for name parts that begin with
+  punctuation or digits, and the model spec confirms existing Active Record
+  upsert timestamp behavior. Neither changes the queue system boundary,
+  lifecycle, authorization, ranking, or data-control rules recorded in the
+  existing claim.
+files:
+  - app/views/components/daily_feed_item_component.rb
+  - spec/components/daily_feed_item_component_spec.rb
+  - spec/models/feed_item_state_spec.rb
+expires_at: 2026-08-22

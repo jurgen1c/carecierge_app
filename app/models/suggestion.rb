@@ -1,3 +1,5 @@
+require "digest"
+
 class Suggestion
   TYPES = %w[
     gift message conversation_topic plan check_in social_reminder event spontaneous repair_focused professional_follow_up
@@ -22,6 +24,10 @@ class Suggestion
 
   attr_reader :fingerprint, :suggestion_type, :title_key, :title_params, :detail_key, :detail_params,
     :reasons, :action_kind, :action_attributes
+
+  def self.fingerprint_for(relationship_profile_id:, suggestion_type:, source_type:, source_id:)
+    Digest::SHA256.hexdigest([ "v1", relationship_profile_id, suggestion_type, source_type, source_id ].join(":"))
+  end
 
   def initialize(fingerprint:, suggestion_type:, title_key:, title_params:, detail_key:, detail_params:, reasons:,
     action_kind:, action_attributes:)

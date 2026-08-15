@@ -11,23 +11,28 @@ title: Data exports and permanent deletion stay owner-scoped and privacy-minimiz
 claim: >
   Owner-scoped JSON, CSV, PDF, and private-calendar exports include recordings,
   social context and screenshots, relationships, localized labels, privacy-safe
-  audit and reminder evidence, and effective message-draft response settings and
-  revisions. Vault payloads require reauthentication; internal errors, leases,
+  audit and reminder evidence, feed dismissal and snooze state, and effective
+  message-draft response settings and revisions. Vault payloads require
+  reauthentication; internal errors, leases,
   fences, recipient keys, and ownership keys stay excluded. Serialization
   neutralizes CSV formulas, preserves recurrences, uses the configured PDF
   origin, and audits only successful exports. Selective AI deletion preserves
   corrected memories and authored notes, clears note analysis without rereading
   unchanged screenshots, and fences delayed results. Profile and account
   deletion lock snapshots, revokes outstanding authenticated upload grants, and
-  idempotently cleans attached or abandoned owner blobs. Ownership stays in the
-  nullifying foreign key rather than retained blob metadata. Completed account
-  deletion retains only a one-way digest; OAuth users receive password setup.
+  idempotently cleans attached or abandoned owner blobs. Feed visibility state
+  is pruned when its source or relationship is permanently deleted and cascades
+  with the account. Ownership stays in the nullifying foreign key rather than
+  retained blob metadata. Completed account deletion retains only a one-way
+  digest; OAuth users receive password setup.
 
 source_files:
   - app/controllers/data_controls_controller.rb
   - app/controllers/data_exports_controller.rb
   - app/controllers/data_deletions_controller.rb
   - app/models/deletion_request.rb
+  - app/models/concerns/feed_item_state_source.rb
+  - app/models/feed_item_state.rb
   - app/serializers/data_exports/snapshot.rb
   - app/services/data_deletions/perform.rb
   - app/services/data_deletions/delete_account.rb
@@ -38,6 +43,7 @@ source_files:
   - app/jobs/purge_abandoned_social_context_upload_job.rb
   - db/migrate/20260808004436_create_deletion_requests.rb
   - db/migrate/20260813120002_add_uploaded_by_user_to_active_storage_blobs.rb
+  - db/migrate/20260814160000_create_feed_item_states.rb
 
 related_files:
   - app/serializers/data_exports/csv_serializer.rb
@@ -95,14 +101,16 @@ last_verified_commit: null
 
 Every export format uses the same owner scope, and decrypted vault payloads
 require password reauthentication. JSON and CSV include privacy-safe evidence,
-message revisions, social notes, consent state, and screenshot bytes while
-excluding internal keys, errors, leases, and fences. Serialization neutralizes
+  message revisions, social notes, consent state, screenshot bytes, and feed
+  visibility state while excluding internal keys, errors, leases, and fences.
+  Serialization neutralizes
 formulas, preserves recurrences, and audits only success. Selective AI deletion
 preserves authored content while clearing and fencing inferred state. Profile and
 account deletion snapshot under owned locks; upload writes share the account lock,
-and cleanup includes attached or abandoned owner-stamped blobs. Ownership lives
-only in a nullifying foreign key, and a retrying expiry job cleans abandoned
-uploads without retaining owner UUIDs in metadata.
+and cleanup includes attached or abandoned owner-stamped blobs. Permanently
+deleted feed sources and relationships also prune obsolete feed visibility rows.
+Ownership lives only in a nullifying foreign key, and a retrying expiry job
+cleans abandoned uploads without retaining owner UUIDs in metadata.
 
 ## Why It Matters
 
@@ -118,6 +126,7 @@ content into a second store.
 - `app/serializers/data_exports/snapshot.rb`
 - `app/services/data_deletions/perform.rb`
 - `app/models/deletion_request.rb`
+- `app/models/concerns/feed_item_state_source.rb`
 - `spec/requests/data_controls_spec.rb`
 - `spec/services/data_deletions/delete_ai_data_spec.rb`
 

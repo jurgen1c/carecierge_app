@@ -25,6 +25,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #
 class SocialContextNote < ApplicationRecord
+  include FeedItemStateSource
+
   MAX_BODY_CHARACTERS = 5_000
   MAX_BODY_HTML_BYTES = 64.kilobytes
   MAX_INTERPRETATION_CHARACTERS = 2_000

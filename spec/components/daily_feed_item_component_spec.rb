@@ -67,6 +67,31 @@ RSpec.describe DailyFeedItemComponent, type: :component do
     expect(page).to have_link("Open draft", href: Rails.application.routes.url_helpers.relationship_profile_path(profile, anchor: "message-drafting"))
   end
 
+  it "uses the first alphabetic character of each relationship name part for initials" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:, preferred_name: "2Pac !Shakur")
+    reminder = create(:reminder, user:, relationship_profile: profile)
+    item = DailyFeed::Item.new(
+      key: "reminder:#{reminder.id}",
+      kind: "reminder",
+      section: "later_today",
+      title: reminder.title,
+      detail: reminder.notes,
+      source_label: "Reminder",
+      source_context: reminder.notes,
+      source_certainty: nil,
+      source: reminder,
+      relationship_profile: profile,
+      sort_at: reminder.effective_delivery_at,
+      action_kind: "complete_reminder",
+      suggestion: nil
+    )
+
+    render_inline(described_class.new(item:))
+
+    expect(page).to have_css("[aria-hidden='true']", text: "PS")
+  end
+
 
   it "labels inferred suggestion evidence" do
     profile = create(:relationship_profile)

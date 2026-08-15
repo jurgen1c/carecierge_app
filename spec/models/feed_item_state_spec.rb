@@ -82,6 +82,17 @@ RSpec.describe FeedItemState do
     )
   end
 
+  it "updates the modification timestamp when an atomic visibility mutation repeats" do
+    user = create(:user)
+    stale_timestamp = 2.days.ago
+    state = described_class.dismiss_for!(user:, item_key: "reminder:shared")
+    state.update_column(:updated_at, stale_timestamp)
+
+    described_class.snooze_for!(user:, item_key: "reminder:shared", until_time: 1.day.from_now)
+
+    expect(user.feed_item_states.find_by!(item_key: "reminder:shared").updated_at).to be > stale_timestamp
+  end
+
   it "removes obsolete state when a feed source or relationship is permanently deleted" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

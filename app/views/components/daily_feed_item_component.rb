@@ -39,7 +39,7 @@ class DailyFeedItemComponent < ApplicationViewComponent
   end
 
   def initials
-    relationship_name.split.filter_map { |part| part.first if part.match?(/[[:alpha:]]/) }.first(2).join.upcase.presence || "C"
+    relationship_name.split.filter_map { |part| part[/[[:alpha:]]/] }.first(2).join.upcase.presence || "C"
   end
 
   def relationship_name

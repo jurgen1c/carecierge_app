@@ -41,6 +41,7 @@ module DataExports
         "notification_preference" => attributes_for(user.notification_preference),
         "relationship_tags" => records(user.relationship_tags),
         "relationship_groups" => records(user.relationship_groups),
+        "feed_item_states" => records(user.feed_item_states, except: %w[user_id]),
         "reminders" => user.reminders.includes(:reminder_deliveries).map { |reminder| reminder_attributes(reminder) },
         "digest_deliveries" => records(user.digest_deliveries),
         "vault_access_events" => records(user.vault_access_events, except: %w[user_id]),

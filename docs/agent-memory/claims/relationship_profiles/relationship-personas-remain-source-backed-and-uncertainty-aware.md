@@ -18,7 +18,10 @@ claim: >
   remain in correction history even for title-only edits. Turbo refreshes the
   persona after memory mutations. Suggestion inputs preserve certainty,
   evidence, and source identity, fail closed for archived profiles, and decrypt
-  protected payloads only with explicit suggestion consent.
+  protected payloads only with explicit suggestion consent. Consent-gated
+  protected suggestion inputs use the eight most recently protected eligible
+  memories before deterministic certainty and title ordering, including on
+  preloaded aggregate surfaces.
 
 source_files:
   - app/models/relationship_persona.rb
@@ -81,6 +84,9 @@ revision rows; submitted notes are also preserved for title-only edits, while a
 title-only edit without a note creates no empty history. Stale, review-needed,
 archived, and protected memories stay out of rendered traits. Consent-gated vault
 payloads may enter suggestion inputs only, and archived profiles expose none.
+Protected suggestion input selection first bounds to the eight most recently
+protected eligible memories, then applies the same deterministic trait ordering
+for ordinary and preloaded consumers.
 
 Suggestion inputs preserve the statement, detail, certainty, evidence, source
 type, and source UUID for CAR-49 without generating suggestions or asserting

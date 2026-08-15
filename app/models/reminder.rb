@@ -41,6 +41,8 @@
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 class Reminder < ApplicationRecord
+  include FeedItemStateSource
+
   REMINDER_TYPES = %w[birthday gift_planning check_in promise_follow_up event_preparation post_event_follow_up relationship_goal custom].freeze
   PRIORITIES = %w[low normal high].freeze
   RECURRENCES = %w[none daily weekly monthly yearly].freeze

@@ -26,6 +26,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class MoodNote < ApplicationRecord
+  include FeedItemStateSource
+
   CATEGORIES = %w[stressed distant excited sad overwhelmed proud other].freeze
 
   belongs_to :relationship_profile

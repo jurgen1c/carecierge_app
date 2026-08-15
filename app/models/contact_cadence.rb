@@ -18,6 +18,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #
 class ContactCadence < ApplicationRecord
+  include FeedItemStateSource
+
   INTERVAL_DAYS = [ 7, 14, 30, 60, 90 ].freeze
 
   WEEKLY_TYPES = %w[
@@ -64,6 +66,11 @@ class ContactCadence < ApplicationRecord
     return @last_interaction_at if defined?(@last_interaction_at)
 
     @last_interaction_at = relationship_profile.interactions.maximum(:occurred_at)
+  end
+
+  def preload_last_interaction_at(value)
+    @last_interaction_at = value
+    self
   end
 
   def next_check_in_at

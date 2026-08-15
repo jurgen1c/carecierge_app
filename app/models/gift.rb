@@ -30,6 +30,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class Gift < ApplicationRecord
+  include FeedItemStateSource
+
   MAX_PRICE_CENTS = 2_147_483_647
   STATUSES = %w[idea planned given archived].freeze
   EDITABLE_STATUSES = %w[idea planned].freeze

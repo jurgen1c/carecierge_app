@@ -1,0 +1,46 @@
+id: daily_feed
+name: Daily Relationship Feed
+summary: Owner-scoped priority queue derived from existing relationship sources with feed-only visibility state.
+claim_globs:
+  - claims/daily_feed/**/*.md
+default_queries:
+  - concierge queue daily relationship feed dashboard priorities
+  - feed item dismiss snooze source action complete
+  - reminders suggestions commitments important dates gifts drafts goals plans
+watched_files:
+  - app/controllers/dashboard_controller.rb
+  - app/controllers/feed_items_controller.rb
+  - app/models/concerns/feed_item_state_source.rb
+  - app/models/commitment.rb
+  - app/models/contact_cadence.rb
+  - app/models/desire.rb
+  - app/models/feed_item_state.rb
+  - app/models/gift.rb
+  - app/models/important_date.rb
+  - app/models/memory_record.rb
+  - app/models/message_draft.rb
+  - app/models/mood_note.rb
+  - app/models/relationship_profile.rb
+  - app/models/relationship_persona.rb
+  - app/models/relationship_preference.rb
+  - app/models/reminder.rb
+  - app/models/social_context_note.rb
+  - app/models/suggestion.rb
+  - app/policies/feed_item_state_policy.rb
+  - app/services/daily_feed/**/*.rb
+  - app/services/suggestions/for_profile.rb
+  - app/views/components/daily_feed_item_component.*
+  - app/views/dashboard/index.html.erb
+  - config/locales/daily_feed.*.yml
+  - config/routes.rb
+  - db/migrate/*feed_item_states*.rb
+  - docs/features/05-01-daily-relationship-feed.md
+  - spec/components/daily_feed_item_component_spec.rb
+  - spec/models/feed_item_state_spec.rb
+  - spec/requests/daily_feed_spec.rb
+  - spec/services/daily_feed/**/*.rb
+  - spec/system/daily_feed_spec.rb
+tags:
+  - daily_feed
+  - dashboard
+  - owner_scope

@@ -1,0 +1,72 @@
+es:
+  daily_feed:
+    title: "Cola de concierge"
+    heading: "Cola de concierge"
+    body: "Tus prioridades diarias, organizadas con el contexto de la relación detrás de cada próximo paso."
+    navigation:
+      label: "Navegación de Carecierge"
+      mobile_label: "Navegación móvil de Carecierge"
+      menu: "Menú"
+      queue: "Cola"
+      people: "Personas"
+      reminders: "Recordatorios"
+      open_reminders: "Abrir recordatorios"
+      activity: "Actividad"
+      data_controls: "Controles de datos"
+      admin_activity: "Actividad administrativa"
+      add_relationship: "Agregar relación"
+      settings: "Configuración"
+      sign_out: "Cerrar sesión"
+    sections:
+      needs_attention: "Necesita atención"
+      later_today: "Más tarde hoy"
+      coming_up: "Próximamente"
+      none_needs_attention: "Nada necesita atención inmediata. Tus elementos posteriores estarán aquí cuando estés listo."
+      none_later_today: "Nada más está esperando para hoy."
+      none_coming_up: "No hay elementos próximos en los siguientes 30 días."
+    relationship:
+      account: "Cuenta"
+    urgency:
+      needs_attention: "Necesita atención"
+    certainty:
+      confirmed: "Confirmado"
+      inferred: "Inferido"
+    actions:
+      complete: "Completar"
+      act: "Actuar"
+      plan: "Planificar"
+      plan_gift: "Planificar regalo"
+      open_draft: "Abrir borrador"
+      continue_plan: "Continuar plan"
+      review_goal: "Revisar meta"
+      snooze: "Posponer"
+      dismiss: "Descartar"
+    source_context:
+      summary: "Contexto de origen"
+      open_profile: "Abrir el perfil de %{name}"
+    sources:
+      reminder: "Recordatorio"
+      commitment: "Compromiso"
+      important_date: "Fecha importante"
+      gift: "Idea de regalo"
+      message_draft: "Borrador de mensaje"
+      plan_continuation: "Continuación de plan"
+      relationship_goal: "Meta de relación"
+      suggestion: "Sugerencia"
+    items:
+      important_date:
+        detail: "Planifica con anticipación para %{name}."
+      message_draft:
+        title: "Continuar borrador de mensaje para %{name}"
+      plan_continuation:
+        unscheduled: "Sin fecha límite"
+    notices:
+      dismissed: "El elemento se eliminó de tu cola. Su origen no cambió."
+      snoozed: "El elemento volverá mañana por la mañana."
+    onboarding:
+      body: "Completa el onboarding para agregar el contexto de relación que hace útil esta cola."
+      action: "Continuar onboarding"
+    empty:
+      title: "Tu cola está despejada"
+      body: "Los nuevos recordatorios, compromisos, fechas, sugerencias, borradores, regalos, planes y metas aparecerán aquí cuando necesiten tu atención."
+      action: "Crear recordatorio"

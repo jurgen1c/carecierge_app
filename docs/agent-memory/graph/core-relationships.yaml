@@ -1,6 +1,26 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: daily_feed.concierge_queue_is_derived_and_owner_scoped
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Queue reminder items reuse owner scope, delivery timing, completion, and linked source behavior from the reminder system.
+    strength: 100
+  - source: daily_feed.concierge_queue_is_derived_and_owner_scoped
+    target: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    relation: requires
+    reason: Queue suggestions retain the existing source-backed evidence and explicit user action boundary.
+    strength: 100
+  - source: daily_feed.concierge_queue_is_derived_and_owner_scoped
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Owner-scoped dismissal and snooze state participates in account portability, is pruned with deleted sources or relationships, and cascades on permanent account deletion.
+    strength: 95
+  - source: daily_feed.concierge_queue_is_derived_and_owner_scoped
+    target: authentication.user_access_flow
+    relation: requires
+    reason: The Concierge Queue becomes the authenticated dashboard surface while the existing access flow remains authoritative for onboarding, redirects, and logout.
+    strength: 90
   - source: authentication.account_access_boundary
     target: authentication.user_access_flow
     relation: explains

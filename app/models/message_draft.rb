@@ -25,6 +25,8 @@
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 class MessageDraft < ApplicationRecord
+  include FeedItemStateSource
+
   DRAFT_TYPES = %w[
     birthday
     apology

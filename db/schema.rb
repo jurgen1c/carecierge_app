@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_13_120002) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_14_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -313,6 +313,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_120002) do
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_feature_flags_on_key", unique: true
     t.index ["retired_at"], name: "index_feature_flags_on_retired_at"
+  end
+
+  create_table "feed_item_states", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "dismissed_at"
+    t.string "item_key", null: false
+    t.datetime "snoozed_until"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id", "item_key"], name: "index_feed_item_states_on_user_id_and_item_key", unique: true
+    t.index ["user_id", "snoozed_until"], name: "index_feed_item_states_on_user_id_and_snoozed_until", where: "(snoozed_until IS NOT NULL)"
+    t.index ["user_id"], name: "index_feed_item_states_on_user_id"
+    t.check_constraint "char_length(item_key::text) >= 1 AND char_length(item_key::text) <= 200", name: "feed_item_states_item_key_length"
+    t.check_constraint "dismissed_at IS NOT NULL OR snoozed_until IS NOT NULL", name: "feed_item_states_active_state"
   end
 
   create_table "friendly_id_slugs", force: :cascade do |t|
@@ -849,6 +863,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_13_120002) do
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
+  add_foreign_key "feed_item_states", "users", on_delete: :cascade
   add_foreign_key "gifts", "relationship_profiles"
   add_foreign_key "important_dates", "relationship_profiles"
   add_foreign_key "interactions", "relationship_profiles", on_delete: :cascade

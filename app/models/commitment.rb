@@ -24,6 +24,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #
 class Commitment < ApplicationRecord
+  include FeedItemStateSource
+
   STATUSES = %w[open completed canceled].freeze
 
   belongs_to :relationship_profile

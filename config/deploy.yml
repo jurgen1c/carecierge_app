@@ -51,6 +51,7 @@ env:
   clear:
     CARECIERGE_MEMORY_EXTRACTION_MODEL: <%= ENV.fetch("CARECIERGE_MEMORY_EXTRACTION_MODEL", "gpt-5-mini") %>
     CARECIERGE_MESSAGE_DRAFTING_MODEL: <%= ENV.fetch("CARECIERGE_MESSAGE_DRAFTING_MODEL", "gpt-5-mini") %>
+    CARECIERGE_RELATIONSHIP_BRIEFING_MODEL: <%= ENV.fetch("CARECIERGE_RELATIONSHIP_BRIEFING_MODEL", "gpt-5-mini") %>
     CARECIERGE_SOCIAL_CONTEXT_MODEL: <%= ENV.fetch("CARECIERGE_SOCIAL_CONTEXT_MODEL", "gpt-5-mini") %>
 
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.

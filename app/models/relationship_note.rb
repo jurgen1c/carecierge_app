@@ -20,6 +20,7 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class RelationshipNote < ApplicationRecord
+  include BriefingSourceLock
   attr_accessor :privacy_vault_transition
 
   belongs_to :relationship_profile

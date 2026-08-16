@@ -47,6 +47,11 @@ Rails.application.routes.draw do
 
   resources :relationship_profiles do
     patch :archive, on: :member
+    resources :relationship_briefings, only: [] do
+      post :generate, on: :collection
+      patch :save, on: :member
+      patch :dismiss, on: :member
+    end
     resource :message_draft, only: %i[update destroy] do
       post :generate
       post "revisions/:revision_id/restore", action: :restore, as: :restore_revision

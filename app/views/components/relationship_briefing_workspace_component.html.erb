@@ -1,0 +1,92 @@
+<section id="relationship-briefing" aria-labelledby="relationship-briefing-title" class="overflow-hidden rounded-2xl border border-private-line bg-canvas">
+  <header class="border-b border-private-line bg-surface px-5 py-5 sm:px-6">
+    <p class="text-sm font-semibold text-primary"><%= t("relationship_briefings.workspace.eyebrow") %></p>
+    <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <h2 id="relationship-briefing-title" class="text-xl font-semibold text-ink"><%= t("relationship_briefings.workspace.title") %></h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-quiet-note"><%= t("relationship_briefings.workspace.body", name: relationship_profile.display_name) %></p>
+      </div>
+      <p class="text-sm font-medium text-primary"><%= t("relationship_briefings.workspace.review_only") %></p>
+    </div>
+  </header>
+
+  <div class="p-5 sm:p-6">
+    <%= form_with scope: :relationship_briefing,
+      url: generate_relationship_profile_relationship_briefings_path(relationship_profile),
+      method: :post,
+      class: "space-y-5" do |form| %>
+      <div>
+        <%= form.label :interaction_context, t("relationship_briefings.fields.interaction_context"), class: "block text-sm font-semibold text-ink" %>
+        <%= form.text_area :interaction_context,
+          value: interaction_context,
+          rows: 3,
+          maxlength: RelationshipBriefing::MAX_INTERACTION_CONTEXT_LENGTH,
+          required: true,
+          placeholder: t("relationship_briefings.workspace.placeholder"),
+          class: "mt-2 w-full rounded-xl border border-stone-300 bg-canvas px-4 py-3 text-base leading-6 text-ink placeholder:text-stone-600 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+        <p class="mt-2 text-sm leading-5 text-quiet-note"><%= t("relationship_briefings.workspace.hint") %></p>
+      </div>
+
+      <fieldset class="grid gap-3 border-t border-private-line pt-4 sm:grid-cols-2">
+        <legend class="sr-only"><%= t("relationship_briefings.private_context.title") %></legend>
+        <label class="flex min-h-11 items-start gap-3 text-sm text-ink">
+          <%= form.check_box :include_private_notes,
+            { checked: include_private_notes?, disabled: !private_notes_available, class: "mt-1 size-5 rounded border-stone-300 text-primary focus:ring-primary" }, "1", "0" %>
+          <span><span class="font-semibold"><%= t("relationship_briefings.private_context.private_notes") %></span><span class="mt-1 block text-quiet-note"><%= t("relationship_briefings.private_context.per_request") %></span></span>
+        </label>
+        <div>
+          <label class="flex min-h-11 items-start gap-3 text-sm text-ink">
+            <%= form.check_box :include_vault_context,
+              { checked: include_vault_context?, disabled: !vault_items_available || !vault_unlocked, class: "mt-1 size-5 rounded border-stone-300 text-primary focus:ring-primary" }, "1", "0" %>
+            <span><span class="font-semibold"><%= t("relationship_briefings.private_context.vault_items") %></span><span class="mt-1 block text-quiet-note"><%= t("relationship_briefings.private_context.active_lease") %></span></span>
+          </label>
+          <% if vault_items_available && !vault_unlocked %>
+            <%= link_to t("relationship_briefings.private_context.unlock_vault"), relationship_profile_privacy_vault_path(relationship_profile), class: "ml-8 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-hover" %>
+          <% end %>
+        </div>
+      </fieldset>
+
+      <%= form.submit briefing ? t("relationship_briefings.actions.refresh") : t("relationship_briefings.actions.generate"),
+        class: style(:primary_button), data: { turbo_submits_with: t("relationship_briefings.actions.generating") } %>
+    <% end %>
+
+    <% if briefing %>
+      <div class="mt-7 border-t border-private-line">
+        <% briefing.sections.each do |section| %>
+          <section class="grid gap-3 border-b border-private-line py-5 md:grid-cols-[12rem_minmax(0,1fr)]" aria-labelledby="briefing-section-<%= section.fetch('key') %>">
+            <h3 id="briefing-section-<%= section.fetch('key') %>" class="text-sm font-semibold text-ink"><%= section_title(section.fetch("key")) %></h3>
+            <ul class="space-y-4">
+              <% section.fetch("items").each do |item| %>
+                <li>
+                  <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <p class="text-sm leading-6 text-ink"><%= item.fetch("body") %></p>
+                    <span class="shrink-0 <%= style(:certainty_badge, certainty: item.fetch('certainty')) %>"><%= certainty_label(item.fetch("certainty")) %></span>
+                  </div>
+                  <p class="mt-2 text-xs leading-5 text-quiet-note">
+                    <span class="font-semibold"><%= t("relationship_briefings.workspace.sources") %></span>
+                    <%= item.fetch("sources").map { |source| source.fetch("label") }.to_sentence %>
+                  </p>
+                </li>
+              <% end %>
+            </ul>
+          </section>
+        <% end %>
+      </div>
+
+      <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <% unless briefing.saved? %>
+          <%= button_to t("relationship_briefings.actions.save"), save_relationship_profile_relationship_briefing_path(relationship_profile, briefing), method: :patch, class: style(:secondary_button) %>
+        <% else %>
+          <span class="inline-flex min-h-11 items-center text-sm font-semibold text-primary"><%= t("relationship_briefings.actions.saved") %></span>
+        <% end %>
+        <%= button_to t("relationship_briefings.actions.dismiss"), dismiss_relationship_profile_relationship_briefing_path(relationship_profile, briefing), method: :patch, class: style(:secondary_button) %>
+        <%= link_to t("relationship_briefings.actions.reminder"), new_reminder_path(relationship_profile_id: relationship_profile.id), class: style(:secondary_button) %>
+        <%= link_to t("relationship_briefings.actions.message_draft"), relationship_profile_path(relationship_profile, anchor: "message-drafting"), class: style(:primary_button) %>
+      </div>
+    <% else %>
+      <div class="mt-7 border-t border-private-line pt-5">
+        <p class="text-sm leading-6 text-quiet-note"><%= t("relationship_briefings.workspace.empty") %></p>
+      </div>
+    <% end %>
+  </div>
+</section>

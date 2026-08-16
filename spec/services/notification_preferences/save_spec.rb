@@ -39,6 +39,27 @@ RSpec.describe NotificationPreferences::Save do
     )
   end
 
+  it "serializes timezone changes with a digest-compatible user lock" do
+    preference = create(:notification_preference, time_zone: "UTC")
+    queries = capture_sql do
+      described_class.call(
+        preference,
+        attributes: { time_zone: "America/Costa_Rica" },
+        relationship_modes: {}
+      )
+    end
+
+    user_lock_index = queries.index do |sql|
+      sql.include?('FROM "users"') && sql.include?("FOR NO KEY UPDATE")
+    end
+    preference_update_index = queries.index do |sql|
+      sql.start_with?('UPDATE "notification_preferences"')
+    end
+
+    expect(user_lock_index).to be_present
+    expect(preference_update_index).to be > user_lock_index
+  end
+
   it "removes an override when the relationship returns to account defaults" do
     user = create(:user)
     preference = create(:notification_preference, user:)

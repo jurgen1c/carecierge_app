@@ -37,29 +37,31 @@ module MemoryExtractions
     end
 
     def persist_proposals(proposals)
-      ApplicationRecord.transaction do
-        conversation_recap.lock!
-        return unless conversation_recap.extraction_status == "processing"
+      conversation_recap.relationship_profile.with_lock do
+        ApplicationRecord.transaction do
+          conversation_recap.lock!
+          return unless conversation_recap.extraction_status == "processing"
 
-        proposal_attributes = proposals.map { |attributes| attributes.to_h.symbolize_keys }
-        validate_source_excerpts!(proposal_attributes)
+          proposal_attributes = proposals.map { |attributes| attributes.to_h.symbolize_keys }
+          validate_source_excerpts!(proposal_attributes)
 
-        proposal_attributes.each do |attributes|
-          conversation_recap.extracted_memories.create!(
-            attributes.slice(:category, :title, :body, :source_excerpt, :confidence).merge(
-              relationship_profile: conversation_recap.relationship_profile
+          proposal_attributes.each do |attributes|
+            conversation_recap.extracted_memories.create!(
+              attributes.slice(:category, :title, :body, :source_excerpt, :confidence).merge(
+                relationship_profile: conversation_recap.relationship_profile
+              )
             )
-          )
-        end
+          end
 
-        completed_at = Time.current
-        conversation_recap.update!(
-          extraction_status: proposals.empty? ? "completed" : "ready_for_review",
-          extraction_completed_at: completed_at,
-          extraction_approved_at: proposals.empty? ? completed_at : nil
-        )
-        create_timeline_entry(proposals.size, completed_at)
-        record_audit_event(proposals.size, completed_at)
+          completed_at = Time.current
+          conversation_recap.update!(
+            extraction_status: proposals.empty? ? "completed" : "ready_for_review",
+            extraction_completed_at: completed_at,
+            extraction_approved_at: proposals.empty? ? completed_at : nil
+          )
+          create_timeline_entry(proposals.size, completed_at)
+          record_audit_event(proposals.size, completed_at)
+        end
       end
     end
 

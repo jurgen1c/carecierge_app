@@ -1,6 +1,23 @@
 require "rails_helper"
 
 RSpec.describe "Data controls", type: :request do
+  it "exports decrypted relationship briefings without internal generation fences" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    briefing = create(:relationship_briefing, user:, relationship_profile: profile, status: "saved")
+    sign_in user
+
+    post data_exports_path, params: { data_export: { format: "json", scope: "account" } }
+
+    payload = JSON.parse(response.body)
+    exported_profile = payload.fetch("relationship_profiles").sole
+    expect(exported_profile).not_to have_key("briefing_generation_version")
+    expect(exported_profile.fetch("relationship_briefings").sole).to include(
+      "interaction_context" => briefing.interaction_context,
+      "sections" => briefing.sections
+    )
+  end
+
   let(:password) { "careful-password" }
   let(:user) { create(:user, email: "owner@example.com", password:) }
   let(:profile) { create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera") }

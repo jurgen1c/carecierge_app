@@ -1,0 +1,57 @@
+es:
+  relationship_briefings:
+    workspace:
+      eyebrow: "Informe de relación"
+      title: "Prepárate para el próximo momento"
+      body: "Solicita un informe enfocado sobre una próxima interacción con %{name}."
+      review_only: "Privado y solo para revisión"
+      placeholder: "Ejemplo: Cena después de su primera semana en un nuevo trabajo"
+      hint: "Carecierge usa solo los registros de relación seleccionados y muestra el origen de cada detalle."
+      sources: "Fuentes:"
+      empty: "Tu informe organizará contexto útil sin enviar mensajes ni crear recordatorios. Nada se envía ni se programa automáticamente."
+    fields:
+      interaction_context: "¿Para qué te estás preparando?"
+    private_context:
+      title: "Contexto privado"
+      private_notes: "Incluir notas privadas en este informe"
+      vault_items: "Incluir elementos de la bóveda en este informe"
+      per_request: "Desactivado por defecto y compartido solo para esta solicitud."
+      active_lease: "Requiere una sesión activa de la bóveda de privacidad."
+      unlock_vault: "Desbloquear la bóveda de privacidad"
+    actions:
+      generate: "Crear informe"
+      refresh: "Crear un informe nuevo"
+      generating: "Creando informe..."
+      save: "Guardar para después"
+      saved: "Guardado para después"
+      dismiss: "Descartar"
+      reminder: "Crear recordatorio"
+      message_draft: "Abrir borrador de mensaje"
+    certainty:
+      confirmed: "Confirmado"
+      inferred: "Inferido"
+    sections:
+      recent_activity: "Actividad reciente"
+      commitments: "Compromisos abiertos"
+      important_dates: "Fechas importantes"
+      preferences: "Preferencias"
+      conversation_topics: "Temas de conversación"
+      sensitive_context: "Contexto sensible"
+    generate:
+      notice: "Tu informe de relación está listo para revisar."
+      superseded: "Información más reciente reemplazó esta solicitud. Crea el informe de nuevo para usar el contexto actualizado."
+      provider_error: "No pudimos crear el informe. No se guardó ningún informe. Inténtalo de nuevo."
+      invalid: "No pudimos crear ese informe. Revisa el contexto de la interacción e inténtalo de nuevo."
+    save:
+      notice: "Informe guardado para después."
+      unavailable: "Este informe ya no está disponible para guardar. Revisa el informe más reciente."
+    dismiss:
+      notice: "Informe descartado."
+    sources:
+      timeline: "Entrada de la cronología del %{date}"
+      commitment: "Compromiso abierto"
+      important_date: "Fecha importante el %{date}"
+      preference: "Preferencia de la relación"
+      public_note: "Nota del %{date}"
+      private_note: "Nota privada del %{date}"
+      vault: "Elemento de la bóveda de privacidad del %{date}"

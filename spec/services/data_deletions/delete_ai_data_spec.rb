@@ -1,6 +1,18 @@
 require "rails_helper"
 
 RSpec.describe DataDeletions::DeleteAiData do
+  it "deletes generated briefings and advances their generation fences" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    create(:relationship_briefing, user:, relationship_profile: profile, status: "saved")
+    generation_version = profile.briefing_generation_version
+
+    described_class.call(user:)
+
+    expect(profile.relationship_briefings.reload).to be_empty
+    expect(profile.reload.briefing_generation_version).to eq(generation_version + 1)
+  end
+
   it "uses a profile lock compatible with extraction foreign-key checks" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

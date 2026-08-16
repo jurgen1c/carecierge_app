@@ -25,8 +25,11 @@ claim: >
   submitted relationship. A separate configured marker distinguishes
   an explicitly saved time zone from the UTC migration default so existing users
   keep browser time-zone capture; important-date scheduling round-trips that
-  capture before deriving a local occurrence. Reminder recurrence and lead-time
-  choices seed new reminders without rewriting existing reminders.
+  capture before deriving a local occurrence. Preference saves acquire a no-key
+  account lock so relationship briefing snapshots cannot persist across an
+  unobserved owner-timezone change without conflicting with digest foreign-key
+  insertion. Reminder recurrence and lead-time choices seed new reminders without
+  rewriting existing reminders.
   Important-date cards expose that entry point, and calendar-sized lead offsets
   preserve the intended local reminder time across daylight-saving transitions.
   Daily and weekly digest choices are stored for CAR-38, which owns digest
@@ -84,7 +87,10 @@ Relationship overrides stay sparse and owner-matched so users can mute one
 relationship without creating a parallel delivery configuration. Important-date
 cards provide the entry point for applying lead-time defaults, and day, week, and
 month leads use calendar offsets in the saved time zone so the intended local
-reminder time survives daylight-saving transitions.
+reminder time survives daylight-saving transitions. Saving preferences shares the
+account lock used by relationship briefing context snapshots, using PostgreSQL's
+no-key mode so digest delivery creation remains compatible while concurrent
+timezone changes stay fenced from briefing persistence.
 
 ## Why It Matters
 

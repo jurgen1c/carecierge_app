@@ -70,6 +70,31 @@ RSpec.describe Commitment, type: :model do
     expect(commitment).to have_attributes(status: "canceled", completed_at: nil)
   end
 
+  it "locks the relationship profile before the commitment for lifecycle transitions" do
+    transitions = [
+      [ create(:commitment, status: "open"), :complete! ],
+      [ create(:commitment, status: "open"), :cancel! ],
+      [ create(:commitment, status: "completed"), :reopen! ]
+    ]
+
+    transitions.each do |record, event|
+      lock_order = []
+      profile = record.relationship_profile
+      allow(profile).to receive(:with_lock).and_wrap_original do |method, &block|
+        lock_order << :profile
+        method.call(&block)
+      end
+      allow(record).to receive(:with_lock).and_wrap_original do |method, &block|
+        lock_order << :commitment
+        method.call(&block)
+      end
+
+      record.public_send(event)
+
+      expect(lock_order.first(2)).to eq(%i[profile commitment])
+    end
+  end
+
   it "retires active reminders when completed without reactivating them on reopen" do
     commitment = create(:commitment)
     reminder = create(:reminder, user: commitment.relationship_profile.user, relationship_profile: commitment.relationship_profile, commitment:)

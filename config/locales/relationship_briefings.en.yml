@@ -1,0 +1,57 @@
+en:
+  relationship_briefings:
+    workspace:
+      eyebrow: "Relationship briefing"
+      title: "Prepare for the next moment"
+      body: "Ask for a focused briefing about an upcoming interaction with %{name}."
+      review_only: "Private and review-only"
+      placeholder: "Example: Dinner after their first week at a new job"
+      hint: "Carecierge uses only your selected relationship records and shows where each detail came from."
+      sources: "Sources:"
+      empty: "Your briefing will organize useful context without sending messages or creating reminders. Nothing is sent or scheduled automatically."
+    fields:
+      interaction_context: "What are you preparing for?"
+    private_context:
+      title: "Private context"
+      private_notes: "Include private notes for this briefing"
+      vault_items: "Include vault items for this briefing"
+      per_request: "Off by default and shared only for this request."
+      active_lease: "Requires an active privacy vault session."
+      unlock_vault: "Unlock the privacy vault"
+    actions:
+      generate: "Create briefing"
+      refresh: "Create a new briefing"
+      generating: "Creating briefing..."
+      save: "Save for later"
+      saved: "Saved for later"
+      dismiss: "Dismiss"
+      reminder: "Create reminder"
+      message_draft: "Open message draft"
+    certainty:
+      confirmed: "Confirmed"
+      inferred: "Inferred"
+    sections:
+      recent_activity: "Recent activity"
+      commitments: "Open commitments"
+      important_dates: "Important dates"
+      preferences: "Preferences"
+      conversation_topics: "Conversation topics"
+      sensitive_context: "Sensitive context"
+    generate:
+      notice: "Your relationship briefing is ready to review."
+      superseded: "Newer relationship information replaced this request. Create the briefing again to use the latest context."
+      provider_error: "We couldn't create the briefing. No briefing was saved. Try again."
+      invalid: "We couldn't create that briefing. Check the interaction context and try again."
+    save:
+      notice: "Briefing saved for later."
+      unavailable: "This briefing is no longer available to save. Review the latest briefing instead."
+    dismiss:
+      notice: "Briefing dismissed."
+    sources:
+      timeline: "Timeline entry from %{date}"
+      commitment: "Open commitment"
+      important_date: "Important date on %{date}"
+      preference: "Relationship preference"
+      public_note: "Note from %{date}"
+      private_note: "Private note from %{date}"
+      vault: "Privacy vault item from %{date}"

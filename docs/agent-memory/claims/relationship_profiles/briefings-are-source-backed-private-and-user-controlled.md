@@ -99,7 +99,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 570ec13aff06611a3c7b263a5b5a60f886280a11
 ---
 
 # Relationship briefings are source-backed, private, and user-controlled

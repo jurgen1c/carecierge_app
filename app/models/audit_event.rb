@@ -20,7 +20,7 @@
 #
 #  index_audit_events_on_action_and_occurred_at     (action,occurred_at DESC)
 #  index_audit_events_on_actor_id                   (actor_id)
-#  index_audit_events_on_global_order               (occurred_at,created_at,id)
+#  index_audit_events_on_global_order               (occurred_at DESC,created_at DESC,id DESC)
 #  index_audit_events_on_source_and_occurred_at     (source,occurred_at DESC)
 #  index_audit_events_on_target_type_and_target_id  (target_type,target_id)
 #  index_audit_events_on_user_id                    (user_id)

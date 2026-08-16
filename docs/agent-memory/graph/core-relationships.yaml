@@ -1,6 +1,51 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Briefings are generated and mutated only through the authenticated owner's active relationship profile.
+    strength: 100
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: reminders.notification_preferences
+    relation: requires
+    reason: The owner timezone shapes date labels and upcoming-date selection, and preference saves share the account lock used by briefing context snapshots.
+    strength: 95
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: relationship_profiles.privacy_vault
+    relation: requires
+    reason: Vault sources require explicit per-request selection and an active lease revalidated at both sensitive-read boundaries.
+    strength: 100
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Generate, save, dismiss, and sensitive access retain content-free account evidence.
+    strength: 95
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Owner exports include decrypted briefing snapshots while selective AI deletion removes them and fences delayed results.
+    strength: 95
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: same_area
+    reason: The profile hosts both review-only AI surfaces, but a briefing only links to message drafting and never writes a draft or sends content.
+    strength: 80
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    relation: same_area
+    reason: Both appear in the active profile workspace and share privacy boundaries, while social-context notes are not briefing sources in this delivery.
+    strength: 75
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: relationship_profiles.conversation_recaps
+    relation: requires
+    reason: Recap mutations synchronize briefing-visible timeline evidence under profile-before-recap locking.
+    strength: 95
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: relationship_profiles.ai_memory_extraction
+    relation: requires
+    reason: Extraction completion creates briefing-visible timeline evidence under profile-before-recap locking so selective deletion cannot invert the order.
+    strength: 95
   - source: daily_feed.concierge_queue_is_derived_and_owner_scoped
     target: reminders.reminder_delivery_system
     relation: requires

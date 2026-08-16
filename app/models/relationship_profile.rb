@@ -5,6 +5,7 @@
 #
 #  id                               :uuid             not null, primary key
 #  birthday                         :date
+#  briefing_generation_version      :bigint           default(0), not null
 #  discarded_at                     :datetime
 #  first_name                       :string           not null
 #  last_name                        :string
@@ -129,6 +130,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :interactions, dependent: :destroy
   has_many :privacy_vault_items, dependent: :destroy
   has_one :message_draft, dependent: :destroy
+  has_many :relationship_briefings, dependent: :destroy
   has_many :vault_access_events, dependent: :nullify
   has_many :automation_permissions, dependent: :destroy
   has_many :automation_permission_changes
@@ -213,6 +215,10 @@ class RelationshipProfile < ApplicationRecord
 
   def cancel_in_flight_message_draft_generations!
     increment!(:message_draft_generation_version)
+  end
+
+  def cancel_in_flight_briefing_generations!
+    increment!(:briefing_generation_version)
   end
 
   def email

@@ -24,6 +24,7 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #
 class Commitment < ApplicationRecord
+  include BriefingSourceLock
   include FeedItemStateSource
 
   STATUSES = %w[open completed canceled].freeze
@@ -54,7 +55,7 @@ class Commitment < ApplicationRecord
   end
 
   def complete!(at: Time.current)
-    with_lock do
+    with_transition_locks do
       raise ActiveRecord::RecordInvalid, self unless open?
 
       update!(status: "completed", completed_at: at)
@@ -63,7 +64,7 @@ class Commitment < ApplicationRecord
   end
 
   def cancel!(at: Time.current)
-    with_lock do
+    with_transition_locks do
       raise ActiveRecord::RecordInvalid, self unless open?
 
       update!(status: "canceled", completed_at: nil)
@@ -72,7 +73,7 @@ class Commitment < ApplicationRecord
   end
 
   def reopen!
-    with_lock do
+    with_transition_locks do
       raise ActiveRecord::RecordInvalid, self if open?
 
       update!(status: "open", completed_at: nil)
@@ -86,6 +87,12 @@ class Commitment < ApplicationRecord
   end
 
   private
+
+  def with_transition_locks
+    relationship_profile.with_lock do
+      with_lock { yield }
+    end
+  end
 
   def retire_active_reminders!(at:)
     reminders.active.find_each { |reminder| reminder.retire!(at:) }

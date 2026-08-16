@@ -24,6 +24,7 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #
 class PrivacyVaultItem < ApplicationRecord
+  include BriefingSourceLock
   REDACTED_TEXT = "[vault protected]".freeze
   PROTECTABLE_TYPES = %w[MemoryRecord RelationshipFieldValue RelationshipNote].freeze
   SUGGESTION_USAGES = %w[excluded allowed].freeze
@@ -44,7 +45,7 @@ class PrivacyVaultItem < ApplicationRecord
   validate :protectable_belongs_to_relationship_profile
   validate :payload_has_display_content
 
-  scope :ordered, -> { order(protected_at: :desc, created_at: :desc) }
+  scope :ordered, -> { order(protected_at: :desc, created_at: :desc, id: :desc) }
   scope :suggestion_allowed, -> { where(suggestion_usage: "allowed") }
 
   def suggestion_allowed?

@@ -20,10 +20,12 @@ module NotificationPreferences
     end
 
     def call
-      NotificationPreference.transaction do
-        preference.update!(attributes_with_time_zone_intent)
-        sync_relationship_modes!
-        release_deferred_reminders!
+      preference.user.with_lock("FOR NO KEY UPDATE") do
+        NotificationPreference.transaction do
+          preference.update!(attributes_with_time_zone_intent)
+          sync_relationship_modes!
+          release_deferred_reminders!
+        end
       end
       true
     rescue ActiveRecord::RecordInvalid

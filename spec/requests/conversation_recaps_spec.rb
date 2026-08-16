@@ -334,6 +334,24 @@ RSpec.describe "Conversation recaps", type: :request do
       expect(timeline_entry.reload).to have_attributes(title: "Updated recap", body: "Updated body", occurred_at: Time.zone.local(2026, 7, 8, 13, 0, 0))
       expect(recap.interaction).to have_attributes(interaction_type: "conversation_recap", occurred_at: Time.zone.local(2026, 7, 8, 13, 0, 0))
     end
+
+    it "locks the relationship profile before updating the recap" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      recap = create(:conversation_recap, relationship_profile: profile)
+      create(:timeline_entry, relationship_profile: profile, entry_type: "conversation_recap", origin: "system", source_record: recap)
+      sign_in user
+
+      queries = capture_sql do
+        patch relationship_profile_conversation_recap_path(profile, recap),
+          params: { conversation_recap: { title: "Updated recap" } },
+          as: :turbo_stream
+      end
+
+      profile_lock_index = queries.index { |sql| sql.include?('FROM "relationship_profiles"') && sql.include?("FOR UPDATE") }
+      recap_update_index = queries.index { |sql| sql.start_with?('UPDATE "conversation_recaps"') }
+      expect(profile_lock_index).to be < recap_update_index
+    end
   end
 
   describe "PATCH /relationship_profiles/:relationship_profile_id/conversation_recaps/:id/retry_extraction" do

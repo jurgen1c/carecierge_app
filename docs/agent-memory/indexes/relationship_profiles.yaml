@@ -1,6 +1,6 @@
 id: relationship_profiles
 name: Relationship Profiles
-summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, manually supplied and review-gated social context, an encrypted password-gated privacy vault, associated structured preference metadata, evidence-backed relationship personas with explicit uncertainty, deterministic source-backed suggestions with user feedback and reminder-only actions, private review-only AI message drafts with explicitly gated sensitive context and immutable revision history, structured owner-scoped relationship-memory search with source, relationship, archive-status, and date filters, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
+summary: Authenticated, user-owned relationship profile CRUD with localized and searchable namespaced STI-backed relationship type labels, JSONB-backed profile attributes for custom type metadata, sanitized discriminator params, contact details, Lexxy/Action Text rich notes, manually supplied and review-gated social context, an encrypted password-gated privacy vault, associated structured preference metadata, evidence-backed relationship personas with explicit uncertainty, deterministic source-backed suggestions with user feedback and reminder-only actions, private source-backed relationship briefings with visible provenance and per-request sensitive-context consent, private review-only AI message drafts with explicitly gated sensitive context and immutable revision history, structured owner-scoped relationship-memory search with source, relationship, archive-status, and date filters, memory records with confidence/source/review metadata and automation guardrails, conversation recaps with asynchronous source-backed and owner-reviewed AI memory extraction, observation-first mood notes with follow-up intent, suggested contact cadence and manual or source-derived interaction history, promises and commitments with reminder and timeline integration, relationship timeline entries, relationship-type template fields, custom field values, important dates and milestones, desires and future ideas with fulfillment history, gift history and reactions, rich private notes, reusable tags, relationship groups, friendly slugs, discard-backed archive state, search, and filtering.
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
@@ -13,6 +13,7 @@ default_queries:
   - relationship persona confirmed inferred evidence title correction suggestion inputs vault consent
   - suggestion engine explanations feedback dismissal act reminder action kind automation permission
   - message drafts response suggestions situation purpose tone length formality private notes vault lease immutable revisions review only OpenAI
+  - relationship briefings interaction context provenance confirmed inferred private notes vault lease save dismiss OpenAI
   - social context user provided screenshots analysis permission interpretation review consent suggestions message drafts
   - social context direct upload abandoned cleanup authorized bounded preview owner column
   - privacy vault encryption password reauthentication access lease audit suggestion exclusion
@@ -44,6 +45,8 @@ watched_files:
   - app/models/suggestion.rb
   - app/models/suggestion_feedback.rb
   - app/models/message_draft.rb
+  - app/models/relationship_briefing.rb
+  - app/models/concerns/briefing_source_lock.rb
   - app/models/draft_revision.rb
   - app/models/social_context_note.rb
   - app/models/privacy_vault_item.rb
@@ -74,6 +77,7 @@ watched_files:
   - app/helpers/relationship_searches_helper.rb
   - app/controllers/suggestions_controller.rb
   - app/controllers/message_drafts_controller.rb
+  - app/controllers/relationship_briefings_controller.rb
   - app/controllers/social_context_notes_controller.rb
   - app/controllers/direct_uploads_controller.rb
   - app/controllers/social_context_screenshots_controller.rb
@@ -99,11 +103,13 @@ watched_files:
   - app/services/privacy_vault/**/*.rb
   - app/services/suggestions/**/*.rb
   - app/services/message_drafts/**/*.rb
+  - app/services/relationship_briefings/**/*.rb
   - app/services/social_context_notes/**/*.rb
   - app/controllers/desires_controller.rb
   - app/policies/relationship_profile_policy.rb
   - app/policies/suggestion_feedback_policy.rb
   - app/policies/message_draft_policy.rb
+  - app/policies/relationship_briefing_policy.rb
   - app/policies/social_context_note_policy.rb
   - app/policies/social_context_screenshot_policy.rb
   - app/policies/important_date_policy.rb
@@ -128,6 +134,7 @@ watched_files:
   - app/views/components/persona_trait_component.*
   - app/views/components/suggestion_*_component.*
   - app/views/components/message_draft_workspace_component.*
+  - app/views/components/relationship_briefing_workspace_component.*
   - app/views/components/social_context_ledger_component.*
   - app/views/active_storage/blobs/_blob.html.erb
   - app/views/suggestions/**/*.erb
@@ -155,6 +162,8 @@ watched_files:
   - config/locales/suggestions.es.yml
   - config/locales/message_drafts.en.yml
   - config/locales/message_drafts.es.yml
+  - config/locales/relationship_briefings.en.yml
+  - config/locales/relationship_briefings.es.yml
   - config/locales/social_context_notes.en.yml
   - config/locales/social_context_notes.es.yml
   - db/migrate/*relationship*.rb
@@ -174,6 +183,7 @@ watched_files:
   - db/migrate/*desire*.rb
   - db/migrate/*suggestion*.rb
   - db/migrate/*message_draft*.rb
+  - db/migrate/*relationship_briefing*.rb
   - db/migrate/*social_context*.rb
   - db/migrate/*active_storage*.rb
   - db/migrate/*action_text*.rb
@@ -201,5 +211,6 @@ tags:
   - desires
   - suggestions
   - message_drafting
+  - relationship_briefings
   - social_context
   - relationship_search

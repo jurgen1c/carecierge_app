@@ -28,6 +28,7 @@
 #
 class ImportantDate < ApplicationRecord
   include FeedItemStateSource
+  include BriefingSourceLock
 
   has_many :reminders, dependent: :nullify
   DATE_TYPES = %w[birthday anniversary milestone appointment holiday custom].freeze

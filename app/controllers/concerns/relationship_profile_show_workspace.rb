@@ -7,6 +7,7 @@ module RelationshipProfileShowWorkspace
   def prepare_relationship_profile_show(invalid_social_context_note: nil)
     unless @relationship_profile.archived?
       prepare_social_context_ledger(invalid_social_context_note:)
+      prepare_relationship_briefing_workspace
       prepare_message_draft_workspace
     end
     @relationship_persona = RelationshipPersona.new(relationship_profile: @relationship_profile)
@@ -57,6 +58,17 @@ module RelationshipProfileShowWorkspace
       .exists?
     @message_vault_items_available = @relationship_profile.privacy_vault_items.exists?
     @message_vault_unlocked = privacy_vault_unlocked?
+  end
+
+  def prepare_relationship_briefing_workspace
+    @relationship_briefing = @relationship_profile.relationship_briefings.visible.recent_first.first
+    @briefing_private_notes_available = @relationship_profile.relationship_notes
+      .where(private: true)
+      .where.missing(:privacy_vault_item)
+      .exists?
+    @briefing_vault_items_available = @relationship_profile.privacy_vault_items.exists?
+    @briefing_vault_unlocked = privacy_vault_unlocked?
+    @relationship_briefing_form_state ||= {}
   end
 
   def prepare_social_context_ledger(invalid_social_context_note: nil)

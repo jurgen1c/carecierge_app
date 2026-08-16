@@ -40,6 +40,30 @@ RSpec.describe MemoryExtractions::Extract do
     expect(AuditEvent.where(action: "ai.memory_extracted", target: recap.relationship_profile)).to exist
   end
 
+  it "locks the relationship profile before the recap when persisting timeline evidence" do
+    recap = create(:conversation_recap, body: "We listened to jazz.", extraction_status: "requested")
+    profile = recap.relationship_profile
+    extractor = instance_double(MemoryExtractions::OpenAiExtractor)
+    lock_order = []
+    allow(extractor).to receive(:extract) do
+      lock_order.clear
+      []
+    end
+    allow(recap).to receive(:relationship_profile).and_return(profile)
+    allow(profile).to receive(:with_lock).and_wrap_original do |method, *arguments, &block|
+      lock_order << :profile
+      method.call(*arguments, &block)
+    end
+    allow(recap).to receive(:lock!).and_wrap_original do |method, *arguments|
+      lock_order << :recap
+      method.call(*arguments)
+    end
+
+    described_class.call(conversation_recap: recap, extractor:)
+
+    expect(lock_order.first(2)).to eq(%i[profile recap])
+  end
+
   it "fails closed with a privacy-safe error code" do
     recap = create(:conversation_recap, extraction_status: "requested", extraction_requested_at: Time.current)
     extractor = instance_double(MemoryExtractions::OpenAiExtractor)

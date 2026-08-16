@@ -19,6 +19,9 @@ module DataDeletions
           end
         ExtractedMemory.where(relationship_profile: profiles).lock.each(&:destroy!)
 
+        RelationshipBriefing.where(relationship_profile: profiles).lock.each(&:destroy!)
+        profiles.each(&:cancel_in_flight_briefing_generations!)
+
         reset_social_context_analysis(profiles)
 
         MemoryRecord.where(relationship_profile: profiles, source: "ai_inferred").find_each(&:destroy!)

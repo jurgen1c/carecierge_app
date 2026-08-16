@@ -37,7 +37,7 @@ class ConversationRecapsController < ApplicationController
   end
 
   def destroy
-    @conversation_recap.destroy!
+    @relationship_profile.with_lock { @conversation_recap.destroy! }
 
     refresh_conversation_recaps(t(".notice"))
   end
@@ -93,11 +93,13 @@ class ConversationRecapsController < ApplicationController
 
   def save_conversation_recap
     extraction_requested = false
-    ConversationRecap.transaction do
-      @conversation_recap.save!
-      extraction_requested = @conversation_recap.saved_change_to_extraction_status?(from: "not_requested", to: "requested")
-      sync_timeline_entry!
-      Interaction.sync_from_source!(@conversation_recap)
+    @relationship_profile.with_lock do
+      ConversationRecap.transaction do
+        @conversation_recap.save!
+        extraction_requested = @conversation_recap.saved_change_to_extraction_status?(from: "not_requested", to: "requested")
+        sync_timeline_entry!
+        Interaction.sync_from_source!(@conversation_recap)
+      end
     end
     enqueue_memory_extraction if extraction_requested && memory_extraction_enabled?
     true

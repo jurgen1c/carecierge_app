@@ -28,6 +28,7 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class TimelineEntry < ApplicationRecord
+  include BriefingSourceLock
   ENTRY_TYPES = %w[
     note
     conversation_recap

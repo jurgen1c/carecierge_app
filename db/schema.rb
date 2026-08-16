@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_14_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_15_230443) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -531,6 +531,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_160000) do
     t.check_constraint "suggestion_usage::text = ANY (ARRAY['excluded'::character varying, 'allowed'::character varying]::text[])", name: "privacy_vault_items_supported_suggestion_usage"
   end
 
+  create_table "relationship_briefings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.jsonb "context_categories", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "dismissed_at"
+    t.datetime "generated_at", null: false
+    t.boolean "include_private_notes", default: false, null: false
+    t.boolean "include_vault_context", default: false, null: false
+    t.text "interaction_context", null: false
+    t.string "locale", default: "en", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "saved_at"
+    t.text "sections", null: false
+    t.string "status", default: "generated", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["relationship_profile_id", "generated_at"], name: "index_relationship_briefings_on_profile_and_generated_at", order: { generated_at: :desc }
+    t.index ["relationship_profile_id"], name: "index_relationship_briefings_on_one_generated_per_profile", unique: true, where: "((status)::text = 'generated'::text)"
+    t.index ["relationship_profile_id"], name: "index_relationship_briefings_on_relationship_profile_id"
+    t.index ["user_id"], name: "index_relationship_briefings_on_user_id"
+    t.check_constraint "jsonb_typeof(context_categories) = 'array'::text", name: "relationship_briefings_context_categories_array"
+    t.check_constraint "locale::text = ANY (ARRAY['en'::character varying, 'es'::character varying]::text[])", name: "relationship_briefings_supported_locale"
+    t.check_constraint "status::text = ANY (ARRAY['generated'::character varying, 'saved'::character varying, 'dismissed'::character varying]::text[])", name: "relationship_briefings_supported_status"
+  end
+
   create_table "relationship_field_values", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "custom", default: false, null: false
@@ -609,6 +634,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_160000) do
 
   create_table "relationship_profiles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.date "birthday"
+    t.bigint "briefing_generation_version", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "discarded_at"
     t.string "first_name", null: false
@@ -875,6 +901,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_160000) do
   add_foreign_key "mood_notes", "relationship_profiles"
   add_foreign_key "notification_preferences", "users", on_delete: :cascade
   add_foreign_key "privacy_vault_items", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "relationship_briefings", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "relationship_briefings", "users", on_delete: :cascade
   add_foreign_key "relationship_field_values", "relationship_profiles"
   add_foreign_key "relationship_field_values", "template_fields"
   add_foreign_key "relationship_group_memberships", "relationship_groups", on_delete: :cascade

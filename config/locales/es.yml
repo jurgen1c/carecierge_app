@@ -652,6 +652,15 @@ es:
       message_drafted:
         title: "Mensaje redactado"
         description: "Se preparó un borrador de mensaje para %{target}."
+      relationship_briefing_generated:
+        title: "Informe de relación creado"
+        description: "Se preparó un informe con fuentes para %{target}."
+      relationship_briefing_saved:
+        title: "Informe de relación guardado"
+        description: "Se guardó un informe de relación para %{target}."
+      relationship_briefing_dismissed:
+        title: "Informe de relación descartado"
+        description: "Se descartó un informe de relación para %{target}."
       vendor_contacted:
         title: "Proveedor contactado"
         description: "Se registró una acción de contacto con proveedor para %{target}."

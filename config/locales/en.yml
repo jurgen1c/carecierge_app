@@ -335,6 +335,15 @@ en:
       message_drafted:
         title: "Message drafted"
         description: "A message draft was prepared for %{target}."
+      relationship_briefing_generated:
+        title: "Relationship briefing created"
+        description: "A source-backed briefing was prepared for %{target}."
+      relationship_briefing_saved:
+        title: "Relationship briefing saved"
+        description: "A relationship briefing was saved for %{target}."
+      relationship_briefing_dismissed:
+        title: "Relationship briefing dismissed"
+        description: "A relationship briefing was dismissed for %{target}."
       vendor_contacted:
         title: "Vendor contacted"
         description: "A vendor contact action was recorded for %{target}."

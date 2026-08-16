@@ -54,7 +54,7 @@ module DataExports
     end
 
     def profile_attributes(profile)
-      attributes_for(profile, except: %w[user_id type message_draft_generation_version]).merge(
+      attributes_for(profile, except: %w[user_id type message_draft_generation_version briefing_generation_version]).merge(
         "relationship_type" => profile.type,
         "relationship_type_label" => profile.relationship_type_label,
         "contact_methods" => records(profile.contact_methods),
@@ -69,6 +69,7 @@ module DataExports
         "memory_records" => profile.memory_records.map { |memory| memory_attributes(memory) },
         "social_context_notes" => profile.social_context_notes.with_rich_text_body_and_embeds.map { |note| social_context_note_attributes(note) },
         "message_draft" => message_draft_attributes(profile.message_draft),
+        "relationship_briefings" => profile.relationship_briefings.recent_first.map { |briefing| relationship_briefing_attributes(briefing) },
         "conversation_recaps" => profile.conversation_recaps.map { |recap| conversation_recap_attributes(recap) },
         "extracted_memories" => records(profile.extracted_memories, except: %w[reviewed_by_id]),
         "mood_notes" => records(profile.mood_notes),
@@ -105,6 +106,10 @@ module DataExports
         "formality" => draft.effective_formality,
         "draft_revisions" => records(draft.draft_revisions.reorder(:position), except: %w[message_draft_id])
       )
+    end
+
+    def relationship_briefing_attributes(briefing)
+      attributes_for(briefing, except: %w[user_id relationship_profile_id lock_version])
     end
 
     def conversation_recap_attributes(recap)

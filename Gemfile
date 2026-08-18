@@ -68,7 +68,7 @@ gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]
 
 gem "capybara", "~> 3.40", group: :test
 gem "cuprite", "~> 0.17", group: :test
-gem "simplecov", "~> 1.0", group: :test
+gem "simplecov", "~> 1.1", group: :test
 
 gem "annotaterb", "~> 4.22", group: :development
 

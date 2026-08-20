@@ -3,7 +3,7 @@ id: relationship_profiles.suggestions_are_source_backed_and_user_initiated
 type: decision
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Suggestions are source-backed and user-initiated
@@ -107,7 +107,7 @@ verification:
   - bin/memory coverage --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 05aec403efdcb51bff5689047fa3f3a8cf66c318
 ---
 
 # Suggestions are source-backed and user-initiated

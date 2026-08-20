@@ -14,7 +14,7 @@ re-entered.
   AI-origin metadata, preferences, reminders, uploaded conversation recordings,
   reminder-delivery lifecycle evidence, tag/group assignments, relationship
   notification overrides, privacy-safe vault-access history, in-app notification
-  state, and related account records.
+  state, suggestion feedback/save/completion state, and related account records.
 - Exclude decrypted privacy-vault payloads by default; password reauthentication
   can include owned protected payloads in the same export.
 - Export reminders and important dates as a private calendar file.

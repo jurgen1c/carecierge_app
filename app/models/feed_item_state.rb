@@ -34,12 +34,13 @@ class FeedItemState < ApplicationRecord
   }.freeze
   SUGGESTION_TYPES_BY_SOURCE = {
     "Commitment" => %w[professional_follow_up],
-    "ContactCadence" => %w[check_in],
+    "ContactCadence" => %w[check_in spontaneous],
     "Desire" => %w[gift plan spontaneous],
-    "ImportantDate" => %w[event],
+    "ImportantDate" => %w[event spontaneous],
+    "Interaction" => %w[spontaneous],
     "MemoryRecord" => %w[message],
     "MoodNote" => %w[repair_focused],
-    "RelationshipPreference" => %w[message],
+    "RelationshipPreference" => %w[message spontaneous],
     "SocialContextNote" => %w[gift message conversation_topic social_reminder]
   }.freeze
 
@@ -78,13 +79,17 @@ class FeedItemState < ApplicationRecord
       item_keys = []
       item_keys << "#{SOURCE_PREFIXES[source_type]}:#{source.id}" if SOURCE_PREFIXES.key?(source_type)
       SUGGESTION_TYPES_BY_SOURCE.fetch(source_type, []).each do |suggestion_type|
-        fingerprint = Suggestion.fingerprint_for(
-          relationship_profile_id: source.relationship_profile_id,
-          suggestion_type:,
-          source_type:,
-          source_id: source.id
-        )
-        item_keys << "suggestion:#{source.relationship_profile_id}:#{fingerprint}"
+        variants = suggestion_type == "spontaneous" ? [ nil, *Suggestion::GESTURE_VARIATIONS ] : [ nil ]
+        variants.each do |variant|
+          fingerprint = Suggestion.fingerprint_for(
+            relationship_profile_id: source.relationship_profile_id,
+            suggestion_type:,
+            source_type:,
+            source_id: source.id,
+            variant:
+          )
+          item_keys << "suggestion:#{source.relationship_profile_id}:#{fingerprint}"
+        end
       end
       scope.where(item_key: item_keys).delete_all if item_keys.any?
     end

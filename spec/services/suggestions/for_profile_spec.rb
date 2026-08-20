@@ -79,6 +79,53 @@ RSpec.describe Suggestions::ForProfile do
     expect(suggestion.reasons.sole).to have_attributes(source: memory, certainty: "inferred")
   end
 
+  it "rotates low, medium, and high effort gestures through recent interaction, preference, and goal sources" do
+    now = Time.zone.local(2026, 8, 19, 9)
+    profile = create(:relationship_profile, preferred_name: "Maya")
+    interaction = create(:interaction, relationship_profile: profile, occurred_at: now - 2.days)
+    preference = create(
+      :relationship_preference,
+      relationship_profile: profile,
+      preference_type: "positive",
+      category: "food",
+      value: "Dark chocolate"
+    )
+    desire = create(:desire, relationship_profile: profile, category: "activity", title: "Visit the sculpture garden")
+
+    gestures = Suggestion::GESTURE_VARIATIONS.map do |variation|
+      described_class.call(relationship_profile: profile, as_of: now, gesture_variation: variation)
+        .find(&:gesture?)
+    end
+
+    expect(gestures.map(&:effort)).to eq(%w[low medium high])
+    expect(gestures.map(&:fingerprint).uniq.size).to eq(3)
+    expect(gestures.map { |gesture| gesture.reasons.sole.source }).to eq([ interaction, preference, desire ])
+    expect(gestures.map(&:alternative_variation)).to eq(%w[medium high low])
+  end
+
+  it "can ground gestures in contact cadence, important dates, and relationship type fallbacks" do
+    now = Time.zone.local(2026, 8, 19, 9)
+    cadence_profile = create(:relationship_profile, type: "RelationshipProfiles::Friend", created_at: now - 20.days)
+    cadence = create(:contact_cadence, relationship_profile: cadence_profile, interval_days: 7, created_at: now - 20.days)
+    date_profile = create(:relationship_profile)
+    important_date = create(
+      :important_date,
+      relationship_profile: date_profile,
+      starts_on: now.to_date + 10.days,
+      title: "First day at a new job"
+    )
+    type_profile = create(:relationship_profile, type: "RelationshipProfiles::Mentor")
+
+    low = described_class.call(relationship_profile: cadence_profile, as_of: now, gesture_variation: "low").find(&:gesture?)
+    medium = described_class.call(relationship_profile: date_profile, as_of: now, gesture_variation: "medium").find(&:gesture?)
+    fallback = described_class.call(relationship_profile: type_profile, as_of: now, gesture_variation: "high").find(&:gesture?)
+
+    expect(low.reasons.sole.source).to eq(cadence)
+    expect(low.reasons.sole.label).to eq("Current relationship context could support a thoughtful gesture")
+    expect(medium.reasons.sole.source).to eq(important_date)
+    expect(fallback.reasons.sole).to have_attributes(source: type_profile, evidence: type_profile.relationship_type_label)
+  end
+
   it "reuses important dates preloaded on the relationship profile" do
     now = Time.zone.local(2026, 8, 8, 9, 0)
     profile = create(:relationship_profile, preferred_name: "Maya")

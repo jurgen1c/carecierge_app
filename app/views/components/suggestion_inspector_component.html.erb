@@ -4,7 +4,12 @@
       <p class="text-xs font-semibold uppercase tracking-wide text-emerald-900"><%= t("suggestions.types.#{suggestion.suggestion_type}.label") %></p>
       <h3 id="suggestion-inspector-title" class="mt-2 text-xl font-semibold text-stone-950"><%= suggestion.title %></h3>
     </div>
-    <span class="<%= style(:certainty, certainty: suggestion.certainty.to_sym) %>"><%= t("suggestions.certainty.#{suggestion.certainty}") %></span>
+    <div class="flex flex-wrap items-center justify-end gap-2">
+      <% if suggestion.gesture? %>
+        <span class="<%= style(:effort) %>"><%= t("suggestions.effort.#{suggestion.effort}") %></span>
+      <% end %>
+      <span class="<%= style(:certainty, certainty: suggestion.certainty.to_sym) %>"><%= t("suggestions.certainty.#{suggestion.certainty}") %></span>
+    </div>
   </div>
 
   <p class="mt-3 max-w-2xl text-sm leading-6 text-stone-700"><%= suggestion.detail %></p>
@@ -25,26 +30,49 @@
     </div>
   </section>
 
-  <div class="mt-6 flex flex-wrap gap-3">
+  <div class="mt-6 flex flex-wrap gap-3" aria-label="<%= t("suggestions.inspector.actions_label") %>">
     <%= button_to t("suggestions.actions.create_reminder"),
-      act_relationship_profile_suggestion_path(relationship_profile, suggestion.fingerprint),
+      action_path(:act),
       method: :post,
       form: { data: { turbo_frame: "_top" } },
-      class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-emerald-800 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+      class: style(:action, tone: :primary) %>
+    <% if suggestion.gesture? %>
+      <% if feedback&.saved_for_later? %>
+        <button type="button" disabled class="<%= style(:action, tone: :saved) %>"><%= t("suggestions.actions.saved") %></button>
+      <% else %>
+        <%= button_to t("suggestions.actions.save"),
+          action_path(:save),
+          method: :patch,
+          class: style(:action) %>
+      <% end %>
+      <%= button_to t("suggestions.actions.complete"),
+        action_path(:complete),
+        method: :patch,
+        class: style(:action) %>
+      <% if alternative_variation %>
+        <%= link_to t("suggestions.actions.show_another"),
+          alternative_path,
+          data: { turbo_frame: "suggestions_section" },
+          class: style(:action, tone: :quiet) %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="mt-3 flex flex-wrap gap-2 border-t border-private-line pt-3" aria-label="<%= t("suggestions.inspector.feedback_label") %>">
     <%= button_to t("suggestions.actions.helpful"),
-      feedback_relationship_profile_suggestion_path(relationship_profile, suggestion.fingerprint),
+      action_path(:feedback),
       method: :patch,
       params: { feedback: "helpful" },
-      class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-stone-100" %>
+      class: style(:action) %>
     <%= button_to t("suggestions.actions.not_for_me"),
-      feedback_relationship_profile_suggestion_path(relationship_profile, suggestion.fingerprint),
+      action_path(:feedback),
       method: :patch,
       params: { feedback: "not_for_me" },
-      class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 hover:bg-stone-100" %>
+      class: style(:action) %>
     <%= button_to t("suggestions.actions.dismiss"),
-      dismiss_relationship_profile_suggestion_path(relationship_profile, suggestion.fingerprint),
+      action_path(:dismiss),
       method: :patch,
-      class: "inline-flex min-h-11 items-center justify-center rounded-lg px-3 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100" %>
+      class: style(:action, tone: :quiet) %>
   </div>
 
   <p class="mt-4 text-xs leading-5 text-stone-600"><%= t("suggestions.inspector.reminder_disclosure") %></p>

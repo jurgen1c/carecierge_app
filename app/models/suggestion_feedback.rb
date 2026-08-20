@@ -8,6 +8,7 @@
 #  dismissed_at            :datetime
 #  feedback                :string
 #  fingerprint             :string           not null
+#  saved_at                :datetime
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null
@@ -43,6 +44,14 @@ class SuggestionFeedback < ApplicationRecord
 
   def dismiss!
     update!(dismissed_at: Time.current)
+  end
+
+  def save_for_later!
+    update!(saved_at: Time.current)
+  end
+
+  def saved_for_later?
+    saved_at.present?
   end
 
   def mark_acted!

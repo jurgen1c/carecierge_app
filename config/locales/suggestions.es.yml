@@ -11,12 +11,22 @@ es:
     certainty:
       confirmed: "Confirmado"
       inferred: "Inferido"
+    effort:
+      low: "Poco esfuerzo"
+      medium: "Esfuerzo medio"
+      high: "Mayor esfuerzo"
     inspector:
       why: "Por qué aparece"
       view_source: "Ver fuente: %{source}"
       reminder_disclosure: "Esto crea un recordatorio privado para ti. No contacta a nadie automáticamente."
+      actions_label: "Acciones de la sugerencia"
+      feedback_label: "Comentarios sobre la sugerencia"
     actions:
       create_reminder: "Crear recordatorio"
+      save: "Guardar"
+      saved: "Guardado"
+      complete: "Marcar como completado"
+      show_another: "Mostrar otra"
       helpful: "Útil"
       not_for_me: "No es para mí"
       dismiss: "Descartar"
@@ -29,6 +39,11 @@ es:
       mood_note: "nota de ánimo"
       commitment: "compromiso"
       social_context_note: "nota de contexto social"
+      interaction: "interacción reciente"
+      relationship_profile: "perfil de relación"
+    evidence:
+      recent_interaction: "%{type} el %{date}"
+      contact_cadence: "Un contacto cada %{days} días"
     reasons:
       gift: "Un interés registrado puede orientar un regalo considerado"
       message: "El contexto de la relación sugiere un estilo de mensaje apropiado"
@@ -37,7 +52,7 @@ es:
       plan: "Un interés registrado puede convertirse en un plan compartido"
       check_in: "La frecuencia de contacto preferida está atrasada"
       event: "Una fecha importante está dentro de su período de planificación"
-      spontaneous: "Un interés registrado puede inspirar un pequeño gesto"
+      spontaneous: "El contexto actual de la relación podría inspirar un gesto considerado"
       repair_focused: "Una observación reciente sugiere que una reparación cuidadosa podría ayudar"
       professional_follow_up: "Un compromiso profesional abierto está atrasado"
       relationship_context: "Contexto de la relación"
@@ -74,6 +89,15 @@ es:
         label: "Espontáneo"
         title: "Ten un pequeño gesto espontáneo con %{name}"
         detail: "Usa un interés conocido para inspirar algo personal y sin presión."
+        low:
+          title: "Envía una nota de voz breve a %{name}"
+          detail: "Comparte un pensamiento o ánimo específico, algo pequeño que puedas hacer hoy."
+        medium:
+          title: "Lleva un detalle considerado a %{name}"
+          detail: "Elige algo pequeño que refleje lo que sabes, sin convertirlo en una gran ocasión."
+        high:
+          title: "Dedica tiempo con intención a %{name}"
+          detail: "Planifica una actividad tranquila en torno a algo que valora y adáptala a la relación."
       repair_focused:
         label: "Reparación"
         title: "Planifica una reparación cuidadosa con %{name}"

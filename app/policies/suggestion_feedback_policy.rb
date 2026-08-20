@@ -11,6 +11,14 @@ class SuggestionFeedbackPolicy < ApplicationPolicy
     owner?
   end
 
+  def save?
+    owner?
+  end
+
+  def complete?
+    owner?
+  end
+
   private
 
   def owner?

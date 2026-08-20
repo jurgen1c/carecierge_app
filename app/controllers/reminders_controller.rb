@@ -164,7 +164,7 @@ class RemindersController < ApplicationController
     profile = selected_relationship_profile
     return if fingerprint.blank? || profile.blank?
 
-    Suggestions::ForProfile.call(relationship_profile: profile)
+    Suggestions::ForProfile.call(relationship_profile: profile, gesture_variation: params[:gesture])
       .find { |suggestion| suggestion.fingerprint == fingerprint }
       .tap { |suggestion| raise ActiveRecord::RecordNotFound unless suggestion }
   end

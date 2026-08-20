@@ -13,6 +13,8 @@ RSpec.describe SuggestionFeedbackPolicy do
       expect(policy.feedback?).to be(true)
       expect(policy.dismiss?).to be(true)
       expect(policy.act?).to be(true)
+      expect(policy.save?).to be(true)
+      expect(policy.complete?).to be(true)
     end
   end
 
@@ -23,6 +25,8 @@ RSpec.describe SuggestionFeedbackPolicy do
       expect(policy.feedback?).to be(false)
       expect(policy.dismiss?).to be(false)
       expect(policy.act?).to be(false)
+      expect(policy.save?).to be(false)
+      expect(policy.complete?).to be(false)
     end
   end
 end

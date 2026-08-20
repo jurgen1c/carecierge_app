@@ -1,4 +1,4 @@
-<%= link_to relationship_profile_path(relationship_profile, suggestion: suggestion.fingerprint),
+<%= link_to relationship_profile_path(relationship_profile, suggestion: suggestion.fingerprint, gesture: suggestion.variation),
   class: style(certainty: suggestion.certainty.to_sym, selected:),
   aria: { current: selected ? "true" : nil },
   data: { turbo_frame: "suggestions_section" } do %>

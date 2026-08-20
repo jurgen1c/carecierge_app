@@ -244,6 +244,19 @@ RSpec.describe DailyFeed::ForUser do
     expect(suggestion_item.source_certainty).to eq("inferred")
   end
 
+  it "includes a spontaneous gesture grounded in a recent interaction" do
+    now = Time.zone.local(2026, 8, 19, 9)
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    interaction = create(:interaction, relationship_profile: profile, occurred_at: now - 2.days)
+
+    gesture_item = described_class.call(user:, as_of: now).items
+      .find { |item| item.suggestion&.gesture? }
+
+    expect(gesture_item).to be_present
+    expect(gesture_item.suggestion.reasons.sole.source).to eq(interaction)
+  end
+
   it "loads only the current message draft revision for each profile" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
@@ -474,10 +487,15 @@ RSpec.describe DailyFeed::ForUser do
       create(:memory_record, relationship_profile: profile, title: format("Memory %02d", index))
     end
 
+    12.times do |index|
+      create(:interaction, relationship_profile: profile, occurred_at: now - index.minutes)
+    end
+
     instantiated = capture_instantiations { described_class.call(user:, as_of: now) }
 
     expect(instantiated.values_at("Gift", "Desire", "RelationshipPreference", "MemoryRecord"))
       .to all(be <= described_class::SECTION_LIMIT)
+    expect(instantiated["Interaction"]).to be <= 10
     expect(instantiated["Commitment"]).to be <= described_class::MAX_ITEMS
   end
 

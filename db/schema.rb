@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_15_230443) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_20_034510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -772,6 +772,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_15_230443) do
     t.string "feedback"
     t.string "fingerprint", null: false
     t.uuid "relationship_profile_id", null: false
+    t.datetime "saved_at"
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["relationship_profile_id", "dismissed_at"], name: "idx_on_relationship_profile_id_dismissed_at_d046df9002"

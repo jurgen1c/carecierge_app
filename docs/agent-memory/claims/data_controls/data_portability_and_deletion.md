@@ -3,7 +3,7 @@ id: data_controls.data_portability_and_deletion
 type: fact
 system: data_controls
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -11,7 +11,8 @@ title: Data exports and permanent deletion stay owner-scoped and privacy-minimiz
 claim: >
   Owner-scoped JSON, CSV, PDF, and private-calendar exports include recordings,
   social context and screenshots, relationships, localized labels, privacy-safe
-  audit and reminder evidence, feed dismissal and snooze state, and effective
+  audit and reminder evidence, feed dismissal and snooze state, suggestion
+  feedback/save/completion state, and effective
   message-draft response settings and revisions. Relationship briefings are
   included with their source-backed sections and consent metadata, while their
   internal generation fences stay excluded. Vault payloads require
@@ -36,6 +37,7 @@ source_files:
   - app/models/deletion_request.rb
   - app/models/concerns/feed_item_state_source.rb
   - app/models/feed_item_state.rb
+  - app/models/suggestion_feedback.rb
   - app/serializers/data_exports/snapshot.rb
   - app/services/data_deletions/perform.rb
   - app/services/data_deletions/delete_account.rb
@@ -47,6 +49,7 @@ source_files:
   - db/migrate/20260808004436_create_deletion_requests.rb
   - db/migrate/20260813120002_add_uploaded_by_user_to_active_storage_blobs.rb
   - db/migrate/20260814160000_create_feed_item_states.rb
+  - db/migrate/20260820034510_add_saved_at_to_suggestion_feedbacks.rb
 
 related_files:
   - app/models/relationship_briefing.rb
@@ -96,7 +99,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 05aec403efdcb51bff5689047fa3f3a8cf66c318
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized

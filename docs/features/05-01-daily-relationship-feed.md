@@ -43,7 +43,8 @@ A central feed that tells users what deserves attention today.
 The dashboard is the Concierge Queue. It groups a bounded set of work into
 Needs attention, Later today, and Coming up, while preserving the source context
 and a direct path back to the originating relationship or workflow. Suggestion
-evidence keeps its confirmed or inferred label. The private dashboard opts out
+evidence keeps its confirmed or inferred label. Recent interactions are bounded
+per active relationship before they can ground a spontaneous gesture. The private dashboard opts out
 of Turbo snapshots, and draft items load only the current revision.
 
 Dismiss and snooze affect only the queue. Snooze returns an item at 9:00 AM the

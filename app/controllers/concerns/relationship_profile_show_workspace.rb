@@ -12,20 +12,36 @@ module RelationshipProfileShowWorkspace
     end
     @relationship_persona = RelationshipPersona.new(relationship_profile: @relationship_profile)
     @mood_notes = @relationship_profile.mood_notes.ordered.to_a
+    @interactions = @relationship_profile.interactions.includes(:source).ordered.limit(10).to_a
+    suggestions_as_of = Time.current
     suggestions = Suggestions::ForProfile.call(
       relationship_profile: @relationship_profile,
+      as_of: suggestions_as_of,
       mood_notes: @mood_notes,
       important_dates: @relationship_profile.important_dates,
+      interactions: @interactions,
+      gesture_variation: params[:gesture],
       social_context_notes: @social_context_source_notes
     )
     @suggestion_feedbacks = current_user.suggestion_feedbacks
       .where(fingerprint: suggestions.map(&:fingerprint))
       .index_by(&:fingerprint)
     @suggestions = suggestions.reject { |suggestion| @suggestion_feedbacks[suggestion.fingerprint]&.hidden? }
-    @selected_suggestion = @suggestions.find { |suggestion| suggestion.fingerprint == params[:suggestion] } || @suggestions.first
+    @selected_suggestion = @suggestions.find { |suggestion| suggestion.fingerprint == params[:suggestion] }
+    @selected_suggestion ||= @suggestions.find(&:gesture?) if params[:suggestion_type] == "spontaneous"
+    @selected_suggestion ||= @suggestions.first
+    @next_gesture_variation = Suggestions::NextGestureVariation.call(
+      user: current_user,
+      relationship_profile: @relationship_profile,
+      suggestion: @selected_suggestion,
+      as_of: suggestions_as_of,
+      mood_notes: @mood_notes,
+      important_dates: @relationship_profile.important_dates,
+      interactions: @interactions,
+      social_context_notes: @social_context_source_notes
+    )
     @timeline_type = params[:timeline_type].to_s.in?(TimelineEntry::ENTRY_TYPES) ? params[:timeline_type].to_s : nil
     @relationship_reminders = @relationship_profile.reminders.active.by_effective_delivery.limit(5).to_a
-    @interactions = @relationship_profile.interactions.includes(:source).ordered.limit(10).to_a
     @conversation_recaps = @relationship_profile.conversation_recaps.ordered.includes(:extracted_memories).to_a
     @extracted_memories = @conversation_recaps.flat_map(&:extracted_memories).sort_by do |memory|
       [ memory.pending? ? 0 : 1, memory.created_at, memory.id ]

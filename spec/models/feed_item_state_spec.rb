@@ -162,4 +162,32 @@ RSpec.describe FeedItemState do
 
     expect(user.feed_item_states.reload).to be_empty
   end
+
+  it "removes every variant-aware spontaneous suggestion state when its source is deleted" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    sources = [
+      create(:interaction, relationship_profile: profile),
+      create(:contact_cadence, relationship_profile: profile),
+      create(:relationship_preference, relationship_profile: profile),
+      create(:important_date, relationship_profile: profile),
+      create(:desire, relationship_profile: profile)
+    ]
+    sources.each do |source|
+      Suggestion::GESTURE_VARIATIONS.each do |variation|
+        fingerprint = Suggestion.fingerprint_for(
+          relationship_profile_id: profile.id,
+          suggestion_type: "spontaneous",
+          source_type: source.class.base_class.name,
+          source_id: source.id,
+          variant: variation
+        )
+        create(:feed_item_state, user:, item_key: "suggestion:#{profile.id}:#{fingerprint}")
+      end
+    end
+
+    sources.each(&:destroy!)
+
+    expect(user.feed_item_states.reload).to be_empty
+  end
 end

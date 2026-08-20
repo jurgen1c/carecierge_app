@@ -13,7 +13,11 @@
             <%= component "suggestion_list_item", suggestion:, relationship_profile:, selected: suggestion == selected_suggestion %>
           <% end %>
         </nav>
-        <%= component "suggestion_inspector", suggestion: selected_suggestion, relationship_profile:, feedback: feedbacks[selected_suggestion.fingerprint] %>
+        <%= component "suggestion_inspector",
+          suggestion: selected_suggestion,
+          relationship_profile:,
+          feedback: feedbacks[selected_suggestion.fingerprint],
+          alternative_variation: next_gesture_variation %>
       </div>
     <% else %>
       <div class="px-5 py-8 sm:px-6">

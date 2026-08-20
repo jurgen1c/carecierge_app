@@ -62,6 +62,8 @@ Rails.application.routes.draw do
     resources :suggestions, only: [] do
       patch :feedback, on: :member
       patch :dismiss, on: :member
+      patch :save, on: :member
+      patch :complete, on: :member
       post :act, on: :member
     end
     resource :privacy_vault, only: :show do

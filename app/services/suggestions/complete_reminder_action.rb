@@ -15,7 +15,8 @@ module Suggestions
     end
 
     def self.suggestion_profile_id(suggestion)
-      suggestion.reasons.first.source.relationship_profile_id
+      source = suggestion.reasons.first.source
+      source.is_a?(RelationshipProfile) ? source.id : source.relationship_profile_id
     end
     private_class_method :suggestion_profile_id
   end

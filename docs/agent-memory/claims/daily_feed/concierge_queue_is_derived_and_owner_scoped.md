@@ -22,9 +22,12 @@ claim: >
   snapshots and bounds eager loading. FeedItemState persists only dismissal or
   snooze presentation state while locking the account and then the source, so
   deletion races cannot leave orphaned state. Source cleanup occurs only after
-  source SQL deletion. Snooze returns at 9:00 AM the next day in the user's
+  source SQL deletion, including every variant-aware spontaneous-gesture key
+  derived from that source. Snooze returns at 9:00 AM the next day in the user's
   notification time zone. Feed state is exported with the account, pruned with
   permanently deleted sources or relationships, and cascades on account deletion.
+  Recent interaction candidates are bounded per active relationship before they
+  can ground spontaneous gestures.
 
 source_files:
   - app/controllers/dashboard_controller.rb
@@ -32,6 +35,7 @@ source_files:
   - app/models/concerns/feed_item_state_source.rb
   - app/models/contact_cadence.rb
   - app/models/feed_item_state.rb
+  - app/models/interaction.rb
   - app/models/relationship_persona.rb
   - app/models/suggestion.rb
   - app/services/daily_feed/for_user.rb

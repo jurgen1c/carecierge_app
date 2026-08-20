@@ -17,7 +17,8 @@ a second memory store.
 - Suggest conflict repair actions.
 - Suggest professional follow-ups.
 - Explain why suggestions were made.
-- Allow helpful/not-for-me feedback, dismissal, and action.
+- Allow helpful/not-for-me feedback, dismissal, save, completion, and action
+  where supported by the suggestion type.
 - Keep every suggestion linked to its source and certainty.
 
 ## Suggestion Types
@@ -37,7 +38,8 @@ a second memory store.
   fingerprint, localized copy keys, evidence reasons, and an `action_kind`.
 - `Suggestion::Reason` preserves its source record, evidence text, and confirmed
   or inferred certainty.
-- `SuggestionFeedback` persists only user interaction state by fingerprint.
+- `SuggestionFeedback` persists only user interaction state by fingerprint,
+  including saved and completed gesture state.
 
 ## Implementation Notes
 
@@ -45,6 +47,10 @@ a second memory store.
 spontaneous, repair-focused, and professional-follow-up suggestions. Archived
 profiles fail closed. High-impact suggestions use confirmed/approved evidence;
 an unapproved AI inference cannot qualify them.
+
+Spontaneous gestures carry low-, medium-, or high-effort metadata. The profile
+shows one deterministic variant at a time and rotates alternatives without
+persisting generated copy or expanding the bounded suggestion result.
 
 The current `create_reminder` action only prefills the existing reminder form.
 The suggestion is marked acted after the reminder saves, not when the form is

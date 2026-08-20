@@ -8,6 +8,7 @@
 #  dismissed_at            :datetime
 #  feedback                :string
 #  fingerprint             :string           not null
+#  saved_at                :datetime
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null
@@ -39,11 +40,16 @@ RSpec.describe SuggestionFeedback do
     expect(feedback.errors[:relationship_profile]).to be_present
   end
 
-  it "tracks feedback, dismissal, and completed action state" do
+  it "tracks feedback, save, dismissal, and completed action state" do
     feedback = create(described_class.model_name.singular.to_sym)
 
     Timecop.freeze(Time.zone.local(2026, 8, 8, 10, 30)) do
       feedback.record_feedback!("helpful")
+      expect(feedback).not_to be_hidden
+
+      feedback.save_for_later!
+      expect(feedback).to be_saved_for_later
+      expect(feedback.saved_at).to eq(Time.current)
       expect(feedback).not_to be_hidden
 
       feedback.dismiss!

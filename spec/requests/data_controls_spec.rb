@@ -75,6 +75,8 @@ RSpec.describe "Data controls", type: :request do
     it "exports all owned account data as JSON and records privacy-minimized evidence" do
       recap = create(:conversation_recap, relationship_profile: profile, extraction_status: "ready_for_review")
       create(:extracted_memory, relationship_profile: profile, conversation_recap: recap, category: "boundary", confidence: "medium")
+      saved_at = Time.zone.local(2026, 8, 19, 9)
+      create(:suggestion_feedback, user:, relationship_profile: profile, fingerprint: "saved-gesture", saved_at:)
 
       post data_exports_path, params: { data_export: { scope: "account", format: "json" } }
 
@@ -89,6 +91,10 @@ RSpec.describe "Data controls", type: :request do
         "category" => "boundary",
         "confidence" => "medium",
         "status" => "pending"
+      )
+      expect(response.parsed_body.dig("relationship_profiles", 0, "suggestion_feedbacks", 0)).to include(
+        "fingerprint" => "saved-gesture",
+        "saved_at" => saved_at.as_json
       )
       expect(user.audit_events.reload.last).to have_attributes(
         action: "data_export.requested",

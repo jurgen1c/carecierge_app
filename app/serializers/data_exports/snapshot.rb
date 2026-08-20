@@ -78,6 +78,7 @@ module DataExports
         "desires" => profile.desires.map { |desire| desire_attributes(desire) },
         "contact_cadence" => attributes_for(profile.contact_cadence),
         "interactions" => records(profile.interactions),
+        "suggestion_feedbacks" => records(profile.suggestion_feedbacks, except: %w[user_id relationship_profile_id]),
         "reminders" => profile.reminders.includes(:reminder_deliveries).map { |reminder| reminder_attributes(reminder) },
         "privacy_vault_items" => privacy_vault_items(profile)
       )

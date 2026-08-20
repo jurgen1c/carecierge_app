@@ -379,6 +379,7 @@ module DailyFeed
       preload_profile_association(records, :commitments, commitment_candidate_scope)
       preload_profile_association(records, :contact_cadence)
       preload_cadence_last_interactions(records)
+      preload_profile_association(records, :interactions, interaction_candidate_scope)
       preload_profile_association(records, :mood_notes, mood_note_candidate_scope)
       preload_profile_association(records, :relationship_preferences, preference_candidate_scope)
       preload_profile_association(records, :memory_records, eligible_memory_scope)
@@ -467,6 +468,14 @@ module DailyFeed
         MoodNote.where(category: Suggestions::ForProfile::REPAIR_CATEGORIES, observed_at: (as_of - 30.days)..as_of),
         order_sql: "mood_notes.observed_at DESC, mood_notes.id DESC",
         limit: 1
+      )
+    end
+
+    def interaction_candidate_scope
+      bounded_candidate_scope(
+        Interaction.where(occurred_at: (as_of - 30.days)..as_of),
+        order_sql: "interactions.occurred_at DESC, interactions.id DESC",
+        limit: 10
       )
     end
 
@@ -687,7 +696,9 @@ module DailyFeed
         as_of:,
         mood_notes: profile.mood_notes,
         important_dates: profile.important_dates,
+        interactions: profile.interactions,
         social_context_notes: profile.social_context_notes,
+        include_profile_gesture_fallback: false,
         use_preloaded_persona_sources: true
       )
     end

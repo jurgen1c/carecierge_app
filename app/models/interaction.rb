@@ -25,6 +25,8 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #
 class Interaction < ApplicationRecord
+  include FeedItemStateSource
+
   MANUAL_TYPES = %w[call message in_person video other].freeze
   DERIVED_TYPES = %w[conversation_recap mood_note].freeze
   TYPES = (MANUAL_TYPES + DERIVED_TYPES).freeze

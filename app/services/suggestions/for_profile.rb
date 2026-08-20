@@ -10,24 +10,32 @@ module Suggestions
     ].freeze
     REPAIR_CATEGORIES = %w[stressed distant sad overwhelmed].freeze
 
-    def self.call(relationship_profile:, as_of: Time.current, mood_notes: nil, important_dates: nil, social_context_notes: nil,
+    def self.call(relationship_profile:, as_of: Time.current, mood_notes: nil, important_dates: nil, interactions: nil,
+      social_context_notes: nil, gesture_variation: nil, include_profile_gesture_fallback: true,
       use_preloaded_persona_sources: false)
       new(
         relationship_profile:,
         as_of:,
         mood_notes:,
         important_dates:,
+        interactions:,
         social_context_notes:,
+        gesture_variation:,
+        include_profile_gesture_fallback:,
         use_preloaded_persona_sources:
       ).call
     end
 
-    def initialize(relationship_profile:, as_of:, mood_notes:, important_dates:, social_context_notes:, use_preloaded_persona_sources:)
+    def initialize(relationship_profile:, as_of:, mood_notes:, important_dates:, interactions:, social_context_notes:,
+      gesture_variation:, include_profile_gesture_fallback:, use_preloaded_persona_sources:)
       @relationship_profile = relationship_profile
       @as_of = as_of
       @mood_notes = mood_notes
       @important_dates = important_dates
+      @interactions = interactions
       @provided_social_context_notes = social_context_notes
+      @gesture_variation = gesture_variation.to_s.in?(Suggestion::GESTURE_VARIATIONS) ? gesture_variation.to_s : "low"
+      @include_profile_gesture_fallback = include_profile_gesture_fallback
       @use_preloaded_persona_sources = use_preloaded_persona_sources
     end
 
@@ -50,8 +58,8 @@ module Suggestions
 
     private
 
-    attr_reader :relationship_profile, :as_of, :mood_notes, :important_dates, :provided_social_context_notes,
-      :use_preloaded_persona_sources
+    attr_reader :relationship_profile, :as_of, :mood_notes, :important_dates, :interactions, :provided_social_context_notes,
+      :gesture_variation, :use_preloaded_persona_sources
 
     def gift_suggestion
       desire = active_desires.find { |item| item.suggestion_contexts.include?("gift") }
@@ -117,8 +125,88 @@ module Suggestions
     end
 
     def spontaneous_suggestion
-      desire = active_desires.find { |item| item.suggestion_contexts.include?("gesture") }
-      build("spontaneous", desire, evidence: desire&.title, reminder_type: "check_in")
+      source = gesture_source
+      build(
+        "spontaneous",
+        source,
+        evidence: gesture_evidence(source),
+        certainty: gesture_certainty(source),
+        reminder_type: "check_in",
+        effort: gesture_variation,
+        variation: gesture_variation
+      )
+    end
+
+    def gesture_source
+      case gesture_variation
+      when "low"
+        recent_interaction || relationship_profile.contact_cadence || profile_gesture_fallback
+      when "medium"
+        safe_gesture_preference || upcoming_important_date || profile_gesture_fallback
+      when "high"
+        active_desires.find { |item| item.suggestion_contexts.include?("gesture") } ||
+          upcoming_important_date || profile_gesture_fallback
+      end
+    end
+
+    def profile_gesture_fallback
+      relationship_profile if @include_profile_gesture_fallback
+    end
+
+    def recent_interaction
+      collection = if interactions
+        interactions
+      elsif use_preloaded_persona_sources
+        association = relationship_profile.association(:interactions)
+        association.loaded? ? association.target : []
+      else
+        relationship_profile.interactions.ordered.limit(10).to_a
+      end
+
+      collection.select { |item| item.occurred_at.between?(as_of - 30.days, as_of) }
+        .max_by { |item| [ item.occurred_at, item.id ] }
+    end
+
+    def safe_gesture_preference
+      preferences = if use_preloaded_persona_sources
+        relationship_profile.relationship_preferences
+      else
+        relationship_profile.relationship_preferences.reload
+      end
+
+      preferences
+        .select { |item| item.preference_type.in?(%w[positive neutral]) }
+        .reject { |item| item.category.in?(%w[boundaries allergies cultural_constraints]) }
+        .min_by { |item| [ item.confidence == "confirmed" ? 0 : 1, item.key.downcase, item.id ] }
+    end
+
+    def upcoming_important_date
+      (important_dates || relationship_profile.important_dates.reload)
+        .select { |item| item.planning_opportunity?(as_of: as_of.to_date) }
+        .min_by { |item| [ item.next_occurrence_on(as_of: as_of.to_date), item.title.to_s, item.id ] }
+    end
+
+    def gesture_evidence(source)
+      case source
+      when Interaction
+        I18n.t(
+          "suggestions.evidence.recent_interaction",
+          type: I18n.t("relationship_searches.interaction_types.#{source.interaction_type}"),
+          date: I18n.l(source.occurred_at.to_date, format: :long)
+        )
+      when ContactCadence
+        I18n.t("suggestions.evidence.contact_cadence", days: source.interval_days)
+      when RelationshipPreference then source.value
+      when ImportantDate then source.display_title
+      when Desire then source.title
+      when RelationshipProfile then source.relationship_type_label
+      end
+    end
+
+    def gesture_certainty(source)
+      return "inferred" if source.is_a?(RelationshipPreference) && source.confidence != "confirmed"
+
+      "confirmed"
     end
 
     def repair_suggestion
@@ -178,7 +266,7 @@ module Suggestions
       association.target.find { |record| record.id == source_id }
     end
 
-    def build(type, source, evidence:, certainty: "confirmed", reminder_type:, priority: "normal")
+    def build(type, source, evidence:, certainty: "confirmed", reminder_type:, priority: "normal", effort: nil, variation: nil)
       return if source.blank? || evidence.blank?
 
       reason = Suggestion::Reason.new(
@@ -192,19 +280,24 @@ module Suggestions
         relationship_profile_id: relationship_profile.id,
         suggestion_type: type,
         source_type: source.class.base_class.name,
-        source_id: source.id
+        source_id: source.id,
+        variant: variation
       )
+
+      copy_key = variation ? "#{type}.#{variation}" : type
 
       Suggestion.new(
         fingerprint:,
         suggestion_type: type,
-        title_key: "suggestions.types.#{type}.title",
+        title_key: "suggestions.types.#{copy_key}.title",
         title_params: { name: relationship_profile.display_name },
-        detail_key: "suggestions.types.#{type}.detail",
+        detail_key: "suggestions.types.#{copy_key}.detail",
         detail_params: { name: relationship_profile.display_name },
         reasons: [ reason ],
         action_kind: "create_reminder",
-        action_attributes: { reminder_type:, priority: }
+        action_attributes: { reminder_type:, priority: },
+        effort:,
+        variation:
       )
     end
   end

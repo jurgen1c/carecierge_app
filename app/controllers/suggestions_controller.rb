@@ -18,12 +18,29 @@ class SuggestionsController < ApplicationController
     render_suggestions
   end
 
+  def save
+    ensure_gesture!
+    feedback = suggestion_feedback
+    authorize feedback, :save?
+    feedback.save_for_later!
+    render_suggestions
+  end
+
+  def complete
+    ensure_gesture!
+    feedback = suggestion_feedback
+    authorize feedback, :complete?
+    feedback.mark_acted!
+    render_suggestions
+  end
+
   def act
     feedback = suggestion_feedback
     authorize feedback, :act?
     redirect_to new_reminder_path(
       relationship_profile_id: @relationship_profile.id,
-      suggestion: @suggestion.fingerprint
+      suggestion: @suggestion.fingerprint,
+      gesture: @suggestion.variation
     )
   end
 
@@ -34,7 +51,12 @@ class SuggestionsController < ApplicationController
   end
 
   def set_suggestion
-    @suggestions = Suggestions::ForProfile.call(relationship_profile: @relationship_profile)
+    @suggestions_as_of = Time.current
+    @suggestions = Suggestions::ForProfile.call(
+      relationship_profile: @relationship_profile,
+      as_of: @suggestions_as_of,
+      gesture_variation: params[:gesture]
+    )
     @suggestion = @suggestions
       .find { |suggestion| suggestion.fingerprint == params[:id] }
     raise ActiveRecord::RecordNotFound unless @suggestion
@@ -46,12 +68,22 @@ class SuggestionsController < ApplicationController
     end
   end
 
+  def ensure_gesture!
+    raise ActiveRecord::RecordNotFound unless @suggestion.gesture?
+  end
+
   def render_suggestions
     feedbacks = current_user.suggestion_feedbacks
       .where(fingerprint: @suggestions.map(&:fingerprint))
       .index_by(&:fingerprint)
     visible_suggestions = @suggestions.reject { |suggestion| feedbacks[suggestion.fingerprint]&.hidden? }
     selected_suggestion = visible_suggestions.find { |suggestion| suggestion.fingerprint == @suggestion.fingerprint } || visible_suggestions.first
+    next_gesture_variation = Suggestions::NextGestureVariation.call(
+      user: current_user,
+      relationship_profile: @relationship_profile,
+      suggestion: selected_suggestion,
+      as_of: @suggestions_as_of
+    )
 
     respond_to do |format|
       format.turbo_stream do
@@ -62,11 +94,18 @@ class SuggestionsController < ApplicationController
             relationship_profile: @relationship_profile,
             suggestions: visible_suggestions,
             selected_suggestion:,
-            feedbacks:
+            feedbacks:,
+            next_gesture_variation:
           }
         )
       end
-      format.html { redirect_to relationship_profile_path(@relationship_profile, suggestion: selected_suggestion&.fingerprint) }
+      format.html do
+        redirect_to relationship_profile_path(
+          @relationship_profile,
+          suggestion: selected_suggestion&.fingerprint,
+          gesture: @suggestion.variation
+        )
+      end
     end
   end
 

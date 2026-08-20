@@ -11,12 +11,22 @@ en:
     certainty:
       confirmed: "Confirmed"
       inferred: "Inferred"
+    effort:
+      low: "Low effort"
+      medium: "Medium effort"
+      high: "Higher effort"
     inspector:
       why: "Why this appears"
       view_source: "View source: %{source}"
       reminder_disclosure: "This creates a private reminder for you. It does not contact anyone automatically."
+      actions_label: "Suggestion actions"
+      feedback_label: "Suggestion feedback"
     actions:
       create_reminder: "Create reminder"
+      save: "Save"
+      saved: "Saved"
+      complete: "Mark complete"
+      show_another: "Show another"
       helpful: "Helpful"
       not_for_me: "Not for me"
       dismiss: "Dismiss"
@@ -29,6 +39,11 @@ en:
       mood_note: "mood note"
       commitment: "commitment"
       social_context_note: "social context note"
+      interaction: "recent interaction"
+      relationship_profile: "relationship profile"
+    evidence:
+      recent_interaction: "%{type} on %{date}"
+      contact_cadence: "A check-in every %{days} days"
     reasons:
       gift: "A recorded interest could guide a thoughtful gift"
       message: "Your relationship context suggests a fitting message style"
@@ -37,7 +52,7 @@ en:
       plan: "A recorded interest could become a shared plan"
       check_in: "The preferred contact rhythm is overdue"
       event: "An important date is within its planning window"
-      spontaneous: "A recorded interest could inspire a small gesture"
+      spontaneous: "Current relationship context could support a thoughtful gesture"
       repair_focused: "A recent observation suggests a gentle repair may help"
       professional_follow_up: "An open professional commitment is overdue"
       relationship_context: "Relationship context"
@@ -74,6 +89,15 @@ en:
         label: "Spontaneous"
         title: "Offer %{name} a small spontaneous gesture"
         detail: "Use a known interest to inspire something low-pressure and personal."
+        low:
+          title: "Send %{name} a quick voice note"
+          detail: "Share one specific thought or encouragement—small enough to do today."
+        medium:
+          title: "Bring %{name} a thoughtful extra"
+          detail: "Choose something small that reflects what you know, without turning it into a major occasion."
+        high:
+          title: "Make thoughtful time for %{name}"
+          detail: "Plan an unhurried activity around something they value, then adapt it to the relationship."
       repair_focused:
         label: "Repair-focused"
         title: "Plan a gentle repair with %{name}"

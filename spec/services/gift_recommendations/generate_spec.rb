@@ -358,22 +358,26 @@ RSpec.describe GiftRecommendations::Generate do
     profile = create(:relationship_profile, user:)
     create(:gift, relationship_profile: profile, name: "Ceramic mug")
     create(:gift_recommendation, user:, relationship_profile: profile, title: "Coffee tasting set")
-    generator = double(generate: [
-      {
-        "title" => "Coffee tasting set",
-        "rationale" => "Duplicates an idea already visible for review.",
-        "source_ids" => [ "profile:#{profile.id}" ],
-        "estimated_price_cents" => 4_000,
-        "vendor" => nil
-      },
-      {
-        "title" => "Ceramic mug",
-        "rationale" => "A repeatable staple from prior gift history.",
-        "source_ids" => [ "profile:#{profile.id}" ],
-        "estimated_price_cents" => 3_000,
-        "vendor" => nil
-      }
-    ])
+    generator = double
+    allow(generator).to receive(:generate) do |excluded_titles:, **|
+      expect(excluded_titles).not_to include("Ceramic mug")
+      [
+        {
+          "title" => "Coffee tasting set",
+          "rationale" => "Duplicates an idea already visible for review.",
+          "source_ids" => [ "profile:#{profile.id}" ],
+          "estimated_price_cents" => 4_000,
+          "vendor" => nil
+        },
+        {
+          "title" => "Ceramic mug",
+          "rationale" => "A repeatable staple from prior gift history.",
+          "source_ids" => [ "profile:#{profile.id}" ],
+          "estimated_price_cents" => 3_000,
+          "vendor" => nil
+        }
+      ]
+    end
 
     recommendations = described_class.call(
       actor: user,

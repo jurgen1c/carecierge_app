@@ -178,6 +178,8 @@ module GiftRecommendations
     end
 
     def provider_excluded_titles
+      return [] if allow_repeats
+
       relationship_profile.gifts
         .order(created_at: :desc, id: :desc)
         .limit(MAX_PROVIDER_EXCLUDED_TITLES)

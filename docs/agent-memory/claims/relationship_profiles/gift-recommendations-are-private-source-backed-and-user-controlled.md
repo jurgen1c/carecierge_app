@@ -31,7 +31,8 @@ claim: >
   Every result cites known sources, supplies a valid estimate when a maximum
   budget was requested, respects the enforced budget and repeat-gift
   guard, and is rejected when its source fingerprint or profile generation fence
-  becomes stale. Repeat mode applies only to canonical gift history; outstanding
+  becomes stale. Repeat mode removes canonical gift-history titles from both the
+  provider exclusion list and local gift-history filtering; outstanding
   recommendations and same-response titles remain unique. Owners can save an
   idea into Gift, mark it purchased into Gift
   planning, dismiss it, or request a distinct alternative, but the feature never
@@ -117,8 +118,9 @@ Generated content is encrypted and source-backed. The provider receives bounded
 JSON as untrusted input and does not store the request. Constraints and dislikes
 are hard exclusions with reserved catalog and character-budget priority. A
 maximum budget requires a valid estimated price. Prior titles are rechecked after the
-provider call, and repeat mode permits only canonical gift history while live
-recommendations and same-batch titles stay unique. Free-form occasion text is
+provider call, and repeat mode omits canonical gift-history titles from provider
+exclusions and local filtering while live recommendations and same-batch titles
+stay unique. Free-form occasion text is
 filtered from request logs. Private context remains an explicit
 request choice behind existing vault controls, including each vault item's
 suggestion-usage setting. Bounded selected sensitive excerpts remain present

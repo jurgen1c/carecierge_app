@@ -1,10 +1,11 @@
 require "rails_helper"
 
 RSpec.describe "Data controls", type: :request do
-  it "exports decrypted relationship briefings without internal generation fences" do
+  it "exports decrypted AI workspaces without internal generation fences" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
     briefing = create(:relationship_briefing, user:, relationship_profile: profile, status: "saved")
+    recommendation = create(:gift_recommendation, user:, relationship_profile: profile, status: "saved")
     sign_in user
 
     post data_exports_path, params: { data_export: { format: "json", scope: "account" } }
@@ -12,9 +13,15 @@ RSpec.describe "Data controls", type: :request do
     payload = JSON.parse(response.body)
     exported_profile = payload.fetch("relationship_profiles").sole
     expect(exported_profile).not_to have_key("briefing_generation_version")
+    expect(exported_profile).not_to have_key("gift_recommendation_generation_version")
     expect(exported_profile.fetch("relationship_briefings").sole).to include(
       "interaction_context" => briefing.interaction_context,
       "sections" => briefing.sections
+    )
+    expect(exported_profile.fetch("gift_recommendations").sole).to include(
+      "title" => recommendation.title,
+      "rationale" => recommendation.rationale,
+      "source_context" => recommendation.source_context
     )
   end
 
@@ -43,14 +50,14 @@ RSpec.describe "Data controls", type: :request do
       expect(response.body).to include(I18n.t("data_controls.show.delete_account.title", locale: :es))
     end
 
-    it "discloses social-analysis deletion in English and Spanish" do
+    it "discloses every AI workspace deletion in English and Spanish" do
       sign_in user
 
       I18n.with_locale(:en) { get data_control_path }
-      expect(response.body).to include("social-context interpretations")
+      expect(response.body).to include("social-context interpretations", "gift recommendations")
 
       I18n.with_locale(:es) { get data_control_path }
-      expect(response.body).to include("interpretaciones de contexto social")
+      expect(response.body).to include("interpretaciones de contexto social", "recomendaciones de regalos")
     end
 
     it "gives OAuth users an explicit password setup path before account deletion" do

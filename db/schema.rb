@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_20_034510) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -340,6 +340,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_034510) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "gift_recommendations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "allow_repeats", default: false, null: false
+    t.integer "budget_cents"
+    t.datetime "created_at", null: false
+    t.datetime "dismissed_at"
+    t.integer "estimated_price_cents"
+    t.datetime "generated_at", null: false
+    t.uuid "gift_id"
+    t.boolean "include_private_notes", default: false, null: false
+    t.boolean "include_vault_context", default: false, null: false
+    t.string "locale", default: "en", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.date "needed_by"
+    t.text "occasion"
+    t.datetime "purchased_at"
+    t.text "rationale", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "saved_at"
+    t.text "source_context", null: false
+    t.string "status", default: "generated", null: false
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.text "vendor"
+    t.index ["gift_id"], name: "index_gift_recommendations_on_gift_id"
+    t.index ["relationship_profile_id", "status", "generated_at"], name: "index_gift_recommendations_on_profile_status_generated"
+    t.index ["relationship_profile_id"], name: "index_gift_recommendations_on_relationship_profile_id"
+    t.index ["user_id"], name: "index_gift_recommendations_on_user_id"
+    t.check_constraint "budget_cents IS NULL OR budget_cents >= 0", name: "gift_recommendations_budget_nonnegative"
+    t.check_constraint "estimated_price_cents IS NULL OR estimated_price_cents >= 0", name: "gift_recommendations_estimated_price_nonnegative"
+    t.check_constraint "status::text = ANY (ARRAY['generated'::character varying, 'saved'::character varying, 'dismissed'::character varying, 'purchased'::character varying]::text[])", name: "gift_recommendations_supported_status"
+  end
+
   create_table "gifts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "given_on"
@@ -638,6 +671,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_034510) do
     t.datetime "created_at", null: false
     t.datetime "discarded_at"
     t.string "first_name", null: false
+    t.bigint "gift_recommendation_generation_version", default: 0, null: false
     t.string "last_name"
     t.bigint "message_draft_generation_version", default: 0, null: false
     t.string "preferred_name"
@@ -891,6 +925,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_034510) do
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
   add_foreign_key "feed_item_states", "users", on_delete: :cascade
+  add_foreign_key "gift_recommendations", "gifts", on_delete: :nullify
+  add_foreign_key "gift_recommendations", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "gift_recommendations", "users", on_delete: :cascade
   add_foreign_key "gifts", "relationship_profiles"
   add_foreign_key "important_dates", "relationship_profiles"
   add_foreign_key "interactions", "relationship_profiles", on_delete: :cascade

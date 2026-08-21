@@ -13,6 +13,20 @@ RSpec.describe DataDeletions::DeleteAiData do
     expect(profile.reload.briefing_generation_version).to eq(generation_version + 1)
   end
 
+  it "deletes generated gift recommendations, preserves saved gifts, and advances generation fences" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    gift = create(:gift, relationship_profile: profile, name: "Saved coffee set")
+    create(:gift_recommendation, user:, relationship_profile: profile, status: "saved", gift:)
+    generation_version = profile.gift_recommendation_generation_version
+
+    described_class.call(user:)
+
+    expect(profile.gift_recommendations.reload).to be_empty
+    expect(profile.gifts.reload).to contain_exactly(gift)
+    expect(profile.reload.gift_recommendation_generation_version).to eq(generation_version + 1)
+  end
+
   it "uses a profile lock compatible with extraction foreign-key checks" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

@@ -22,4 +22,17 @@ RSpec.describe AuditEventPresenter do
 
     expect(described_class.new(event.reload).target_label).to eq(I18n.t("audit_events.targets.deleted_resource"))
   end
+
+  it "has complete English and Spanish labels for gift recommendation actions" do
+    action_keys = %w[
+      gift_recommendation_generated
+      gift_recommendation_saved
+      gift_recommendation_dismissed
+      gift_recommendation_purchased
+    ]
+
+    %i[en es].product(action_keys, %w[title description]).each do |locale, action_key, attribute|
+      expect(I18n.exists?("audit_events.actions.#{action_key}.#{attribute}", locale)).to be(true)
+    end
+  end
 end

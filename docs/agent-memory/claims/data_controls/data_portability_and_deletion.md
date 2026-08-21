@@ -3,7 +3,7 @@ id: data_controls.data_portability_and_deletion
 type: fact
 system: data_controls
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -13,16 +13,16 @@ claim: >
   social context and screenshots, relationships, localized labels, privacy-safe
   audit and reminder evidence, feed dismissal and snooze state, suggestion
   feedback/save/completion state, and effective
-  message-draft response settings and revisions. Relationship briefings are
-  included with their source-backed sections and consent metadata, while their
-  internal generation fences stay excluded. Vault payloads require
+  message-draft response settings and revisions. Relationship briefings and
+  gift recommendations are included with source-backed output and consent
+  metadata, while their internal generation fences stay excluded. Vault payloads require
   reauthentication; internal errors, leases,
   fences, recipient keys, and ownership keys stay excluded. Serialization
   neutralizes CSV formulas, preserves recurrences, uses the configured PDF
   origin, and audits only successful exports. Selective AI deletion preserves
-  corrected memories and authored notes, deletes relationship briefings, clears
-  note analysis without rereading unchanged screenshots, and fences delayed
-  results. Profile and account
+  corrected memories, authored notes, and gifts accepted from recommendations;
+  deletes relationship briefings and gift recommendations; clears note analysis
+  without rereading unchanged screenshots; and fences delayed results. Profile and account
   deletion lock snapshots, revokes outstanding authenticated upload grants, and
   idempotently cleans attached or abandoned owner blobs. Feed visibility state
   is pruned when its source or relationship is permanently deleted and cascades
@@ -53,6 +53,7 @@ source_files:
 
 related_files:
   - app/models/relationship_briefing.rb
+  - app/models/gift_recommendation.rb
   - app/serializers/data_exports/csv_serializer.rb
   - app/serializers/data_exports/calendar_serializer.rb
   - app/views/data_controls/show.html.erb
@@ -99,7 +100,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 05aec403efdcb51bff5689047fa3f3a8cf66c318
+last_verified_commit: null
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -108,13 +109,13 @@ last_verified_commit: 05aec403efdcb51bff5689047fa3f3a8cf66c318
 
 Every export format uses the same owner scope, and decrypted vault payloads
 require password reauthentication. JSON and CSV include privacy-safe evidence,
-  message revisions, relationship briefings, social notes, consent state,
+  message revisions, relationship briefings, gift recommendations, social notes, consent state,
   screenshot bytes, and feed visibility state while excluding internal keys,
   errors, leases, and fences.
   Serialization neutralizes
 formulas, preserves recurrences, and audits only success. Selective AI deletion
-preserves authored content while deleting briefings and clearing and fencing
-other inferred state. Profile and
+preserves authored content and accepted gifts while deleting briefings and gift
+recommendations and clearing and fencing other inferred state. Profile and
 account deletion snapshot under owned locks; upload writes share the account lock,
 and cleanup includes attached or abandoned owner-stamped blobs. Permanently
 deleted feed sources and relationships also prune obsolete feed visibility rows.

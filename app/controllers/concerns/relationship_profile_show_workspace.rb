@@ -9,6 +9,7 @@ module RelationshipProfileShowWorkspace
       prepare_social_context_ledger(invalid_social_context_note:)
       prepare_relationship_briefing_workspace
       prepare_message_draft_workspace
+      prepare_gift_recommendation_workspace
     end
     @relationship_persona = RelationshipPersona.new(relationship_profile: @relationship_profile)
     @mood_notes = @relationship_profile.mood_notes.ordered.to_a
@@ -85,6 +86,22 @@ module RelationshipProfileShowWorkspace
     @briefing_vault_items_available = @relationship_profile.privacy_vault_items.exists?
     @briefing_vault_unlocked = privacy_vault_unlocked?
     @relationship_briefing_form_state ||= {}
+  end
+
+  def prepare_gift_recommendation_workspace
+    @gift_recommendations = @relationship_profile.gift_recommendations.visible.recent_first.limit(10).to_a
+    @gift_recommendation_permission = AutomationPermission.decision_for(
+      user: current_user,
+      capability: "suggest_gifts",
+      relationship_profile: @relationship_profile
+    )
+    @gift_recommendation_private_notes_available = @relationship_profile.relationship_notes
+      .where(private: true)
+      .where.missing(:privacy_vault_item)
+      .exists?
+    @gift_recommendation_vault_items_available = @relationship_profile.privacy_vault_items.suggestion_allowed.exists?
+    @gift_recommendation_vault_unlocked = privacy_vault_unlocked?
+    @gift_recommendation_form_state ||= {}
   end
 
   def prepare_social_context_ledger(invalid_social_context_note: nil)

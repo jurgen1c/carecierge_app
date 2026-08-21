@@ -65,6 +65,12 @@ RSpec.describe AuditEvent, type: :model do
       "data_deletion.requested",
       "automation.performed"
     )
+    expect(described_class::ACTIONS).to include(
+      "gift_recommendation.generated",
+      "gift_recommendation.saved",
+      "gift_recommendation.dismissed",
+      "gift_recommendation.purchased"
+    )
   end
 
   it "rejects arbitrary metadata keys and nested payloads" do

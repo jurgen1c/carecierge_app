@@ -1,0 +1,76 @@
+en:
+  gift_recommendations:
+    workspace:
+      title: "Gift recommendations"
+      body: "Use what you already know about %{name} to explore thoughtful ideas with clear reasons and source context."
+      safety_note: "Nothing is purchased automatically. You review every idea before it becomes part of gift planning."
+    form:
+      title: "Shape the recommendation"
+      body: "Add practical limits. Carecierge will use likes, dislikes, constraints, desires, prior gifts, important dates, and relationship context already on this profile."
+      budget: "Maximum budget"
+      budget_placeholder: "75.00"
+      occasion: "Occasion"
+      occasion_placeholder: "Birthday, thank-you, or just because"
+      needed_by: "Needed by"
+      context_title: "Private context"
+      context_body: "Sensitive sources stay out unless you choose them for this request."
+      include_private_notes: "Include private notes"
+      include_private_notes_help: "Use unprotected private notes for this request only."
+      include_vault_context: "Include Privacy Vault context"
+      vault_unlocked: "Your vault is unlocked for this request."
+      vault_locked: "Unlock the vault before choosing protected context."
+      unlock_vault: "Unlock the Privacy Vault"
+      allow_repeats: "Allow repeatable staples"
+      allow_repeats_help: "Permit a prior gift only when repeating it is clearly appropriate."
+      generate: "Recommend gifts"
+    empty:
+      title: "No recommendations yet"
+      body: "Set a budget or occasion, then ask for a few source-backed ideas. Add preferences, desires, dates, or gift history when you want richer suggestions."
+    permission:
+      title: "Gift suggestions are off"
+      body: "Enable gift suggestions in Automation Controls before relationship context can be used for recommendations."
+      action: "Review gift suggestion controls"
+    item:
+      vendor: "Possible vendor:"
+      sources: "Why this fits"
+      private_source: "Private source"
+    certainty:
+      confirmed: "Confirmed"
+      inferred: "Inferred"
+    statuses:
+      generated: "Ready to review"
+      saved: "Saved to gift ideas"
+      dismissed: "Dismissed"
+      purchased: "Marked purchased"
+    actions:
+      save: "Save idea"
+      purchase: "Mark purchased"
+      alternative: "Try an alternative"
+      dismiss: "Dismiss"
+      unavailable: "That recommendation is no longer available for this action."
+    generate:
+      notice: "Gift recommendations are ready to review."
+      permission_denied: "Gift suggestions are disabled in Automation Controls."
+      superseded: "A newer request or relationship update replaced this recommendation request. Please try again."
+      provider_error: "We couldn't create gift recommendations right now. Check the details and try again."
+    alternative:
+      notice: "A new alternative is ready to review."
+      error: "We couldn't create an alternative right now."
+      reuse_private_notes: "Reuse private notes for this alternative"
+      reuse_vault_context: "Reuse Privacy Vault context for this alternative"
+    save:
+      notice: "The recommendation was saved to gift ideas."
+    dismiss:
+      notice: "The recommendation was dismissed."
+    purchase:
+      notice: "The recommendation was marked purchased and added to gift planning."
+    sources:
+      relationship: "Relationship type"
+      preference: "Preference"
+      constraint: "Constraint or boundary"
+      desire: "Desire"
+      gift: "Gift history"
+      important_date: "Important date on %{date}"
+      public_note: "Profile note"
+      private_note: "Private note"
+      vault: "Privacy Vault item"

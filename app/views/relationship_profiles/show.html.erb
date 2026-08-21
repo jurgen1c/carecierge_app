@@ -48,6 +48,16 @@
 
   <%= render "important_dates/section", relationship_profile: @relationship_profile %>
   <%= render "contact_cadences/section", relationship_profile: @relationship_profile, interactions: @interactions %>
+  <% unless @relationship_profile.archived? %>
+    <%= component "gift_recommendation_workspace",
+      relationship_profile: @relationship_profile,
+      recommendations: @gift_recommendations,
+      permission: @gift_recommendation_permission,
+      form_state: @gift_recommendation_form_state,
+      private_notes_available: @gift_recommendation_private_notes_available,
+      vault_items_available: @gift_recommendation_vault_items_available,
+      vault_unlocked: @gift_recommendation_vault_unlocked %>
+  <% end %>
   <%= render "gifts/section", relationship_profile: @relationship_profile %>
   <%= render "privacy_vaults/section", relationship_profile: @relationship_profile %>
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>

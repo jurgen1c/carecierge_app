@@ -19,17 +19,18 @@
 #
 # Indexes
 #
+#  index_gifts_on_profile_and_lower_name                (relationship_profile_id, lower((name)::text))
 #  index_gifts_on_relationship_profile_id               (relationship_profile_id)
 #  index_gifts_on_relationship_profile_id_and_given_on  (relationship_profile_id,given_on)
 #  index_gifts_on_relationship_profile_id_and_outcome   (relationship_profile_id,outcome)
 #  index_gifts_on_relationship_profile_id_and_status    (relationship_profile_id,status)
-#  index_gifts_on_profile_and_lower_name                (relationship_profile_id, lower((name)::text))
 #
 # Foreign Keys
 #
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class Gift < ApplicationRecord
+  include BriefingSourceLock
   include FeedItemStateSource
 
   MAX_PRICE_CENTS = 2_147_483_647

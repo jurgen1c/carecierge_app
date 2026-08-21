@@ -9,18 +9,15 @@ severity: important
 title: Gift history is owner-scoped relationship memory
 
 claim: >
-  Gift records belong to a RelationshipProfile and are managed through
-  authenticated, owner-scoped nested routes. Gifts store ideas and given gifts
-  with name, status, occasion, price, vendor, given date, reaction, outcome, and
-  notes. Manual create, edit, mark-given, and delete actions refresh the
-  relationship profile gift-history section with Turbo streams when possible,
-  preserve English and Spanish localized labels and validation copy, protect
-  terminal given/outcome metadata from generic form forging, surface duplicate
-  candidates from prior same-profile gifts with an index aligned to the
-  normalized-name lookup and a loaded-association duplicate-name cache, require
-  a given date on given gifts, order gift history by newest given date with
-  names ascending for same-day ties, and cannot access another user's
-  relationship profile.
+  Gift records belong to an owner-scoped RelationshipProfile and store ideas or
+  given gifts with occasion, price, vendor, reaction, outcome, and notes.
+  Localized nested CRUD refreshes gift history through Turbo, protects terminal
+  result metadata from generic form forging, and requires a date for given
+  gifts. Same-profile normalized-name candidates use an aligned expression
+  index and loaded-association cache. History orders newest given dates first
+  with deterministic name ties. Gift mutations share the profile source lock
+  used by recommendation generation, and accepted recommendations become
+  ordinary idea or planned Gift records.
 
 source_files:
   - app/models/gift.rb
@@ -34,6 +31,8 @@ source_files:
 related_files:
   - spec/models/gift_spec.rb
   - spec/requests/gifts_spec.rb
+  - app/services/gift_recommendations/apply_action.rb
+  - spec/requests/gift_recommendations_spec.rb
 symbols:
   - Gift
   - GiftsController
@@ -62,22 +61,16 @@ last_verified_commit: null
 
 ## Claim
 
-Gifts are relationship-profile-owned records used to store gift ideas and gifts
-given with occasion, price, vendor, reaction, outcome, and notes. Manual
-create/edit/mark-given/delete actions are owner-scoped through the signed-in
-user's relationship profiles and update inline through Turbo streams where
-possible. Generic create and edit params cannot forge terminal given status,
-given dates, reactions, or outcomes; explicit mark-given behavior owns those
-metadata changes. Given gifts must have a given date so malformed mark-given
-input cannot persist a gift as given without history ordering metadata.
-Same-profile prior gifts with the same normalized name are surfaced as duplicate
-candidates so future gift recommendations can avoid repeating what already
-happened. The gifts table indexes relationship profile plus lowercased name to
-match the duplicate-candidate lookup. When relationship profile gifts are
-already loaded, duplicate detection reuses a normalized-name cache on the
-profile instead of scanning the full collection for every gift card. Gift
-history sorts newest given gifts first while keeping same-day gifts in ascending
-name order.
+Gifts are relationship-profile-owned ideas or history records with occasion,
+price, vendor, reaction, outcome, and notes. Owner-scoped nested CRUD updates
+the profile inline. Generic params cannot forge terminal result metadata, and a
+given gift requires its date. Duplicate detection uses the profile/lower-name
+index and a loaded-association cache; history ordering is deterministic.
+
+Gift writes acquire the profile source lock so recommendation generation cannot
+persist against outdated history. Saving or marking a recommendation purchased
+creates an ordinary idea or planned Gift rather than a parallel accepted-item
+store.
 
 ## Why It Matters
 
@@ -97,6 +90,8 @@ relationship details or treating gift data as a separate tenant boundary.
 - `db/migrate/20260707123000_create_gifts.rb`
 - `spec/models/gift_spec.rb`
 - `spec/requests/gifts_spec.rb`
+- `app/services/gift_recommendations/apply_action.rb`
+- `spec/requests/gift_recommendations_spec.rb`
 
 ## Verification
 

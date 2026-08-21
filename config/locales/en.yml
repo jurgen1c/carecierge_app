@@ -344,6 +344,18 @@ en:
       relationship_briefing_dismissed:
         title: "Relationship briefing dismissed"
         description: "A relationship briefing was dismissed for %{target}."
+      gift_recommendation_generated:
+        title: "Gift recommendations created"
+        description: "Source-backed gift recommendations were prepared for %{target}."
+      gift_recommendation_saved:
+        title: "Gift recommendation saved"
+        description: "A gift recommendation was saved for %{target}."
+      gift_recommendation_dismissed:
+        title: "Gift recommendation dismissed"
+        description: "A gift recommendation was dismissed for %{target}."
+      gift_recommendation_purchased:
+        title: "Gift recommendation marked purchased"
+        description: "A gift recommendation was marked purchased for %{target}."
       vendor_contacted:
         title: "Vendor contacted"
         description: "A vendor contact action was recorded for %{target}."
@@ -1996,9 +2008,9 @@ en:
       confirmation: "Type %{email} to confirm"
       delete_ai:
         title: "Delete AI-generated data"
-        body: "Permanently removes AI-inferred memories, AI-extraction timeline records, and social-context interpretations with their review state and proposed uses. Your social notes and uploads, user-confirmed memories, and manually created timeline entries stay in place."
+        body: "Permanently removes AI-inferred memories, AI-extraction timeline records, social-context interpretations with their review state and proposed uses, and gift recommendations in every state. Your social notes and uploads, user-confirmed memories, manually created timeline entries, and gifts saved from recommendations stay in place."
         action: "Delete AI-generated data"
-        confirm: "Delete all AI-generated data, including social-context interpretations, in this account?"
+        confirm: "Delete all AI-generated data, including social-context interpretations and gift recommendations, in this account?"
       delete_account:
         title: "Delete account"
         body: "Permanently removes your account and all relationship data. Privacy-minimized deletion evidence remains without your email or relationship content."

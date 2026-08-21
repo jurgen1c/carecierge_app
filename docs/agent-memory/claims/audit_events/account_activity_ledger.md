@@ -17,7 +17,9 @@ claim: >
   so concurrent deletion cannot leave a dangling ID. Profile and reminder
   mutations record through AuditEvents::Track. Automation permissions add the
   generic event beside specialized evidence in the same owner lock, while vault
-  events preserve existing transactional and best-effort semantics. Calendar
+  events preserve existing transactional and best-effort semantics. Gift
+  recommendation generation and lifecycle actions add result/count-only
+  evidence without titles, rationales, budgets, or source contents. Calendar
   exports emit privacy-minimized evidence after serialization; Turbo prefetches
   do not. Account and profile data exports add scope/format-only evidence after
   successful serialization, and permanent deletion adds request-kind-only
@@ -50,6 +52,10 @@ related_files:
   - spec/requests/audit_events_spec.rb
   - spec/requests/admin_audit_events_spec.rb
   - spec/requests/audit_event_integrations_spec.rb
+  - app/services/gift_recommendations/generate.rb
+  - app/services/gift_recommendations/apply_action.rb
+  - spec/services/gift_recommendations/generate_spec.rb
+  - spec/requests/gift_recommendations_spec.rb
 
 symbols:
   - AuditEvent
@@ -92,9 +98,9 @@ content. Owners receive their own chronological timeline; admins use a separate,
 authorized cross-account ledger. Pagination and allowlisted filters fail closed
 for forged, non-scalar, malformed, or out-of-range values.
 
-Existing profile, reminder, automation-permission, privacy-vault, and calendar
-export flows emit privacy-minimized evidence without weakening their transaction
-semantics. Calendar links disable Turbo prefetch, and server-identified
+Existing profile, reminder, automation-permission, privacy-vault, gift
+recommendation, and calendar export flows emit privacy-minimized evidence
+without weakening their transaction semantics. Calendar links disable Turbo prefetch, and server-identified
 prefetches create no evidence. Normalized no-op saves create no update event.
 
 ## Why It Matters

@@ -66,6 +66,13 @@ Rails.application.routes.draw do
       patch :complete, on: :member
       post :act, on: :member
     end
+    resources :gift_recommendations, only: [] do
+      post :generate, on: :collection
+      post :alternative, on: :member
+      patch :save, on: :member
+      patch :dismiss, on: :member
+      patch :purchase, on: :member
+    end
     resource :privacy_vault, only: :show do
       post :unlock
       post :reset_password

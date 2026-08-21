@@ -26,6 +26,7 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class Desire < ApplicationRecord
+  include BriefingSourceLock
   include FeedItemStateSource
 
   CATEGORIES = %w[gift activity experience help travel food wellness other].freeze

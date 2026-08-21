@@ -661,6 +661,18 @@ es:
       relationship_briefing_dismissed:
         title: "Informe de relación descartado"
         description: "Se descartó un informe de relación para %{target}."
+      gift_recommendation_generated:
+        title: "Recomendaciones de regalos creadas"
+        description: "Se prepararon recomendaciones de regalos con fuentes para %{target}."
+      gift_recommendation_saved:
+        title: "Recomendación de regalo guardada"
+        description: "Se guardó una recomendación de regalo para %{target}."
+      gift_recommendation_dismissed:
+        title: "Recomendación de regalo descartada"
+        description: "Se descartó una recomendación de regalo para %{target}."
+      gift_recommendation_purchased:
+        title: "Recomendación de regalo marcada como comprada"
+        description: "Se marcó como comprada una recomendación de regalo para %{target}."
       vendor_contacted:
         title: "Proveedor contactado"
         description: "Se registró una acción de contacto con proveedor para %{target}."
@@ -1972,9 +1984,9 @@ es:
       confirmation: "Escribe %{email} para confirmar"
       delete_ai:
         title: "Eliminar datos generados por IA"
-        body: "Elimina permanentemente memorias inferidas por IA, registros de cronología de extracción por IA e interpretaciones de contexto social con su estado de revisión y usos propuestos. Tus notas sociales y archivos subidos, las memorias confirmadas y las entradas manuales permanecen."
+        body: "Elimina permanentemente memorias inferidas por IA, registros de cronología de extracción por IA, interpretaciones de contexto social con su estado de revisión y usos propuestos, y recomendaciones de regalos en cualquier estado. Tus notas sociales y archivos subidos, las memorias confirmadas, las entradas manuales y los regalos guardados desde recomendaciones permanecen."
         action: "Eliminar datos generados por IA"
-        confirm: "¿Eliminar todos los datos generados por IA, incluidas las interpretaciones de contexto social, de esta cuenta?"
+        confirm: "¿Eliminar todos los datos generados por IA, incluidas las interpretaciones de contexto social y las recomendaciones de regalos, de esta cuenta?"
       delete_account:
         title: "Eliminar cuenta"
         body: "Elimina permanentemente tu cuenta y todos los datos de relaciones. Se conserva evidencia minimizada de la eliminación sin tu correo ni contenido de relaciones."

@@ -1,6 +1,41 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Recommendations and lifecycle actions are loaded only through the authenticated owner's active relationship profile.
+    strength: 100
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: relationship_profiles.gift_history
+    relation: requires
+    reason: Prior gifts prevent repeats, while explicit save and purchased actions create canonical Gift records instead of a parallel accepted-idea store.
+    strength: 100
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: relationship_profiles.desires
+    relation: requires
+    reason: Active and planned desires are bounded recommendation sources, and desire mutations share the profile lock used to create a consistent source snapshot and fingerprint.
+    strength: 100
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: relationship_profiles.privacy_vault
+    relation: requires
+    reason: Vault sources require per-item suggestion approval, explicit request selection, and an active password-backed lease revalidated at sensitive read boundaries.
+    strength: 100
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: automation_permissions.permission_decisions
+    relation: requires
+    reason: Every generation and alternative evaluates the effective suggest_gifts permission, including ask-every-time approval.
+    strength: 100
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Owner exports include decrypted recommendations while selective AI deletion removes them and fences delayed results without deleting accepted gifts.
+    strength: 95
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Generation, lifecycle actions, and sensitive reads emit content-free account evidence.
+    strength: 95
   - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
     target: relationship_profiles.profile_crud_owner_scope
     relation: requires

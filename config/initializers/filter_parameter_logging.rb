@@ -10,6 +10,7 @@ Rails.application.config.filter_parameters += [
   "extracted_memory.corrected_title", "extracted_memory.corrected_body",
   "message_draft.content", "message_draft.situation",
   "relationship_briefing.interaction_context",
+  "gift_recommendation.occasion",
   "social_context_note.body", "social_context_note.interpretation",
   "mood_note.observation", "mood_note.supportive_action",
   "reminder.notes", "commitment.notes", "interaction.notes",

@@ -44,6 +44,10 @@ class AuditEvent < ApplicationRecord
     relationship_briefing.generated
     relationship_briefing.saved
     relationship_briefing.dismissed
+    gift_recommendation.generated
+    gift_recommendation.saved
+    gift_recommendation.dismissed
+    gift_recommendation.purchased
     vendor.contacted
     booking.requested
     purchase.approved
@@ -69,6 +73,7 @@ class AuditEvent < ApplicationRecord
   SAFE_METADATA_KEYS = %w[
     capability
     changed_fields
+    count
     new_mode
     permission_scope
     previous_mode

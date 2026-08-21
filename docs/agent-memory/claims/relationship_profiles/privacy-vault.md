@@ -25,6 +25,8 @@ claim: >
   lease before handing off to Devise. Unlocked users can reveal, restore, allow
   an item for suggestions, or permanently delete its underlying protected
   record through the privacy-minimized deletion-request workflow;
+  downstream gift recommendation context fails closed unless that per-item
+  suggestion approval remains current as well as the lease.
   VaultAccessEvent stores metadata only. Access-event
   persistence is best-effort and reports failures without blocking password,
   lock, or view outcomes, while mutation-event persistence remains transactional.
@@ -61,6 +63,9 @@ related_files:
   - spec/policies/privacy_vault_item_policy_spec.rb
   - spec/requests/privacy_vaults_spec.rb
   - spec/services/message_drafts/generate_spec.rb
+  - app/services/gift_recommendations/context_builder.rb
+  - spec/services/gift_recommendations/context_builder_spec.rb
+  - spec/services/gift_recommendations/generate_spec.rb
   - spec/system/privacy_vault_spec.rb
 symbols:
   - PrivacyVaultItem

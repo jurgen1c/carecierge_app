@@ -1,0 +1,146 @@
+<section id="gift-recommendations" aria-labelledby="gift-recommendations-title" class="rounded-2xl border border-private-line bg-canvas">
+  <header class="border-b border-private-line px-5 py-5 sm:px-6">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <h2 id="gift-recommendations-title" class="text-xl font-semibold text-ink"><%= t("gift_recommendations.workspace.title") %></h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-quiet-note"><%= t("gift_recommendations.workspace.body", name: relationship_profile.display_name) %></p>
+      </div>
+      <p class="max-w-sm rounded-lg border border-private-line bg-surface px-4 py-3 text-sm leading-6 text-quiet-note">
+        <%= t("gift_recommendations.workspace.safety_note") %>
+      </p>
+    </div>
+  </header>
+
+  <div class="grid gap-0 lg:grid-cols-[minmax(17rem,0.78fr)_minmax(0,1.22fr)]">
+    <% if enabled? %>
+      <%= form_with url: generate_relationship_profile_gift_recommendations_path(relationship_profile), scope: :gift_recommendation, class: "border-b border-private-line bg-surface p-5 lg:border-b-0 lg:border-r sm:p-6" do |form| %>
+        <h3 class="text-base font-semibold text-ink"><%= t("gift_recommendations.form.title") %></h3>
+        <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("gift_recommendations.form.body") %></p>
+
+        <div class="mt-5 grid gap-4">
+          <div>
+            <%= form.label :budget, t("gift_recommendations.form.budget"), class: "block text-sm font-semibold text-ink" %>
+            <%= form.number_field :budget, value: field_value(:budget), min: 0, step: "0.01", inputmode: "decimal", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20", placeholder: t("gift_recommendations.form.budget_placeholder") %>
+          </div>
+
+          <div>
+            <%= form.label :occasion, t("gift_recommendations.form.occasion"), class: "block text-sm font-semibold text-ink" %>
+            <%= form.text_field :occasion, value: field_value(:occasion), maxlength: GiftRecommendation::MAX_OCCASION_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20", placeholder: t("gift_recommendations.form.occasion_placeholder") %>
+          </div>
+
+          <div>
+            <%= form.label :needed_by, t("gift_recommendations.form.needed_by"), class: "block text-sm font-semibold text-ink" %>
+            <%= form.date_field :needed_by, value: field_value(:needed_by), min: owner_local_date.iso8601, max: GiftRecommendation::MAX_NEEDED_BY.iso8601, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+          </div>
+        </div>
+
+        <fieldset class="mt-5 border-t border-private-line pt-5">
+          <legend class="text-sm font-semibold text-ink"><%= t("gift_recommendations.form.context_title") %></legend>
+          <p class="mt-1 text-sm leading-6 text-quiet-note"><%= t("gift_recommendations.form.context_body") %></p>
+          <div class="mt-3 grid gap-3">
+            <% if private_notes_available %>
+              <label class="flex min-h-11 items-start gap-3 rounded-lg border border-private-line bg-canvas px-3 py-3 text-sm text-ink">
+                <%= form.check_box :include_private_notes, { checked: checked?(:include_private_notes), class: "mt-0.5 size-5 rounded border-stone-300 text-primary focus:ring-primary" }, "1", "0" %>
+                <span><strong class="block font-semibold"><%= t("gift_recommendations.form.include_private_notes") %></strong><span class="mt-1 block text-quiet-note"><%= t("gift_recommendations.form.include_private_notes_help") %></span></span>
+              </label>
+            <% end %>
+            <% if vault_items_available %>
+              <div>
+                <label class="flex min-h-11 items-start gap-3 rounded-lg border border-private-line bg-canvas px-3 py-3 text-sm text-ink">
+                  <%= form.check_box :include_vault_context, { checked: checked?(:include_vault_context), disabled: !vault_unlocked, class: "mt-0.5 size-5 rounded border-stone-300 text-primary focus:ring-primary" }, "1", "0" %>
+                  <span><strong class="block font-semibold"><%= t("gift_recommendations.form.include_vault_context") %></strong><span class="mt-1 block text-quiet-note"><%= vault_unlocked ? t("gift_recommendations.form.vault_unlocked") : t("gift_recommendations.form.vault_locked") %></span></span>
+                </label>
+                <% unless vault_unlocked %>
+                  <%= link_to t("gift_recommendations.form.unlock_vault"), relationship_profile_privacy_vault_path(relationship_profile), class: "mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+                <% end %>
+              </div>
+            <% end %>
+            <label class="flex min-h-11 items-start gap-3 rounded-lg border border-private-line bg-canvas px-3 py-3 text-sm text-ink">
+              <%= form.check_box :allow_repeats, { checked: checked?(:allow_repeats), class: "mt-0.5 size-5 rounded border-stone-300 text-primary focus:ring-primary" }, "1", "0" %>
+              <span><strong class="block font-semibold"><%= t("gift_recommendations.form.allow_repeats") %></strong><span class="mt-1 block text-quiet-note"><%= t("gift_recommendations.form.allow_repeats_help") %></span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <%= form.submit t("gift_recommendations.form.generate"), class: "mt-5 #{style(:primary_button)}" %>
+      <% end %>
+    <% else %>
+      <div class="border-b border-private-line bg-surface px-5 py-6 lg:border-b-0 lg:border-r sm:px-6">
+        <h3 class="text-base font-semibold text-ink"><%= t("gift_recommendations.permission.title") %></h3>
+        <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("gift_recommendations.permission.body") %></p>
+        <%= link_to t("gift_recommendations.permission.action"), edit_automation_permissions_path(selected_capability: "suggest_gifts"), class: "mt-4 #{style(:secondary_button)}" %>
+      </div>
+    <% end %>
+
+    <div aria-live="polite" class="p-5 sm:p-6">
+        <% if recommendations.any? %>
+          <div class="divide-y divide-private-line">
+            <% recommendations.each do |recommendation| %>
+              <article class="py-5 first:pt-0 last:pb-0">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p class="text-xs font-semibold text-primary"><%= status_label(recommendation) %></p>
+                    <h3 class="mt-1 text-base font-semibold text-ink"><%= recommendation.title %></h3>
+                  </div>
+                  <% if recommendation.estimated_price_cents.present? %>
+                    <span class="rounded-full border border-private-line bg-surface px-3 py-1 text-sm font-semibold text-ink"><%= number_to_currency(recommendation.estimated_price_cents / 100.0) %></span>
+                  <% end %>
+                </div>
+                <p class="mt-3 max-w-3xl text-sm leading-6 text-quiet-note"><%= recommendation.rationale %></p>
+                <% if recommendation.vendor.present? %>
+                  <p class="mt-2 text-sm text-quiet-note"><span class="font-semibold text-ink"><%= t("gift_recommendations.item.vendor") %></span> <%= recommendation.vendor %></p>
+                <% end %>
+                <details class="mt-3 rounded-lg border border-private-line bg-surface px-4 py-3">
+                  <summary class="cursor-pointer text-sm font-semibold text-ink"><%= t("gift_recommendations.item.sources") %></summary>
+                  <ul class="mt-3 grid gap-2 text-sm text-quiet-note">
+                    <% recommendation.source_context.each do |source| %>
+                      <li class="flex flex-wrap items-center gap-2">
+                        <span><%= source.fetch("label") %></span>
+                        <span class="rounded-full border border-private-line bg-canvas px-2 py-0.5 text-xs"><%= source_certainty_label(source) %></span>
+                        <% if source.fetch("sensitive") %><span class="text-xs font-semibold text-ink"><%= t("gift_recommendations.item.private_source") %></span><% end %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </details>
+
+                <% if recommendation.generated? %>
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    <%= button_to t("gift_recommendations.actions.save"), save_relationship_profile_gift_recommendation_path(relationship_profile, recommendation), method: :patch, class: style(:primary_button) %>
+                    <%= button_to t("gift_recommendations.actions.purchase"), purchase_relationship_profile_gift_recommendation_path(relationship_profile, recommendation), method: :patch, class: style(:secondary_button) %>
+                    <% if enabled? %>
+                      <%= form_with url: alternative_relationship_profile_gift_recommendation_path(relationship_profile, recommendation), method: :post, scope: :gift_recommendation, class: "grid gap-2 rounded-lg border border-private-line bg-surface p-2" do |form| %>
+                        <% if sensitive_source_kind?(recommendation, "private_note") %>
+                          <label class="flex items-start gap-2 px-1 text-xs leading-5 text-quiet-note">
+                            <%= form.check_box :include_private_notes, { class: "mt-0.5 size-4 rounded border-stone-300 text-primary focus:ring-primary" }, "1", "0" %>
+                            <span><%= t("gift_recommendations.alternative.reuse_private_notes") %></span>
+                          </label>
+                        <% end %>
+                        <% if sensitive_source_kind?(recommendation, "vault") %>
+                          <div>
+                            <label class="flex items-start gap-2 px-1 text-xs leading-5 text-quiet-note">
+                              <%= form.check_box :include_vault_context, { disabled: !vault_unlocked, class: "mt-0.5 size-4 rounded border-stone-300 text-primary focus:ring-primary" }, "1", "0" %>
+                              <span><%= t("gift_recommendations.alternative.reuse_vault_context") %></span>
+                            </label>
+                            <% unless vault_unlocked %>
+                              <%= link_to t("gift_recommendations.form.unlock_vault"), relationship_profile_privacy_vault_path(relationship_profile), class: "mt-1 inline-flex min-h-11 items-center px-1 text-xs font-semibold text-primary underline underline-offset-4 hover:text-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+                            <% end %>
+                          </div>
+                        <% end %>
+                        <%= form.submit t("gift_recommendations.actions.alternative"), class: style(:secondary_button) %>
+                      <% end %>
+                    <% end %>
+                    <%= button_to t("gift_recommendations.actions.dismiss"), dismiss_relationship_profile_gift_recommendation_path(relationship_profile, recommendation), method: :patch, class: style(:quiet_button) %>
+                  </div>
+                <% end %>
+              </article>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="flex min-h-64 flex-col justify-center">
+            <h3 class="text-base font-semibold text-ink"><%= t("gift_recommendations.empty.title") %></h3>
+            <p class="mt-2 max-w-xl text-sm leading-6 text-quiet-note"><%= t("gift_recommendations.empty.body") %></p>
+          </div>
+        <% end %>
+    </div>
+  </div>
+</section>

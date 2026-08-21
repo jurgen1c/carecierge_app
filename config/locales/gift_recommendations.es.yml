@@ -1,0 +1,76 @@
+es:
+  gift_recommendations:
+    workspace:
+      title: "Recomendaciones de regalos"
+      body: "Usa lo que ya sabes de %{name} para explorar ideas consideradas con razones claras y contexto de origen."
+      safety_note: "Nada se compra automáticamente. Tú revisas cada idea antes de que forme parte de la planificación de regalos."
+    form:
+      title: "Define la recomendación"
+      body: "Agrega límites prácticos. Carecierge usará gustos, disgustos, restricciones, deseos, regalos anteriores, fechas importantes y el contexto de la relación que ya están en este perfil."
+      budget: "Presupuesto máximo"
+      budget_placeholder: "75.00"
+      occasion: "Ocasión"
+      occasion_placeholder: "Cumpleaños, agradecimiento o porque sí"
+      needed_by: "Se necesita para"
+      context_title: "Contexto privado"
+      context_body: "Las fuentes sensibles quedan fuera a menos que las elijas para esta solicitud."
+      include_private_notes: "Incluir notas privadas"
+      include_private_notes_help: "Usa notas privadas no protegidas solo para esta solicitud."
+      include_vault_context: "Incluir contexto de la Bóveda de privacidad"
+      vault_unlocked: "Tu bóveda está desbloqueada para esta solicitud."
+      vault_locked: "Desbloquea la bóveda antes de elegir contexto protegido."
+      unlock_vault: "Desbloquear la Bóveda de privacidad"
+      allow_repeats: "Permitir regalos básicos repetibles"
+      allow_repeats_help: "Permite un regalo anterior solo cuando repetirlo sea claramente apropiado."
+      generate: "Recomendar regalos"
+    empty:
+      title: "Aún no hay recomendaciones"
+      body: "Define un presupuesto o una ocasión y pide algunas ideas respaldadas por fuentes. Agrega preferencias, deseos, fechas o historial de regalos para obtener sugerencias más completas."
+    permission:
+      title: "Las sugerencias de regalos están desactivadas"
+      body: "Activa las sugerencias de regalos en Controles de automatización antes de usar el contexto de la relación para recomendaciones."
+      action: "Revisar controles de sugerencias"
+    item:
+      vendor: "Posible proveedor:"
+      sources: "Por qué encaja"
+      private_source: "Fuente privada"
+    certainty:
+      confirmed: "Confirmado"
+      inferred: "Inferido"
+    statuses:
+      generated: "Listo para revisar"
+      saved: "Guardado en ideas de regalos"
+      dismissed: "Descartado"
+      purchased: "Marcado como comprado"
+    actions:
+      save: "Guardar idea"
+      purchase: "Marcar como comprado"
+      alternative: "Probar una alternativa"
+      dismiss: "Descartar"
+      unavailable: "Esa recomendación ya no está disponible para esta acción."
+    generate:
+      notice: "Las recomendaciones de regalos están listas para revisar."
+      permission_denied: "Las sugerencias de regalos están desactivadas en Controles de automatización."
+      superseded: "Una solicitud más reciente o una actualización de la relación reemplazó esta solicitud. Inténtalo de nuevo."
+      provider_error: "No pudimos crear recomendaciones de regalos ahora. Revisa los detalles e inténtalo de nuevo."
+    alternative:
+      notice: "Hay una nueva alternativa lista para revisar."
+      error: "No pudimos crear una alternativa ahora."
+      reuse_private_notes: "Reutilizar notas privadas para esta alternativa"
+      reuse_vault_context: "Reutilizar contexto de la Bóveda de privacidad para esta alternativa"
+    save:
+      notice: "La recomendación se guardó en las ideas de regalos."
+    dismiss:
+      notice: "La recomendación se descartó."
+    purchase:
+      notice: "La recomendación se marcó como comprada y se agregó a la planificación de regalos."
+    sources:
+      relationship: "Tipo de relación"
+      preference: "Preferencia"
+      constraint: "Restricción o límite"
+      desire: "Deseo"
+      gift: "Historial de regalos"
+      important_date: "Fecha importante el %{date}"
+      public_note: "Nota del perfil"
+      private_note: "Nota privada"
+      vault: "Elemento de la Bóveda de privacidad"

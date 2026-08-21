@@ -41,6 +41,10 @@ RSpec.describe "Parameter filtering" do
         "interaction_context" => "Private plans for an upcoming dinner",
         "include_private_notes" => "1"
       },
+      "gift_recommendation" => {
+        "occasion" => "Private details about a milestone",
+        "allow_repeats" => "1"
+      },
       "social_context_note" => {
         "body" => "Private social context",
         "interpretation" => "Private AI interpretation",
@@ -77,6 +81,8 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("message_draft", "tone")).to eq("warm")
     expect(filtered.dig("relationship_briefing", "interaction_context")).to eq("[FILTERED]")
     expect(filtered.dig("relationship_briefing", "include_private_notes")).to eq("1")
+    expect(filtered.dig("gift_recommendation", "occasion")).to eq("[FILTERED]")
+    expect(filtered.dig("gift_recommendation", "allow_repeats")).to eq("1")
     expect(filtered.dig("social_context_note", "body")).to eq("[FILTERED]")
     expect(filtered.dig("social_context_note", "interpretation")).to eq("[FILTERED]")
     expect(filtered.dig("social_context_note", "allow_suggestions")).to eq("1")

@@ -54,7 +54,7 @@ module DataExports
     end
 
     def profile_attributes(profile)
-      attributes_for(profile, except: %w[user_id type message_draft_generation_version briefing_generation_version]).merge(
+      attributes_for(profile, except: %w[user_id type message_draft_generation_version briefing_generation_version gift_recommendation_generation_version]).merge(
         "relationship_type" => profile.type,
         "relationship_type_label" => profile.relationship_type_label,
         "contact_methods" => records(profile.contact_methods),
@@ -66,6 +66,7 @@ module DataExports
         "relationship_field_values" => records(profile.relationship_field_values),
         "important_dates" => records(profile.important_dates),
         "gifts" => records(profile.gifts),
+        "gift_recommendations" => profile.gift_recommendations.recent_first.map { |recommendation| gift_recommendation_attributes(recommendation) },
         "memory_records" => profile.memory_records.map { |memory| memory_attributes(memory) },
         "social_context_notes" => profile.social_context_notes.with_rich_text_body_and_embeds.map { |note| social_context_note_attributes(note) },
         "message_draft" => message_draft_attributes(profile.message_draft),
@@ -111,6 +112,10 @@ module DataExports
 
     def relationship_briefing_attributes(briefing)
       attributes_for(briefing, except: %w[user_id relationship_profile_id lock_version])
+    end
+
+    def gift_recommendation_attributes(recommendation)
+      attributes_for(recommendation, except: %w[user_id relationship_profile_id lock_version])
     end
 
     def conversation_recap_attributes(recap)

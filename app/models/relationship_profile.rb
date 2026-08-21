@@ -3,21 +3,22 @@
 # Table name: relationship_profiles
 # Database name: primary
 #
-#  id                               :uuid             not null, primary key
-#  birthday                         :date
-#  briefing_generation_version      :bigint           default(0), not null
-#  discarded_at                     :datetime
-#  first_name                       :string           not null
-#  last_name                        :string
-#  message_draft_generation_version :bigint           default(0), not null
-#  preferred_name                   :string
-#  profile_attributes               :jsonb            not null
-#  pronouns                         :string
-#  slug                             :string
-#  type                             :string           not null
-#  created_at                       :datetime         not null
-#  updated_at                       :datetime         not null
-#  user_id                          :uuid             not null
+#  id                                     :uuid             not null, primary key
+#  birthday                               :date
+#  briefing_generation_version            :bigint           default(0), not null
+#  discarded_at                           :datetime
+#  first_name                             :string           not null
+#  gift_recommendation_generation_version :bigint           default(0), not null
+#  last_name                              :string
+#  message_draft_generation_version       :bigint           default(0), not null
+#  preferred_name                         :string
+#  profile_attributes                     :jsonb            not null
+#  pronouns                               :string
+#  slug                                   :string
+#  type                                   :string           not null
+#  created_at                             :datetime         not null
+#  updated_at                             :datetime         not null
+#  user_id                                :uuid             not null
 #
 # Indexes
 #
@@ -119,6 +120,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :suggestion_feedbacks, dependent: :destroy
   has_many :commitments, -> { ordered }, dependent: :destroy
   has_many :gifts, dependent: :destroy
+  has_many :gift_recommendations, dependent: :destroy
   has_many :memory_records, dependent: :destroy
   has_many :social_context_notes, dependent: :destroy
   has_many :conversation_recaps, dependent: :destroy
@@ -219,6 +221,10 @@ class RelationshipProfile < ApplicationRecord
 
   def cancel_in_flight_briefing_generations!
     increment!(:briefing_generation_version)
+  end
+
+  def cancel_in_flight_gift_recommendation_generations!
+    increment!(:gift_recommendation_generation_version)
   end
 
   def email

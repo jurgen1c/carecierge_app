@@ -50,12 +50,14 @@ class PersonalTouchChecklist < ApplicationRecord
   def with_mutation_lock
     relationship_profile.user.with_lock do
       relationship_profile.with_lock do
-        with_lock do
-          reload
-          raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
-          raise ActiveRecord::RecordNotFound if event_plan&.archived?
+        moment.with_lock do
+          with_lock do
+            reload
+            raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
+            raise ActiveRecord::RecordNotFound if moment.respond_to?(:archived?) && moment.archived?
 
-          yield
+            yield
+          end
         end
       end
     end

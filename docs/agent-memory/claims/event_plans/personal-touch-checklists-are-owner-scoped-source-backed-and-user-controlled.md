@@ -17,11 +17,11 @@ claim: >
   and preference confidence is normalized into visible confirmed or inferred
   provenance. Items support explicit
   categories, completion, reopening, accessible up/down ordering, and
-  dismissal. Account-first, profile, and moment or checklist locks plus
-  active-profile and archived-plan revalidation serialize creation and
-  mutation; database constraints require exactly one UUID-backed moment and one
-  checklist per moment. Pundit scopes every read and mutation to the active
-  profile owner. Content and provenance are encrypted at rest, lifecycle
+  dismissal. Account-first, profile, attached-moment, and checklist row locks
+  plus active-profile and archived-plan revalidation under those locks serialize
+  creation and mutation; database constraints require exactly one UUID-backed
+  moment and one checklist per moment. Pundit scopes every read and mutation to
+  the active profile owner. Content and provenance are encrypted at rest, lifecycle
   evidence is content-free, and owner exports include the checklist, items, and
   attached moment identifier. The UI remains review-only and never sends,
   books, contacts, purchases, or scores the user's care.

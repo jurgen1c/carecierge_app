@@ -74,13 +74,15 @@ RSpec.describe PersonalTouchChecklist do
     expect(checklist.moment).to eq(checklist.event_plan)
   end
 
-  it "locks the owning account before the profile and checklist during mutations" do
+  it "locks the owning account before the profile, moment, and checklist during mutations" do
     checklist = create(:personal_touch_checklist)
     profile = checklist.relationship_profile
     owner = profile.user
+    moment = checklist.moment
 
     expect(owner).to receive(:with_lock).ordered.and_call_original
     expect(profile).to receive(:with_lock).ordered.and_call_original
+    expect(moment).to receive(:with_lock).ordered.and_call_original
     expect(checklist).to receive(:with_lock).ordered.and_call_original
 
     checklist.with_mutation_lock { nil }

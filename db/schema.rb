@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_21_040001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_22_164819) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -572,6 +572,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_040001) do
     t.check_constraint "reminder_lead_minutes = ANY (ARRAY[0, 60, 1440, 10080, 20160, 43200])", name: "notification_preferences_supported_reminder_lead"
   end
 
+  create_table "personal_touch_checklists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "event_plan_id"
+    t.uuid "important_date_id"
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_plan_id"], name: "idx_personal_touch_checklists_unique_event_plan", unique: true, where: "(event_plan_id IS NOT NULL)"
+    t.index ["important_date_id"], name: "idx_personal_touch_checklists_unique_important_date", unique: true, where: "(important_date_id IS NOT NULL)"
+    t.index ["relationship_profile_id"], name: "index_personal_touch_checklists_on_relationship_profile_id"
+    t.check_constraint "(event_plan_id IS NOT NULL) <> (important_date_id IS NOT NULL)", name: "personal_touch_checklists_exactly_one_moment"
+  end
+
+  create_table "personal_touch_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "category", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "details"
+    t.datetime "dismissed_at"
+    t.string "origin", default: "manual", null: false
+    t.uuid "personal_touch_checklist_id", null: false
+    t.integer "position", default: 0, null: false
+    t.text "source_context", default: "[]", null: false
+    t.string "status", default: "active", null: false
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["personal_touch_checklist_id", "status", "position"], name: "idx_personal_touch_items_checklist_status_position"
+    t.index ["personal_touch_checklist_id"], name: "index_personal_touch_items_on_personal_touch_checklist_id"
+    t.check_constraint "category::text = ANY (ARRAY['preference'::character varying, 'constraint'::character varying, 'message'::character varying, 'gift'::character varying, 'dietary_need'::character varying, 'accessibility_need'::character varying, 'logistics'::character varying, 'follow_up'::character varying]::text[])", name: "personal_touch_items_category"
+    t.check_constraint "origin::text = ANY (ARRAY['manual'::character varying, 'suggested'::character varying]::text[])", name: "personal_touch_items_origin"
+    t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'completed'::character varying, 'dismissed'::character varying]::text[])", name: "personal_touch_items_status"
+  end
+
   create_table "plan_tasks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -991,6 +1023,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_21_040001) do
   add_foreign_key "message_drafts", "users", on_delete: :cascade
   add_foreign_key "mood_notes", "relationship_profiles"
   add_foreign_key "notification_preferences", "users", on_delete: :cascade
+  add_foreign_key "personal_touch_checklists", "event_plans", on_delete: :cascade
+  add_foreign_key "personal_touch_checklists", "important_dates", on_delete: :cascade
+  add_foreign_key "personal_touch_checklists", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "personal_touch_items", "personal_touch_checklists", on_delete: :cascade
   add_foreign_key "plan_tasks", "event_plans", on_delete: :cascade
   add_foreign_key "privacy_vault_items", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_briefings", "relationship_profiles", on_delete: :cascade

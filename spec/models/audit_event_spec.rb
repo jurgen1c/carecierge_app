@@ -34,6 +34,17 @@
 require "rails_helper"
 
 RSpec.describe AuditEvent, type: :model do
+  it "supports the privacy-safe personal touch checklist lifecycle" do
+    expect(described_class::ACTIONS).to include(
+      "personal_touch_checklist.created",
+      "personal_touch_item.created",
+      "personal_touch_item.completed",
+      "personal_touch_item.reopened",
+      "personal_touch_item.dismissed",
+      "personal_touch_item.reordered"
+    )
+  end
+
   it "stores a privacy-minimized event with an owned user actor and optional target" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

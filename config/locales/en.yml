@@ -368,6 +368,24 @@ en:
       event_plan_suggestions_generated:
         title: "Event plan suggestions created"
         description: "Source-backed planning steps were prepared for %{target}."
+      personal_touch_checklist_created:
+        title: "Personal touch checklist created"
+        description: "A practical personal touch checklist was created for %{target}."
+      personal_touch_item_created:
+        title: "Personal touch added"
+        description: "A personal touch was added for %{target}."
+      personal_touch_item_completed:
+        title: "Personal touch completed"
+        description: "A personal touch was completed for %{target}."
+      personal_touch_item_reopened:
+        title: "Personal touch reopened"
+        description: "A personal touch was marked pending again for %{target}."
+      personal_touch_item_dismissed:
+        title: "Personal touch dismissed"
+        description: "A personal touch was dismissed for %{target}."
+      personal_touch_item_reordered:
+        title: "Personal touches reordered"
+        description: "The personal touch order was updated for %{target}."
       vendor_contacted:
         title: "Vendor contacted"
         description: "A vendor contact action was recorded for %{target}."

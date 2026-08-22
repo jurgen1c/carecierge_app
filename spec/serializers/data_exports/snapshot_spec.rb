@@ -16,6 +16,24 @@ RSpec.describe DataExports::Snapshot do
     expect(task_queries.length).to eq(1)
   end
 
+  it "exports attached personal touch checklists and their items" do
+    profile = create(:relationship_profile)
+    important_date = create(:important_date, relationship_profile: profile)
+    checklist = create(
+      :personal_touch_checklist,
+      relationship_profile: profile,
+      event_plan: nil,
+      important_date:
+    )
+    item = create(:personal_touch_item, personal_touch_checklist: checklist, category: "follow_up")
+
+    snapshot = described_class.new(user: profile.user, relationship_profile: profile).to_h
+    exported = snapshot.fetch("relationship_profiles").sole.fetch("personal_touch_checklists").sole
+
+    expect(exported).to include("moment_type" => "ImportantDate", "moment_id" => important_date.id)
+    expect(exported.fetch("items").sole).to include("id" => item.id, "category" => "follow_up")
+  end
+
   private
 
   def capture_sql

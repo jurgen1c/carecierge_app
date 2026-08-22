@@ -61,6 +61,11 @@ RSpec.describe "Parameter filtering" do
         "details" => "Private step details",
         "phase" => "arrange"
       },
+      "personal_touch_item" => {
+        "title" => "Private personal gesture",
+        "details" => "Private relationship context",
+        "category" => "message"
+      },
       "privacy_vault_unlock" => {
         "password" => "vault-password"
       },
@@ -104,6 +109,9 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("plan_task", "title")).to eq("[FILTERED]")
     expect(filtered.dig("plan_task", "details")).to eq("[FILTERED]")
     expect(filtered.dig("plan_task", "phase")).to eq("arrange")
+    expect(filtered.dig("personal_touch_item", "title")).to eq("[FILTERED]")
+    expect(filtered.dig("personal_touch_item", "details")).to eq("[FILTERED]")
+    expect(filtered.dig("personal_touch_item", "category")).to eq("message")
     expect(filtered.dig("privacy_vault_unlock", "password")).to eq("[FILTERED]")
     expect(filtered["memory_query"]).to eq("[FILTERED]")
     expect(filtered["body"]).to eq("Unrelated body")

@@ -37,6 +37,7 @@ class ImportantDate < ApplicationRecord
   REMINDER_SCHEDULES = %w[none day_before week_before two_weeks_before month_before custom].freeze
 
   belongs_to :relationship_profile
+  has_one :personal_touch_checklist, dependent: :destroy
 
   before_validation :normalize_text_fields
 

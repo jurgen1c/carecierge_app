@@ -126,7 +126,7 @@ class RelationshipProfilesController < ApplicationController
       .includes(
         :contact_methods,
         :gifts,
-        :important_dates,
+        { important_dates: { personal_touch_checklist: :visible_personal_touch_items } },
         :contact_cadence,
         :memory_records,
         :privacy_vault_items,

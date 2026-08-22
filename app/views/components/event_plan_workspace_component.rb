@@ -6,6 +6,7 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
   option :vault_items
   option :vault_unlocked, default: -> { false }
   option :next_reminder, default: -> { nil }
+  option :personal_touch_checklist, default: -> { nil }
 
   style :primary_button do
     base do

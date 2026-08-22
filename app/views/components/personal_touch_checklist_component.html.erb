@@ -1,0 +1,96 @@
+<section id="<%= anchor_id %>" aria-labelledby="<%= title_id %>" class="<%= style(:container, compact:) %>">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h2 id="<%= title_id %>" class="text-lg font-semibold text-ink"><%= t("personal_touch_checklists.title") %></h2>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("personal_touch_checklists.body") %></p>
+    </div>
+    <% if checklist %>
+      <p class="shrink-0 text-sm font-semibold text-quiet-note" aria-live="polite">
+        <%= t("personal_touch_checklists.progress", completed: progress[:completed], total: progress[:total]) %>
+      </p>
+    <% end %>
+  </div>
+
+  <% unless checklist %>
+    <%= button_to t("personal_touch_checklists.create.action"), create_path,
+      method: :post,
+      form: { class: "mt-4", data: { turbo_frame: "_top" } },
+      class: style(:primary_button) %>
+  <% else %>
+    <% if visible_items.any? %>
+      <ol class="mt-5 divide-y divide-private-line border-y border-private-line">
+        <% visible_items.each_with_index do |item, index| %>
+          <li class="py-4">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="<%= style(:category_badge) %>"><%= t("personal_touch_checklists.categories.#{item.category}") %></span>
+                  <% if item.suggested? %>
+                    <span class="text-xs font-semibold text-primary"><%= t("personal_touch_checklists.suggested") %></span>
+                  <% end %>
+                </div>
+                <h3 class="mt-2 text-sm font-semibold text-ink <%= "line-through" if item.completed? %>"><%= item.title %></h3>
+                <% if item.details.present? %><p class="mt-1 text-sm leading-6 text-quiet-note"><%= item.details %></p><% end %>
+                <% labels = source_labels(item) %>
+                <% if labels.any? %>
+                  <p class="mt-2 text-xs leading-5 text-quiet-note"><%= labels.to_sentence %></p>
+                <% end %>
+              </div>
+
+              <% if editable? %><div class="flex flex-wrap gap-2 lg:justify-end">
+                <% if item.completed? %>
+                  <%= button_to t("personal_touch_checklists.items.reopen.action", title: item.title),
+                    item_path(item, :reopen), method: :patch, form: { data: { turbo_frame: "_top" } }, class: style(:quiet_button) %>
+                <% else %>
+                  <%= button_to t("personal_touch_checklists.items.complete.action", title: item.title),
+                    item_path(item, :complete), method: :patch, form: { data: { turbo_frame: "_top" } }, class: style(:quiet_button) %>
+                <% end %>
+                <%= button_to t("personal_touch_checklists.items.move_up", title: item.title),
+                  item_path(item, :move_up), method: :patch, disabled: index.zero?,
+                  form: { data: { turbo_frame: "_top" } }, class: style(:quiet_button) %>
+                <%= button_to t("personal_touch_checklists.items.move_down", title: item.title),
+                  item_path(item, :move_down), method: :patch, disabled: index == visible_items.length - 1,
+                  form: { data: { turbo_frame: "_top" } }, class: style(:quiet_button) %>
+                <%= button_to t("personal_touch_checklists.items.dismiss.action", title: item.title),
+                  item_path(item, :dismiss), method: :patch,
+                  form: { data: { turbo_frame: "_top" } }, class: style(:quiet_button, intent: :danger) %>
+              </div><% end %>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <p class="mt-4 rounded-xl border border-dashed border-private-line bg-surface px-4 py-5 text-sm leading-6 text-quiet-note">
+        <%= t("personal_touch_checklists.empty") %>
+      </p>
+    <% end %>
+
+    <% if editable? %><details class="mt-5 rounded-xl border border-private-line bg-surface p-4">
+      <summary class="min-h-11 cursor-pointer text-sm font-semibold text-primary"><%= t("personal_touch_checklists.items.create.action") %></summary>
+      <%= form_with model: PersonalTouchItem.new,
+        url: personal_touch_checklist_personal_touch_items_path(checklist),
+        namespace: "personal_touch_#{checklist.id}",
+        class: "mt-3 grid gap-3 sm:grid-cols-2",
+        data: { turbo_frame: "_top" } do |form| %>
+        <div class="sm:col-span-2">
+          <%= form.label :title, t("personal_touch_checklists.items.fields.title"), class: "block text-sm font-semibold text-ink" %>
+          <%= form.text_field :title, required: true, maxlength: PersonalTouchItem::MAX_TITLE_LENGTH,
+            placeholder: t("personal_touch_checklists.items.fields.title_placeholder"),
+            class: "mt-2 min-h-11 w-full rounded-lg border border-private-line bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+        </div>
+        <div>
+          <%= form.label :category, t("personal_touch_checklists.items.fields.category"), class: "block text-sm font-semibold text-ink" %>
+          <%= form.select :category,
+            PersonalTouchItem::CATEGORIES.map { |value| [ t("personal_touch_checklists.categories.#{value}"), value ] }, {},
+            class: "mt-2 min-h-11 w-full rounded-lg border border-private-line bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+        </div>
+        <div class="sm:col-span-2">
+          <%= form.label :details, t("personal_touch_checklists.items.fields.details"), class: "block text-sm font-semibold text-ink" %>
+          <%= form.text_area :details, rows: 2, maxlength: PersonalTouchItem::MAX_DETAILS_LENGTH,
+            class: "mt-2 w-full rounded-lg border border-private-line bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+        </div>
+        <div class="sm:col-span-2"><%= form.submit t("personal_touch_checklists.items.create.save"), class: style(:primary_button) %></div>
+      <% end %>
+    </details><% end %>
+  <% end %>
+</section>

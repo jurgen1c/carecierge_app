@@ -38,9 +38,19 @@ Rails.application.routes.draw do
     patch :complete, on: :member
     patch :reopen, on: :member
     post :suggest, on: :member
+    resource :personal_touch_checklist, only: :create
     resources :plan_tasks, only: %i[create update destroy] do
       patch :complete, on: :member
       patch :reopen, on: :member
+    end
+  end
+  resources :personal_touch_checklists, only: [] do
+    resources :personal_touch_items, only: :create do
+      patch :complete, on: :member
+      patch :reopen, on: :member
+      patch :dismiss, on: :member
+      patch :move_up, on: :member
+      patch :move_down, on: :member
     end
   end
   resource :notification_preference, only: %i[edit update]
@@ -91,7 +101,9 @@ Rails.application.routes.draw do
     resources :privacy_vault_items, only: %i[create update destroy] do
       delete :delete_data, on: :member
     end
-    resources :important_dates, except: %i[index show]
+    resources :important_dates, except: %i[index show] do
+      resource :personal_touch_checklist, only: :create
+    end
     resources :gifts, except: %i[index show] do
       patch :mark_given, on: :member
     end

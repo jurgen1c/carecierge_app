@@ -685,6 +685,24 @@ es:
       event_plan_suggestions_generated:
         title: "Sugerencias del plan de evento creadas"
         description: "Se prepararon pasos de planificación con fuentes para %{target}."
+      personal_touch_checklist_created:
+        title: "Lista de detalles personales creada"
+        description: "Se creó una lista práctica de detalles personales para %{target}."
+      personal_touch_item_created:
+        title: "Detalle personal agregado"
+        description: "Se agregó un detalle personal para %{target}."
+      personal_touch_item_completed:
+        title: "Detalle personal completado"
+        description: "Se completó un detalle personal para %{target}."
+      personal_touch_item_reopened:
+        title: "Detalle personal reabierto"
+        description: "Se volvió a marcar un detalle personal como pendiente para %{target}."
+      personal_touch_item_dismissed:
+        title: "Detalle personal descartado"
+        description: "Se descartó un detalle personal para %{target}."
+      personal_touch_item_reordered:
+        title: "Detalles personales reordenados"
+        description: "Se actualizó el orden de los detalles personales para %{target}."
       vendor_contacted:
         title: "Proveedor contactado"
         description: "Se registró una acción de contacto con proveedor para %{target}."

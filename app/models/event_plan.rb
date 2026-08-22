@@ -46,6 +46,7 @@ class EventPlan < ApplicationRecord
 
   belongs_to :user
   belongs_to :relationship_profile
+  has_one :personal_touch_checklist, dependent: :destroy
   has_many :plan_tasks, -> { ordered }, dependent: :destroy
   has_many :reminders, dependent: :destroy
   has_many :targeted_audit_events, as: :target, class_name: "AuditEvent", dependent: :nullify

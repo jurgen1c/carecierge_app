@@ -171,6 +171,8 @@ class EventPlansController < ApplicationController
       .to_a
     @vault_unlocked = privacy_vault_unlocked?
     @next_reminder = @event_plan.reminders.active.by_effective_delivery.first
+    @personal_touch_checklist = @event_plan.personal_touch_checklist
+    @personal_touch_checklist&.personal_touch_items&.load
   end
 
   def prepare_form_options

@@ -49,6 +49,12 @@ class AuditEvent < ApplicationRecord
     gift_recommendation.dismissed
     gift_recommendation.purchased
     event_plan.suggestions_generated
+    personal_touch_checklist.created
+    personal_touch_item.created
+    personal_touch_item.completed
+    personal_touch_item.reopened
+    personal_touch_item.dismissed
+    personal_touch_item.reordered
     vendor.contacted
     booking.requested
     purchase.approved

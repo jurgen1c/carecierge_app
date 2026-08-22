@@ -7,26 +7,43 @@ default_queries:
   - event plan birthday anniversary generic occasion template task phase progress
   - event plan AI suggestion source provenance private note privacy vault lease
   - event plan reminder scheduling completion archive selective AI deletion export
+  - personal touch checklist event plan important date birthday anniversary preference provenance reorder dismiss
 watched_files:
   - app/controllers/event_plans_controller.rb
   - app/controllers/plan_tasks_controller.rb
+  - app/controllers/personal_touch_checklists_controller.rb
+  - app/controllers/personal_touch_items_controller.rb
   - app/models/event_plan.rb
   - app/models/plan_task.rb
+  - app/models/personal_touch_checklist.rb
+  - app/models/personal_touch_item.rb
   - app/policies/event_plan_policy.rb
   - app/policies/plan_task_policy.rb
+  - app/policies/personal_touch_checklist_policy.rb
+  - app/policies/personal_touch_item_policy.rb
   - app/services/event_plans/**/*.rb
+  - app/services/personal_touch_checklists/**/*.rb
   - app/views/event_plans/**/*.erb
   - app/views/components/event_plan_workspace_component.*
+  - app/views/components/personal_touch_checklist_component.*
   - config/locales/event_plans.*.yml
+  - config/locales/personal_touch_checklists.*.yml
   - db/migrate/*event_plans*.rb
+  - db/migrate/*personal_touch_checklists*.rb
   - docs/features/06-03-general-event-planning-assistant.md
+  - docs/features/06-04-personal-touch-checklist.md
   - spec/components/event_plan_workspace_component_spec.rb
+  - spec/components/personal_touch_checklist_component_spec.rb
   - spec/models/event_plan_spec.rb
   - spec/models/plan_task_spec.rb
+  - spec/models/personal_touch_checklist_spec.rb
+  - spec/models/personal_touch_item_spec.rb
   - spec/policies/event_plan_policy_spec.rb
   - spec/policies/plan_task_policy_spec.rb
   - spec/requests/event_plans_spec.rb
+  - spec/requests/personal_touch_checklists_spec.rb
   - spec/services/event_plans/**/*.rb
+  - spec/services/personal_touch_checklists/**/*.rb
   - spec/system/event_plans_spec.rb
 tags:
   - event_plans
@@ -34,3 +51,4 @@ tags:
   - privacy
   - reminders
   - source_provenance
+  - personal_touch_checklists

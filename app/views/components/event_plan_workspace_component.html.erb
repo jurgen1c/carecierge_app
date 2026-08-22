@@ -141,6 +141,11 @@
         </details>
       </section>
 
+      <%= component "personal_touch_checklist",
+        relationship_profile: event_plan.relationship_profile,
+        moment: event_plan,
+        checklist: personal_touch_checklist %>
+
       <% if event_plan.active? %>
         <section aria-labelledby="event-plan-suggestions-title" class="rounded-2xl border border-private-line bg-surface p-5 sm:p-6">
         <h2 id="event-plan-suggestions-title" class="text-lg font-semibold text-ink"><%= t("event_plans.suggestions.title") %></h2>

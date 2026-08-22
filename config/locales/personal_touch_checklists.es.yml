@@ -1,0 +1,60 @@
+es:
+  personal_touch_checklists:
+    title: Detalles personales
+    body: Mantén los detalles atentos junto al plan práctico. Agrega lo que solo tú puedes aportar y usa las sugerencias como punto de partida.
+    progress: "%{completed} de %{total} completados"
+    empty: Agrega el próximo detalle que haría que este momento se sienta considerado y específico.
+    suggested: Sugerencia
+    create:
+      action: Crear lista
+      notice: Se creó la lista de detalles personales.
+    categories:
+      preference: Preferencia
+      constraint: Restricción
+      message: Mensaje
+      gift: Regalo
+      dietary_need: Necesidad alimentaria
+      accessibility_need: Necesidad de accesibilidad
+      logistics: Logística
+      follow_up: Seguimiento
+    sources:
+      relationship_preference:
+        confirmed: "De preferencia confirmada: %{label}"
+        inferred: "De preferencia inferida: %{label}"
+    suggestions:
+      preference_prompt: "Toma en cuenta %{key}: %{value}"
+      prompts:
+        handwritten_note:
+          title: Escribe una nota personal breve
+          details: Usa tus propias palabras y agrega un detalle que solo podría venir de ti.
+        meaningful_memory:
+          title: Elige un recuerdo significativo para mencionar
+          details: Elige un momento compartido específico en vez de un cumplido genérico.
+        private_message:
+          title: Revisa personalmente el mensaje final
+          details: Mantén un tono natural y haz tuya la redacción final.
+        follow_up:
+          title: Planea un seguimiento sencillo
+          details: Decide cómo quieres comunicarte después de que haya pasado el momento.
+    items:
+      error: No se pudo guardar ese detalle personal.
+      create:
+        action: Agregar un detalle personal
+        save: Agregar detalle
+        notice: Se agregó el detalle personal.
+      complete:
+        action: "Marcar %{title} como completado"
+        notice: Se completó el detalle personal.
+      reopen:
+        action: "Marcar %{title} como pendiente"
+        notice: Se volvió a abrir el detalle personal.
+      dismiss:
+        action: "Descartar %{title}"
+        notice: Se descartó el detalle personal.
+      move_up: "Mover %{title} hacia arriba"
+      move_down: "Mover %{title} hacia abajo"
+      fields:
+        title: Detalle personal
+        title_placeholder: ¿Qué haría que esto se sienta personal?
+        category: Categoría
+        details: Detalle útil

@@ -31,6 +31,36 @@ edges:
     relation: requires
     reason: Suggestion generation and sensitive reads retain content-free evidence without copying plan or source contents.
     strength: 95
+  - source: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Every checklist resolves through the authenticated owner's active relationship profile and revalidates that scope under mutation locks.
+    strength: 100
+  - source: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    target: relationship_profiles.important_dates
+    relation: requires
+    reason: Birthdays, anniversaries, and other relationship moments attach through the existing owner-scoped important-date model.
+    strength: 95
+  - source: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: same_area
+    reason: Event plans host checklists while retaining their distinct phased task, suggestion, reminder, and lifecycle behavior.
+    strength: 85
+  - source: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Checklist creation and item lifecycle changes emit content-free account evidence against the owning relationship.
+    strength: 95
+  - source: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Owner exports include checklist items and attached moment identifiers, while relationship deletion cascades the owned records.
+    strength: 95
+  - source: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    target: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    relation: requires
+    reason: Preference-backed checklist suggestions preserve the shared confirmed-versus-inferred distinction in their encrypted provenance and localized explanation.
+    strength: 95
   - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
     target: relationship_profiles.profile_crud_owner_scope
     relation: requires

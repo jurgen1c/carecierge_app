@@ -126,6 +126,35 @@ RSpec.describe "Important dates", type: :request do
       expect(response.body).to include("Plan ahead")
     end
 
+    it "preloads checklist items once while refreshing multiple dates through Turbo" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      3.times do |index|
+        date = create(:important_date, relationship_profile: profile, title: "Moment #{index}")
+        checklist = create(
+          :personal_touch_checklist,
+          relationship_profile: profile,
+          event_plan: nil,
+          important_date: date
+        )
+        create(:personal_touch_item, personal_touch_checklist: checklist)
+      end
+      sign_in user
+      sql = []
+      subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+        sql << payload[:sql] unless payload[:name] == "SCHEMA"
+      end
+
+      ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
+        post relationship_profile_important_dates_path(profile),
+          params: { important_date: { date_type: "birthday", starts_on: "2026-07-25" } },
+          as: :turbo_stream
+      end
+
+      expect(sql.count { |statement| statement.include?('FROM "personal_touch_checklists"') }).to eq(1)
+      expect(sql.count { |statement| statement.include?('FROM "personal_touch_items"') }).to eq(1)
+    end
+
     it "does not create an important date for another user's profile" do
       sign_in create(:user)
       profile = create(:relationship_profile)

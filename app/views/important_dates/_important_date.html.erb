@@ -34,5 +34,11 @@
         <%= button_to t("important_dates.item.delete"), relationship_profile_important_date_path(relationship_profile, important_date), method: :delete, form: { data: { turbo_confirm: t("important_dates.item.delete_confirm") } }, class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700" %>
       </div>
     </div>
+
+    <%= component "personal_touch_checklist",
+      relationship_profile:,
+      moment: important_date,
+      checklist: important_date.personal_touch_checklist,
+      compact: true %>
   </article>
 <% end %>

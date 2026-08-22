@@ -68,6 +68,9 @@ module DataExports
         "gifts" => records(profile.gifts),
         "gift_recommendations" => profile.gift_recommendations.recent_first.map { |recommendation| gift_recommendation_attributes(recommendation) },
         "event_plans" => profile.event_plans.ordered.includes(:plan_tasks).map { |plan| event_plan_attributes(plan) },
+        "personal_touch_checklists" => profile.personal_touch_checklists.includes(:personal_touch_items).order(:created_at, :id).map do |checklist|
+          personal_touch_checklist_attributes(checklist)
+        end,
         "memory_records" => profile.memory_records.map { |memory| memory_attributes(memory) },
         "social_context_notes" => profile.social_context_notes.with_rich_text_body_and_embeds.map { |note| social_context_note_attributes(note) },
         "message_draft" => message_draft_attributes(profile.message_draft),
@@ -127,6 +130,17 @@ module DataExports
         "plan_tasks" => plan.plan_tasks.map do |task|
           attributes_for(task, except: %w[event_plan_id lock_version])
         end
+      )
+    end
+
+    def personal_touch_checklist_attributes(checklist)
+      attributes_for(
+        checklist,
+        except: %w[relationship_profile_id event_plan_id important_date_id]
+      ).merge(
+        "moment_type" => checklist.event_plan_id ? "EventPlan" : "ImportantDate",
+        "moment_id" => checklist.event_plan_id || checklist.important_date_id,
+        "items" => records(checklist.personal_touch_items, except: %w[personal_touch_checklist_id])
       )
     end
 

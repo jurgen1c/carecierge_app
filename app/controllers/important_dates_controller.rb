@@ -40,7 +40,7 @@ class ImportantDatesController < ApplicationController
   private
 
   def set_relationship_profile
-    @relationship_profile = current_user.relationship_profiles.includes(:important_dates).friendly.find(params[:relationship_profile_id])
+    @relationship_profile = current_user.relationship_profiles.friendly.find(params[:relationship_profile_id])
   end
 
   def set_important_date
@@ -62,7 +62,7 @@ class ImportantDatesController < ApplicationController
 
   def refresh_important_dates(notice)
     flash.now[:notice] = notice
-    @relationship_profile.reload
+    @relationship_profile = relationship_profile_scope.find(@relationship_profile.id)
 
     respond_to do |format|
       format.turbo_stream { render :refresh }
@@ -85,5 +85,9 @@ class ImportantDatesController < ApplicationController
 
   def not_found
     head :not_found
+  end
+
+  def relationship_profile_scope
+    current_user.relationship_profiles.includes(important_dates: { personal_touch_checklist: :personal_touch_items })
   end
 end

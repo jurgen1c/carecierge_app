@@ -13,6 +13,7 @@ Rails.application.config.filter_parameters += [
   "gift_recommendation.occasion",
   "event_plan.title", "event_plan.guest_list", "event_plan.notes",
   "plan_task.title", "plan_task.details", "reminder.title",
+  "personal_touch_item.title", "personal_touch_item.details",
   "social_context_note.body", "social_context_note.interpretation",
   "mood_note.observation", "mood_note.supportive_action",
   "reminder.notes", "commitment.notes", "interaction.notes",

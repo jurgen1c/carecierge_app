@@ -1,0 +1,60 @@
+en:
+  personal_touch_checklists:
+    title: Personal touches
+    body: Keep the thoughtful details visible alongside the practical plan. Add what only you can provide, and use suggestions as a starting point.
+    progress: "%{completed} of %{total} complete"
+    empty: Add the next detail that would make this moment feel considered and specific.
+    suggested: Suggested
+    create:
+      action: Create checklist
+      notice: Personal touch checklist created.
+    categories:
+      preference: Preference
+      constraint: Constraint
+      message: Message
+      gift: Gift
+      dietary_need: Dietary need
+      accessibility_need: Accessibility need
+      logistics: Logistics
+      follow_up: Follow-up
+    sources:
+      relationship_preference:
+        confirmed: "From confirmed preference: %{label}"
+        inferred: "From inferred preference: %{label}"
+    suggestions:
+      preference_prompt: "Plan around %{key}: %{value}"
+      prompts:
+        handwritten_note:
+          title: Write a short personal note
+          details: Use your own words and add one detail that could only come from you.
+        meaningful_memory:
+          title: Choose one meaningful memory to mention
+          details: Pick a specific shared moment instead of a generic compliment.
+        private_message:
+          title: Review the final message yourself
+          details: Keep the tone natural and make the final wording yours.
+        follow_up:
+          title: Plan a simple follow-up
+          details: Decide how you want to check in after the moment has passed.
+    items:
+      error: That checklist item could not be saved.
+      create:
+        action: Add a personal touch
+        save: Add item
+        notice: Personal touch added.
+      complete:
+        action: "Mark %{title} complete"
+        notice: Personal touch completed.
+      reopen:
+        action: "Mark %{title} incomplete"
+        notice: Personal touch reopened.
+      dismiss:
+        action: "Dismiss %{title}"
+        notice: Personal touch dismissed.
+      move_up: "Move %{title} up"
+      move_down: "Move %{title} down"
+      fields:
+        title: Personal touch
+        title_placeholder: What would make this feel personal?
+        category: Category
+        details: Helpful detail

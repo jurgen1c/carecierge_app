@@ -18,9 +18,12 @@ class RemindersController < ApplicationController
     @reload_after_time_zone_capture = @capture_browser_time_zone && important_date.present?
     preference.time_zone = captured_zone if captured_zone
     @reminder = current_user.reminders.new(
-      relationship_profile: selected_commitment&.relationship_profile || important_date&.relationship_profile || selected_relationship_profile,
+      relationship_profile: selected_plan_task&.event_plan&.relationship_profile || selected_event_plan&.relationship_profile || selected_commitment&.relationship_profile || important_date&.relationship_profile || selected_relationship_profile,
       important_date:,
       commitment: selected_commitment,
+      event_plan: selected_event_plan,
+      plan_task: selected_plan_task,
+      title: selected_plan_task&.title,
       recurrence: preference.reminder_frequency,
       time_zone: preference.time_zone,
       scheduled_at: initial_schedule_for(important_date, preference)
@@ -37,17 +40,20 @@ class RemindersController < ApplicationController
 
   def create
     @suggestion = selected_suggestion
-    @reminder = current_user.reminders.new(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :scheduled_at, :time_zone))
-    assign_relationship_context(@reminder)
-    assign_schedule(@reminder)
-    authorize @reminder
+    @reminder = current_user.reminders.new(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :event_plan_id, :plan_task_id, :scheduled_at, :time_zone))
+    saved = with_reminder_persistence_locks(@reminder) do
+      assign_relationship_context(@reminder)
+      assign_event_planning_context(@reminder)
+      assign_schedule(@reminder)
+      authorize @reminder
 
-    saved = AuditEvents::Track.call(
-      user: current_user,
-      actor: current_user,
-      action: "reminder.created",
-      target: @reminder
-    ) { Suggestions::CompleteReminderAction.call(reminder: @reminder, suggestion: @suggestion, user: current_user) }
+      AuditEvents::Track.call(
+        user: current_user,
+        actor: current_user,
+        action: "reminder.created",
+        target: @reminder
+      ) { Suggestions::CompleteReminderAction.call(reminder: @reminder, suggestion: @suggestion, user: current_user) }
+    end
 
     if saved
       params[:relationship_profile_id] ||= @reminder.active_relationship_profile_id
@@ -59,9 +65,10 @@ class RemindersController < ApplicationController
   end
 
   def update
-    saved = @reminder.with_lock do
-      @reminder.assign_attributes(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :scheduled_at, :time_zone))
+    saved = with_reminder_persistence_locks(@reminder) do
+      @reminder.assign_attributes(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :event_plan_id, :plan_task_id, :scheduled_at, :time_zone))
       assign_relationship_context(@reminder)
+      assign_event_planning_context(@reminder)
       assign_schedule(@reminder)
       AuditEvents::Track.call(
         user: current_user,
@@ -183,6 +190,23 @@ class RemindersController < ApplicationController
     active_important_dates.find(id)
   end
 
+  def selected_event_plan
+    return @selected_event_plan if defined?(@selected_event_plan)
+
+    id = params[:event_plan_id].presence || params.dig(:reminder, :event_plan_id).presence
+    @selected_event_plan = id && current_user.event_plans.for_active_relationships.where(status: "active").find(id)
+  end
+
+  def selected_plan_task
+    return @selected_plan_task if defined?(@selected_plan_task)
+
+    id = params[:plan_task_id].presence || params.dig(:reminder, :plan_task_id).presence
+    return @selected_plan_task = nil unless id
+
+    plan = selected_event_plan || raise(ActiveRecord::RecordNotFound)
+    @selected_plan_task = plan.plan_tasks.incomplete.find(id)
+  end
+
   def captured_time_zone
     value = params[:time_zone].presence
     value if value && ActiveSupport::TimeZone[value].present?
@@ -277,6 +301,72 @@ class RemindersController < ApplicationController
     reminder.scheduled_at = parse_local_schedule(zone, permitted_params[:scheduled_at])
   end
 
+  def assign_event_planning_context(reminder)
+    permitted_params = reminder_params
+    plan_supplied = permitted_params.key?(:event_plan_id)
+    task_supplied = permitted_params.key?(:plan_task_id)
+
+    if plan_supplied
+      plan_id = permitted_params[:event_plan_id].presence
+      reminder.event_plan = if plan_id.blank?
+        nil
+      elsif reminder.persisted? && plan_id == reminder.event_plan_id
+        reminder.event_plan
+      else
+        current_user.event_plans.for_active_relationships.where(status: "active").find(plan_id)
+      end
+    end
+
+    if task_supplied
+      task_id = permitted_params[:plan_task_id].presence
+      reminder.plan_task = if task_id.blank?
+        nil
+      elsif reminder.persisted? && task_id == reminder.plan_task_id
+        reminder.plan_task
+      else
+        raise ActiveRecord::RecordNotFound unless reminder.event_plan
+
+        reminder.event_plan.plan_tasks.incomplete.find(task_id)
+      end
+    end
+
+    reminder.event_plan ||= reminder.plan_task&.event_plan
+    reminder.relationship_profile ||= reminder.event_plan&.relationship_profile
+  end
+
+  def with_reminder_persistence_locks(reminder, &)
+    with_record_locks(planning_lock_records(reminder)) do
+      reminder.reload if reminder.persisted?
+      yield
+    end
+  end
+
+  def planning_lock_records(reminder)
+    permitted_params = reminder_params
+    plan_ids = [ reminder.event_plan_id, permitted_params[:event_plan_id] ].compact_blank
+    task_ids = [ reminder.plan_task_id, permitted_params[:plan_task_id] ].compact_blank
+    plans = current_user.event_plans.where(id: plan_ids).order(:id).to_a
+    tasks = PlanTask.joins(:event_plan)
+      .where(event_plans: { user_id: current_user.id }, id: task_ids)
+      .order(:id)
+      .to_a
+    profile_ids = [
+      reminder.relationship_profile_id,
+      permitted_params[:relationship_profile_id],
+      *plans.map(&:relationship_profile_id)
+    ].compact_blank
+    profiles = current_user.relationship_profiles.where(id: profile_ids).order(:id).to_a
+
+    [ *profiles, *plans, *tasks, *([ reminder ] if reminder.persisted?) ]
+  end
+
+  def with_record_locks(records, index = 0, &)
+    record = records[index]
+    return yield if record.blank?
+
+    record.with_lock { with_record_locks(records, index + 1, &) }
+  end
+
   def parse_local_schedule(zone, value)
     return if zone.blank? || value.blank?
 
@@ -300,6 +390,8 @@ class RemindersController < ApplicationController
       :relationship_profile_id,
       :important_date_id,
       :commitment_id,
+      :event_plan_id,
+      :plan_task_id,
       :title,
       :notes,
       :reminder_type,
@@ -361,6 +453,11 @@ class RemindersController < ApplicationController
   end
 
   def refresh_workspace(message)
+    if @reminder&.event_plan&.then { |plan| !plan.archived? && plan.relationship_profile.kept? }
+      redirect_to event_plan_path(@reminder.event_plan), notice: message
+      return
+    end
+
     flash.now[:notice] = message
     prepare_workspace
 

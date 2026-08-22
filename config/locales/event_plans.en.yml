@@ -1,0 +1,203 @@
+en:
+  event_plans:
+    index:
+      title: "Event plans"
+      body: "Keep dinners, visits, celebrations, and other relationship moments organized in one private planning workspace."
+      create: "Create event plan"
+      empty_title: "Plan the next meaningful moment"
+      empty_body: "Start with a relationship and occasion. Carecierge will prepare an editable runway you control."
+      empty_action: "Create your first event plan"
+    new:
+      title: "Create event plan"
+      body: "Choose the relationship and occasion. You can edit every suggested planning step afterward."
+    edit:
+      title: "Edit event plan"
+      body: "Keep the plan's relationship context, timing, and practical constraints current."
+      archive: "Archive event plan"
+      archive_confirm: "Archive this event plan? Its active reminders will be retired."
+    form:
+      relationship: "Relationship"
+      relationship_prompt: "Choose a relationship"
+      title: "Plan title"
+      occasion_type: "Occasion"
+      starts_on: "Event date"
+      budget: "Maximum budget"
+      guest_list: "Guest list or participants"
+      notes: "Planning notes"
+      create: "Create event plan"
+      update: "Save plan"
+      cancel: "Cancel"
+      errors:
+        one: "Review this plan detail"
+        other: "Review these %{count} plan details"
+    workspace:
+      navigation_title: "Event plans"
+      navigation_label: "Event plan navigation"
+      create: "Create event plan"
+      create_short: "Create"
+      all_plans: "View all event plans"
+      unscheduled: "Date not set"
+      edit_plan: "Edit plan"
+      complete_plan: "Complete plan"
+      reopen_plan: "Reopen plan"
+      progress: "%{completed} of %{total} steps completed"
+      remaining:
+        one: "1 step remaining"
+        other: "%{count} steps remaining"
+      runway_title: "Planning runway"
+      runway_body: "Work through decisions, arrangements, reminders, and follow-through in date order."
+      draft_only: "Draft only — nothing is sent"
+      sources: "Sources:"
+      create_reminder: "Create reminder"
+      decisions_title: "Outstanding decisions"
+      no_decisions: "No open decisions. Add one when the plan needs a choice."
+      next_reminder_title: "Next reminder"
+      mark_reminder_done: "Mark as done"
+      no_reminder: "No active reminder is attached to this plan."
+      relationship_sources_title: "Relationship sources"
+      relationship_sources_body: "Optional AI steps keep the source labels used to shape them."
+      no_sources: "No AI source context has been added to this plan."
+    suggestions:
+      title: "Suggest next steps"
+      body: "Ask for source-backed planning ideas. Suggestions are added for your review and never send, book, contact, or purchase anything."
+      private_notes: "Private notes for this request"
+      per_request: "Nothing is selected by default. Your choice applies only to this request."
+      private_note_label: "Private note from %{date}: %{summary}"
+      vault_items: "Privacy Vault items for this request"
+      vault_lease: "Protected items require an active vault session and prior suggestion approval."
+      vault_item_label: "Protected item: %{title}"
+      unlock_vault: "Unlock Privacy Vault"
+      action: "Suggest next steps"
+      loading: "Preparing suggestions…"
+      review_only: "Review only — no external action is taken."
+    phases:
+      decide: "Decide"
+      arrange: "Arrange"
+      follow_through: "Follow through"
+    task_kinds:
+      decision: "Decision"
+      task: "Task"
+      reminder: "Reminder"
+      vendor_need: "Vendor need"
+      gift_idea: "Gift idea"
+      message_draft: "Message draft"
+      backup_step: "Backup plan"
+      milestone: "Milestone"
+    occasion_types:
+      birthday: "Birthday"
+      anniversary: "Anniversary"
+      graduation: "Graduation"
+      baby_shower: "Baby shower"
+      retirement: "Retirement"
+      promotion: "Promotion"
+      family_reunion: "Family reunion"
+      date_night: "Date night"
+      childrens_party: "Children's party"
+      holiday_event: "Holiday event"
+      apology: "Apology or repair gesture"
+      custom: "Custom event"
+    plan_tasks:
+      fields:
+        title: "Step title"
+        details: "Details"
+        phase: "Phase"
+        kind: "Step type"
+        due_on: "Due date"
+      create:
+        action: "Add planning step"
+        save: "Add step"
+        notice: "Planning step added."
+      edit:
+        action: "Edit step"
+        save: "Save step"
+      update:
+        notice: "Planning step updated."
+      destroy:
+        action: "Delete"
+        confirm: "Delete this planning step?"
+        notice: "Planning step deleted."
+      complete:
+        action: "Complete"
+        label: "Complete %{title}"
+        notice: "Planning step completed."
+      reopen:
+        action: "Reopen"
+        label: "Reopen %{title}"
+        notice: "Planning step reopened."
+      error: "Review the planning step and try again."
+    create:
+      notice: "Event plan created."
+    update:
+      notice: "Event plan updated."
+    archive:
+      notice: "Event plan archived."
+    complete:
+      notice: "Event plan completed."
+    reopen:
+      notice: "Event plan reopened."
+    lifecycle:
+      unavailable: "This event plan changed and that action is no longer available."
+    suggest:
+      notice: "Source-backed planning steps were added for your review."
+      error: "We could not prepare planning suggestions. Try again without changing the plan."
+      superseded: "The plan changed while suggestions were being prepared. Review it and try again."
+    sources:
+      relationship: "Relationship"
+      preference: "Preference"
+      constraint: "Constraint"
+      memory: "Relationship memory"
+      important_date: "Important date"
+      commitment: "Commitment"
+      gift: "Gift history"
+      desire: "Future idea"
+      public_note: "Relationship note"
+      private_note: "Selected private note"
+      vault: "Selected Privacy Vault item"
+    relationship_section:
+      title: "Event plans"
+      body: "Prepare upcoming moments with %{name} without losing the relationship context behind each step."
+      create: "Create event plan"
+      all: "View all event plans"
+      empty: "No event plan is active for this relationship yet."
+    templates:
+      default:
+        titles:
+          define_moment: "Define the moment"
+          confirm_format: "Confirm the date and format"
+          confirm_guests: "Confirm the guest list"
+          identify_vendors: "Identify vendor needs"
+          choose_gift: "Choose a meaningful gift or gesture"
+          draft_message: "Draft the invitation or message"
+          set_reminder: "Set a planning reminder"
+          prepare_backup: "Prepare a backup plan"
+          event_day: "Review the final plan"
+        details:
+          define_moment: "Write down the outcome, tone, date, and budget you want."
+          confirm_format: "Decide what kind of gathering or gesture fits this relationship."
+          confirm_guests: "Confirm who should participate and any accessibility needs."
+          identify_vendors: "List any venue, food, transport, or service support to arrange."
+          choose_gift: "Review preferences, constraints, and gift history before deciding."
+          draft_message: "Prepare wording for review; Carecierge will not send it."
+          set_reminder: "Create a reminder using the existing reminder workflow."
+          prepare_backup: "Choose a practical fallback for weather, availability, or timing."
+          event_day: "Check the remaining decisions and follow-through before the event."
+  activerecord:
+    errors:
+      models:
+        event_plan:
+          attributes:
+            relationship_profile:
+              owner_mismatch: "must belong to you"
+            source_context:
+              invalid: "must contain supported source references"
+        plan_task:
+          attributes:
+            source_context:
+              invalid: "must contain supported source references"
+        reminder:
+          attributes:
+            event_plan:
+              different_owner: "must belong to you"
+              different_relationship: "must belong to the selected relationship"
+            plan_task:
+              different_plan: "must belong to the selected event plan"

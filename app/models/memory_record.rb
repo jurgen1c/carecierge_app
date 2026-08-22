@@ -30,6 +30,7 @@
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id)
 #
 class MemoryRecord < ApplicationRecord
+  include BriefingSourceLock
   include FeedItemStateSource
 
   SOURCES = %w[user_confirmed ai_inferred imported user_corrected].freeze

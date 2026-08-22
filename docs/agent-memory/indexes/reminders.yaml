@@ -12,6 +12,7 @@ default_queries:
   - reminder calendar ics export
   - commitment reminder integration overdue commitments
   - reminders workspace automation permission settings entry point
+  - event plan plan task reminder association lifecycle retirement
 watched_files:
   - app/models/reminder.rb
   - app/models/reminder_delivery.rb
@@ -65,6 +66,7 @@ watched_files:
   - db/migrate/*notification_preferences*.rb
   - db/migrate/*relationship_notification_preferences*.rb
   - db/migrate/*digest_deliveries*.rb
+  - db/migrate/*event_plans*.rb
 tags:
   - reminders
   - noticed

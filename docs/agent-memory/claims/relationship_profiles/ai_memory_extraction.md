@@ -10,17 +10,11 @@ title: AI memory extraction is asynchronous, source-backed, and owner-approved
 
 claim: >
   Feature-flagged recaps enqueue strict, non-stored OpenAI Responses extraction.
-  Source excerpts must occur in the recap. The flag is installed disabled;
-  disabled requested or processing jobs fail retryably and clear stale start
-  time, while retries reclaim interrupted work. Proposals remain separate until
-  the owner approves, rejects, or corrects them through locked, idempotent
-  reviews; unsupported decisions fail closed with localized feedback. Exports
-  include proposals. Selective deletion locks and resets recap state before
-  deleting proposals, preventing delayed recreation while preserving
-  user-corrected memories. Approved AI-inferred canonical memories may feed the
-  relationship persona but retain inferred language regardless of confidence;
-  user-corrected canonical memories render as confirmed, and pending proposals
-  never enter persona assembly directly.
+  Source excerpts must occur in the recap, and proposals remain separate until
+  owner review. Reviews lock the profile before proposal and recap rows, matching
+  selective deletion's deterministic order. Exports include proposals; deletion
+  prevents delayed recreation while preserving user-corrected memories. Only
+  approved or corrected canonical memories may feed relationship personas.
 
 source_files:
   - app/models/extracted_memory.rb
@@ -94,15 +88,16 @@ last_verified_commit: null
 ## Claim
 
 AI extraction is owner-gated. The adapter uses a strict schema, disables
-provider storage, and records generic errors. The rollout defaults off;
+provider storage, and records generic errors. The rollout is off by default;
 disabled requested or processing jobs become retryable with stale start time
 cleared, while retries reclaim interrupted work.
 
 Proposals preserve their source excerpt, original content, confidence, and
-review state. Approval creates `ai_inferred` memory at the same confidence;
+review state. Approval creates `ai_inferred` memory at that confidence;
 correction preserves the proposal and creates confirmed `user_corrected`
-memory; rejection creates none. Reviews are locked and idempotent, and
-unsupported decisions receive feedback distinct from correction validation.
+memory; rejection creates none. Reviews lock the profile before proposal and
+recap rows, remain idempotent, and distinguish unsupported decisions from
+invalid corrections.
 
 The queue shows evidence and uncertainty, exports include proposals, and
 correction inputs stay filtered from logs. Deletion locks and resets recaps

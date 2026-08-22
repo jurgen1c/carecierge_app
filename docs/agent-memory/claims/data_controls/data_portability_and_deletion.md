@@ -14,14 +14,17 @@ claim: >
   audit and reminder evidence, feed dismissal and snooze state, suggestion
   feedback/save/completion state, and effective
   message-draft response settings and revisions. Relationship briefings and
-  gift recommendations are included with source-backed output and consent
+  gift recommendations, event plans, and plan tasks are included with
+  source-backed output and consent
   metadata, while their internal generation fences stay excluded. Vault payloads require
   reauthentication; internal errors, leases,
   fences, recipient keys, and ownership keys stay excluded. Serialization
   neutralizes CSV formulas, preserves recurrences, uses the configured PDF
   origin, and audits only successful exports. Selective AI deletion preserves
   corrected memories, authored notes, and gifts accepted from recommendations;
-  deletes relationship briefings and gift recommendations; clears note analysis
+  deletes relationship briefings, gift recommendations, and AI-origin plan
+  tasks; preserves event plans, template/manual plan work, and explicit plan
+  reminders even for terminal plans; clears note analysis
   without rereading unchanged screenshots; and fences delayed results. Profile and account
   deletion lock snapshots, revokes outstanding authenticated upload grants, and
   idempotently cleans attached or abandoned owner blobs. Feed visibility state
@@ -50,10 +53,14 @@ source_files:
   - db/migrate/20260813120002_add_uploaded_by_user_to_active_storage_blobs.rb
   - db/migrate/20260814160000_create_feed_item_states.rb
   - db/migrate/20260820034510_add_saved_at_to_suggestion_feedbacks.rb
+  - db/migrate/20260821040000_create_event_plans.rb
+  - db/migrate/20260821040001_add_event_plan_references_to_reminders.rb
 
 related_files:
   - app/models/relationship_briefing.rb
   - app/models/gift_recommendation.rb
+  - app/models/event_plan.rb
+  - app/models/plan_task.rb
   - app/serializers/data_exports/csv_serializer.rb
   - app/serializers/data_exports/calendar_serializer.rb
   - app/views/data_controls/show.html.erb
@@ -109,13 +116,15 @@ last_verified_commit: null
 
 Every export format uses the same owner scope, and decrypted vault payloads
 require password reauthentication. JSON and CSV include privacy-safe evidence,
-  message revisions, relationship briefings, gift recommendations, social notes, consent state,
+  message revisions, relationship briefings, gift recommendations, event plans,
+  plan tasks, social notes, consent state,
   screenshot bytes, and feed visibility state while excluding internal keys,
   errors, leases, and fences.
   Serialization neutralizes
 formulas, preserves recurrences, and audits only success. Selective AI deletion
-preserves authored content and accepted gifts while deleting briefings and gift
-recommendations and clearing and fencing other inferred state. Profile and
+preserves authored content, accepted gifts, event plans, manual/template plan
+work, and explicit reminders while deleting briefings, gift recommendations,
+and AI-origin plan suggestions and clearing and fencing other inferred state. Profile and
 account deletion snapshot under owned locks; upload writes share the account lock,
 and cleanup includes attached or abandoned owner-stamped blobs. Permanently
 deleted feed sources and relationships also prune obsolete feed visibility rows.

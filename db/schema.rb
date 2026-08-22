@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_21_040001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -251,6 +251,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
     t.index ["message_draft_id", "position"], name: "index_draft_revisions_on_message_draft_id_and_position", unique: true
     t.index ["message_draft_id"], name: "index_draft_revisions_on_message_draft_id"
     t.check_constraint "\"position\" > 0", name: "draft_revisions_position_positive"
+  end
+
+  create_table "event_plans", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "budget_cents"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.bigint "generation_version", default: 0, null: false
+    t.text "guest_list"
+    t.integer "lock_version", default: 0, null: false
+    t.text "notes"
+    t.string "occasion_type", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.text "source_context", null: false
+    t.date "starts_on"
+    t.string "status", default: "active", null: false
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["relationship_profile_id", "status", "starts_on"], name: "index_event_plans_on_profile_status_and_start"
+    t.index ["relationship_profile_id"], name: "index_event_plans_on_relationship_profile_id"
+    t.index ["user_id", "status", "starts_on"], name: "index_event_plans_on_user_id_and_status_and_starts_on"
+    t.index ["user_id"], name: "index_event_plans_on_user_id"
+    t.check_constraint "budget_cents IS NULL OR budget_cents >= 0", name: "event_plans_budget_nonnegative"
+    t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'completed'::character varying, 'archived'::character varying]::text[])", name: "event_plans_supported_status"
   end
 
   create_table "extracted_memories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -548,6 +572,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
     t.check_constraint "reminder_lead_minutes = ANY (ARRAY[0, 60, 1440, 10080, 20160, 43200])", name: "notification_preferences_supported_reminder_lead"
   end
 
+  create_table "plan_tasks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "details"
+    t.date "due_on"
+    t.uuid "event_plan_id", null: false
+    t.string "kind", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "origin", default: "manual", null: false
+    t.string "phase", null: false
+    t.integer "position", null: false
+    t.text "source_context", null: false
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_plan_id", "completed_at", "due_on"], name: "index_plan_tasks_on_plan_completion_and_due"
+    t.index ["event_plan_id", "phase", "position"], name: "index_plan_tasks_on_plan_phase_position"
+    t.index ["event_plan_id"], name: "index_plan_tasks_on_event_plan_id"
+    t.check_constraint "\"position\" >= 0", name: "plan_tasks_position_nonnegative"
+    t.check_constraint "kind::text = ANY (ARRAY['decision'::character varying, 'task'::character varying, 'reminder'::character varying, 'vendor_need'::character varying, 'gift_idea'::character varying, 'message_draft'::character varying, 'backup_step'::character varying, 'milestone'::character varying]::text[])", name: "plan_tasks_supported_kind"
+    t.check_constraint "origin::text = ANY (ARRAY['manual'::character varying, 'template'::character varying, 'ai'::character varying]::text[])", name: "plan_tasks_supported_origin"
+    t.check_constraint "phase::text = ANY (ARRAY['decide'::character varying, 'arrange'::character varying, 'follow_through'::character varying]::text[])", name: "plan_tasks_supported_phase"
+  end
+
   create_table "privacy_vault_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "payload", null: false
@@ -746,9 +793,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
     t.uuid "commitment_id"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.uuid "event_plan_id"
     t.uuid "important_date_id"
     t.datetime "next_delivery_at"
     t.text "notes"
+    t.uuid "plan_task_id"
     t.string "priority", default: "normal", null: false
     t.string "recurrence", default: "none", null: false
     t.datetime "recurrence_anchor_at", null: false
@@ -762,8 +811,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["commitment_id"], name: "index_reminders_on_commitment_id"
+    t.index ["event_plan_id"], name: "index_reminders_on_event_plan_id"
     t.index ["important_date_id"], name: "index_reminders_on_important_date_id"
     t.index ["next_delivery_at"], name: "index_reminders_on_active_next_delivery_at", where: "(((status)::text = 'active'::text) AND (next_delivery_at IS NOT NULL))"
+    t.index ["plan_task_id"], name: "index_reminders_on_plan_task_id"
     t.index ["relationship_profile_id", "status", "scheduled_at"], name: "index_reminders_on_profile_status_and_schedule"
     t.index ["relationship_profile_id"], name: "index_reminders_on_relationship_profile_id"
     t.index ["user_id", "status", "scheduled_at"], name: "index_reminders_on_user_id_and_status_and_scheduled_at"
@@ -917,6 +968,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
   add_foreign_key "desires", "relationship_profiles"
   add_foreign_key "digest_deliveries", "users"
   add_foreign_key "draft_revisions", "message_drafts", on_delete: :cascade
+  add_foreign_key "event_plans", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "event_plans", "users", on_delete: :cascade
   add_foreign_key "extracted_memories", "conversation_recaps", on_delete: :cascade
   add_foreign_key "extracted_memories", "memory_records", column: "canonical_memory_record_id", on_delete: :nullify
   add_foreign_key "extracted_memories", "relationship_profiles", on_delete: :cascade
@@ -938,6 +991,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
   add_foreign_key "message_drafts", "users", on_delete: :cascade
   add_foreign_key "mood_notes", "relationship_profiles"
   add_foreign_key "notification_preferences", "users", on_delete: :cascade
+  add_foreign_key "plan_tasks", "event_plans", on_delete: :cascade
   add_foreign_key "privacy_vault_items", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_briefings", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_briefings", "users", on_delete: :cascade
@@ -957,7 +1011,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_20_040000) do
   add_foreign_key "reminder_deliveries", "noticed_events", on_delete: :nullify
   add_foreign_key "reminder_deliveries", "reminders", on_delete: :cascade
   add_foreign_key "reminders", "commitments", on_delete: :cascade
+  add_foreign_key "reminders", "event_plans", on_delete: :cascade
   add_foreign_key "reminders", "important_dates", on_delete: :nullify
+  add_foreign_key "reminders", "plan_tasks", on_delete: :nullify
   add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade
   add_foreign_key "reminders", "users", on_delete: :cascade
   add_foreign_key "social_context_notes", "relationship_profiles", on_delete: :cascade

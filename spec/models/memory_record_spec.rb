@@ -45,6 +45,15 @@ RSpec.describe MemoryRecord, type: :model do
     end
   end
 
+  it "serializes writes through the relationship context lock" do
+    profile = create(:relationship_profile)
+    record = build(:memory_record, relationship_profile: profile)
+
+    expect(RelationshipProfile).to receive(:where).with(id: profile.id).and_call_original
+
+    record.save!
+  end
+
   describe "#review_required?" do
     it "is true for stale or queued records" do
       travel_to Time.zone.local(2026, 7, 8, 10, 0, 0) do

@@ -1,0 +1,22 @@
+<section id="event-plans" class="rounded-2xl border border-private-line bg-canvas p-5 sm:p-6" aria-labelledby="relationship-event-plans-title">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h2 id="relationship-event-plans-title" class="text-xl font-semibold text-ink"><%= t("event_plans.relationship_section.title") %></h2>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.relationship_section.body", name: relationship_profile.display_name) %></p>
+    </div>
+    <% unless relationship_profile.discarded? %>
+      <%= link_to t("event_plans.relationship_section.create"), new_event_plan_path(relationship_profile_id: relationship_profile.id), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-canvas hover:bg-primary-hover" %>
+    <% end %>
+  </div>
+  <% plans = relationship_profile.discarded? ? EventPlan.none : relationship_profile.event_plans.visible.ordered.limit(3) %>
+  <% if plans.any? %>
+    <ul class="mt-5 divide-y divide-private-line border-y border-private-line">
+      <% plans.each do |plan| %>
+        <li><%= link_to plan.title, event_plan_path(plan), class: "flex min-h-14 items-center justify-between gap-3 py-3 text-sm font-semibold text-ink hover:text-primary" %></li>
+      <% end %>
+    </ul>
+    <%= link_to t("event_plans.relationship_section.all"), event_plans_path, class: "mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-primary" %>
+  <% else %>
+    <p class="mt-5 text-sm leading-6 text-quiet-note"><%= t("event_plans.relationship_section.empty") %></p>
+  <% end %>
+</section>

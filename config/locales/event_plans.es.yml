@@ -1,0 +1,203 @@
+es:
+  event_plans:
+    index:
+      title: "Planes de eventos"
+      body: "Organiza cenas, visitas, celebraciones y otros momentos de relación en un espacio privado de planificación."
+      create: "Crear plan de evento"
+      empty_title: "Planifica el próximo momento significativo"
+      empty_body: "Empieza con una relación y una ocasión. Carecierge preparará una ruta editable que tú controlas."
+      empty_action: "Crear tu primer plan de evento"
+    new:
+      title: "Crear plan de evento"
+      body: "Elige la relación y la ocasión. Después podrás editar cada paso sugerido."
+    edit:
+      title: "Editar plan de evento"
+      body: "Mantén al día el contexto de la relación, el momento y las restricciones prácticas."
+      archive: "Archivar plan de evento"
+      archive_confirm: "¿Archivar este plan de evento? Sus recordatorios activos se retirarán."
+    form:
+      relationship: "Relación"
+      relationship_prompt: "Elige una relación"
+      title: "Título del plan"
+      occasion_type: "Ocasión"
+      starts_on: "Fecha del evento"
+      budget: "Presupuesto máximo"
+      guest_list: "Lista de invitados o participantes"
+      notes: "Notas de planificación"
+      create: "Crear plan de evento"
+      update: "Guardar plan"
+      cancel: "Cancelar"
+      errors:
+        one: "Revisa este detalle del plan"
+        other: "Revisa estos %{count} detalles del plan"
+    workspace:
+      navigation_title: "Planes de eventos"
+      navigation_label: "Navegación de planes de eventos"
+      create: "Crear plan de evento"
+      create_short: "Crear"
+      all_plans: "Ver todos los planes"
+      unscheduled: "Fecha sin definir"
+      edit_plan: "Editar plan"
+      complete_plan: "Completar plan"
+      reopen_plan: "Reabrir plan"
+      progress: "%{completed} de %{total} pasos completados"
+      remaining:
+        one: "Queda 1 paso"
+        other: "Quedan %{count} pasos"
+      runway_title: "Ruta de planificación"
+      runway_body: "Avanza por decisiones, arreglos, recordatorios y seguimiento en orden de fecha."
+      draft_only: "Solo borrador — no se envía nada"
+      sources: "Fuentes:"
+      create_reminder: "Crear recordatorio"
+      decisions_title: "Decisiones pendientes"
+      no_decisions: "No hay decisiones abiertas. Agrega una cuando el plan necesite una elección."
+      next_reminder_title: "Próximo recordatorio"
+      mark_reminder_done: "Marcar como hecho"
+      no_reminder: "No hay un recordatorio activo asociado a este plan."
+      relationship_sources_title: "Fuentes de la relación"
+      relationship_sources_body: "Los pasos opcionales de IA conservan las etiquetas de las fuentes que los orientaron."
+      no_sources: "Este plan todavía no tiene contexto de fuentes de IA."
+    suggestions:
+      title: "Sugerir próximos pasos"
+      body: "Pide ideas de planificación con fuentes. Las sugerencias quedan para tu revisión y nunca envían, reservan, contactan ni compran nada."
+      private_notes: "Notas privadas para esta solicitud"
+      per_request: "Nada se selecciona por defecto. Tu elección aplica solo a esta solicitud."
+      private_note_label: "Nota privada del %{date}: %{summary}"
+      vault_items: "Elementos de la Bóveda de privacidad para esta solicitud"
+      vault_lease: "Los elementos protegidos requieren una sesión activa y aprobación previa para sugerencias."
+      vault_item_label: "Elemento protegido: %{title}"
+      unlock_vault: "Desbloquear Bóveda de privacidad"
+      action: "Sugerir próximos pasos"
+      loading: "Preparando sugerencias…"
+      review_only: "Solo revisión — no se realiza ninguna acción externa."
+    phases:
+      decide: "Decidir"
+      arrange: "Organizar"
+      follow_through: "Dar seguimiento"
+    task_kinds:
+      decision: "Decisión"
+      task: "Tarea"
+      reminder: "Recordatorio"
+      vendor_need: "Necesidad de proveedor"
+      gift_idea: "Idea de regalo"
+      message_draft: "Borrador de mensaje"
+      backup_step: "Plan alternativo"
+      milestone: "Hito"
+    occasion_types:
+      birthday: "Cumpleaños"
+      anniversary: "Aniversario"
+      graduation: "Graduación"
+      baby_shower: "Baby shower"
+      retirement: "Jubilación"
+      promotion: "Ascenso"
+      family_reunion: "Reunión familiar"
+      date_night: "Cita"
+      childrens_party: "Fiesta infantil"
+      holiday_event: "Evento festivo"
+      apology: "Disculpa o gesto de reparación"
+      custom: "Evento personalizado"
+    plan_tasks:
+      fields:
+        title: "Título del paso"
+        details: "Detalles"
+        phase: "Fase"
+        kind: "Tipo de paso"
+        due_on: "Fecha límite"
+      create:
+        action: "Agregar paso de planificación"
+        save: "Agregar paso"
+        notice: "Paso de planificación agregado."
+      edit:
+        action: "Editar paso"
+        save: "Guardar paso"
+      update:
+        notice: "Paso de planificación actualizado."
+      destroy:
+        action: "Eliminar"
+        confirm: "¿Eliminar este paso de planificación?"
+        notice: "Paso de planificación eliminado."
+      complete:
+        action: "Completar"
+        label: "Completar %{title}"
+        notice: "Paso de planificación completado."
+      reopen:
+        action: "Reabrir"
+        label: "Reabrir %{title}"
+        notice: "Paso de planificación reabierto."
+      error: "Revisa el paso de planificación e inténtalo de nuevo."
+    create:
+      notice: "Plan de evento creado."
+    update:
+      notice: "Plan de evento actualizado."
+    archive:
+      notice: "Plan de evento archivado."
+    complete:
+      notice: "Plan de evento completado."
+    reopen:
+      notice: "Plan de evento reabierto."
+    lifecycle:
+      unavailable: "Este plan de evento cambió y esa acción ya no está disponible."
+    suggest:
+      notice: "Se agregaron pasos con fuentes para tu revisión."
+      error: "No pudimos preparar sugerencias. Inténtalo de nuevo sin cambiar el plan."
+      superseded: "El plan cambió mientras se preparaban las sugerencias. Revísalo e inténtalo de nuevo."
+    sources:
+      relationship: "Relación"
+      preference: "Preferencia"
+      constraint: "Restricción"
+      memory: "Memoria de la relación"
+      important_date: "Fecha importante"
+      commitment: "Compromiso"
+      gift: "Historial de regalos"
+      desire: "Idea futura"
+      public_note: "Nota de la relación"
+      private_note: "Nota privada seleccionada"
+      vault: "Elemento seleccionado de la Bóveda de privacidad"
+    relationship_section:
+      title: "Planes de eventos"
+      body: "Prepara próximos momentos con %{name} sin perder el contexto de la relación detrás de cada paso."
+      create: "Crear plan de evento"
+      all: "Ver todos los planes"
+      empty: "Todavía no hay un plan de evento activo para esta relación."
+    templates:
+      default:
+        titles:
+          define_moment: "Definir el momento"
+          confirm_format: "Confirmar la fecha y el formato"
+          confirm_guests: "Confirmar la lista de invitados"
+          identify_vendors: "Identificar necesidades de proveedores"
+          choose_gift: "Elegir un regalo o gesto significativo"
+          draft_message: "Redactar la invitación o mensaje"
+          set_reminder: "Configurar un recordatorio de planificación"
+          prepare_backup: "Preparar un plan alternativo"
+          event_day: "Revisar el plan final"
+        details:
+          define_moment: "Anota el resultado, tono, fecha y presupuesto que deseas."
+          confirm_format: "Decide qué tipo de encuentro o gesto encaja con esta relación."
+          confirm_guests: "Confirma quién participará y cualquier necesidad de accesibilidad."
+          identify_vendors: "Enumera el apoyo de lugar, comida, transporte o servicio que debes organizar."
+          choose_gift: "Revisa preferencias, restricciones e historial de regalos antes de decidir."
+          draft_message: "Prepara el texto para revisión; Carecierge no lo enviará."
+          set_reminder: "Crea un recordatorio mediante el flujo existente."
+          prepare_backup: "Elige una alternativa práctica para clima, disponibilidad o tiempo."
+          event_day: "Revisa las decisiones y el seguimiento pendientes antes del evento."
+  activerecord:
+    errors:
+      models:
+        event_plan:
+          attributes:
+            relationship_profile:
+              owner_mismatch: "debe pertenecerte"
+            source_context:
+              invalid: "debe contener referencias de fuentes compatibles"
+        plan_task:
+          attributes:
+            source_context:
+              invalid: "debe contener referencias de fuentes compatibles"
+        reminder:
+          attributes:
+            event_plan:
+              different_owner: "debe pertenecerte"
+              different_relationship: "debe pertenecer a la relación seleccionada"
+            plan_task:
+              different_plan: "debe pertenecer al plan de evento seleccionado"

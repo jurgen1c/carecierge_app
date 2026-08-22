@@ -1,6 +1,36 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Plans, tasks, context, and every mutation resolve through the authenticated owner's active relationship profile.
+    strength: 100
+  - source: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    target: relationship_profiles.privacy_vault
+    relation: requires
+    reason: Protected planning sources require per-item suggestion approval, explicit per-request selection, and a revalidated password-backed lease.
+    strength: 100
+  - source: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    target: relationship_profiles.memory_records
+    relation: constrains
+    reason: Default planning context admits only current, non-protected memory evidence and excludes time-stale records.
+    strength: 95
+  - source: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Plan and task reminders reuse the existing owner-scoped scheduling, snooze, completion, priority, and delivery lifecycle.
+    strength: 100
+  - source: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Plans and tasks participate in owner exports; selective AI deletion removes suggestions and fences late results while preserving authored work and reminders.
+    strength: 95
+  - source: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Suggestion generation and sensitive reads retain content-free evidence without copying plan or source contents.
+    strength: 95
   - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
     target: relationship_profiles.profile_crud_owner_scope
     relation: requires

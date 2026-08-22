@@ -57,6 +57,7 @@ en:
       mood_note: "Mood note"
       notification_preference: "Notification settings"
       reminder: "Reminder"
+      event_plan: "Event plan"
     attributes:
       feature_flag:
         description: "Description"
@@ -204,9 +205,16 @@ en:
             commitment:
               different_owner: "must belong to you"
               different_relationship: "must belong to the selected relationship"
+            event_plan:
+              different_owner: "must belong to you"
+              different_relationship: "must belong to the selected relationship"
+              inactive: "must be active before adding a reminder"
             important_date:
               different_owner: "must belong to you"
               different_relationship: "must belong to the selected relationship"
+            plan_task:
+              different_plan: "must belong to the selected event plan"
+              completed: "must be incomplete before adding a reminder"
             relationship_profile:
               different_owner: "must belong to you"
         notification_preference:
@@ -309,6 +317,7 @@ en:
       privacy_vault: "Privacy vault"
       relationship_profile: "Relationship profile"
       reminder: "Reminder"
+      event_plan: "Event plan"
       resource: "Account resource"
     actions:
       approval_granted:
@@ -356,6 +365,9 @@ en:
       gift_recommendation_purchased:
         title: "Gift recommendation marked purchased"
         description: "A gift recommendation was marked purchased for %{target}."
+      event_plan_suggestions_generated:
+        title: "Event plan suggestions created"
+        description: "Source-backed planning steps were prepared for %{target}."
       vendor_contacted:
         title: "Vendor contacted"
         description: "A vendor contact action was recorded for %{target}."
@@ -2008,9 +2020,9 @@ en:
       confirmation: "Type %{email} to confirm"
       delete_ai:
         title: "Delete AI-generated data"
-        body: "Permanently removes AI-inferred memories, AI-extraction timeline records, social-context interpretations with their review state and proposed uses, and gift recommendations in every state. Your social notes and uploads, user-confirmed memories, manually created timeline entries, and gifts saved from recommendations stay in place."
+        body: "Permanently removes AI-inferred memories, AI-extraction timeline records, social-context interpretations with their review state and proposed uses, gift recommendations in every state, and event-plan suggestions. Your event plans, template and manually created plan steps, plan reminders, social notes and uploads, user-confirmed memories, manually created timeline entries, and gifts saved from recommendations stay in place."
         action: "Delete AI-generated data"
-        confirm: "Delete all AI-generated data, including social-context interpretations and gift recommendations, in this account?"
+        confirm: "Delete all AI-generated data, including social-context interpretations, gift recommendations, and event-plan suggestions, in this account?"
       delete_account:
         title: "Delete account"
         body: "Permanently removes your account and all relationship data. Privacy-minimized deletion evidence remains without your email or relationship content."

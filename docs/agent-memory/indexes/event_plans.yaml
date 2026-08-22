@@ -1,0 +1,36 @@
+id: event_plans
+name: Event Plans
+summary: Owner-scoped relationship event plans with deterministic templates, user-controlled source-backed suggestions, and reminder reuse.
+claim_globs:
+  - claims/event_plans/**/*.md
+default_queries:
+  - event plan birthday anniversary generic occasion template task phase progress
+  - event plan AI suggestion source provenance private note privacy vault lease
+  - event plan reminder scheduling completion archive selective AI deletion export
+watched_files:
+  - app/controllers/event_plans_controller.rb
+  - app/controllers/plan_tasks_controller.rb
+  - app/models/event_plan.rb
+  - app/models/plan_task.rb
+  - app/policies/event_plan_policy.rb
+  - app/policies/plan_task_policy.rb
+  - app/services/event_plans/**/*.rb
+  - app/views/event_plans/**/*.erb
+  - app/views/components/event_plan_workspace_component.*
+  - config/locales/event_plans.*.yml
+  - db/migrate/*event_plans*.rb
+  - docs/features/06-03-general-event-planning-assistant.md
+  - spec/components/event_plan_workspace_component_spec.rb
+  - spec/models/event_plan_spec.rb
+  - spec/models/plan_task_spec.rb
+  - spec/policies/event_plan_policy_spec.rb
+  - spec/policies/plan_task_policy_spec.rb
+  - spec/requests/event_plans_spec.rb
+  - spec/services/event_plans/**/*.rb
+  - spec/system/event_plans_spec.rb
+tags:
+  - event_plans
+  - relationship_profiles
+  - privacy
+  - reminders
+  - source_provenance

@@ -9,6 +9,7 @@ default_queries:
   - social context export screenshot deletion blob cleanup
   - social context abandoned upload cleanup owner metadata foreign key
   - deletion request account digest audit evidence
+  - event plans plan tasks AI suggestions export selective deletion reminder preservation
 watched_files:
   - app/controllers/data_controls_controller.rb
   - app/controllers/data_exports_controller.rb
@@ -36,6 +37,7 @@ watched_files:
   - db/migrate/*deletion_requests*.rb
   - db/migrate/*feed_item_states*.rb
   - db/migrate/*social_context*.rb
+  - db/migrate/*event_plans*.rb
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb
   - spec/system/data_controls_spec.rb

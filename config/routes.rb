@@ -33,6 +33,16 @@ Rails.application.routes.draw do
     patch :snooze, on: :member
     patch :complete, on: :member
   end
+  resources :event_plans, except: :destroy do
+    patch :archive, on: :member
+    patch :complete, on: :member
+    patch :reopen, on: :member
+    post :suggest, on: :member
+    resources :plan_tasks, only: %i[create update destroy] do
+      patch :complete, on: :member
+      patch :reopen, on: :member
+    end
+  end
   resource :notification_preference, only: %i[edit update]
   resource :automation_permissions, only: %i[edit update]
   resources :automation_permission_overrides, only: %i[create update destroy]

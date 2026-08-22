@@ -1,0 +1,26 @@
+<%= form_with model: event_plan, class: "mt-6 grid gap-5" do |form| %>
+  <% if event_plan.errors.any? %>
+    <div class="rounded-xl border border-danger-border bg-danger-surface p-4 text-sm text-danger-ink" role="alert">
+      <p class="font-semibold"><%= t("event_plans.form.errors", count: event_plan.errors.count) %></p>
+      <ul class="mt-2 list-disc space-y-1 pl-5"><% event_plan.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+  <% unless event_plan.persisted? %>
+    <div>
+      <%= form.label :relationship_profile_id, t("event_plans.form.relationship"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.collection_select :relationship_profile_id, @relationship_profiles, :id, :display_name, { prompt: t("event_plans.form.relationship_prompt") }, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+  <% end %>
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div class="sm:col-span-2"><%= form.label :title, t("event_plans.form.title"), class: "block text-sm font-semibold text-ink" %><%= form.text_field :title, required: true, maxlength: EventPlan::MAX_TITLE_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+    <div><%= form.label :occasion_type, t("event_plans.form.occasion_type"), class: "block text-sm font-semibold text-ink" %><%= form.select :occasion_type, EventPlan::OCCASION_TYPES.map { |value| [ t("event_plans.occasion_types.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+    <div><%= form.label :starts_on, t("event_plans.form.starts_on"), class: "block text-sm font-semibold text-ink" %><%= form.date_field :starts_on, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+    <div><%= label_tag "event_plan_budget", t("event_plans.form.budget"), class: "block text-sm font-semibold text-ink" %><%= text_field_tag "event_plan[budget]", @budget_input.nil? ? (event_plan.budget_cents && format("%.2f", event_plan.budget_cents / 100.0)) : @budget_input, inputmode: "decimal", maxlength: EventPlansController::MAX_BUDGET_INPUT_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+    <div class="sm:col-span-2"><%= form.label :guest_list, t("event_plans.form.guest_list"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :guest_list, rows: 3, maxlength: EventPlan::MAX_GUEST_LIST_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+    <div class="sm:col-span-2"><%= form.label :notes, t("event_plans.form.notes"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :notes, rows: 4, maxlength: EventPlan::MAX_NOTES_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+  </div>
+  <div class="flex flex-wrap gap-3">
+    <%= form.submit event_plan.persisted? ? t("event_plans.form.update") : t("event_plans.form.create"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover" %>
+    <%= link_to t("event_plans.form.cancel"), event_plan.persisted? ? event_plan_path(event_plan) : event_plans_path, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-private-line bg-canvas px-5 py-3 text-sm font-semibold text-ink hover:bg-surface" %>
+  </div>
+<% end %>

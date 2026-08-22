@@ -121,6 +121,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :commitments, -> { ordered }, dependent: :destroy
   has_many :gifts, dependent: :destroy
   has_many :gift_recommendations, dependent: :destroy
+  has_many :event_plans, dependent: :destroy
   has_many :memory_records, dependent: :destroy
   has_many :social_context_notes, dependent: :destroy
   has_many :conversation_recaps, dependent: :destroy

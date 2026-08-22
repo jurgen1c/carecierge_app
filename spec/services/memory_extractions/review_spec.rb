@@ -24,6 +24,15 @@ RSpec.describe MemoryExtractions::Review do
       .not_to change(MemoryRecord, :count)
   end
 
+  it "locks the profile before the proposal so deletion and review share one order" do
+    proposal = create(:extracted_memory, conversation_recap: recap, relationship_profile: profile)
+
+    expect(profile).to receive(:with_lock).ordered.and_call_original
+    expect(proposal).to receive(:lock!).ordered.and_call_original
+
+    described_class.call(extracted_memory: proposal, reviewer: user, decision: "approve")
+  end
+
   it "rejects a proposal without canonical mutation" do
     proposal = create(:extracted_memory, conversation_recap: recap, relationship_profile: profile)
 

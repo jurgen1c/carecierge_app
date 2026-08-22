@@ -18,8 +18,9 @@ claim: >
   mutations record through AuditEvents::Track. Automation permissions add the
   generic event beside specialized evidence in the same owner lock, while vault
   events preserve existing transactional and best-effort semantics. Gift
-  recommendation generation and lifecycle actions add result/count-only
-  evidence without titles, rationales, budgets, or source contents. Calendar
+  recommendation generation and lifecycle actions, plus event-plan suggestion
+  generation, add result/count-only evidence without titles, rationales,
+  budgets, plan details, or source contents. Calendar
   exports emit privacy-minimized evidence after serialization; Turbo prefetches
   do not. Account and profile data exports add scope/format-only evidence after
   successful serialization, and permanent deletion adds request-kind-only
@@ -56,6 +57,8 @@ related_files:
   - app/services/gift_recommendations/apply_action.rb
   - spec/services/gift_recommendations/generate_spec.rb
   - spec/requests/gift_recommendations_spec.rb
+  - app/services/event_plans/suggest.rb
+  - spec/services/event_plans/suggest_spec.rb
 
 symbols:
   - AuditEvent
@@ -99,7 +102,7 @@ authorized cross-account ledger. Pagination and allowlisted filters fail closed
 for forged, non-scalar, malformed, or out-of-range values.
 
 Existing profile, reminder, automation-permission, privacy-vault, gift
-recommendation, and calendar export flows emit privacy-minimized evidence
+recommendation, event-plan suggestion, and calendar export flows emit privacy-minimized evidence
 without weakening their transaction semantics. Calendar links disable Turbo prefetch, and server-identified
 prefetches create no evidence. Normalized no-op saves create no update event.
 

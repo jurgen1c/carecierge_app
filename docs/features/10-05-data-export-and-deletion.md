@@ -11,7 +11,7 @@ re-entered.
 
 - Export one owned relationship profile or the full account.
 - Include relationship details, timeline records, important dates, memories,
-  AI-origin metadata, preferences, reminders, uploaded conversation recordings,
+  AI-origin metadata, event plans and plan tasks, preferences, reminders, uploaded conversation recordings,
   reminder-delivery lifecycle evidence, tag/group assignments, relationship
   notification overrides, privacy-safe vault-access history, in-app notification
   state, suggestion feedback/save/completion state, and related account records.
@@ -21,9 +21,11 @@ re-entered.
 - Delete profiles from their existing owner-scoped profile surface.
 - Permanently delete a protected note, memory, or relationship detail only from
   an unlocked privacy vault.
-- Delete AI-inferred memories, AI-extraction timeline records, and social-context
-  interpretations with their review state and proposed uses, without removing
-  owner-authored social notes and uploads or user-confirmed/manual records.
+- Delete AI-inferred memories, AI-extraction timeline records, social-context
+  interpretations with their review state and proposed uses, gift
+  recommendations, and AI-origin event-plan suggestions without removing
+  owner-authored social notes and uploads, user-confirmed/manual records, event
+  plans, template/manual plan work, or plan reminders.
 - Delete the full account only after exact email confirmation and current
   password verification.
 
@@ -71,6 +73,12 @@ auditable without retaining the account email or relationship contents.
   so delayed provider output cannot recreate deleted AI state. Clearing this AI
   state does not reread unchanged screenshot storage, so missing or temporarily
   unavailable uploads cannot block the privacy control.
+- Selective AI deletion locks each owned event plan, advances its generation
+  fence, clears aggregate AI provenance, and removes AI-origin plan tasks.
+  Explicit reminders are detached from deleted AI tasks and remain attached to
+  their event plan, including when that plan is completed or archived. Reminder
+  actions associated with an archived plan return to the reminder inbox because
+  archived plans are no longer readable planning destinations.
 - Account deletion synchronously purges uploaded recordings, attached social
   screenshots, and owner-stamped uploads that never reached a saved note before
   the request can be marked completed. Upload grants are short-lived and storage

@@ -49,7 +49,7 @@ RSpec.describe "Event plans", type: :request do
     expect(plan).to have_attributes(budget_cents: 15_000, relationship_profile_id: profile.id)
   end
 
-  it "returns a form error when the budget exceeds the database column" do
+  it "returns a form error when the budget is not numeric" do
     submitted_budget = "not-a-budget"
 
     expect do

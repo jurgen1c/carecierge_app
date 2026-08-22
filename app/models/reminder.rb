@@ -19,7 +19,9 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  commitment_id           :uuid
+#  event_plan_id           :uuid
 #  important_date_id       :uuid
+#  plan_task_id            :uuid
 #  relationship_profile_id :uuid
 #  user_id                 :uuid             not null
 #
@@ -27,7 +29,9 @@
 #
 #  index_reminders_on_active_next_delivery_at              (next_delivery_at) WHERE (((status)::text = 'active'::text) AND (next_delivery_at IS NOT NULL))
 #  index_reminders_on_commitment_id                        (commitment_id)
+#  index_reminders_on_event_plan_id                        (event_plan_id)
 #  index_reminders_on_important_date_id                    (important_date_id)
+#  index_reminders_on_plan_task_id                         (plan_task_id)
 #  index_reminders_on_profile_status_and_schedule          (relationship_profile_id,status,scheduled_at)
 #  index_reminders_on_relationship_profile_id              (relationship_profile_id)
 #  index_reminders_on_user_id                              (user_id)
@@ -36,7 +40,9 @@
 # Foreign Keys
 #
 #  fk_rails_...  (commitment_id => commitments.id) ON DELETE => cascade
+#  fk_rails_...  (event_plan_id => event_plans.id) ON DELETE => cascade
 #  fk_rails_...  (important_date_id => important_dates.id) ON DELETE => nullify
+#  fk_rails_...  (plan_task_id => plan_tasks.id) ON DELETE => nullify
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
@@ -52,6 +58,8 @@ class Reminder < ApplicationRecord
   belongs_to :relationship_profile, optional: true
   belongs_to :important_date, optional: true
   belongs_to :commitment, optional: true
+  belongs_to :event_plan, optional: true
+  belongs_to :plan_task, optional: true
 
   has_many :reminder_deliveries, dependent: :destroy
   has_many :noticed_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
@@ -69,6 +77,7 @@ class Reminder < ApplicationRecord
   validate :associations_belong_to_user
   validate :important_date_matches_relationship
   validate :commitment_matches_relationship
+  validate :event_planning_context_matches_owner_and_relationship
 
   before_validation :initialize_next_delivery_at, on: :create
   before_validation :refresh_recurrence_anchor
@@ -194,6 +203,29 @@ class Reminder < ApplicationRecord
     return if commitment.relationship_profile_id == relationship_profile_id
 
     errors.add(:commitment, :different_relationship)
+  end
+
+  def event_planning_context_matches_owner_and_relationship
+    if event_plan.present?
+      errors.add(:event_plan, :different_owner) if event_plan.user_id != user_id
+      if relationship_profile.present? && event_plan.relationship_profile_id != relationship_profile_id
+        errors.add(:event_plan, :different_relationship)
+      end
+      if planning_attachment_added_or_changed? && !event_plan.active?
+        errors.add(:event_plan, :inactive)
+      end
+    end
+
+    return if plan_task.blank?
+
+    errors.add(:plan_task, :different_plan) if event_plan.blank? || plan_task.event_plan_id != event_plan_id
+    errors.add(:plan_task, :completed) if planning_attachment_added_or_changed? && plan_task.completed?
+  end
+
+  def planning_attachment_added_or_changed?
+    new_record? ||
+      will_save_change_to_event_plan_id? && event_plan_id.present? ||
+      will_save_change_to_plan_task_id? && plan_task_id.present?
   end
 
   def initialize_next_delivery_at

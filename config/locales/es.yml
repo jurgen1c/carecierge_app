@@ -29,6 +29,7 @@ es:
       mood_note: "Nota de ánimo"
       notification_preference: "Configuración de notificaciones"
       reminder: "Recordatorio"
+      event_plan: "Plan de evento"
     attributes:
       feature_flag:
         description: "Descripción"
@@ -176,9 +177,16 @@ es:
             commitment:
               different_owner: "debe pertenecerte"
               different_relationship: "debe pertenecer a la relación seleccionada"
+            event_plan:
+              different_owner: "debe pertenecerte"
+              different_relationship: "debe pertenecer a la relación seleccionada"
+              inactive: "debe estar activo antes de agregar un recordatorio"
             important_date:
               different_owner: "debe pertenecerte"
               different_relationship: "debe pertenecer a la relación seleccionada"
+            plan_task:
+              different_plan: "debe pertenecer al plan de evento seleccionado"
+              completed: "debe estar incompleta antes de agregar un recordatorio"
             relationship_profile:
               different_owner: "debe pertenecerte"
         notification_preference:
@@ -626,6 +634,7 @@ es:
       privacy_vault: "Bóveda de privacidad"
       relationship_profile: "Perfil de relación"
       reminder: "Recordatorio"
+      event_plan: "Plan de evento"
       resource: "Recurso de la cuenta"
     actions:
       approval_granted:
@@ -673,6 +682,9 @@ es:
       gift_recommendation_purchased:
         title: "Recomendación de regalo marcada como comprada"
         description: "Se marcó como comprada una recomendación de regalo para %{target}."
+      event_plan_suggestions_generated:
+        title: "Sugerencias del plan de evento creadas"
+        description: "Se prepararon pasos de planificación con fuentes para %{target}."
       vendor_contacted:
         title: "Proveedor contactado"
         description: "Se registró una acción de contacto con proveedor para %{target}."
@@ -1984,9 +1996,9 @@ es:
       confirmation: "Escribe %{email} para confirmar"
       delete_ai:
         title: "Eliminar datos generados por IA"
-        body: "Elimina permanentemente memorias inferidas por IA, registros de cronología de extracción por IA, interpretaciones de contexto social con su estado de revisión y usos propuestos, y recomendaciones de regalos en cualquier estado. Tus notas sociales y archivos subidos, las memorias confirmadas, las entradas manuales y los regalos guardados desde recomendaciones permanecen."
+        body: "Elimina permanentemente memorias inferidas por IA, registros de cronología de extracción por IA, interpretaciones de contexto social con su estado de revisión y usos propuestos, recomendaciones de regalos en cualquier estado y sugerencias de planes de eventos. Tus planes de eventos, los pasos de plantilla y creados manualmente, los recordatorios de planes, tus notas sociales y archivos subidos, las memorias confirmadas, las entradas manuales y los regalos guardados desde recomendaciones permanecen."
         action: "Eliminar datos generados por IA"
-        confirm: "¿Eliminar todos los datos generados por IA, incluidas las interpretaciones de contexto social y las recomendaciones de regalos, de esta cuenta?"
+        confirm: "¿Eliminar todos los datos generados por IA, incluidas las interpretaciones de contexto social, las recomendaciones de regalos y las sugerencias de planes de eventos, de esta cuenta?"
       delete_account:
         title: "Eliminar cuenta"
         body: "Elimina permanentemente tu cuenta y todos los datos de relaciones. Se conserva evidencia minimizada de la eliminación sin tu correo ni contenido de relaciones."

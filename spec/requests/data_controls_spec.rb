@@ -25,6 +25,53 @@ RSpec.describe "Data controls", type: :request do
     )
   end
 
+  it "exports event plans with decrypted tasks and source provenance without internal fences" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      title: "Maya's birthday dinner",
+      source_context: [ { "id" => "memory:favorite-tea", "label" => "Favorite tea" } ]
+    )
+    task = create(
+      :plan_task,
+      event_plan: plan,
+      origin: "ai",
+      title: "Ask about tea service",
+      source_context: [
+        {
+          "id" => "memory:favorite-tea",
+          "label" => "Favorite tea",
+          "certainty" => "confirmed",
+          "sensitive" => false
+        }
+      ]
+    )
+    sign_in user
+
+    post data_exports_path, params: { data_export: { format: "json", scope: "account" } }
+
+    exported_plan = response.parsed_body.dig("relationship_profiles", 0, "event_plans", 0)
+    expect(exported_plan).to include(
+      "id" => plan.id,
+      "title" => "Maya's birthday dinner",
+      "source_context" => plan.source_context
+    )
+    expect(exported_plan).not_to have_key("user_id")
+    expect(exported_plan).not_to have_key("relationship_profile_id")
+    expect(exported_plan).not_to have_key("generation_version")
+    expect(exported_plan).not_to have_key("lock_version")
+    expect(exported_plan.fetch("plan_tasks").sole).to include(
+      "id" => task.id,
+      "title" => "Ask about tea service",
+      "source_context" => task.source_context
+    )
+    expect(exported_plan.fetch("plan_tasks").sole).not_to have_key("event_plan_id")
+    expect(exported_plan.fetch("plan_tasks").sole).not_to have_key("lock_version")
+  end
+
   let(:password) { "careful-password" }
   let(:user) { create(:user, email: "owner@example.com", password:) }
   let(:profile) { create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera") }
@@ -54,10 +101,14 @@ RSpec.describe "Data controls", type: :request do
       sign_in user
 
       I18n.with_locale(:en) { get data_control_path }
-      expect(response.body).to include("social-context interpretations", "gift recommendations")
+      expect(response.body).to include("social-context interpretations", "gift recommendations", "event-plan suggestions")
 
       I18n.with_locale(:es) { get data_control_path }
-      expect(response.body).to include("interpretaciones de contexto social", "recomendaciones de regalos")
+      expect(response.body).to include(
+        "interpretaciones de contexto social",
+        "recomendaciones de regalos",
+        "sugerencias de planes de eventos"
+      )
     end
 
     it "gives OAuth users an explicit password setup path before account deletion" do

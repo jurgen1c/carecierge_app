@@ -67,6 +67,7 @@ module DataExports
         "important_dates" => records(profile.important_dates),
         "gifts" => records(profile.gifts),
         "gift_recommendations" => profile.gift_recommendations.recent_first.map { |recommendation| gift_recommendation_attributes(recommendation) },
+        "event_plans" => profile.event_plans.ordered.includes(:plan_tasks).map { |plan| event_plan_attributes(plan) },
         "memory_records" => profile.memory_records.map { |memory| memory_attributes(memory) },
         "social_context_notes" => profile.social_context_notes.with_rich_text_body_and_embeds.map { |note| social_context_note_attributes(note) },
         "message_draft" => message_draft_attributes(profile.message_draft),
@@ -116,6 +117,17 @@ module DataExports
 
     def gift_recommendation_attributes(recommendation)
       attributes_for(recommendation, except: %w[user_id relationship_profile_id lock_version])
+    end
+
+    def event_plan_attributes(plan)
+      attributes_for(
+        plan,
+        except: %w[user_id relationship_profile_id generation_version lock_version]
+      ).merge(
+        "plan_tasks" => plan.plan_tasks.map do |task|
+          attributes_for(task, except: %w[event_plan_id lock_version])
+        end
+      )
     end
 
     def conversation_recap_attributes(recap)

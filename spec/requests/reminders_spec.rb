@@ -74,6 +74,116 @@ RSpec.describe "Reminders", type: :request do
   end
 
   describe "POST /reminders" do
+    it "derives a plan-task reminder title server-side" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      plan = create(:event_plan, user:, relationship_profile: profile)
+      plan_task = create(:plan_task, event_plan: plan, title: "Confirm the private guest list")
+      sign_in user
+
+      get new_reminder_path(
+        event_plan_id: plan.id,
+        plan_task_id: plan_task.id,
+        title: "Untrusted query title"
+      )
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.at_css("[name='reminder[title]']")["value"]).to eq(plan_task.title)
+      expect(response.body).not_to include("Untrusted query title")
+    end
+
+    it "does not prefill an ordinary reminder title from the query string" do
+      sign_in create(:user)
+
+      get new_reminder_path(title: "Private query title")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.at_css("[name='reminder[title]']")["value"]).to be_blank
+      expect(response.body).not_to include("Private query title")
+    end
+
+    it "creates a reminder owned by an event plan and plan task, then returns to the plan" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      plan = create(:event_plan, user:, relationship_profile: profile)
+      plan_task = create(:plan_task, event_plan: plan)
+      sign_in user
+
+      expect_any_instance_of(RelationshipProfile).to receive(:with_lock).at_least(:once).and_call_original
+      expect_any_instance_of(EventPlan).to receive(:with_lock).at_least(:once).and_call_original
+      expect_any_instance_of(PlanTask).to receive(:with_lock).at_least(:once).and_call_original
+
+      post reminders_path, params: {
+        reminder: {
+          relationship_profile_id: profile.id,
+          event_plan_id: plan.id,
+          plan_task_id: plan_task.id,
+          title: "Confirm the guest list",
+          reminder_type: "event_preparation",
+          priority: "normal",
+          recurrence: "none",
+          time_zone: "UTC",
+          scheduled_at: "2026-09-01T09:00"
+        }
+      }
+
+      reminder = user.reminders.order(:created_at).last
+      expect(reminder).to have_attributes(event_plan: plan, plan_task:)
+      expect(response).to redirect_to(event_plan_path(plan))
+    end
+
+    it "rejects new reminder attachments to completed plans and tasks" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      plan = create(:event_plan, user:, relationship_profile: profile)
+      completed_task = create(:plan_task, event_plan: plan, completed_at: Time.current)
+      sign_in user
+
+      expect do
+        post reminders_path, params: {
+          reminder: attributes_for(:reminder).merge(
+            relationship_profile_id: profile.id,
+            event_plan_id: plan.id,
+            plan_task_id: completed_task.id
+          )
+        }
+      end.not_to change(Reminder, :count)
+      expect(response).to have_http_status(:not_found)
+
+      active_task = create(:plan_task, event_plan: plan)
+      plan.update!(status: "completed", completed_at: Time.current)
+
+      get new_reminder_path(event_plan_id: plan.id, plan_task_id: active_task.id)
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "rejects a task attachment without its event plan context" do
+      plan = create(:event_plan)
+      task = create(:plan_task, event_plan: plan)
+      sign_in plan.user
+
+      expect do
+        post reminders_path, params: {
+          reminder: {
+            relationship_profile_id: plan.relationship_profile_id,
+            plan_task_id: task.id,
+            title: "Prepare the event",
+            reminder_type: "event_preparation",
+            priority: "normal",
+            recurrence: "none",
+            time_zone: "UTC",
+            scheduled_at: "2026-09-01T09:00"
+          }
+        }
+      end.not_to change(Reminder, :count)
+
+      expect(response).to have_http_status(:not_found)
+
+      get new_reminder_path(plan_task_id: task.id)
+
+      expect(response).to have_http_status(:not_found)
+    end
+
     it "offers a visible timezone fallback when browser timezone capture is unavailable" do
       sign_in create(:user)
 
@@ -366,6 +476,25 @@ RSpec.describe "Reminders", type: :request do
       expect(response).to redirect_to(reminders_path(relationship_profile_id: reminder.relationship_profile_id))
     end
 
+    it "returns an archived plan reminder to the reminder inbox after an HTML update" do
+      plan = create(:event_plan)
+      task = create(:plan_task, event_plan: plan)
+      reminder = create(
+        :reminder,
+        user: plan.user,
+        relationship_profile: plan.relationship_profile,
+        event_plan: plan,
+        plan_task: task
+      )
+      plan.archive!
+      sign_in reminder.user
+
+      patch reminder_path(reminder), params: { reminder: { title: "Updated archived plan reminder" } }
+
+      expect(response).to redirect_to(reminders_path(relationship_profile_id: plan.relationship_profile_id))
+      expect(reminder.reload.title).to eq("Updated archived plan reminder")
+    end
+
     it "renders the HTML edit form when validation fails without Turbo" do
       reminder = create(:reminder)
       sign_in reminder.user
@@ -529,6 +658,11 @@ RSpec.describe "Reminders", type: :request do
 
       completable = create(:reminder, user:, relationship_profile: profile)
       patch complete_reminder_path(completable)
+      expect(response).to redirect_to(reminders_path)
+
+      plan = create(:event_plan, user:, relationship_profile: profile)
+      planned = create(:reminder, user:, relationship_profile: profile, event_plan: plan)
+      patch complete_reminder_path(planned)
       expect(response).to redirect_to(reminders_path)
     end
   end

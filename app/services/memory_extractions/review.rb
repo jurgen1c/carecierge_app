@@ -25,12 +25,14 @@ module MemoryExtractions
       raise ArgumentError, "Unsupported review decision" unless decision.in?(DECISIONS)
 
       ApplicationRecord.transaction do
-        extracted_memory.lock!
-        return extracted_memory unless extracted_memory.pending?
+        extracted_memory.relationship_profile.with_lock do
+          extracted_memory.lock!
+          return extracted_memory unless extracted_memory.pending?
 
-        apply_decision
-        complete_recap_if_reviewed
-        extracted_memory
+          apply_decision
+          complete_recap_if_reviewed
+          extracted_memory
+        end
       end
     end
 

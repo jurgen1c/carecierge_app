@@ -1,0 +1,29 @@
+<% disable_turbo_cache %>
+<main class="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+  <div class="flex flex-col gap-4 border-b border-private-line pb-6 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-ink"><%= t("event_plans.index.title") %></h1>
+      <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("event_plans.index.body") %></p>
+    </div>
+    <%= link_to t("event_plans.index.create"), new_event_plan_path, class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+  </div>
+
+  <% if @event_plans.any? %>
+    <ul class="mt-6 divide-y divide-private-line border-y border-private-line">
+      <% @event_plans.each do |plan| %>
+        <li>
+          <%= link_to event_plan_path(plan), class: "grid min-h-16 gap-2 py-4 text-ink transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center" do %>
+            <span><span class="block text-base font-semibold"><%= plan.title %></span><span class="mt-1 block text-sm text-quiet-note"><%= plan.relationship_profile.display_name %> · <%= plan.occasion_type_label %></span></span>
+            <span class="text-sm text-quiet-note"><%= plan.starts_on ? l(plan.starts_on, format: :important_date) : t("event_plans.workspace.unscheduled") %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <section class="mt-8 rounded-2xl border border-private-line bg-surface p-6" aria-labelledby="event-plans-empty-title">
+      <h2 id="event-plans-empty-title" class="text-xl font-semibold text-ink"><%= t("event_plans.index.empty_title") %></h2>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.index.empty_body") %></p>
+      <%= link_to t("event_plans.index.empty_action"), new_event_plan_path, class: "mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-primary" %>
+    </section>
+  <% end %>
+</main>

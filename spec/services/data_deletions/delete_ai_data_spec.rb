@@ -27,6 +27,42 @@ RSpec.describe DataDeletions::DeleteAiData do
     expect(profile.reload.gift_recommendation_generation_version).to eq(generation_version + 1)
   end
 
+  it "removes AI plan suggestions while preserving the user plan, authored work, and reminders" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      source_context: [ { "id" => "memory:owned", "label" => "Favorite tea" } ]
+    )
+    template_task = create(:plan_task, event_plan: plan, origin: "template", title: "Confirm the date")
+    manual_task = create(:plan_task, event_plan: plan, origin: "manual", title: "Call the venue")
+    ai_task = create(
+      :plan_task,
+      event_plan: plan,
+      origin: "ai",
+      title: "Ask about the tea service",
+      source_context: [
+        {
+          "id" => "memory:owned",
+          "label" => "Favorite tea",
+          "certainty" => "confirmed",
+          "sensitive" => false
+        }
+      ]
+    )
+    reminder = create(:reminder, user:, relationship_profile: profile, event_plan: plan, plan_task: ai_task)
+    plan.update_columns(status: "completed", completed_at: Time.current)
+    generation_version = plan.generation_version
+
+    described_class.call(user:)
+
+    expect(plan.reload).to have_attributes(source_context: [], generation_version: generation_version + 1)
+    expect(plan.plan_tasks.reload).to contain_exactly(template_task, manual_task)
+    expect(reminder.reload).to have_attributes(event_plan: plan, plan_task: nil)
+  end
+
   it "uses a profile lock compatible with extraction foreign-key checks" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

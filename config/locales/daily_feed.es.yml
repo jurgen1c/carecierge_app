@@ -10,6 +10,7 @@ es:
       queue: "Cola"
       people: "Personas"
       reminders: "Recordatorios"
+      event_plans: "Planes de eventos"
       open_reminders: "Abrir recordatorios"
       activity: "Actividad"
       data_controls: "Controles de datos"

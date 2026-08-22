@@ -19,7 +19,9 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  commitment_id           :uuid
+#  event_plan_id           :uuid
 #  important_date_id       :uuid
+#  plan_task_id            :uuid
 #  relationship_profile_id :uuid
 #  user_id                 :uuid             not null
 #
@@ -27,7 +29,9 @@
 #
 #  index_reminders_on_active_next_delivery_at              (next_delivery_at) WHERE (((status)::text = 'active'::text) AND (next_delivery_at IS NOT NULL))
 #  index_reminders_on_commitment_id                        (commitment_id)
+#  index_reminders_on_event_plan_id                        (event_plan_id)
 #  index_reminders_on_important_date_id                    (important_date_id)
+#  index_reminders_on_plan_task_id                         (plan_task_id)
 #  index_reminders_on_profile_status_and_schedule          (relationship_profile_id,status,scheduled_at)
 #  index_reminders_on_relationship_profile_id              (relationship_profile_id)
 #  index_reminders_on_user_id                              (user_id)
@@ -36,7 +40,9 @@
 # Foreign Keys
 #
 #  fk_rails_...  (commitment_id => commitments.id) ON DELETE => cascade
+#  fk_rails_...  (event_plan_id => event_plans.id) ON DELETE => cascade
 #  fk_rails_...  (important_date_id => important_dates.id) ON DELETE => nullify
+#  fk_rails_...  (plan_task_id => plan_tasks.id) ON DELETE => nullify
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
@@ -49,6 +55,17 @@ RSpec.describe Reminder, type: :model do
     commitment = create(:commitment, relationship_profile: profile)
 
     reminder = build(:reminder, user:, relationship_profile: profile, commitment:)
+
+    expect(reminder).to be_valid
+  end
+
+  it "accepts event-plan and plan-task context owned by the same user and relationship" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    event_plan = create(:event_plan, user:, relationship_profile: profile)
+    plan_task = create(:plan_task, event_plan:)
+
+    reminder = build(:reminder, user:, relationship_profile: profile, event_plan:, plan_task:)
 
     expect(reminder).to be_valid
   end
@@ -128,6 +145,81 @@ RSpec.describe Reminder, type: :model do
 
       expect(reminder).not_to be_valid
       expect(reminder.errors[:important_date]).to include("must belong to the selected relationship")
+    end
+
+    it "rejects event planning context from another owner or relationship" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      foreign_plan = create(:event_plan)
+      other_plan = create(:event_plan, user:, relationship_profile: create(:relationship_profile, user:))
+      reminder = build(:reminder, user:, relationship_profile: profile, event_plan: foreign_plan)
+
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:event_plan, :different_owner)).to be(true)
+
+      reminder.event_plan = other_plan
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:event_plan, :different_relationship)).to be(true)
+    end
+
+    it "requires a task reminder to reference its task's plan" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      event_plan = create(:event_plan, user:, relationship_profile: profile)
+      other_plan = create(:event_plan, user:, relationship_profile: profile)
+      reminder = build(
+        :reminder,
+        user:,
+        relationship_profile: profile,
+        event_plan: other_plan,
+        plan_task: create(:plan_task, event_plan:)
+      )
+
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:plan_task, :different_plan)).to be(true)
+    end
+
+    it "rejects new reminder attachments to completed plans or tasks" do
+      plan = create(:event_plan)
+      completed_task = create(:plan_task, event_plan: plan, completed_at: Time.current)
+      reminder = build(
+        :reminder,
+        user: plan.user,
+        relationship_profile: plan.relationship_profile,
+        event_plan: plan,
+        plan_task: completed_task
+      )
+
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:plan_task, :completed)).to be(true)
+
+      completed_task.update!(completed_at: nil)
+      plan.update!(status: "completed", completed_at: Time.current)
+      reminder = build(
+        :reminder,
+        user: plan.user,
+        relationship_profile: plan.relationship_profile,
+        event_plan: plan,
+        plan_task: completed_task
+      )
+
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:event_plan, :inactive)).to be(true)
+    end
+
+    it "preserves editable historical reminder associations after planning work completes" do
+      plan = create(:event_plan)
+      task = create(:plan_task, event_plan: plan)
+      reminder = create(
+        :reminder,
+        user: plan.user,
+        relationship_profile: plan.relationship_profile,
+        event_plan: plan,
+        plan_task: task
+      )
+      task.complete!
+
+      expect { reminder.reload.update!(notes: "Keep this history") }.not_to raise_error
     end
 
     it "localizes an important-date relationship mismatch" do

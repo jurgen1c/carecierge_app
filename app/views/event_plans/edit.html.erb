@@ -1,0 +1,9 @@
+<% disable_turbo_cache %>
+<main class="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+  <h1 class="text-3xl font-semibold text-ink"><%= t("event_plans.edit.title") %></h1>
+  <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("event_plans.edit.body") %></p>
+  <%= render "form", event_plan: @event_plan %>
+  <div class="mt-8 border-t border-private-line pt-5">
+    <%= button_to t("event_plans.edit.archive"), archive_event_plan_path(@event_plan), method: :patch, form: { data: { turbo_confirm: t("event_plans.edit.archive_confirm") } }, class: "inline-flex min-h-11 items-center text-sm font-semibold text-danger-ink" %>
+  </div>
+</main>

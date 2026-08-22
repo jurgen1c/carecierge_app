@@ -10,6 +10,7 @@ en:
       queue: "Queue"
       people: "People"
       reminders: "Reminders"
+      event_plans: "Event plans"
       open_reminders: "Open reminders"
       activity: "Activity"
       data_controls: "Data controls"

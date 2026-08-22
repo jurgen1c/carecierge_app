@@ -1,0 +1,224 @@
+<main aria-labelledby="event-plan-title" class="mx-auto w-full max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
+  <div class="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)_18rem]">
+    <aside class="lg:border-r lg:border-private-line lg:pr-5" aria-labelledby="event-plans-navigation-title">
+      <div class="flex items-center justify-between gap-3">
+        <h2 id="event-plans-navigation-title" class="text-lg font-semibold text-ink"><%= t("event_plans.workspace.navigation_title") %></h2>
+        <%= link_to t("event_plans.workspace.create_short"), new_event_plan_path, class: "text-sm font-semibold text-primary hover:text-primary-hover lg:hidden" %>
+      </div>
+      <%= link_to t("event_plans.workspace.create"), new_event_plan_path, class: "mt-4 hidden w-full lg:inline-flex #{style(:primary_button)}" %>
+      <nav class="mt-4 grid gap-1" aria-label="<%= t("event_plans.workspace.navigation_label") %>">
+        <% event_plans.each do |plan| %>
+          <%= link_to event_plan_path(plan), aria: { current: plan == event_plan ? "page" : nil }, class: [
+            "min-h-11 rounded-lg px-3 py-3 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+            plan == event_plan ? "bg-surface text-primary" : "text-ink hover:bg-surface"
+          ] do %>
+            <span class="block text-sm font-semibold"><%= plan.title %></span>
+            <span class="mt-1 block text-xs text-quiet-note"><%= plan.starts_on ? l(plan.starts_on, format: :important_date) : t("event_plans.workspace.unscheduled") %></span>
+          <% end %>
+        <% end %>
+      </nav>
+      <%= link_to t("event_plans.workspace.all_plans"), event_plans_path, class: "mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:text-primary-hover" %>
+    </aside>
+
+    <div class="min-w-0">
+      <header class="border-b border-private-line pb-5">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p class="text-sm font-semibold text-primary"><%= event_plan.relationship_profile.display_name %></p>
+            <h1 id="event-plan-title" class="mt-1 text-3xl font-semibold text-ink"><%= event_plan.title %></h1>
+            <p class="mt-2 text-sm leading-6 text-quiet-note">
+              <%= event_plan.occasion_type_label %>
+              <% if event_plan.starts_on %> · <%= l(event_plan.starts_on, format: :important_date) %><% end %>
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <%= link_to t("event_plans.workspace.edit_plan"), edit_event_plan_path(event_plan), class: style(:secondary_button) %>
+            <% if event_plan.active? %>
+              <%= button_to t("event_plans.workspace.complete_plan"), complete_event_plan_path(event_plan), method: :patch, class: style(:secondary_button) %>
+            <% elsif event_plan.completed? %>
+              <%= button_to t("event_plans.workspace.reopen_plan"), reopen_event_plan_path(event_plan), method: :patch, class: style(:secondary_button) %>
+            <% end %>
+          </div>
+        </div>
+        <div class="mt-5 grid gap-2">
+          <div class="flex flex-wrap justify-between gap-2 text-sm text-quiet-note">
+            <span><%= t("event_plans.workspace.progress", completed: progress[:completed], total: progress[:total]) %></span>
+            <span><%= t("event_plans.workspace.remaining", count: progress[:total] - progress[:completed]) %></span>
+          </div>
+          <progress class="h-2 w-full overflow-hidden rounded-full accent-primary" max="100" value="<%= progress[:percentage] %>"><%= progress[:percentage] %>%</progress>
+        </div>
+      </header>
+
+      <section aria-labelledby="planning-runway-title" class="py-6">
+        <div class="flex flex-col gap-4 border-b border-private-line pb-5 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 id="planning-runway-title" class="text-xl font-semibold text-ink"><%= t("event_plans.workspace.runway_title") %></h2>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.workspace.runway_body") %></p>
+          </div>
+        </div>
+
+        <% PlanTask::PHASES.each do |phase| %>
+          <details open class="border-b border-private-line py-2">
+            <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 text-base font-semibold text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+              <span><%= t("event_plans.phases.#{phase}") %></span>
+              <span class="text-sm font-medium text-quiet-note"><%= tasks_for(phase).count(&:completed?) %>/<%= tasks_for(phase).length %></span>
+            </summary>
+            <ol class="divide-y divide-private-line">
+              <% tasks_for(phase).each do |task| %>
+                <li class="py-4">
+                  <div class="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-start">
+                    <div class="pt-1">
+                      <% if task.completed? %>
+                        <%= button_to reopen_event_plan_plan_task_path(event_plan, task), method: :patch, class: "inline-flex size-11 items-center justify-center rounded-full border border-primary bg-primary text-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary", aria: { label: t("event_plans.plan_tasks.reopen.label", title: task.title) } do %>✓<% end %>
+                      <% else %>
+                        <%= button_to complete_event_plan_plan_task_path(event_plan, task), method: :patch, class: "inline-flex size-11 items-center justify-center rounded-full border border-stone-300 bg-canvas text-quiet-note hover:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary", aria: { label: t("event_plans.plan_tasks.complete.label", title: task.title) } do %>○<% end %>
+                      <% end %>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="<%= style(:kind_badge, origin: task.origin.to_sym) %>"><%= t("event_plans.task_kinds.#{task.kind}") %></span>
+                        <% if task.due_on %><span class="text-xs font-medium text-quiet-note"><%= l(task.due_on, format: :important_date) %></span><% end %>
+                      </div>
+                      <h3 class="mt-2 text-sm font-semibold text-ink <%= "line-through" if task.completed? %>"><%= task.title %></h3>
+                      <% if task.details.present? %><p class="mt-1 text-sm leading-6 text-quiet-note"><%= task.details %></p><% end %>
+                      <% if task.kind == "message_draft" %><p class="mt-1 text-xs font-semibold text-primary"><%= t("event_plans.workspace.draft_only") %></p><% end %>
+                      <% if task_source_labels(task).any? %>
+                        <p class="mt-2 text-xs leading-5 text-quiet-note"><span class="font-semibold"><%= t("event_plans.workspace.sources") %></span> <%= task_source_labels(task).to_sentence %></p>
+                      <% end %>
+                      <details class="mt-2">
+                        <summary class="inline-flex min-h-11 cursor-pointer items-center text-sm font-semibold text-primary"><%= t("event_plans.plan_tasks.edit.action") %></summary>
+                        <%= form_with model: [ event_plan, task ], class: "grid gap-3 rounded-xl bg-surface p-4 sm:grid-cols-2" do |form| %>
+                          <%= form.text_field :title, aria: { label: t("event_plans.plan_tasks.fields.title") }, class: "min-h-11 rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink sm:col-span-2" %>
+                          <%= form.text_area :details, rows: 2, aria: { label: t("event_plans.plan_tasks.fields.details") }, class: "rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink sm:col-span-2" %>
+                          <%= form.select :phase, PlanTask::PHASES.map { |value| [ t("event_plans.phases.#{value}"), value ] }, {}, aria: { label: t("event_plans.plan_tasks.fields.phase") }, class: "min-h-11 rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+                          <%= form.date_field :due_on, aria: { label: t("event_plans.plan_tasks.fields.due_on") }, class: "min-h-11 rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+                          <%= form.submit t("event_plans.plan_tasks.edit.save"), class: style(:primary_button) %>
+                        <% end %>
+                      </details>
+                    </div>
+                    <div class="flex flex-wrap gap-2 sm:justify-end">
+                      <% if event_plan.active? && !task.completed? %>
+                        <%= link_to t("event_plans.workspace.create_reminder"), new_reminder_path(
+                          relationship_profile_id: event_plan.relationship_profile_id,
+                          event_plan_id: event_plan.id,
+                          plan_task_id: task.id
+                        ), class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:text-primary-hover" %>
+                      <% end %>
+                      <%= button_to t("event_plans.plan_tasks.destroy.action"), event_plan_plan_task_path(event_plan, task), method: :delete, form: { data: { turbo_confirm: t("event_plans.plan_tasks.destroy.confirm") } }, class: "inline-flex min-h-11 items-center text-sm font-semibold text-danger-ink" %>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ol>
+          </details>
+        <% end %>
+
+        <details class="mt-5 rounded-xl border border-private-line bg-surface p-4">
+          <summary class="min-h-11 cursor-pointer text-sm font-semibold text-primary"><%= t("event_plans.plan_tasks.create.action") %></summary>
+          <%= form_with model: [ event_plan, plan_task ], class: "mt-3 grid gap-3 sm:grid-cols-2" do |form| %>
+            <div class="sm:col-span-2">
+              <%= form.label :title, t("event_plans.plan_tasks.fields.title"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.text_field :title, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+            </div>
+            <div>
+              <%= form.label :phase, t("event_plans.plan_tasks.fields.phase"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.select :phase, PlanTask::PHASES.map { |value| [ t("event_plans.phases.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+            </div>
+            <div>
+              <%= form.label :kind, t("event_plans.plan_tasks.fields.kind"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.select :kind, PlanTask::KINDS.map { |value| [ t("event_plans.task_kinds.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+            </div>
+            <div class="sm:col-span-2">
+              <%= form.label :details, t("event_plans.plan_tasks.fields.details"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.text_area :details, rows: 2, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+            </div>
+            <div>
+              <%= form.label :due_on, t("event_plans.plan_tasks.fields.due_on"), class: "block text-sm font-semibold text-ink" %>
+              <%= form.date_field :due_on, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+            </div>
+            <div class="flex items-end"><%= form.submit t("event_plans.plan_tasks.create.save"), class: "w-full #{style(:primary_button)}" %></div>
+          <% end %>
+        </details>
+      </section>
+
+      <% if event_plan.active? %>
+        <section aria-labelledby="event-plan-suggestions-title" class="rounded-2xl border border-private-line bg-surface p-5 sm:p-6">
+        <h2 id="event-plan-suggestions-title" class="text-lg font-semibold text-ink"><%= t("event_plans.suggestions.title") %></h2>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.suggestions.body") %></p>
+        <%= form_with url: suggest_event_plan_path(event_plan), method: :post, class: "mt-5 space-y-4" do %>
+          <% if private_notes.any? %>
+            <fieldset class="space-y-2">
+              <legend class="text-sm font-semibold text-ink"><%= t("event_plans.suggestions.private_notes") %></legend>
+              <p class="text-xs leading-5 text-quiet-note"><%= t("event_plans.suggestions.per_request") %></p>
+              <% private_notes.each do |note| %>
+                <label class="flex min-h-11 items-center gap-3 text-sm text-ink">
+                  <%= check_box_tag "event_plan_suggestion[private_note_ids][]", note.id, false, class: "size-5 rounded border-stone-300 text-primary focus:ring-primary" %>
+                  <%= private_note_label(note) %>
+                </label>
+              <% end %>
+            </fieldset>
+          <% end %>
+          <% if vault_items.any? %>
+            <fieldset class="space-y-2 border-t border-private-line pt-4">
+              <legend class="text-sm font-semibold text-ink"><%= t("event_plans.suggestions.vault_items") %></legend>
+              <p class="text-xs leading-5 text-quiet-note"><%= t("event_plans.suggestions.vault_lease") %></p>
+              <% if vault_unlocked %>
+                <% vault_items.each do |item| %>
+                  <label class="flex min-h-11 items-center gap-3 text-sm text-ink">
+                    <%= check_box_tag "event_plan_suggestion[vault_item_ids][]", item.id, false, class: "size-5 rounded border-stone-300 text-primary focus:ring-primary" %>
+                    <%= t("event_plans.suggestions.vault_item_label", title: item.display_title) %>
+                  </label>
+                <% end %>
+              <% else %>
+                <%= link_to t("event_plans.suggestions.unlock_vault"), relationship_profile_privacy_vault_path(event_plan.relationship_profile), class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
+              <% end %>
+            </fieldset>
+          <% end %>
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <%= submit_tag t("event_plans.suggestions.action"), class: style(:primary_button), data: { turbo_submits_with: t("event_plans.suggestions.loading") } %>
+            <p class="text-xs leading-5 text-quiet-note"><%= t("event_plans.suggestions.review_only") %></p>
+          </div>
+        <% end %>
+        </section>
+      <% end %>
+    </div>
+
+    <aside class="space-y-6 lg:border-l lg:border-private-line lg:pl-5">
+      <section aria-labelledby="outstanding-decisions-title">
+        <h2 id="outstanding-decisions-title" class="text-base font-semibold text-ink"><%= t("event_plans.workspace.decisions_title") %></h2>
+        <% if event_plan.outstanding_decisions.any? %>
+          <ul class="mt-3 divide-y divide-private-line border-y border-private-line">
+            <% event_plan.outstanding_decisions.each do |decision| %>
+              <li class="py-3"><p class="text-sm font-semibold text-ink"><%= decision.title %></p><% if decision.due_on %><p class="mt-1 text-xs text-quiet-note"><%= l(decision.due_on, format: :important_date) %></p><% end %></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("event_plans.workspace.no_decisions") %></p>
+        <% end %>
+      </section>
+
+      <section aria-labelledby="next-reminder-title" class="border-t border-private-line pt-5">
+        <h2 id="next-reminder-title" class="text-base font-semibold text-ink"><%= t("event_plans.workspace.next_reminder_title") %></h2>
+        <% if next_reminder %>
+          <p class="mt-3 text-sm font-semibold text-ink"><%= next_reminder.title %></p>
+          <p class="mt-1 text-xs text-quiet-note"><%= l(next_reminder.effective_delivery_at, format: :long) %></p>
+          <%= button_to t("event_plans.workspace.mark_reminder_done"), complete_reminder_path(next_reminder), method: :patch, class: "mt-3 #{style(:secondary_button)}" %>
+        <% else %>
+          <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("event_plans.workspace.no_reminder") %></p>
+        <% end %>
+      </section>
+
+      <section aria-labelledby="relationship-sources-title" class="border-t border-private-line pt-5">
+        <h2 id="relationship-sources-title" class="text-base font-semibold text-ink"><%= t("event_plans.workspace.relationship_sources_title") %></h2>
+        <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("event_plans.workspace.relationship_sources_body") %></p>
+        <% if source_labels.any? %>
+          <ul class="mt-3 divide-y divide-private-line border-y border-private-line">
+            <% source_labels.each do |label| %><li class="py-3 text-sm text-ink"><%= label %></li><% end %>
+          </ul>
+        <% else %>
+          <p class="mt-3 text-sm text-quiet-note"><%= t("event_plans.workspace.no_sources") %></p>
+        <% end %>
+      </section>
+    </aside>
+  </div>
+</main>

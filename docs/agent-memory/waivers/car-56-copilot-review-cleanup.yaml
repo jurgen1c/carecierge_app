@@ -1,0 +1,11 @@
+id: car_56_copilot_review_cleanup
+status: active
+reason: >
+  Follow-up Copilot review cleanup after CAR-56 introduced the durable
+  event_plans.plans_are_owner_scoped_source_backed_and_user_controlled claim.
+  This change only corrects a request-spec example description so it accurately
+  identifies non-numeric budget validation; it does not change event-plan
+  behavior, authorization, privacy, lifecycle, or data-control rules.
+files:
+  - spec/requests/event_plans_spec.rb
+expires_at: 2026-09-05

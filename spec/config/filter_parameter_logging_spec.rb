@@ -50,6 +50,17 @@ RSpec.describe "Parameter filtering" do
         "interpretation" => "Private AI interpretation",
         "allow_suggestions" => "1"
       },
+      "event_plan" => {
+        "title" => "Private celebration title",
+        "guest_list" => "Private guest list",
+        "notes" => "Private planning notes",
+        "occasion_type" => "birthday"
+      },
+      "plan_task" => {
+        "title" => "Private planning step",
+        "details" => "Private step details",
+        "phase" => "arrange"
+      },
       "privacy_vault_unlock" => {
         "password" => "vault-password"
       },
@@ -71,7 +82,7 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("mood_note", "supportive_action")).to eq("[FILTERED]")
     expect(filtered.dig("mood_note", "category")).to eq("stressed")
     expect(filtered.dig("reminder", "notes")).to eq("[FILTERED]")
-    expect(filtered.dig("reminder", "title")).to eq("Call David")
+    expect(filtered.dig("reminder", "title")).to eq("[FILTERED]")
     expect(filtered.dig("commitment", "notes")).to eq("[FILTERED]")
     expect(filtered.dig("commitment", "title")).to eq("Send David the report")
     expect(filtered.dig("interaction", "notes")).to eq("[FILTERED]")
@@ -86,6 +97,13 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("social_context_note", "body")).to eq("[FILTERED]")
     expect(filtered.dig("social_context_note", "interpretation")).to eq("[FILTERED]")
     expect(filtered.dig("social_context_note", "allow_suggestions")).to eq("1")
+    expect(filtered.dig("event_plan", "title")).to eq("[FILTERED]")
+    expect(filtered.dig("event_plan", "guest_list")).to eq("[FILTERED]")
+    expect(filtered.dig("event_plan", "notes")).to eq("[FILTERED]")
+    expect(filtered.dig("event_plan", "occasion_type")).to eq("birthday")
+    expect(filtered.dig("plan_task", "title")).to eq("[FILTERED]")
+    expect(filtered.dig("plan_task", "details")).to eq("[FILTERED]")
+    expect(filtered.dig("plan_task", "phase")).to eq("arrange")
     expect(filtered.dig("privacy_vault_unlock", "password")).to eq("[FILTERED]")
     expect(filtered["memory_query"]).to eq("[FILTERED]")
     expect(filtered["body"]).to eq("Unrelated body")

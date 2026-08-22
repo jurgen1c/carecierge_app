@@ -25,6 +25,8 @@ module DataDeletions
         GiftRecommendation.where(relationship_profile: profiles).lock.each(&:destroy!)
         profiles.each(&:cancel_in_flight_gift_recommendation_generations!)
 
+        delete_event_plan_suggestions(user:, profiles:)
+
         reset_social_context_analysis(profiles)
 
         MemoryRecord.where(relationship_profile: profiles, source: "ai_inferred").find_each(&:destroy!)
@@ -35,6 +37,20 @@ module DataDeletions
         ).find_each(&:destroy!)
       end
     end
+
+    def self.delete_event_plan_suggestions(user:, profiles:)
+      EventPlan
+        .where(user:, relationship_profile: profiles)
+        .order(:id)
+        .lock("FOR NO KEY UPDATE")
+        .each do |plan|
+          ai_tasks = plan.plan_tasks.where(origin: "ai").reorder(:id).lock.to_a
+          Reminder.where(plan_task: ai_tasks).order(:id).lock.each { |reminder| reminder.update!(plan_task: nil) }
+          ai_tasks.each(&:destroy!)
+          plan.update!(source_context: [], generation_version: plan.generation_version + 1)
+        end
+    end
+    private_class_method :delete_event_plan_suggestions
 
     def self.reset_social_context_analysis(profiles)
       notes_by_profile = SocialContextNote

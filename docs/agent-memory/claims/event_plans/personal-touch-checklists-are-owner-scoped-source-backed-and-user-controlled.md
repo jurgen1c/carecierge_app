@@ -21,10 +21,12 @@ claim: >
   plus active-profile and archived-plan revalidation under those locks serialize
   creation and mutation; database constraints require exactly one UUID-backed
   moment and one checklist per moment. Pundit scopes every read and mutation to
-  the active profile owner. Content and provenance are encrypted at rest, lifecycle
-  evidence is content-free, and owner exports include the checklist, items, and
-  attached moment identifier. The UI remains review-only and never sends,
-  books, contacts, purchases, or scores the user's care.
+  the active profile owner. UI progress and rendering preload only ordered,
+  non-dismissed items, while owner exports retain the complete lifecycle. Content
+  and provenance are encrypted at rest, lifecycle evidence is content-free, and
+  exports include the checklist, items, and attached moment identifier. The UI
+  remains review-only and never sends, books, contacts, purchases, or scores the
+  user's care.
 
 source_files:
   - app/models/personal_touch_checklist.rb

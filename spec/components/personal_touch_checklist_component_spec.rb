@@ -66,6 +66,32 @@ RSpec.describe PersonalTouchChecklistComponent, type: :component do
     expect(page.native.at_css("input[placeholder]")["id"]).to eq(title_id)
   end
 
+  it "computes provenance labels once per rendered item" do
+    checklist = create(:personal_touch_checklist)
+    create(
+      :personal_touch_item,
+      personal_touch_checklist: checklist,
+      origin: "suggested",
+      source_context: [
+        {
+          "source_type" => "RelationshipPreference",
+          "source_id" => SecureRandom.uuid,
+          "source_label" => "Small gatherings",
+          "certainty" => "confirmed"
+        }
+      ]
+    )
+    rendered = described_class.new(
+      relationship_profile: checklist.relationship_profile,
+      moment: checklist.moment,
+      checklist:
+    )
+
+    expect(rendered).to receive(:source_labels).once.and_call_original
+
+    render_inline(rendered)
+  end
+
   it "renders the empty attachment action in Spanish" do
     plan = create(:event_plan)
 

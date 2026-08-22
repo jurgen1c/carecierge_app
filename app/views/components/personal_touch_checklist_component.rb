@@ -61,7 +61,7 @@ class PersonalTouchChecklistComponent < ApplicationViewComponent
   end
 
   def visible_items
-    @visible_items ||= checklist.personal_touch_items.reject(&:dismissed?)
+    @visible_items ||= checklist.visible_personal_touch_items.to_a
   end
 
   def progress

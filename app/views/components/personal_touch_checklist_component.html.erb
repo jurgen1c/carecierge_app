@@ -31,8 +31,9 @@
                 </div>
                 <h3 class="mt-2 text-sm font-semibold text-ink <%= "line-through" if item.completed? %>"><%= item.title %></h3>
                 <% if item.details.present? %><p class="mt-1 text-sm leading-6 text-quiet-note"><%= item.details %></p><% end %>
-                <% if source_labels(item).any? %>
-                  <p class="mt-2 text-xs leading-5 text-quiet-note"><%= source_labels(item).to_sentence %></p>
+                <% labels = source_labels(item) %>
+                <% if labels.any? %>
+                  <p class="mt-2 text-xs leading-5 text-quiet-note"><%= labels.to_sentence %></p>
                 <% end %>
               </div>
 

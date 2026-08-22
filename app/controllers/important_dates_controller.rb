@@ -88,6 +88,6 @@ class ImportantDatesController < ApplicationController
   end
 
   def relationship_profile_scope
-    current_user.relationship_profiles.includes(important_dates: { personal_touch_checklist: :personal_touch_items })
+    current_user.relationship_profiles.includes(important_dates: { personal_touch_checklist: :visible_personal_touch_items })
   end
 end

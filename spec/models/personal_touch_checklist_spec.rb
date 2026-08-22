@@ -74,6 +74,18 @@ RSpec.describe PersonalTouchChecklist do
     expect(checklist.moment).to eq(checklist.event_plan)
   end
 
+  it "calculates progress without loading dismissed items" do
+    checklist = create(:personal_touch_checklist)
+    create(:personal_touch_item, personal_touch_checklist: checklist, status: "active")
+    create(:personal_touch_item, personal_touch_checklist: checklist, status: "completed", completed_at: Time.current)
+    create(:personal_touch_item, personal_touch_checklist: checklist, status: "dismissed", dismissed_at: Time.current)
+    checklist.reload
+
+    expect(checklist.progress).to eq(completed: 1, total: 2)
+    expect(checklist.association(:personal_touch_items)).not_to be_loaded
+    expect(checklist.association(:visible_personal_touch_items)).to be_loaded
+  end
+
   it "locks the owning account before the profile, moment, and checklist during mutations" do
     checklist = create(:personal_touch_checklist)
     profile = checklist.relationship_profile

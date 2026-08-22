@@ -28,6 +28,9 @@ class PersonalTouchChecklist < ApplicationRecord
   belongs_to :important_date, optional: true
 
   has_many :personal_touch_items, -> { order(:position, :created_at, :id) }, dependent: :destroy
+  has_many :visible_personal_touch_items,
+    -> { visible.ordered },
+    class_name: "PersonalTouchItem"
 
   validates :event_plan_id, uniqueness: true, allow_nil: true
   validates :important_date_id, uniqueness: true, allow_nil: true
@@ -41,7 +44,7 @@ class PersonalTouchChecklist < ApplicationRecord
   end
 
   def progress
-    visible = personal_touch_items.reject(&:dismissed?)
+    visible = visible_personal_touch_items.to_a
     completed = visible.count(&:completed?)
 
     { completed:, total: visible.length }

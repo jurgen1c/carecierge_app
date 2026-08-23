@@ -15,9 +15,11 @@ claim: >
   event-plan source catalog and generation fence through a swappable RubyLLM
   provider boundary, with provider-compatible model defaults, a bounded
   provider-specific output-token limit, and OpenAI response storage explicitly
-  disabled. Explicit model overrides are passed directly to their selected
-  provider even when newer than RubyLLM's bundled registry, while repository
-  defaults retain registry validation. Public relationship context is
+  disabled. Provider names are normalized for case and surrounding whitespace
+  before provider and response-parameter selection. Explicit model overrides
+  are passed directly to their selected provider even when newer than RubyLLM's
+  bundled registry, while repository defaults retain registry validation.
+  Public relationship context is
   eligible by default, private notes require identifiable per-request selection,
   and vault items also require suggestion approval plus a revalidated active
   lease. Prior AI tasks are eligible only when all of their sources remain
@@ -75,6 +77,7 @@ related_files:
   - config/locales/event_plans.en.yml
   - config/locales/event_plans.es.yml
   - docs/features/06-05-backup-plan-generator.md
+  - spec/agents/event_plans/llm_configuration_spec.rb
   - spec/services/backup_plans/generate_spec.rb
   - spec/services/backup_plans/promote_spec.rb
   - spec/requests/backup_plans_spec.rb
@@ -100,6 +103,7 @@ tags:
   - recovery
 
 verification:
+  - bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb
   - bundle exec rspec spec/migrations/create_backup_plans_spec.rb spec/models/backup_plan_spec.rb spec/models/backup_option_spec.rb spec/services/backup_plans spec/requests/backup_plans_spec.rb spec/components/event_plan_workspace_component_spec.rb
   - bundle exec rspec spec/models/event_plan_spec.rb spec/models/plan_task_spec.rb spec/models/reminder_spec.rb spec/services/event_plans spec/requests/event_plans_spec.rb spec/requests/reminders_spec.rb
   - bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/requests/localization_spec.rb
@@ -139,6 +143,7 @@ from changing a plan and prevents obsolete reminders from firing after recovery.
 
 ## Verification
 
+- `bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb`
 - `bundle exec rspec spec/migrations/create_backup_plans_spec.rb spec/models/backup_plan_spec.rb spec/models/backup_option_spec.rb spec/services/backup_plans spec/requests/backup_plans_spec.rb spec/components/event_plan_workspace_component_spec.rb`
 - `bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/requests/localization_spec.rb`
 - `bin/rubocop`

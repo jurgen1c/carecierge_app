@@ -10,8 +10,10 @@ module EventPlans
     module_function
 
     def provider
-      Rails.application.credentials.dig(:event_plans, :provider).presence ||
-        ENV.fetch("CARECIERGE_EVENT_PLAN_PROVIDER", DEFAULT_PROVIDER)
+      normalize_provider(
+        Rails.application.credentials.dig(:event_plans, :provider).presence ||
+          ENV.fetch("CARECIERGE_EVENT_PLAN_PROVIDER", DEFAULT_PROVIDER)
+      )
     end
 
     def model(provider: self.provider)
@@ -19,7 +21,7 @@ module EventPlans
     end
 
     def chat_options(model: nil, provider: self.provider)
-      provider = provider.to_s
+      provider = normalize_provider(provider)
       model_override = model.presence || configured_model || legacy_openai_model(provider)
       options = {
         model: (model_override || fallback_model(provider)).to_s,
@@ -30,7 +32,7 @@ module EventPlans
     end
 
     def response_params(provider:, output_token_limit:)
-      case provider.to_s
+      case normalize_provider(provider)
       when "openai"
         { store: false, max_completion_tokens: output_token_limit }
       when "gemini"
@@ -45,6 +47,11 @@ module EventPlans
         ENV["CARECIERGE_EVENT_PLAN_MODEL"].presence
     end
     private_class_method :configured_model
+
+    def normalize_provider(provider)
+      provider.to_s.strip.downcase.presence || DEFAULT_PROVIDER
+    end
+    private_class_method :normalize_provider
 
     def legacy_openai_model(provider)
       return unless provider.to_s == "openai"

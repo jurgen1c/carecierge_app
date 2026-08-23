@@ -30,10 +30,12 @@ claim: >
   reviewable tasks: it never sends, schedules, contacts, books, or purchases.
   OpenAI, Anthropic, and Gemini credentials can be supplied through encrypted
   Rails credentials or Kamal-forwarded provider environment secrets. Provider
-  defaults select a compatible model as a pair, while an explicit shared model
-  override takes precedence over the legacy OpenAI-only model credential and is
-  passed directly to the selected provider even when it is newer than RubyLLM's
-  bundled model registry; repository defaults retain registry validation.
+  names are normalized for case and surrounding whitespace before provider and
+  response-parameter selection. Provider defaults select a compatible model as
+  a pair, while an explicit shared model override takes precedence over the
+  legacy OpenAI-only model credential and is passed directly to the selected
+  provider even when it is newer than RubyLLM's bundled model registry;
+  repository defaults retain registry validation.
   Current, non-stale public relationship evidence is eligible by default;
   private notes require an identifiable per-request selection, while protected sources also
   require current suggestion approval, an identifiable unlocked choice, and a
@@ -93,6 +95,7 @@ related_files:
   - spec/models/plan_task_spec.rb
   - spec/services/event_plans/update_spec.rb
   - spec/services/event_plans/suggest_spec.rb
+  - spec/agents/event_plans/llm_configuration_spec.rb
   - spec/requests/event_plans_spec.rb
   - spec/config/ai_memory_deploy_spec.rb
   - spec/serializers/data_exports/snapshot_spec.rb
@@ -124,6 +127,7 @@ tags:
   - source_provenance
 
 verification:
+  - bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb
   - bundle exec rspec spec/models/event_plan_spec.rb spec/models/plan_task_spec.rb spec/models/reminder_spec.rb spec/services/event_plans spec/policies/event_plan_policy_spec.rb spec/policies/plan_task_policy_spec.rb spec/components/event_plan_workspace_component_spec.rb spec/requests/event_plans_spec.rb spec/requests/reminders_spec.rb spec/system/event_plans_spec.rb
   - bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb
   - bin/rubocop
@@ -163,6 +167,7 @@ silent sensitive-context reuse, and accidental action on the user's behalf.
 
 ## Verification
 
+- `bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb`
 - `bundle exec rspec spec/models/event_plan_spec.rb spec/models/plan_task_spec.rb spec/models/reminder_spec.rb spec/services/event_plans spec/policies/event_plan_policy_spec.rb spec/policies/plan_task_policy_spec.rb spec/components/event_plan_workspace_component_spec.rb spec/requests/event_plans_spec.rb spec/requests/reminders_spec.rb spec/system/event_plans_spec.rb`
 - `bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb`
 - `bin/rubocop`

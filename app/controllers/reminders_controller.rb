@@ -204,7 +204,7 @@ class RemindersController < ApplicationController
     return @selected_plan_task = nil unless id
 
     plan = selected_event_plan || raise(ActiveRecord::RecordNotFound)
-    @selected_plan_task = plan.plan_tasks.incomplete.find(id)
+    @selected_plan_task = plan.plan_tasks.current.incomplete.find(id)
   end
 
   def captured_time_zone
@@ -326,7 +326,7 @@ class RemindersController < ApplicationController
       else
         raise ActiveRecord::RecordNotFound unless reminder.event_plan
 
-        reminder.event_plan.plan_tasks.incomplete.find(task_id)
+        reminder.event_plan.plan_tasks.current.incomplete.find(task_id)
       end
     end
 

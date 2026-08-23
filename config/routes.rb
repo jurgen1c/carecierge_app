@@ -38,6 +38,10 @@ Rails.application.routes.draw do
     patch :complete, on: :member
     patch :reopen, on: :member
     post :suggest, on: :member
+    resources :backup_plans, only: [] do
+      post :generate, on: :collection
+      patch :promote, on: :member
+    end
     resource :personal_touch_checklist, only: :create
     resources :plan_tasks, only: %i[create update destroy] do
       patch :complete, on: :member

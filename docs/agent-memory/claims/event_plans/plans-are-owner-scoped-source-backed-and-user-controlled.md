@@ -3,7 +3,7 @@ id: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
 type: fact
 system: event_plans
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Event plans are owner-scoped, source-backed, and user-controlled
@@ -12,7 +12,8 @@ claim: >
   Active relationship owners create encrypted birthday, anniversary, and generic
   event plans from one deterministic localized template. Plans and their phased
   tasks expose progress, decisions, and explicit lifecycle actions. Scheduling or
-  rescheduling a plan rebases untouched template deadlines while preserving
+  rescheduling a plan rebases untouched template deadlines, including
+  superseded work that selective AI deletion may later restore, while preserving
   user-customized dates. New task
   reminders require active plans and incomplete tasks, and deleting a task
   detaches rather than deletes its reminder history. Optional AI planning is
@@ -28,7 +29,9 @@ claim: >
   fence. Account-profile-plan locking plus
   profile-lock participation by eligible source writers, a generation fence,
   and active-profile revalidation under mutation locks reject stale work. Authored content is filtered
-  from request logs and sensitive plan pages disable Turbo snapshots. Plans and
+  from request logs and sensitive plan pages disable Turbo snapshots. Superseded
+  tasks are excluded from later provider snapshots and interactive task flows,
+  with their current state rechecked inside held mutation locks. Plans and
   tasks participate in owner exports. Selective AI deletion clears aggregate
   provenance, deletes AI-origin tasks, advances the fence, and detaches rather
   than deletes explicit reminders while preserving plans and template/manual
@@ -104,7 +107,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
 ---
 
 # Event plans are owner-scoped, source-backed, and user-controlled

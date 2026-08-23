@@ -3,7 +3,7 @@ id: data_controls.data_portability_and_deletion
 type: fact
 system: data_controls
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -16,15 +16,18 @@ claim: >
   message-draft response settings and revisions. Relationship briefings and
   gift recommendations, event plans, and plan tasks are included with
   source-backed output and consent
-  metadata, while their internal generation fences stay excluded. Vault payloads require
+  metadata, while their internal generation fences stay excluded. Ordinary
+  exports keep sensitive backup-source provenance but redact the plaintext
+  source content. Vault payloads and unredacted sensitive backup sources require
   reauthentication; internal errors, leases,
   fences, recipient keys, and ownership keys stay excluded. Serialization
   neutralizes CSV formulas, preserves recurrences, uses the configured PDF
   origin, and audits only successful exports. Selective AI deletion preserves
   corrected memories, authored notes, and gifts accepted from recommendations;
   deletes relationship briefings, gift recommendations, and AI-origin plan
-  tasks; preserves event plans, template/manual plan work, and explicit plan
-  reminders even for terminal plans; clears note analysis
+  tasks; restores template/manual work superseded by deleted AI backup options
+  with untouched template deadlines aligned to any rescheduled event date,
+  and preserves event plans and explicit plan reminders even for terminal plans; clears note analysis
   without rereading unchanged screenshots; and fences delayed results. Profile and account
   deletion lock snapshots, revokes outstanding authenticated upload grants, and
   idempotently cleans attached or abandoned owner blobs. Feed visibility state
@@ -107,7 +110,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized

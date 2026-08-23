@@ -49,6 +49,8 @@ class AuditEvent < ApplicationRecord
     gift_recommendation.dismissed
     gift_recommendation.purchased
     event_plan.suggestions_generated
+    event_plan.backup_options_generated
+    event_plan.backup_option_promoted
     personal_touch_checklist.created
     personal_touch_item.created
     personal_touch_item.completed
@@ -81,11 +83,14 @@ class AuditEvent < ApplicationRecord
     capability
     changed_fields
     count
+    created_count
     new_mode
     permission_scope
     previous_mode
     request_kind
     result
+    scenario
+    superseded_count
   ].freeze
   TARGET_TYPES = %w[AutomationPermission EventPlan PrivacyVaultItem RelationshipProfile Reminder User].freeze
   MAX_METADATA_VALUE_LENGTH = 120

@@ -67,7 +67,7 @@ module DataExports
         "important_dates" => records(profile.important_dates),
         "gifts" => records(profile.gifts),
         "gift_recommendations" => profile.gift_recommendations.recent_first.map { |recommendation| gift_recommendation_attributes(recommendation) },
-        "event_plans" => profile.event_plans.ordered.includes(:plan_tasks).map { |plan| event_plan_attributes(plan) },
+        "event_plans" => profile.event_plans.ordered.includes(:plan_tasks, backup_plans: :backup_options).map { |plan| event_plan_attributes(plan) },
         "personal_touch_checklists" => profile.personal_touch_checklists.includes(:personal_touch_items).order(:created_at, :id).map do |checklist|
           personal_touch_checklist_attributes(checklist)
         end,
@@ -129,8 +129,27 @@ module DataExports
       ).merge(
         "plan_tasks" => plan.plan_tasks.map do |task|
           attributes_for(task, except: %w[event_plan_id lock_version])
+        end,
+        "backup_plans" => plan.backup_plans.map { |backup_plan| backup_plan_attributes(backup_plan) }
+      )
+    end
+
+    def backup_plan_attributes(backup_plan)
+      attributes_for(
+        backup_plan,
+        except: %w[user_id event_plan_id event_plan_generation_version context_fingerprint lock_version]
+      ).merge(
+        "source_context" => exportable_source_context(backup_plan.source_context),
+        "backup_options" => backup_plan.backup_options.map do |option|
+          attributes_for(option, except: %w[backup_plan_id lock_version])
         end
       )
+    end
+
+    def exportable_source_context(source_context)
+      source_context.map do |source|
+        source["sensitive"] && !include_sensitive ? source.except("content") : source
+      end
     end
 
     def personal_touch_checklist_attributes(checklist)

@@ -5,29 +5,34 @@ require "rails_helper"
 # Table name: plan_tasks
 # Database name: primary
 #
-#  id             :uuid             not null, primary key
-#  completed_at   :datetime
-#  details        :text
-#  due_on         :date
-#  kind           :string           not null
-#  lock_version   :integer          default(0), not null
-#  origin         :string           default("manual"), not null
-#  phase          :string           not null
-#  position       :integer          not null
-#  source_context :text             not null
-#  title          :text             not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  event_plan_id  :uuid             not null
+#  id               :uuid             not null, primary key
+#  completed_at     :datetime
+#  details          :text
+#  due_on           :date
+#  kind             :string           not null
+#  lock_version     :integer          default(0), not null
+#  origin           :string           default("manual"), not null
+#  phase            :string           not null
+#  position         :integer          not null
+#  source_context   :text             not null
+#  superseded_at    :datetime
+#  title            :text             not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  backup_option_id :uuid
+#  event_plan_id    :uuid             not null
 #
 # Indexes
 #
+#  index_plan_tasks_on_backup_option_id         (backup_option_id)
 #  index_plan_tasks_on_event_plan_id            (event_plan_id)
+#  index_plan_tasks_on_plan_and_superseded      (event_plan_id,superseded_at)
 #  index_plan_tasks_on_plan_completion_and_due  (event_plan_id,completed_at,due_on)
 #  index_plan_tasks_on_plan_phase_position      (event_plan_id,phase,position)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (backup_option_id => backup_options.id) ON DELETE => nullify
 #  fk_rails_...  (event_plan_id => event_plans.id) ON DELETE => cascade
 #
 RSpec.describe PlanTask, type: :model do
@@ -85,6 +90,24 @@ RSpec.describe PlanTask, type: :model do
     expect(plan_task.reload.completed_at).to be_nil
     expect(reminder.reload).to be_completed
     expect(plan_task.event_plan.reload.generation_version).to eq(generation_version + 1)
+  end
+
+  it "rejects completion after the task is superseded while waiting for the plan lock" do
+    plan_task = create(:plan_task)
+    PlanTask.where(id: plan_task.id).update_all(superseded_at: Time.current)
+
+    expect { plan_task.complete! }.to raise_error(ActiveRecord::RecordNotFound)
+
+    expect(plan_task.reload).not_to be_completed
+  end
+
+  it "rejects reopening after the task is superseded while waiting for the plan lock" do
+    plan_task = create(:plan_task, completed_at: Time.current)
+    PlanTask.where(id: plan_task.id).update_all(superseded_at: Time.current)
+
+    expect { plan_task.reopen! }.to raise_error(ActiveRecord::RecordNotFound)
+
+    expect(plan_task.reload).to be_completed
   end
 
   it "detaches reminders without deleting their delivery history when destroyed" do

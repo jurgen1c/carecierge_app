@@ -70,6 +70,76 @@ en:
       action: "Suggest next steps"
       loading: "Preparing suggestions…"
       review_only: "Review only — no external action is taken."
+    backup_plans:
+      title: "Backup options"
+      body: "Prepare a practical recovery path from this plan and its existing constraints. Nothing changes until you promote an option."
+      reassurance: "Plan B, ready when you need it"
+      scenario_label: "Choose what changed"
+      scenario_prompt: "Select a recovery scenario"
+      scenarios:
+        weather: "Weather changed"
+        vendor: "A vendor fell through"
+        gift_delay: "A gift is delayed"
+        restaurant_unavailable: "The restaurant is unavailable"
+        transportation: "Transportation changed"
+        illness_cancellation: "Illness or cancellation"
+      optional_context: "Use optional private context"
+      per_request: "Nothing private is selected by default. Your choice applies only to this request."
+      private_notes: "Private notes for this request"
+      vault_items: "Privacy Vault items for this request"
+      vault_item_label: "Protected item: %{title}"
+      unlock_vault: "Unlock Privacy Vault"
+      effort: "Effort"
+      timing: "Timing"
+      cost: "Estimated cost"
+      fit: "Relationship fit"
+      preserves: "What stays the same"
+      changes: "What will change"
+      sources: "Source evidence"
+      applied: "Applied to active plan"
+      not_applied: "Not applied"
+      additions: "Steps this option will add"
+      applied_additions: "Steps this option added"
+      replacements: "Current steps this option will retire"
+      applied_replacements: "Current steps this option retired"
+      reminders_retires: "Active reminders that will be retired"
+      applied_reminders: "Active reminders that were retired"
+      no_active_reminders: "No active reminders are attached to this step."
+      no_replacements: "No current steps or reminders will be retired."
+      due_on: "Due %{date}"
+      impact: "%{added} backup steps will be added; %{superseded} conflicting incomplete steps will be superseded. Completed work stays in place."
+      applied_impact: "%{added} backup steps were added; %{superseded} conflicting incomplete steps were superseded. Completed work stayed in place."
+      empty: "Choose a scenario when a detail changes. You will be able to compare up to three recovery options before updating the plan."
+      promoted: "This backup option is now part of the active plan. Completed work stayed in place."
+      stale: "The event plan changed after these options were prepared. Generate fresh options before promoting one."
+      efforts:
+        low: "Low"
+        medium: "Medium"
+        high: "High"
+      timings:
+        same_day: "Same day"
+        within_week: "Within a week"
+        new_date: "New date"
+      cost_levels:
+        lower: "Lower than the original plan"
+        similar: "Similar to the original plan"
+        higher: "Higher than the original plan"
+        unknown: "Needs confirmation"
+      relationship_fits:
+        strong: "Strong match"
+        good: "Good match"
+        fair: "Fair match"
+      generate:
+        action: "Generate options"
+        loading: "Preparing backup options…"
+        notice: "Backup options are ready to compare."
+        error: "We could not prepare backup options. Review the scenario and try again."
+        superseded: "The plan changed while backup options were being prepared. Review it and try again."
+      promote:
+        action: "Promote this option"
+        confirm: "Promote this backup option? Completed work will stay in place. Conflicting incomplete steps and their active reminders will be retired."
+        notice: "The backup option is now part of your active plan."
+        unavailable: "This backup option is no longer current. Generate fresh options and try again."
     phases:
       decide: "Decide"
       arrange: "Arrange"
@@ -194,6 +264,24 @@ en:
           attributes:
             source_context:
               invalid: "must contain supported source references"
+        backup_plan:
+          attributes:
+            event_plan:
+              owner_mismatch: "must belong to you"
+            source_context:
+              invalid: "must contain supported source references"
+        backup_option:
+          attributes:
+            preserved_constraints:
+              invalid: "must contain supported constraints"
+            change_summary:
+              invalid: "must contain supported changes"
+            replacement_task_ids:
+              invalid: "must contain supported plan tasks"
+            task_blueprints:
+              invalid: "must contain supported backup steps"
+            source_context:
+              invalid: "must contain supported source references"
         reminder:
           attributes:
             event_plan:
@@ -201,3 +289,4 @@ en:
               different_relationship: "must belong to the selected relationship"
             plan_task:
               different_plan: "must belong to the selected event plan"
+              superseded: "has been superseded"

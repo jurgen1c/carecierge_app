@@ -3,7 +3,7 @@ id: reminders.reminder_delivery_system
 type: fact
 system: reminders
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Reminders provide owner-scoped scheduling and idempotent delivery
@@ -18,8 +18,11 @@ claim: >
   recovery, advisory worker locks, attempt tokens, final-handoff lifecycle and
   preference checks, after-commit enqueueing, and retries keep in-app and email
   delivery idempotent. Owner and relationship associations are validated and
-  policy-scoped. New planning attachments require active plans and incomplete
-  tasks. Terminal transitions retire active reminders, reopening never silently
+  policy-scoped. New planning attachments require active plans and current,
+  incomplete tasks; superseded tasks cannot receive new reminders. Backup-plan
+  options preserve an encrypted review snapshot of active reminders on proposed
+  replacement tasks and fail promotion if that reminder impact changed.
+  Terminal transitions retire active reminders, reopening never silently
   reactivates them, and task deletion detaches rather than deletes history. Push
   and SMS settings are stored but are not active delivery
   channels. Calendar exports emit privacy-minimized evidence only after
@@ -56,6 +59,12 @@ related_files:
   - db/migrate/20260714070000_add_reminder_delivery_processing_fence.rb
   - db/migrate/20260821040000_create_event_plans.rb
   - db/migrate/20260821040001_add_event_plan_references_to_reminders.rb
+  - app/models/backup_option.rb
+  - app/services/backup_plans/generate.rb
+  - app/services/backup_plans/promote.rb
+  - db/migrate/20260822210000_add_reviewed_reminders_to_backup_options.rb
+  - spec/services/backup_plans/generate_spec.rb
+  - spec/services/backup_plans/promote_spec.rb
   - Dockerfile
   - .kamal/secrets
   - docs/features/03-01-reminder-system.md
@@ -92,7 +101,7 @@ verification:
   - bundle exec rspec
   - bin/rubocop
   - bin/ci
-last_verified_commit: null
+last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
 ---
 
 # Reminders provide owner-scoped scheduling and idempotent delivery

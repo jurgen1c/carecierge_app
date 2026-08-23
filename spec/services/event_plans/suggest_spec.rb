@@ -105,6 +105,25 @@ RSpec.describe EventPlans::Suggest do
     expect(captured_snapshot.existing_tasks.sole).to have_attributes(title: "Original task title")
   end
 
+  it "excludes superseded tasks from the provider snapshot" do
+    plan = create(:event_plan)
+    current_task = create(:plan_task, event_plan: plan, title: "Current task")
+    superseded_task = create(:plan_task, event_plan: plan, title: "Old task", superseded_at: 1.hour.ago)
+    captured_snapshot = nil
+    generator = double
+    allow(generator).to receive(:generate) do |plan_snapshot:, **|
+      captured_snapshot = plan_snapshot
+      []
+    end
+
+    expect do
+      described_class.call(actor: plan.user, event_plan: plan, generator:)
+    end.to raise_error(EventPlans::GenerationError, /no usable steps/)
+
+    expect(captured_snapshot.existing_tasks.map(&:title)).to include(current_task.title)
+    expect(captured_snapshot.existing_tasks.map(&:title)).not_to include(superseded_task.title)
+  end
+
   it "rejects output when the relationship is archived during provider generation" do
     plan = create(:event_plan)
     generator = double

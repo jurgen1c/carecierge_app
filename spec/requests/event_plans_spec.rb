@@ -358,6 +358,27 @@ RSpec.describe "Event plans", type: :request do
     expect(task.reload.title).to eq("Submitted title")
   end
 
+  %i[patch delete].each do |request_method|
+    it "rejects a stale #{request_method} after concurrent promotion supersedes the task" do
+      plan = create(:event_plan, user:, relationship_profile: profile)
+      task = create(:plan_task, event_plan: plan, title: "Current task")
+      allow_any_instance_of(EventPlan).to receive(:with_lock).and_wrap_original do |method, *args, &block|
+        task.update_column(:superseded_at, Time.current)
+        method.call(*args, &block)
+      end
+
+      if request_method == :patch
+        patch event_plan_plan_task_path(plan, task), params: { plan_task: { title: "Too late" } }
+      else
+        delete event_plan_plan_task_path(plan, task)
+      end
+
+      expect(response).to have_http_status(:not_found)
+      expect(task.reload).to be_persisted
+      expect(task.title).to eq("Current task")
+    end
+  end
+
   it "hides reminder creation for completed planning work" do
     plan = create(:event_plan, user:, relationship_profile: profile)
     completed_task = create(:plan_task, event_plan: plan, completed_at: Time.current)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_22_164819) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_22_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -114,6 +114,61 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_164819) do
     t.check_constraint "(capability::text <> ALL (ARRAY['make_purchases'::character varying, 'pay_deposits'::character varying]::text[])) OR mode::text <> 'allow_automatically'::text", name: "automation_permissions_high_impact_mode_check"
     t.check_constraint "capability::text = ANY (ARRAY['draft_messages'::character varying, 'send_reminders'::character varying, 'access_contacts'::character varying, 'access_calendar'::character varying, 'suggest_gifts'::character varying, 'contact_vendors'::character varying, 'send_invitations'::character varying, 'make_reservations'::character varying, 'make_purchases'::character varying, 'pay_deposits'::character varying, 'analyze_uploaded_social_content'::character varying]::text[])", name: "automation_permissions_capability_check"
     t.check_constraint "mode::text = ANY (ARRAY['disabled'::character varying, 'ask_every_time'::character varying, 'allow_automatically'::character varying]::text[])", name: "automation_permissions_mode_check"
+  end
+
+  create_table "backup_options", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "backup_plan_id", null: false
+    t.text "change_summary", null: false
+    t.string "cost_level", null: false
+    t.datetime "created_at", null: false
+    t.string "effort", null: false
+    t.integer "estimated_cost_cents"
+    t.integer "lock_version", default: 0, null: false
+    t.integer "position", null: false
+    t.text "preserved_constraints", null: false
+    t.datetime "promoted_at"
+    t.string "relationship_fit", null: false
+    t.text "replacement_task_ids", null: false
+    t.text "reviewed_reminders", null: false
+    t.text "source_context", null: false
+    t.text "summary", null: false
+    t.text "task_blueprints", null: false
+    t.string "timing", null: false
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["backup_plan_id", "position"], name: "index_backup_options_on_backup_plan_id_and_position", unique: true
+    t.index ["backup_plan_id"], name: "index_backup_options_on_backup_plan_id"
+    t.check_constraint "\"position\" >= 0", name: "backup_options_position_nonnegative"
+    t.check_constraint "cost_level::text = ANY (ARRAY['lower'::character varying, 'similar'::character varying, 'higher'::character varying, 'unknown'::character varying]::text[])", name: "backup_options_supported_cost_level"
+    t.check_constraint "effort::text = ANY (ARRAY['low'::character varying, 'medium'::character varying, 'high'::character varying]::text[])", name: "backup_options_supported_effort"
+    t.check_constraint "estimated_cost_cents IS NULL OR estimated_cost_cents >= 0", name: "backup_options_estimated_cost_nonnegative"
+    t.check_constraint "relationship_fit::text = ANY (ARRAY['strong'::character varying, 'good'::character varying, 'fair'::character varying]::text[])", name: "backup_options_supported_relationship_fit"
+    t.check_constraint "timing::text = ANY (ARRAY['same_day'::character varying, 'within_week'::character varying, 'new_date'::character varying]::text[])", name: "backup_options_supported_timing"
+  end
+
+  create_table "backup_plans", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "context_fingerprint", limit: 64, null: false
+    t.datetime "created_at", null: false
+    t.bigint "event_plan_generation_version", null: false
+    t.uuid "event_plan_id", null: false
+    t.datetime "generated_at", null: false
+    t.boolean "include_private_notes", default: false, null: false
+    t.boolean "include_vault_context", default: false, null: false
+    t.string "locale", default: "en", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "promoted_at"
+    t.string "scenario", null: false
+    t.text "source_context", null: false
+    t.string "status", default: "generated", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["event_plan_id", "status", "generated_at"], name: "index_backup_plans_on_plan_status_generated"
+    t.index ["event_plan_id"], name: "index_backup_plans_on_event_plan_id"
+    t.index ["user_id"], name: "index_backup_plans_on_user_id"
+    t.check_constraint "context_fingerprint::text ~ '^[0-9a-f]{64}$'::text", name: "backup_plans_context_fingerprint_format"
+    t.check_constraint "locale::text = ANY (ARRAY['en'::character varying, 'es'::character varying]::text[])", name: "backup_plans_supported_locale"
+    t.check_constraint "scenario::text = ANY (ARRAY['weather'::character varying, 'vendor'::character varying, 'gift_delay'::character varying, 'restaurant_unavailable'::character varying, 'transportation'::character varying, 'illness_cancellation'::character varying]::text[])", name: "backup_plans_supported_scenario"
+    t.check_constraint "status::text = ANY (ARRAY['generated'::character varying, 'promoted'::character varying, 'superseded'::character varying]::text[])", name: "backup_plans_supported_status"
   end
 
   create_table "commitments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -605,6 +660,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_164819) do
   end
 
   create_table "plan_tasks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "backup_option_id"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.text "details"
@@ -616,10 +672,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_164819) do
     t.string "phase", null: false
     t.integer "position", null: false
     t.text "source_context", null: false
+    t.datetime "superseded_at"
     t.text "title", null: false
     t.datetime "updated_at", null: false
+    t.index ["backup_option_id"], name: "index_plan_tasks_on_backup_option_id"
     t.index ["event_plan_id", "completed_at", "due_on"], name: "index_plan_tasks_on_plan_completion_and_due"
     t.index ["event_plan_id", "phase", "position"], name: "index_plan_tasks_on_plan_phase_position"
+    t.index ["event_plan_id", "superseded_at"], name: "index_plan_tasks_on_plan_and_superseded"
     t.index ["event_plan_id"], name: "index_plan_tasks_on_event_plan_id"
     t.check_constraint "\"position\" >= 0", name: "plan_tasks_position_nonnegative"
     t.check_constraint "kind::text = ANY (ARRAY['decision'::character varying, 'task'::character varying, 'reminder'::character varying, 'vendor_need'::character varying, 'gift_idea'::character varying, 'message_draft'::character varying, 'backup_step'::character varying, 'milestone'::character varying]::text[])", name: "plan_tasks_supported_kind"
@@ -991,6 +1050,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_164819) do
   add_foreign_key "automation_permission_changes", "users", column: "actor_id"
   add_foreign_key "automation_permissions", "relationship_profiles"
   add_foreign_key "automation_permissions", "users"
+  add_foreign_key "backup_options", "backup_plans", on_delete: :cascade
+  add_foreign_key "backup_plans", "event_plans", on_delete: :cascade
+  add_foreign_key "backup_plans", "users", on_delete: :cascade
   add_foreign_key "commitments", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_cadences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"
@@ -1027,6 +1089,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_164819) do
   add_foreign_key "personal_touch_checklists", "important_dates", on_delete: :cascade
   add_foreign_key "personal_touch_checklists", "relationship_profiles", on_delete: :cascade
   add_foreign_key "personal_touch_items", "personal_touch_checklists", on_delete: :cascade
+  add_foreign_key "plan_tasks", "backup_options", on_delete: :nullify
   add_foreign_key "plan_tasks", "event_plans", on_delete: :cascade
   add_foreign_key "privacy_vault_items", "relationship_profiles", on_delete: :cascade
   add_foreign_key "relationship_briefings", "relationship_profiles", on_delete: :cascade

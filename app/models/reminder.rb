@@ -220,6 +220,7 @@ class Reminder < ApplicationRecord
 
     errors.add(:plan_task, :different_plan) if event_plan.blank? || plan_task.event_plan_id != event_plan_id
     errors.add(:plan_task, :completed) if planning_attachment_added_or_changed? && plan_task.completed?
+    errors.add(:plan_task, :superseded) if planning_attachment_added_or_changed? && plan_task.superseded?
   end
 
   def planning_attachment_added_or_changed?

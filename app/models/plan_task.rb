@@ -3,29 +3,34 @@
 # Table name: plan_tasks
 # Database name: primary
 #
-#  id             :uuid             not null, primary key
-#  completed_at   :datetime
-#  details        :text
-#  due_on         :date
-#  kind           :string           not null
-#  lock_version   :integer          default(0), not null
-#  origin         :string           default("manual"), not null
-#  phase          :string           not null
-#  position       :integer          not null
-#  source_context :text             not null
-#  title          :text             not null
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  event_plan_id  :uuid             not null
+#  id               :uuid             not null, primary key
+#  completed_at     :datetime
+#  details          :text
+#  due_on           :date
+#  kind             :string           not null
+#  lock_version     :integer          default(0), not null
+#  origin           :string           default("manual"), not null
+#  phase            :string           not null
+#  position         :integer          not null
+#  source_context   :text             not null
+#  superseded_at    :datetime
+#  title            :text             not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  backup_option_id :uuid
+#  event_plan_id    :uuid             not null
 #
 # Indexes
 #
+#  index_plan_tasks_on_backup_option_id         (backup_option_id)
 #  index_plan_tasks_on_event_plan_id            (event_plan_id)
+#  index_plan_tasks_on_plan_and_superseded      (event_plan_id,superseded_at)
 #  index_plan_tasks_on_plan_completion_and_due  (event_plan_id,completed_at,due_on)
 #  index_plan_tasks_on_plan_phase_position      (event_plan_id,phase,position)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (backup_option_id => backup_options.id) ON DELETE => nullify
 #  fk_rails_...  (event_plan_id => event_plans.id) ON DELETE => cascade
 #
 class PlanTask < ApplicationRecord
@@ -37,6 +42,7 @@ class PlanTask < ApplicationRecord
   MAX_SOURCES = 8
 
   belongs_to :event_plan
+  belongs_to :backup_option, optional: true
   has_many :reminders, dependent: :nullify
 
   serialize :source_context, coder: JSON
@@ -56,12 +62,15 @@ class PlanTask < ApplicationRecord
 
   scope :ordered, -> { order(:position, Arel.sql("due_on ASC NULLS LAST"), :created_at, :id) }
   scope :incomplete, -> { where(completed_at: nil) }
+  scope :current, -> { where(superseded_at: nil) }
 
   def completed? = completed_at.present?
+  def superseded? = superseded_at.present?
 
   def complete!(at: Time.current)
     event_plan.with_mutation_lock do
       with_lock do
+        raise ActiveRecord::RecordNotFound if superseded?
         return if completed?
 
         update!(completed_at: at)
@@ -74,6 +83,7 @@ class PlanTask < ApplicationRecord
   def reopen!
     event_plan.with_mutation_lock do
       with_lock do
+        raise ActiveRecord::RecordNotFound if superseded?
         return unless completed?
 
         update!(completed_at: nil)

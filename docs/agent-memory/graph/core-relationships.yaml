@@ -1,6 +1,31 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: Backup generation reuses the owner-scoped event plan, source catalog, mutation locks, and generation fence.
+    strength: 100
+  - source: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    target: relationship_profiles.privacy_vault
+    relation: requires
+    reason: Protected recovery context requires suggestion approval, explicit per-request selection, and a revalidated password-backed lease.
+    strength: 100
+  - source: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Promotion retires and detaches reminders for superseded incomplete tasks while retaining their durable delivery history.
+    strength: 100
+  - source: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Owner exports include backup plans and options while selective AI deletion removes them and promoted AI tasks.
+    strength: 95
+  - source: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Generation, promotion, and sensitive reads emit content-free account evidence.
+    strength: 95
   - source: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
     target: relationship_profiles.profile_crud_owner_scope
     relation: requires

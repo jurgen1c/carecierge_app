@@ -368,6 +368,12 @@ en:
       event_plan_suggestions_generated:
         title: "Event plan suggestions created"
         description: "Source-backed planning steps were prepared for %{target}."
+      event_plan_backup_options_generated:
+        title: "Event backup options prepared"
+        description: "Source-backed backup options were prepared for %{target}."
+      event_plan_backup_option_promoted:
+        title: "Event backup option promoted"
+        description: "A reviewed backup option was added to %{target}."
       personal_touch_checklist_created:
         title: "Personal touch checklist created"
         description: "A practical personal touch checklist was created for %{target}."

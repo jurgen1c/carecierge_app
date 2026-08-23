@@ -14,7 +14,11 @@ module EventPlans
       event_plan.with_mutation_lock do
         previous_starts_on = event_plan.starts_on
         previous_occasion_type = event_plan.occasion_type
-        unchanged_template_positions = unchanged_template_positions(occasion_type: previous_occasion_type)
+        unchanged_template_positions = if occasion_change_requested?
+          unchanged_template_positions(occasion_type: previous_occasion_type)
+        else
+          []
+        end
         event_plan.update!(attributes)
         retemplate_unchanged_copy!(positions: unchanged_template_positions) if event_plan.saved_change_to_occasion_type?
         rebase_template_deadlines(previous_starts_on:) if event_plan.saved_change_to_starts_on?
@@ -26,6 +30,11 @@ module EventPlans
     private
 
     attr_reader :event_plan, :attributes, :locale
+
+    def occasion_change_requested?
+      key = attributes.key?(:occasion_type) ? :occasion_type : "occasion_type"
+      attributes.key?(key) && attributes[key].to_s != event_plan.occasion_type
+    end
 
     def unchanged_template_positions(occasion_type:)
       templates_by_locale = %i[en es].map do |template_locale|

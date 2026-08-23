@@ -16,8 +16,9 @@ claim: >
   plans use localized birthday steps and expose the earliest due incomplete
   current task as one review-only next action. When an unsourced plan changes
   occasion, untouched localized template copy follows the new occasion and
-  locale while user-edited wording is preserved. Plans and their phased tasks
-  expose progress, decisions, and explicit lifecycle actions. Scheduling or
+  locale while user-edited wording is preserved; updates that do not change the
+  occasion skip localized template matching. Plans and their phased tasks expose
+  progress, decisions, and explicit lifecycle actions. Scheduling or
   rescheduling a plan rebases untouched template deadlines, including
   superseded work that selective AI deletion may later restore, while preserving
   user-customized dates. New task

@@ -1,6 +1,16 @@
 require "rails_helper"
 
 RSpec.describe EventPlans::Update do
+  it "skips template-copy lookup when the occasion is unchanged" do
+    plan = create(:event_plan)
+
+    expect(EventPlans::Template).not_to receive(:for)
+
+    described_class.call(event_plan: plan, attributes: { notes: "Updated constraints" })
+
+    expect(plan.reload.notes).to eq("Updated constraints")
+  end
+
   it "relocalizes untouched template copy when the occasion changes" do
     profile = create(:relationship_profile)
     plan = EventPlans::Create.call(

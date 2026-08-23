@@ -30,14 +30,31 @@ RSpec.describe DataDeletions::DeleteAiData do
   it "removes AI plan suggestions while preserving the user plan, authored work, and reminders" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
+    original_start = Date.new(2026, 9, 20)
+    rescheduled_start = Date.new(2026, 10, 20)
     plan = create(
       :event_plan,
       user:,
       relationship_profile: profile,
+      starts_on: original_start,
       source_context: [ { "id" => "memory:owned", "label" => "Favorite tea" } ]
     )
-    template_task = create(:plan_task, event_plan: plan, origin: "template", title: "Confirm the date")
-    manual_task = create(:plan_task, event_plan: plan, origin: "manual", title: "Call the venue")
+    template_task = create(
+      :plan_task,
+      event_plan: plan,
+      origin: "template",
+      title: "Confirm the date",
+      position: 0,
+      due_on: EventPlans::Template.deadline_for(position: 0, starts_on: original_start),
+      superseded_at: 1.hour.ago
+    )
+    manual_task = create(
+      :plan_task,
+      event_plan: plan,
+      origin: "manual",
+      title: "Call the venue",
+      superseded_at: 1.hour.ago
+    )
     ai_task = create(
       :plan_task,
       event_plan: plan,
@@ -52,7 +69,15 @@ RSpec.describe DataDeletions::DeleteAiData do
         }
       ]
     )
+    backup_plan = create(:backup_plan, user:, event_plan: plan)
+    backup_option = create(
+      :backup_option,
+      backup_plan:,
+      replacement_task_ids: [ template_task.id, manual_task.id ]
+    )
+    ai_task.update!(backup_option:)
     reminder = create(:reminder, user:, relationship_profile: profile, event_plan: plan, plan_task: ai_task)
+    EventPlans::Update.call(event_plan: plan, attributes: { starts_on: rescheduled_start })
     plan.update_columns(status: "completed", completed_at: Time.current)
     generation_version = plan.generation_version
 
@@ -60,6 +85,11 @@ RSpec.describe DataDeletions::DeleteAiData do
 
     expect(plan.reload).to have_attributes(source_context: [], generation_version: generation_version + 1)
     expect(plan.plan_tasks.reload).to contain_exactly(template_task, manual_task)
+    expect(plan.plan_tasks).to all(have_attributes(superseded_at: nil))
+    expect(template_task.reload.due_on).to eq(
+      EventPlans::Template.deadline_for(position: 0, starts_on: rescheduled_start)
+    )
+    expect(plan.backup_plans.reload).to be_empty
     expect(reminder.reload).to have_attributes(event_plan: plan, plan_task: nil)
   end
 

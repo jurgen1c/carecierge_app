@@ -6,14 +6,20 @@ RSpec.describe DataExports::Snapshot do
     2.times do
       plan = create(:event_plan, user: profile.user, relationship_profile: profile)
       create(:plan_task, event_plan: plan)
+      backup_plan = create(:backup_plan, user: profile.user, event_plan: plan)
+      create(:backup_option, backup_plan:)
     end
 
     queries = capture_sql do
       described_class.new(user: profile.user, relationship_profile: profile.reload).to_h
     end
     task_queries = queries.select { |query| query.include?('FROM "plan_tasks"') }
+    backup_plan_queries = queries.select { |query| query.include?('FROM "backup_plans"') }
+    backup_option_queries = queries.select { |query| query.include?('FROM "backup_options"') }
 
     expect(task_queries.length).to eq(1)
+    expect(backup_plan_queries.length).to eq(1)
+    expect(backup_option_queries.length).to eq(1)
   end
 
   it "exports attached personal touch checklists and their items" do
@@ -32,6 +38,42 @@ RSpec.describe DataExports::Snapshot do
 
     expect(exported).to include("moment_type" => "ImportantDate", "moment_id" => important_date.id)
     expect(exported.fetch("items").sole).to include("id" => item.id, "category" => "follow_up")
+  end
+
+  it "keeps sensitive backup source plaintext behind the sensitive export gate" do
+    profile = create(:relationship_profile)
+    plan = create(:event_plan, user: profile.user, relationship_profile: profile)
+    backup_plan = create(
+      :backup_plan,
+      user: profile.user,
+      event_plan: plan,
+      include_vault_context: true,
+      source_context: [
+        {
+          "id" => "vault:protected-source",
+          "kind" => "vault",
+          "content" => "A protected family detail",
+          "label" => "Privacy vault",
+          "certainty" => "confirmed",
+          "sensitive" => true
+        }
+      ]
+    )
+
+    ordinary_snapshot = described_class.new(user: profile.user, relationship_profile: profile).to_h
+    sensitive_snapshot = described_class.new(
+      user: profile.user,
+      relationship_profile: profile,
+      include_sensitive: true
+    ).to_h
+
+    ordinary_source = ordinary_snapshot.dig("relationship_profiles", 0, "event_plans", 0, "backup_plans", 0, "source_context", 0)
+    sensitive_source = sensitive_snapshot.dig("relationship_profiles", 0, "event_plans", 0, "backup_plans", 0, "source_context", 0)
+    exported_backup_plan = ordinary_snapshot.dig("relationship_profiles", 0, "event_plans", 0, "backup_plans", 0)
+    expect(ordinary_source).to include("id" => "vault:protected-source", "sensitive" => true)
+    expect(ordinary_source).not_to have_key("content")
+    expect(sensitive_source).to include("content" => backup_plan.source_context.sole.fetch("content"))
+    expect(exported_backup_plan).not_to have_key("context_fingerprint")
   end
 
   private

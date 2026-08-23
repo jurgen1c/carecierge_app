@@ -44,6 +44,15 @@ module DataDeletions
         .order(:id)
         .lock("FOR NO KEY UPDATE")
         .each do |plan|
+          backup_plans = plan.backup_plans.reorder(:id).lock.to_a
+          backup_options = BackupOption.where(backup_plan: backup_plans).reorder(:id).lock.to_a
+          replacement_task_ids = backup_options.flat_map(&:replacement_task_ids).uniq
+          plan.plan_tasks
+            .where(id: replacement_task_ids, origin: %w[manual template])
+            .reorder(:id)
+            .lock
+            .each { |task| task.update!(superseded_at: nil) }
+          backup_plans.each(&:destroy!)
           ai_tasks = plan.plan_tasks.where(origin: "ai").reorder(:id).lock.to_a
           Reminder.where(plan_task: ai_tasks).order(:id).lock.each { |reminder| reminder.update!(plan_task: nil) }
           ai_tasks.each(&:destroy!)

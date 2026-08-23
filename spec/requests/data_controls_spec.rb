@@ -49,6 +49,8 @@ RSpec.describe "Data controls", type: :request do
         }
       ]
     )
+    backup_plan = create(:backup_plan, user:, event_plan: plan)
+    backup_option = create(:backup_option, backup_plan:, title: "Move dinner indoors")
     sign_in user
 
     post data_exports_path, params: { data_export: { format: "json", scope: "account" } }
@@ -70,6 +72,18 @@ RSpec.describe "Data controls", type: :request do
     )
     expect(exported_plan.fetch("plan_tasks").sole).not_to have_key("event_plan_id")
     expect(exported_plan.fetch("plan_tasks").sole).not_to have_key("lock_version")
+    exported_backup = exported_plan.fetch("backup_plans").sole
+    expect(exported_backup).to include(
+      "id" => backup_plan.id,
+      "scenario" => "weather",
+      "source_context" => backup_plan.source_context
+    )
+    expect(exported_backup).not_to have_key("event_plan_generation_version")
+    expect(exported_backup.fetch("backup_options").sole).to include(
+      "id" => backup_option.id,
+      "title" => "Move dinner indoors",
+      "source_context" => backup_option.source_context
+    )
   end
 
   let(:password) { "careful-password" }

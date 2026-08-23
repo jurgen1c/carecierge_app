@@ -46,7 +46,7 @@ class PlanTasksController < ApplicationController
   end
 
   def set_plan_task
-    @plan_task = @event_plan.plan_tasks.find(params[:id])
+    @plan_task = @event_plan.plan_tasks.current.find(params[:id])
     authorize @plan_task
   end
 
@@ -57,6 +57,8 @@ class PlanTasksController < ApplicationController
   def mutate_plan
     @event_plan.with_mutation_lock do
       @plan_task.reload if @plan_task&.persisted?
+      raise ActiveRecord::RecordNotFound if @plan_task&.superseded?
+
       yield
       @event_plan.increment!(:generation_version)
     end

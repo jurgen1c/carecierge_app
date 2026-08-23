@@ -685,6 +685,12 @@ es:
       event_plan_suggestions_generated:
         title: "Sugerencias del plan de evento creadas"
         description: "Se prepararon pasos de planificación con fuentes para %{target}."
+      event_plan_backup_options_generated:
+        title: "Opciones alternativas del evento preparadas"
+        description: "Se prepararon opciones alternativas con fuentes para %{target}."
+      event_plan_backup_option_promoted:
+        title: "Opción alternativa del evento promovida"
+        description: "Se agregó una opción alternativa revisada a %{target}."
       personal_touch_checklist_created:
         title: "Lista de detalles personales creada"
         description: "Se creó una lista práctica de detalles personales para %{target}."

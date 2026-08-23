@@ -48,6 +48,7 @@ class EventPlan < ApplicationRecord
   belongs_to :relationship_profile
   has_one :personal_touch_checklist, dependent: :destroy
   has_many :plan_tasks, -> { ordered }, dependent: :destroy
+  has_many :backup_plans, -> { recent_first }, dependent: :destroy
   has_many :reminders, dependent: :destroy
   has_many :targeted_audit_events, as: :target, class_name: "AuditEvent", dependent: :nullify
 
@@ -77,14 +78,14 @@ class EventPlan < ApplicationRecord
   STATUSES.each { |value| define_method("#{value}?") { status == value } }
 
   def progress
-    tasks = plan_tasks.to_a
+    tasks = plan_tasks.reject(&:superseded?)
     total = tasks.length
     completed = tasks.count(&:completed?)
     { completed:, total:, percentage: total.zero? ? 0 : ((completed * 100.0) / total).floor }
   end
 
   def outstanding_decisions
-    plan_tasks.select { |task| task.kind == "decision" && !task.completed? }
+    plan_tasks.select { |task| task.kind == "decision" && !task.completed? && !task.superseded? }
   end
 
   def complete!(at: Time.current)

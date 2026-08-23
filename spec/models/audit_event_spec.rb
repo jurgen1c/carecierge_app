@@ -83,7 +83,11 @@ RSpec.describe AuditEvent, type: :model do
       "gift_recommendation.dismissed",
       "gift_recommendation.purchased"
     )
-    expect(described_class::ACTIONS).to include("event_plan.suggestions_generated")
+    expect(described_class::ACTIONS).to include(
+      "event_plan.suggestions_generated",
+      "event_plan.backup_options_generated",
+      "event_plan.backup_option_promoted"
+    )
   end
 
   it "accepts an owner-scoped event plan target" do

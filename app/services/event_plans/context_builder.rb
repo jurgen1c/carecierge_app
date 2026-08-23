@@ -22,15 +22,17 @@ module EventPlans
     end
 
     def call
-      selected_sources = bound_sources(sources)
-      Result.new(
-        sources: selected_sources,
-        categories: selected_sources.map { |source| category_for(source.kind) }.uniq,
-        fingerprint: Digest::SHA256.hexdigest(JSON.generate(
-          event_plan: plan_fingerprint_payload,
-          sources: selected_sources.map(&:to_h)
-        ))
-      )
+      I18n.with_locale(locale) do
+        selected_sources = bound_sources(sources)
+        Result.new(
+          sources: selected_sources,
+          categories: selected_sources.map { |source| category_for(source.kind) }.uniq,
+          fingerprint: Digest::SHA256.hexdigest(JSON.generate(
+            event_plan: plan_fingerprint_payload,
+            sources: selected_sources.map(&:to_h)
+          ))
+        )
+      end
     end
 
     private

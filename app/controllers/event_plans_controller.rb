@@ -171,6 +171,7 @@ class EventPlansController < ApplicationController
       .to_a
     @vault_unlocked = privacy_vault_unlocked?
     @next_reminder = @event_plan.reminders.active.by_effective_delivery.first
+    @backup_plan = @event_plan.backup_plans.includes(:backup_options).recent_first.first
     @personal_touch_checklist = @event_plan.personal_touch_checklist
     @personal_touch_checklist&.visible_personal_touch_items&.load
   end

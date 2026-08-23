@@ -70,6 +70,76 @@ es:
       action: "Sugerir próximos pasos"
       loading: "Preparando sugerencias…"
       review_only: "Solo revisión — no se realiza ninguna acción externa."
+    backup_plans:
+      title: "Opciones alternativas"
+      body: "Prepara una recuperación práctica a partir de este plan y sus restricciones actuales. Nada cambia hasta que promuevas una opción."
+      reassurance: "Un plan alternativo, listo cuando lo necesites"
+      scenario_label: "Elige qué cambió"
+      scenario_prompt: "Selecciona un escenario de recuperación"
+      scenarios:
+        weather: "Cambió el clima"
+        vendor: "Falló un proveedor"
+        gift_delay: "Se retrasó un regalo"
+        restaurant_unavailable: "El restaurante no está disponible"
+        transportation: "Cambió el transporte"
+        illness_cancellation: "Enfermedad o cancelación"
+      optional_context: "Usar contexto privado opcional"
+      per_request: "Nada privado se selecciona de forma predeterminada. Tu elección aplica solo a esta solicitud."
+      private_notes: "Notas privadas para esta solicitud"
+      vault_items: "Elementos de la Bóveda de privacidad para esta solicitud"
+      vault_item_label: "Elemento protegido: %{title}"
+      unlock_vault: "Desbloquear Bóveda de privacidad"
+      effort: "Esfuerzo"
+      timing: "Tiempo"
+      cost: "Costo estimado"
+      fit: "Afinidad con la relación"
+      preserves: "Lo que se mantiene"
+      changes: "Lo que cambiará"
+      sources: "Evidencia de fuentes"
+      applied: "Aplicada al plan activo"
+      not_applied: "No aplicada"
+      additions: "Pasos que agregará esta opción"
+      applied_additions: "Pasos que agregó esta opción"
+      replacements: "Pasos actuales que retirará esta opción"
+      applied_replacements: "Pasos actuales que retiró esta opción"
+      reminders_retires: "Recordatorios activos que se retirarán"
+      applied_reminders: "Recordatorios activos que se retiraron"
+      no_active_reminders: "Este paso no tiene recordatorios activos."
+      no_replacements: "No se retirarán pasos ni recordatorios actuales."
+      due_on: "Vence el %{date}"
+      impact: "Se agregarán %{added} pasos alternativos; %{superseded} pasos incompletos en conflicto serán reemplazados. El trabajo completado se mantiene."
+      applied_impact: "Se agregaron %{added} pasos alternativos; se reemplazaron %{superseded} pasos incompletos en conflicto. El trabajo completado se mantuvo."
+      empty: "Elige un escenario cuando cambie un detalle. Podrás comparar hasta tres opciones de recuperación antes de actualizar el plan."
+      promoted: "Esta opción alternativa ya forma parte del plan activo. El trabajo completado se mantuvo."
+      stale: "El plan del evento cambió después de preparar estas opciones. Genera opciones nuevas antes de promover una."
+      efforts:
+        low: "Bajo"
+        medium: "Medio"
+        high: "Alto"
+      timings:
+        same_day: "El mismo día"
+        within_week: "Dentro de una semana"
+        new_date: "Nueva fecha"
+      cost_levels:
+        lower: "Menor que el plan original"
+        similar: "Similar al plan original"
+        higher: "Mayor que el plan original"
+        unknown: "Requiere confirmación"
+      relationship_fits:
+        strong: "Afinidad alta"
+        good: "Buena afinidad"
+        fair: "Afinidad moderada"
+      generate:
+        action: "Generar opciones"
+        loading: "Preparando opciones alternativas…"
+        notice: "Las opciones alternativas están listas para comparar."
+        error: "No pudimos preparar opciones alternativas. Revisa el escenario e inténtalo de nuevo."
+        superseded: "El plan cambió mientras preparábamos las opciones alternativas. Revísalo e inténtalo de nuevo."
+      promote:
+        action: "Promover esta opción"
+        confirm: "¿Promover esta opción alternativa? El trabajo completado se mantendrá. Los pasos incompletos en conflicto y sus recordatorios activos se retirarán."
+        notice: "La opción alternativa ya forma parte de tu plan activo."
+        unavailable: "Esta opción alternativa ya no está vigente. Genera opciones nuevas e inténtalo de nuevo."
     phases:
       decide: "Decidir"
       arrange: "Organizar"
@@ -194,6 +264,24 @@ es:
           attributes:
             source_context:
               invalid: "debe contener referencias de fuentes compatibles"
+        backup_plan:
+          attributes:
+            event_plan:
+              owner_mismatch: "debe pertenecerte"
+            source_context:
+              invalid: "debe contener referencias de fuentes compatibles"
+        backup_option:
+          attributes:
+            preserved_constraints:
+              invalid: "debe contener restricciones compatibles"
+            change_summary:
+              invalid: "debe contener cambios compatibles"
+            replacement_task_ids:
+              invalid: "debe contener pasos del plan compatibles"
+            task_blueprints:
+              invalid: "debe contener pasos alternativos compatibles"
+            source_context:
+              invalid: "debe contener referencias de fuentes compatibles"
         reminder:
           attributes:
             event_plan:
@@ -201,3 +289,4 @@ es:
               different_relationship: "debe pertenecer a la relación seleccionada"
             plan_task:
               different_plan: "debe pertenecer al plan de evento seleccionado"
+              superseded: "fue reemplazado"

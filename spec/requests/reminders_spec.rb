@@ -184,6 +184,26 @@ RSpec.describe "Reminders", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
+    it "rejects reminder attachment to a superseded plan task" do
+      plan = create(:event_plan)
+      task = create(:plan_task, event_plan: plan, superseded_at: 1.hour.ago)
+      sign_in plan.user
+
+      get new_reminder_path(event_plan_id: plan.id, plan_task_id: task.id)
+      expect(response).to have_http_status(:not_found)
+
+      expect do
+        post reminders_path, params: {
+          reminder: attributes_for(:reminder).merge(
+            relationship_profile_id: plan.relationship_profile_id,
+            event_plan_id: plan.id,
+            plan_task_id: task.id
+          )
+        }
+      end.not_to change(Reminder, :count)
+      expect(response).to have_http_status(:not_found)
+    end
+
     it "offers a visible timezone fallback when browser timezone capture is unavailable" do
       sign_in create(:user)
 

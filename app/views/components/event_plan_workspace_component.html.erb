@@ -49,6 +49,24 @@
         </div>
       </header>
 
+      <% if event_plan.active? && birthday_plan? && next_action %>
+        <section aria-labelledby="birthday-next-action-title" class="my-6 rounded-2xl border border-primary/30 bg-surface p-5 sm:p-6">
+          <div class="grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+            <div>
+              <div class="flex flex-wrap items-center gap-2 text-sm font-semibold text-primary">
+                <span><%= t("event_plans.birthday.next_action_kicker") %></span>
+                <% if birthday_timing %><span aria-hidden="true">·</span><span><%= birthday_timing %></span><% end %>
+              </div>
+              <h2 id="birthday-next-action-title" class="mt-2 text-xl font-semibold text-ink"><%= t("event_plans.birthday.next_action_title") %></h2>
+              <p class="mt-2 text-base font-semibold text-ink"><%= next_action.title %></p>
+              <% if next_action.details.present? %><p class="mt-1 max-w-2xl text-sm leading-6 text-quiet-note"><%= next_action.details %></p><% end %>
+              <p class="mt-3 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.birthday.review_only") %></p>
+            </div>
+            <%= link_to next_action_label, next_action_path, class: style(:primary_button) %>
+          </div>
+        </section>
+      <% end %>
+
       <section aria-labelledby="planning-runway-title" class="py-6">
         <div class="flex flex-col gap-4 border-b border-private-line pb-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -65,7 +83,7 @@
             </summary>
             <ol class="divide-y divide-private-line">
               <% tasks_for(phase).each do |task| %>
-                <li class="py-4">
+                <li id="plan-task-<%= task.id %>" class="scroll-mt-6 py-4">
                   <div class="grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-start">
                     <div class="pt-1">
                       <% if task.completed? %>

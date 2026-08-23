@@ -2,8 +2,8 @@
 id: data_controls.data_portability_and_deletion
 type: fact
 system: data_controls
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -25,7 +25,8 @@ claim: >
   origin, and audits only successful exports. Selective AI deletion preserves
   corrected memories, authored notes, and gifts accepted from recommendations;
   deletes relationship briefings, gift recommendations, and AI-origin plan
-  tasks; restores template/manual work superseded by deleted AI backup options
+  tasks while retaining non-AI birthday-origin provenance; restores
+  template/manual work superseded by deleted AI backup options
   with untouched template deadlines aligned to any rescheduled event date,
   and preserves event plans and explicit plan reminders even for terminal plans; clears note analysis
   without rereading unchanged screenshots; and fences delayed results. Profile and account
@@ -110,7 +111,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
+last_verified_commit: null
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -126,8 +127,9 @@ require password reauthentication. JSON and CSV include privacy-safe evidence,
   Serialization neutralizes
 formulas, preserves recurrences, and audits only success. Selective AI deletion
 preserves authored content, accepted gifts, event plans, manual/template plan
-work, and explicit reminders while deleting briefings, gift recommendations,
-and AI-origin plan suggestions and clearing and fencing other inferred state. Profile and
+work, non-AI birthday-origin provenance, and explicit reminders while deleting
+briefings, gift recommendations, and AI-origin plan suggestions and clearing and
+fencing other inferred state. Profile and
 account deletion snapshot under owned locks; upload writes share the account lock,
 and cleanup includes attached or abandoned owner-stamped blobs. Permanently
 deleted feed sources and relationships also prune obsolete feed visibility rows.

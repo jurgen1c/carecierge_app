@@ -94,3 +94,5 @@ gem "discard", "~> 2.0"
 gem "lexxy", "~> 0.9.30"
 
 gem "timecop", "~> 0.9.11", groups: [ :development, :test ]
+
+gem "ruby_llm", "~> 1.16.0"

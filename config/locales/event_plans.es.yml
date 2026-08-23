@@ -18,6 +18,7 @@ es:
     form:
       relationship: "Relación"
       relationship_prompt: "Elige una relación"
+      birthday_context_fixed: "Se define a partir de esta fecha de cumpleaños. Inicia otro plan para elegir otra relación u ocasión."
       title: "Título del plan"
       occasion_type: "Ocasión"
       starts_on: "Fecha del evento"
@@ -57,6 +58,23 @@ es:
       relationship_sources_title: "Fuentes de la relación"
       relationship_sources_body: "Los pasos opcionales de IA conservan las etiquetas de las fuentes que los orientaron."
       no_sources: "Este plan todavía no tiene contexto de fuentes de IA."
+    birthday:
+      plan_title: "Cumpleaños de %{name}"
+      days_away:
+        one: "Cumpleaños en 1 día"
+        other: "Cumpleaños en %{count} días"
+      today: "El cumpleaños es hoy"
+      passed: "La fecha del cumpleaños ya pasó"
+      next_action_kicker: "Asistente de cumpleaños"
+      next_action_title: "Tu próximo paso"
+      next_action_body: "Haz avanzar el plan con una acción práctica a la vez."
+      review_only: "Tú revisas cada borrador y decides qué sucede después. Nada se envía, reserva ni compra automáticamente."
+      actions:
+        gift_idea: "Revisar ideas de regalos"
+        message_draft: "Redactar un mensaje"
+        reminder: "Configurar un recordatorio"
+        backup_step: "Revisar opciones alternativas"
+        default: "Abrir este paso"
     suggestions:
       title: "Sugerir próximos pasos"
       body: "Pide ideas de planificación con fuentes. Las sugerencias quedan para tu revisión y nunca envían, reservan, contactan ni compran nada."
@@ -230,6 +248,27 @@ es:
       all: "Ver todos los planes"
       empty: "Todavía no hay un plan de evento activo para esta relación."
     templates:
+      birthday:
+        titles:
+          define_moment: "Definir la intención del cumpleaños"
+          confirm_format: "Elegir el formato del cumpleaños"
+          confirm_guests: "Confirmar a quién incluir"
+          identify_vendors: "Elegir un restaurante o actividad de cumpleaños"
+          choose_gift: "Elegir un regalo de cumpleaños o gesto personal"
+          draft_message: "Redactar un mensaje de cumpleaños cálido"
+          set_reminder: "Configurar recordatorios para el cumpleaños"
+          prepare_backup: "Preparar un plan alternativo para el cumpleaños"
+          event_day: "Revisar el plan para el día del cumpleaños"
+        details:
+          define_moment: "Captura el tono, presupuesto y sentimiento que deseas para este cumpleaños."
+          confirm_format: "Elige una reunión, comida, actividad, llamada o gesto atento que encaje con esta relación."
+          confirm_guests: "Confirma quién debe participar y cualquier restricción de accesibilidad u horario."
+          identify_vendors: "Revisa ideas de restaurantes y actividades antes de contactar o reservar algo por tu cuenta."
+          choose_gift: "Usa preferencias, restricciones, deseos e historial de regalos conocidos antes de decidir."
+          draft_message: "Prepara un texto cálido para revisión; Carecierge no lo enviará."
+          set_reminder: "Crea recordatorios para las decisiones y arreglos que quieras retomar."
+          prepare_backup: "Mantén una alternativa práctica para cambios de disponibilidad, tiempo, entrega o clima."
+          event_day: "Revisa el mensaje, regalo, planes, recordatorios y detalles personales antes del cumpleaños."
       default:
         titles:
           define_moment: "Definir el momento"
@@ -256,6 +295,8 @@ es:
       models:
         event_plan:
           attributes:
+            occasion_type:
+              birthday_origin_immutable: "debe seguir siendo cumpleaños porque este plan se inició desde una fecha de cumpleaños"
             relationship_profile:
               owner_mismatch: "debe pertenecerte"
             source_context:

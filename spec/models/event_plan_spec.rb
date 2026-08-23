@@ -83,6 +83,17 @@ RSpec.describe EventPlan, type: :model do
     expect(event_plan.outstanding_decisions.map(&:kind)).to eq([ "decision" ])
   end
 
+  it "reports the earliest due incomplete current task as the next action" do
+    event_plan = create(:event_plan)
+    create(:plan_task, event_plan:, title: "Completed", due_on: Date.new(2026, 8, 20), completed_at: Time.current)
+    create(:plan_task, event_plan:, title: "Later", due_on: Date.new(2026, 9, 1), position: 1)
+    expected = create(:plan_task, event_plan:, title: "Next", due_on: Date.new(2026, 8, 25), position: 2)
+    create(:plan_task, event_plan:, title: "Superseded", due_on: Date.new(2026, 8, 22), superseded_at: Time.current, position: 3)
+    create(:plan_task, event_plan:, title: "Unscheduled", due_on: nil, position: 0)
+
+    expect(event_plan.next_action).to eq(expected)
+  end
+
   it "retires active reminders when completed without reactivating them when reopened" do
     event_plan = create(:event_plan)
     reminder = create(:reminder, user: event_plan.user, relationship_profile: event_plan.relationship_profile, event_plan:)
@@ -125,5 +136,19 @@ RSpec.describe EventPlan, type: :model do
     expect(without_sources.source_context).to eq([])
     expect(malformed).not_to be_valid
     expect(malformed.errors.of_kind?(:source_context, :invalid)).to be(true)
+  end
+
+  it "requires a birthday-origin plan to remain a birthday" do
+    event_plan.source_context = [
+      {
+        "id" => "important_date:#{SecureRandom.uuid}",
+        "label" => "Important date",
+        "role" => "birthday_origin"
+      }
+    ]
+    event_plan.occasion_type = "custom"
+
+    expect(event_plan).not_to be_valid
+    expect(event_plan.errors.of_kind?(:occasion_type, :birthday_origin_immutable)).to be(true)
   end
 end

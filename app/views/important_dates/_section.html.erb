@@ -50,6 +50,12 @@
                   </div>
                   <p class="mt-3 text-sm font-semibold text-stone-950"><%= date.display_title %></p>
                   <p class="mt-1 text-sm leading-6 text-stone-700"><%= date.planning_prompt %></p>
+                  <% if date.date_type == "birthday" %>
+                    <%= link_to t("important_dates.item.plan_ahead"),
+                      new_event_plan_path(relationship_profile_id: relationship_profile.id, important_date_id: date.id),
+                      data: { turbo_frame: "_top" },
+                      class: "mt-3 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-canvas transition hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+                  <% end %>
                 </article>
               <% end %>
             </div>

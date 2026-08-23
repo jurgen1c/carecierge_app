@@ -70,6 +70,7 @@ class EventPlan < ApplicationRecord
   validates :guest_list, length: { maximum: MAX_GUEST_LIST_LENGTH }, allow_blank: true
   validate :relationship_profile_belongs_to_user
   validate :source_context_is_supported
+  validate :birthday_origin_requires_birthday_occasion
 
   scope :visible, -> { where.not(status: "archived") }
   scope :for_active_relationships, -> { joins(:relationship_profile).merge(RelationshipProfile.active) }
@@ -86,6 +87,12 @@ class EventPlan < ApplicationRecord
 
   def outstanding_decisions
     plan_tasks.select { |task| task.kind == "decision" && !task.completed? && !task.superseded? }
+  end
+
+  def next_action
+    plan_tasks.current.incomplete
+      .reorder(Arel.sql("due_on ASC NULLS LAST"), :position, :created_at, :id)
+      .first
   end
 
   def complete!(at: Time.current)
@@ -117,6 +124,14 @@ class EventPlan < ApplicationRecord
   end
 
   def occasion_type_label = I18n.t("event_plans.occasion_types.#{occasion_type}")
+
+  def birthday_origin_context
+    Array(source_context).select do |source|
+      source.is_a?(Hash) && source["role"] == "birthday_origin" && source["id"].to_s.start_with?("important_date:")
+    end
+  end
+
+  def birthday_origin? = birthday_origin_context.any?
 
   def with_active_relationship_lock
     relationship_profile.with_lock do
@@ -163,5 +178,9 @@ class EventPlan < ApplicationRecord
       source.is_a?(Hash) && source["id"].is_a?(String) && source["label"].is_a?(String)
     end
     errors.add(:source_context, :invalid) unless valid
+  end
+
+  def birthday_origin_requires_birthday_occasion
+    errors.add(:occasion_type, :birthday_origin_immutable) if birthday_origin? && occasion_type != "birthday"
   end
 end

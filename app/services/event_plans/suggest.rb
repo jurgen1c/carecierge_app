@@ -19,7 +19,7 @@ module EventPlans
       vault_item_ids: [],
       vault_lease: nil,
       locale: I18n.locale,
-      generator: OpenAiSuggester.new
+      generator: LlmSuggester.new
     )
       new(
         actor:,

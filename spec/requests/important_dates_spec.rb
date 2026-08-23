@@ -24,6 +24,9 @@ RSpec.describe "Important dates", type: :request do
       expect(response.body).to include("Add important date")
       expect(response.body).to include(%(href="#{new_relationship_profile_important_date_path(profile)}"))
       expect(CGI.unescapeHTML(response.body)).to include(new_reminder_path(relationship_profile_id: profile.id, important_date_id: important_date.id))
+      expect(CGI.unescapeHTML(response.body)).to include(
+        new_event_plan_path(relationship_profile_id: profile.id, important_date_id: important_date.id)
+      )
       expect(response.body).to include(%(<div id="flash" aria-live="polite">))
       expect(response.body).not_to include(%(<div id="flash" class="mb-5))
     end
@@ -45,7 +48,7 @@ RSpec.describe "Important dates", type: :request do
       expect(response.body).not_to include("Important dates")
     end
 
-    it "only links planning controls to rendered planning suggestions" do
+    it "keeps non-birthday planning controls linked to rendered planning suggestions" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
       sign_in user

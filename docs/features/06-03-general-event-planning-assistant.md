@@ -47,7 +47,8 @@ suggestions that remain source-backed and review-only.
 - Show source provenance on generated steps and retain only known, bounded
   source identifiers and labels.
 - Export plans and tasks with owner data, and selectively delete AI-origin plan
-  suggestions while preserving the plan, template/manual work, and reminders.
+  suggestions while preserving the plan, non-AI birthday-origin provenance,
+  template/manual work, and reminders.
 
 ## Possible Data Objects
 
@@ -75,11 +76,19 @@ suggestions that remain source-backed and review-only.
   migration adds reminder foreign-key columns with concurrent indexes and
   separately validated constraints so deployment does not block normal reminder
   writes for the duration of an index build or table scan.
-- `EventPlans::OpenAiSuggester` uses a non-stored structured response. Its
-  instructions prohibit sending messages, contacting vendors, booking,
-  purchasing, or scheduling actions. Event-plan and task content is filtered
-  from request logs, task titles stay out of reminder URLs, and event-plan pages
-  disable Turbo snapshots.
+- `EventPlans::LlmSuggester` and `BackupPlans::LlmGenerator` use RubyLLM's
+  structured-output interface so the configured model and provider can change
+  without changing the planning operations. Provider defaults resolve to a
+  compatible OpenAI, Anthropic, or Gemini model, and explicit provider-neutral
+  model configuration takes precedence over the legacy OpenAI-only credential;
+  Kamal leaves that shared override unset unless the operator supplies it.
+  OpenAI responses explicitly use `store: false`, while all provider payloads
+  have bounded output-token limits and remain subject to application-side schema,
+  provenance, tenancy, and lifecycle validation. Their instructions prohibit
+  sending messages, contacting vendors, booking, purchasing, or scheduling
+  actions. Event-plan and task content is filtered from request logs, task
+  titles stay out of reminder URLs, and event-plan pages disable Turbo
+  snapshots.
 - The responsive workspace uses Carecierge's existing semantic palette and
   component/style-variant conventions. It is available globally and from each
   relationship profile.

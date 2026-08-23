@@ -20,7 +20,7 @@ module BackupPlans
       vault_item_ids: [],
       vault_lease: nil,
       locale: I18n.locale,
-      generator: OpenAiGenerator.new
+      generator: LlmGenerator.new
     )
       new(
         actor:,

@@ -3,7 +3,7 @@ id: reminders.reminder_delivery_system
 type: fact
 system: reminders
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Reminders provide owner-scoped scheduling and idempotent delivery
@@ -101,7 +101,7 @@ verification:
   - bundle exec rspec
   - bin/rubocop
   - bin/ci
-last_verified_commit: null
+last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
 ---
 
 # Reminders provide owner-scoped scheduling and idempotent delivery

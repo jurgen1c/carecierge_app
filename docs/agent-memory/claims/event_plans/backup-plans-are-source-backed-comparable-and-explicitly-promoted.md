@@ -3,7 +3,7 @@ id: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promote
 type: fact
 system: event_plans
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Backup plans are source-backed, comparable, and explicitly promoted
@@ -100,7 +100,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
 ---
 
 # Backup plans are source-backed, comparable, and explicitly promoted

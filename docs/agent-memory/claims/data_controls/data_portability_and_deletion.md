@@ -3,7 +3,7 @@ id: data_controls.data_portability_and_deletion
 type: fact
 system: data_controls
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -110,7 +110,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized

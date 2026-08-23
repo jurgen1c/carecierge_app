@@ -1,6 +1,46 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: Birthday planning specializes the shared EventPlan store, deterministic task runway, owner scope, source provenance, and review-only lifecycle.
+    strength: 100
+  - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    target: relationship_profiles.important_dates
+    relation: requires
+    reason: The ImportantDate birthday planning link hands off to EventPlan entry, which resolves and revalidates the next occurrence through the existing owner-scoped date model.
+    strength: 100
+  - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    target: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    relation: same_area
+    reason: The birthday workspace hosts both phased plan tasks and the existing moment-specific personal-touch checklist while preserving their separate lifecycles.
+    strength: 90
+  - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    target: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    relation: requires
+    reason: Birthday backup steps link to the existing source-backed comparison and explicit-promotion workflow.
+    strength: 90
+  - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    target: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    relation: requires
+    reason: Birthday gift steps hand off to the existing private, source-backed, user-controlled recommendation workspace.
+    strength: 90
+  - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: requires
+    reason: Birthday message steps hand off to the existing private draft workflow and never send content automatically.
+    strength: 90
+  - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Birthday reminder steps reuse the owner-scoped scheduling and delivery lifecycle rather than scheduling automatically.
+    strength: 90
+  - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    target: authentication.localization_baseline
+    relation: constrains
+    reason: Birthday entry, templates, next-action copy, and review-only reassurance remain available in English and Spanish with English as default.
+    strength: 85
   - source: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
     target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
     relation: requires

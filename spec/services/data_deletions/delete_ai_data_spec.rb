@@ -37,7 +37,14 @@ RSpec.describe DataDeletions::DeleteAiData do
       user:,
       relationship_profile: profile,
       starts_on: original_start,
-      source_context: [ { "id" => "memory:owned", "label" => "Favorite tea" } ]
+      source_context: [
+        {
+          "id" => "important_date:birthday-123",
+          "label" => "Birthday",
+          "role" => "birthday_origin"
+        },
+        { "id" => "memory:owned", "label" => "Favorite tea" }
+      ]
     )
     template_task = create(
       :plan_task,
@@ -83,7 +90,16 @@ RSpec.describe DataDeletions::DeleteAiData do
 
     described_class.call(user:)
 
-    expect(plan.reload).to have_attributes(source_context: [], generation_version: generation_version + 1)
+    expect(plan.reload).to have_attributes(
+      source_context: [
+        {
+          "id" => "important_date:birthday-123",
+          "label" => "Birthday",
+          "role" => "birthday_origin"
+        }
+      ],
+      generation_version: generation_version + 1
+    )
     expect(plan.plan_tasks.reload).to contain_exactly(template_task, manual_task)
     expect(plan.plan_tasks).to all(have_attributes(superseded_at: nil))
     expect(template_task.reload.due_on).to eq(

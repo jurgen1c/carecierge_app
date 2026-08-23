@@ -28,7 +28,12 @@
       <div class="flex shrink-0 flex-wrap gap-2">
         <%= link_to t("important_dates.item.add_reminder"), new_reminder_path(relationship_profile_id: relationship_profile.id, important_date_id: important_date.id), data: { turbo_frame: "_top" }, class: "inline-flex min-h-10 items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
         <% if planning_link_available %>
-          <%= link_to t("important_dates.item.plan_ahead"), "##{dom_id(important_date, :planning)}", data: { turbo_frame: "_top" }, class: "inline-flex min-h-10 items-center justify-center rounded-lg bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-950 transition hover:bg-orange-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-700" %>
+          <% planning_path = if important_date.date_type == "birthday"
+            new_event_plan_path(relationship_profile_id: relationship_profile.id, important_date_id: important_date.id)
+          else
+            "##{dom_id(important_date, :planning)}"
+          end %>
+          <%= link_to t("important_dates.item.plan_ahead"), planning_path, data: { turbo_frame: "_top" }, class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-canvas transition hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <% end %>
         <%= link_to t("important_dates.item.edit"), edit_relationship_profile_important_date_path(relationship_profile, important_date), class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
         <%= button_to t("important_dates.item.delete"), relationship_profile_important_date_path(relationship_profile, important_date), method: :delete, form: { data: { turbo_confirm: t("important_dates.item.delete_confirm") } }, class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700" %>

@@ -33,7 +33,7 @@ RSpec.describe BackupPlans::Generate do
       }
     end
   end
-  let(:generator) { instance_double(BackupPlans::OpenAiGenerator, generate: raw_options) }
+  let(:generator) { instance_double(BackupPlans::LlmGenerator, generate: raw_options) }
 
   it "persists three comparable source-backed options without changing active tasks" do
     reminder = create(

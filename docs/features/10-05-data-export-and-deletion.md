@@ -74,7 +74,8 @@ auditable without retaining the account email or relationship contents.
   state does not reread unchanged screenshot storage, so missing or temporarily
   unavailable uploads cannot block the privacy control.
 - Selective AI deletion locks each owned event plan, advances its generation
-  fence, clears aggregate AI provenance, and removes AI-origin plan tasks.
+  fence, clears aggregate AI provenance while retaining non-AI birthday-origin
+  provenance, and removes AI-origin plan tasks.
   Explicit reminders are detached from deleted AI tasks and remain attached to
   their event plan, including when that plan is completed or archived. Reminder
   actions associated with an archived plan return to the reminder inbox because

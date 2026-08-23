@@ -56,7 +56,10 @@ module DataDeletions
           ai_tasks = plan.plan_tasks.where(origin: "ai").reorder(:id).lock.to_a
           Reminder.where(plan_task: ai_tasks).order(:id).lock.each { |reminder| reminder.update!(plan_task: nil) }
           ai_tasks.each(&:destroy!)
-          plan.update!(source_context: [], generation_version: plan.generation_version + 1)
+          plan.update!(
+            source_context: plan.birthday_origin_context,
+            generation_version: plan.generation_version + 1
+          )
         end
     end
     private_class_method :delete_event_plan_suggestions

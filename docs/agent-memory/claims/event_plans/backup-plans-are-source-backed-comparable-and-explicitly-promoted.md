@@ -2,8 +2,8 @@
 id: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
 type: fact
 system: event_plans
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Backup plans are source-backed, comparable, and explicitly promoted
@@ -12,7 +12,14 @@ claim: >
   Active event-plan owners manually choose one supported recovery scenario and
   generate up to three encrypted structured backup options without changing the
   active plan. The non-stored provider request uses the existing bounded
-  event-plan source catalog and generation fence: public relationship context is
+  event-plan source catalog and generation fence through a swappable RubyLLM
+  provider boundary, with provider-compatible model defaults, a bounded
+  provider-specific output-token limit, and OpenAI response storage explicitly
+  disabled. Provider names are normalized for case and surrounding whitespace
+  before provider and response-parameter selection. Explicit model overrides
+  are passed directly to their selected provider even when newer than RubyLLM's
+  bundled registry, while repository defaults retain registry validation.
+  Public relationship context is
   eligible by default, private notes require identifiable per-request selection,
   and vault items also require suggestion approval plus a revalidated active
   lease. Prior AI tasks are eligible only when all of their sources remain
@@ -44,7 +51,9 @@ source_files:
   - app/models/backup_option.rb
   - app/services/backup_plans/generate.rb
   - app/services/backup_plans/promote.rb
-  - app/services/backup_plans/open_ai_generator.rb
+  - app/agents/backup_plans/llm_generator.rb
+  - app/agents/event_plans/llm_configuration.rb
+  - config/initializers/ruby_llm.rb
   - app/controllers/backup_plans_controller.rb
   - db/migrate/20260822191243_create_backup_plans.rb
   - db/migrate/20260822192636_add_backup_option_reference_to_plan_tasks.rb
@@ -62,11 +71,13 @@ related_files:
   - app/views/components/event_plan_workspace_component.rb
   - app/views/components/event_plan_workspace_component.html.erb
   - config/routes.rb
+  - config/deploy.yml
   - config/locales/en.yml
   - config/locales/es.yml
   - config/locales/event_plans.en.yml
   - config/locales/event_plans.es.yml
   - docs/features/06-05-backup-plan-generator.md
+  - spec/agents/event_plans/llm_configuration_spec.rb
   - spec/services/backup_plans/generate_spec.rb
   - spec/services/backup_plans/promote_spec.rb
   - spec/requests/backup_plans_spec.rb
@@ -78,7 +89,8 @@ symbols:
   - BackupPlansController
   - BackupPlans::Generate
   - BackupPlans::Promote
-  - BackupPlans::OpenAiGenerator
+  - BackupPlans::LlmGenerator
+  - EventPlans::LlmConfiguration
 routes:
   - generate_event_plan_backup_plans
   - promote_event_plan_backup_plan
@@ -91,6 +103,7 @@ tags:
   - recovery
 
 verification:
+  - bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb
   - bundle exec rspec spec/migrations/create_backup_plans_spec.rb spec/models/backup_plan_spec.rb spec/models/backup_option_spec.rb spec/services/backup_plans spec/requests/backup_plans_spec.rb spec/components/event_plan_workspace_component_spec.rb
   - bundle exec rspec spec/models/event_plan_spec.rb spec/models/plan_task_spec.rb spec/models/reminder_spec.rb spec/services/event_plans spec/requests/event_plans_spec.rb spec/requests/reminders_spec.rb
   - bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/requests/localization_spec.rb
@@ -100,7 +113,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
+last_verified_commit: null
 ---
 
 # Backup plans are source-backed, comparable, and explicitly promoted
@@ -122,7 +135,7 @@ from changing a plan and prevents obsolete reminders from firing after recovery.
 
 - `app/services/backup_plans/generate.rb`
 - `app/services/backup_plans/promote.rb`
-- `app/services/backup_plans/open_ai_generator.rb`
+- `app/agents/backup_plans/llm_generator.rb`
 - `app/models/backup_plan.rb`
 - `app/models/backup_option.rb`
 - `spec/services/backup_plans/generate_spec.rb`
@@ -130,6 +143,7 @@ from changing a plan and prevents obsolete reminders from firing after recovery.
 
 ## Verification
 
+- `bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb`
 - `bundle exec rspec spec/migrations/create_backup_plans_spec.rb spec/models/backup_plan_spec.rb spec/models/backup_option_spec.rb spec/services/backup_plans spec/requests/backup_plans_spec.rb spec/components/event_plan_workspace_component_spec.rb`
 - `bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/requests/localization_spec.rb`
 - `bin/rubocop`

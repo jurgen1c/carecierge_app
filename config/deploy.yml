@@ -48,11 +48,17 @@ env:
     - CARECIERGE_SMTP_PORT
     - CARECIERGE_SMTP_AUTHENTICATION
     - OPENAI_API_KEY
+    - ANTHROPIC_API_KEY
+    - GEMINI_API_KEY
   clear:
     CARECIERGE_MEMORY_EXTRACTION_MODEL: <%= ENV.fetch("CARECIERGE_MEMORY_EXTRACTION_MODEL", "gpt-5-mini") %>
     CARECIERGE_MESSAGE_DRAFTING_MODEL: <%= ENV.fetch("CARECIERGE_MESSAGE_DRAFTING_MODEL", "gpt-5-mini") %>
     CARECIERGE_RELATIONSHIP_BRIEFING_MODEL: <%= ENV.fetch("CARECIERGE_RELATIONSHIP_BRIEFING_MODEL", "gpt-5-mini") %>
     CARECIERGE_SOCIAL_CONTEXT_MODEL: <%= ENV.fetch("CARECIERGE_SOCIAL_CONTEXT_MODEL", "gpt-5-mini") %>
+    CARECIERGE_EVENT_PLAN_PROVIDER: <%= ENV.fetch("CARECIERGE_EVENT_PLAN_PROVIDER", "openai") %>
+<% unless ENV["CARECIERGE_EVENT_PLAN_MODEL"].to_s.empty? %>
+    CARECIERGE_EVENT_PLAN_MODEL: <%= ENV["CARECIERGE_EVENT_PLAN_MODEL"] %>
+<% end %>
 
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.

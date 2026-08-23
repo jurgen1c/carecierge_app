@@ -5,6 +5,7 @@ claim_globs:
   - claims/event_plans/**/*.md
 default_queries:
   - event plan birthday anniversary generic occasion template task phase progress
+  - birthday important date prefill next occurrence next action gift message backup review only
   - event plan AI suggestion source provenance private note privacy vault lease
   - event plan reminder scheduling completion archive selective AI deletion export
   - personal touch checklist event plan important date birthday anniversary preference provenance reorder dismiss
@@ -26,17 +27,25 @@ watched_files:
   - app/policies/personal_touch_checklist_policy.rb
   - app/policies/personal_touch_item_policy.rb
   - app/services/event_plans/**/*.rb
+  - app/agents/event_plans/**/*.rb
   - app/services/personal_touch_checklists/**/*.rb
   - app/services/backup_plans/**/*.rb
+  - app/agents/backup_plans/**/*.rb
   - app/views/event_plans/**/*.erb
+  - app/views/important_dates/_important_date.html.erb
+  - app/views/important_dates/_section.html.erb
+  - app/views/important_dates/_upcoming.html.erb
   - app/views/components/event_plan_workspace_component.*
   - app/views/components/personal_touch_checklist_component.*
   - config/locales/event_plans.*.yml
+  - config/initializers/ruby_llm.rb
+  - config/deploy.yml
   - config/locales/personal_touch_checklists.*.yml
   - db/migrate/*backup_plan*.rb
   - db/migrate/*event_plans*.rb
   - db/migrate/*personal_touch_checklists*.rb
   - docs/features/06-03-general-event-planning-assistant.md
+  - docs/features/06-01-birthday-concierge.md
   - docs/features/06-04-personal-touch-checklist.md
   - docs/features/06-05-backup-plan-generator.md
   - spec/components/event_plan_workspace_component_spec.rb
@@ -52,8 +61,10 @@ watched_files:
   - spec/requests/event_plans_spec.rb
   - spec/requests/personal_touch_checklists_spec.rb
   - spec/services/event_plans/**/*.rb
+  - spec/agents/event_plans/**/*.rb
   - spec/services/personal_touch_checklists/**/*.rb
   - spec/services/backup_plans/**/*.rb
+  - spec/agents/backup_plans/**/*.rb
   - spec/requests/backup_plans_spec.rb
   - spec/system/event_plans_spec.rb
 tags:
@@ -65,3 +76,4 @@ tags:
   - personal_touch_checklists
   - backup_plans
   - recovery
+  - birthdays

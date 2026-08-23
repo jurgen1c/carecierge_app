@@ -2,23 +2,40 @@
 id: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
 type: fact
 system: event_plans
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Event plans are owner-scoped, source-backed, and user-controlled
 
 claim: >
   Active relationship owners create encrypted birthday, anniversary, and generic
-  event plans from one deterministic localized template. Plans and their phased
-  tasks expose progress, decisions, and explicit lifecycle actions. Scheduling or
+  event plans from one deterministic localized template. An owned birthday
+  ImportantDate can prefill the plan and is retained with a birthday-origin
+  provenance role whose occasion cannot later be changed; birthday
+  plans use localized birthday steps and expose the earliest due incomplete
+  current task as one review-only next action. When an unsourced plan changes
+  occasion, untouched localized template copy follows the new occasion and
+  locale while user-edited wording is preserved; updates that do not change the
+  occasion skip localized template matching. Plans and their phased tasks expose
+  progress, decisions, and explicit lifecycle actions. Scheduling or
   rescheduling a plan rebases untouched template deadlines, including
   superseded work that selective AI deletion may later restore, while preserving
   user-customized dates. New task
   reminders require active plans and incomplete tasks, and deleting a task
   detaches rather than deletes its reminder history. Optional AI planning is
-  requested manually, uses bounded non-stored structured output, and can only add
+  requested manually through a swappable RubyLLM provider boundary, uses bounded
+  structured output with provider-specific output-token limits and OpenAI
+  storage explicitly disabled, and can only add
   reviewable tasks: it never sends, schedules, contacts, books, or purchases.
+  OpenAI, Anthropic, and Gemini credentials can be supplied through encrypted
+  Rails credentials or Kamal-forwarded provider environment secrets. Provider
+  names are normalized for case and surrounding whitespace before provider and
+  response-parameter selection. Provider defaults select a compatible model as
+  a pair, while an explicit shared model override takes precedence over the
+  legacy OpenAI-only model credential and is passed directly to the selected
+  provider even when it is newer than RubyLLM's bundled model registry;
+  repository defaults retain registry validation.
   Current, non-stale public relationship evidence is eligible by default;
   private notes require an identifiable per-request selection, while protected sources also
   require current suggestion approval, an identifiable unlocked choice, and a
@@ -32,10 +49,10 @@ claim: >
   from request logs and sensitive plan pages disable Turbo snapshots. Superseded
   tasks are excluded from later provider snapshots and interactive task flows,
   with their current state rechecked inside held mutation locks. Plans and
-  tasks participate in owner exports. Selective AI deletion clears aggregate
-  provenance, deletes AI-origin tasks, advances the fence, and detaches rather
-  than deletes explicit reminders while preserving plans and template/manual
-  work.
+  tasks participate in owner exports. Selective AI deletion clears aggregate AI
+  provenance while retaining non-AI birthday-origin provenance, deletes
+  AI-origin tasks, advances the fence, and detaches rather than deletes explicit
+  reminders while preserving plans and template/manual work.
 
 source_files:
   - app/models/event_plan.rb
@@ -47,7 +64,9 @@ source_files:
   - app/services/event_plans/update.rb
   - app/services/event_plans/context_builder.rb
   - app/services/event_plans/suggest.rb
-  - app/services/event_plans/open_ai_suggester.rb
+  - app/agents/event_plans/llm_suggester.rb
+  - app/agents/event_plans/llm_configuration.rb
+  - config/initializers/ruby_llm.rb
   - db/migrate/20260821040000_create_event_plans.rb
   - db/migrate/20260821040001_add_event_plan_references_to_reminders.rb
 
@@ -62,15 +81,23 @@ related_files:
   - app/views/components/event_plan_workspace_component.rb
   - app/views/components/event_plan_workspace_component.html.erb
   - app/views/event_plans/show.html.erb
+  - app/views/important_dates/_important_date.html.erb
+  - app/views/important_dates/_section.html.erb
+  - app/views/important_dates/_upcoming.html.erb
   - app/views/relationship_profiles/show.html.erb
   - config/initializers/filter_parameter_logging.rb
+  - .kamal/secrets
+  - config/deploy.yml
   - config/locales/daily_feed.en.yml
   - config/locales/daily_feed.es.yml
   - docs/features/06-03-general-event-planning-assistant.md
   - spec/models/event_plan_spec.rb
   - spec/models/plan_task_spec.rb
+  - spec/services/event_plans/update_spec.rb
   - spec/services/event_plans/suggest_spec.rb
+  - spec/agents/event_plans/llm_configuration_spec.rb
   - spec/requests/event_plans_spec.rb
+  - spec/config/ai_memory_deploy_spec.rb
   - spec/serializers/data_exports/snapshot_spec.rb
   - spec/system/event_plans_spec.rb
 symbols:
@@ -83,7 +110,8 @@ symbols:
   - EventPlans::Update
   - EventPlans::ContextBuilder
   - EventPlans::Suggest
-  - EventPlans::OpenAiSuggester
+  - EventPlans::LlmSuggester
+  - EventPlans::LlmConfiguration
   - EventPlanWorkspaceComponent
 routes:
   - event_plans
@@ -99,6 +127,7 @@ tags:
   - source_provenance
 
 verification:
+  - bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb
   - bundle exec rspec spec/models/event_plan_spec.rb spec/models/plan_task_spec.rb spec/models/reminder_spec.rb spec/services/event_plans spec/policies/event_plan_policy_spec.rb spec/policies/plan_task_policy_spec.rb spec/components/event_plan_workspace_component_spec.rb spec/requests/event_plans_spec.rb spec/requests/reminders_spec.rb spec/system/event_plans_spec.rb
   - bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb
   - bin/rubocop
@@ -107,7 +136,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
+last_verified_commit: null
 ---
 
 # Event plans are owner-scoped, source-backed, and user-controlled
@@ -138,6 +167,7 @@ silent sensitive-context reuse, and accidental action on the user's behalf.
 
 ## Verification
 
+- `bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb`
 - `bundle exec rspec spec/models/event_plan_spec.rb spec/models/plan_task_spec.rb spec/models/reminder_spec.rb spec/services/event_plans spec/policies/event_plan_policy_spec.rb spec/policies/plan_task_policy_spec.rb spec/components/event_plan_workspace_component_spec.rb spec/requests/event_plans_spec.rb spec/requests/reminders_spec.rb spec/system/event_plans_spec.rb`
 - `bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb`
 - `bin/rubocop`

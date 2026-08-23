@@ -1,11 +1,8 @@
 require "json"
-require "net/http"
 
 module BackupPlans
-  class OpenAiGenerator
-    ENDPOINT = URI("https://api.openai.com/v1/responses")
-    DEFAULT_MODEL = "gpt-5-mini"
-    REQUEST_TIMEOUT = 30
+  class LlmGenerator
+    OUTPUT_TOKEN_LIMIT = 4_000
     OUTPUT_LANGUAGES = { en: "English", es: "Spanish" }.freeze
     SOURCE_IDS = {
       type: "array",
@@ -76,69 +73,57 @@ module BackupPlans
       required: [ "options" ]
     }.freeze
 
-    def initialize(api_key: self.class.default_api_key, model: self.class.default_model, transport: nil)
-      @api_key = api_key.to_s
-      @model = model.to_s
-      @transport = transport || method(:perform_request)
+    def initialize(model: nil, provider: nil)
+      @provider = (provider.presence || self.class.default_provider).to_s
+      @chat_options = EventPlans::LlmConfiguration.chat_options(model:, provider: @provider)
     end
 
     def generate(plan_snapshot:, scenario:, sources:, locale:, count: Generate::MAX_RESULTS)
-      raise EventPlans::GenerationError, "Backup plan generation is not configured" if api_key.blank?
-
-      response = transport.call(build_request(plan_snapshot:, scenario:, sources:, locale:, count:))
-      raise EventPlans::GenerationError, "Backup plan request failed" unless response.is_a?(Net::HTTPSuccess)
-
-      parsed = JSON.parse(response.body)
-      raise EventPlans::GenerationError, "Backup plan response was incomplete" unless parsed.fetch("status") == "completed"
-
-      output = JSON.parse(output_text(parsed))
+      response = configured_chat(locale:, count:).ask(
+        JSON.generate(input_payload(plan_snapshot:, scenario:, sources:))
+      )
+      output = response.content
       raise TypeError unless output.is_a?(Hash)
+      output = output.deep_stringify_keys
 
       options = output.fetch("options")
       raise EventPlans::GenerationError, "Backup plan response was invalid" unless options.is_a?(Array)
 
       options.first(count)
-    rescue JSON::ParserError, KeyError, TypeError
+    rescue KeyError, TypeError
       raise EventPlans::GenerationError, "Backup plan response was invalid"
+    rescue NoMethodError => error
+      raise unless error.name == :content && error.receiver.nil?
+
+      raise EventPlans::GenerationError, "Backup plan response was invalid"
+    rescue RubyLLM::Error, RubyLLM::ConfigurationError, RubyLLM::ModelNotFoundError, Faraday::Error
+      raise EventPlans::GenerationError, "Backup plan provider was unavailable"
     end
 
-    def self.default_api_key
-      Rails.application.credentials.dig(:openai, :api_key).presence || ENV["OPENAI_API_KEY"]
-    end
+    def self.default_model(provider: default_provider) = EventPlans::LlmConfiguration.model(provider:)
 
-    def self.default_model
-      Rails.application.credentials.dig(:openai, :event_plan_model).presence ||
-        ENV.fetch("CARECIERGE_EVENT_PLAN_MODEL", DEFAULT_MODEL)
-    end
+    def self.default_provider = EventPlans::LlmConfiguration.provider
 
     private
 
-    attr_reader :api_key, :model, :transport
+    attr_reader :chat_options, :provider
 
-    def build_request(plan_snapshot:, scenario:, sources:, locale:, count:)
-      request = Net::HTTP::Post.new(ENDPOINT)
-      request["Authorization"] = "Bearer #{api_key}"
-      request["Content-Type"] = "application/json"
-      request.body = JSON.generate(
-        model:,
-        store: false,
-        max_output_tokens: 4_000,
-        instructions: instructions(locale:, count:),
-        input: JSON.generate(
-          scenario:,
-          event_plan: plan_payload(plan_snapshot),
-          sources: sources.map(&:to_h)
-        ),
-        text: {
-          format: {
-            type: "json_schema",
-            name: "event_plan_backup_options",
-            strict: true,
-            schema: SCHEMA
-          }
-        }
+    def configured_chat(locale:, count:)
+      chat = RubyLLM.chat(**chat_options)
+      chat.with_instructions(instructions(locale:, count:))
+      chat.with_schema(name: "event_plan_backup_options", schema: SCHEMA)
+      chat.with_params(
+        **EventPlans::LlmConfiguration.response_params(provider:, output_token_limit: OUTPUT_TOKEN_LIMIT)
       )
-      request
+      chat
+    end
+
+    def input_payload(plan_snapshot:, scenario:, sources:)
+      {
+        scenario:,
+        event_plan: plan_payload(plan_snapshot),
+        sources: sources.map(&:to_h)
+      }
     end
 
     def plan_payload(plan_snapshot)
@@ -178,39 +163,6 @@ module BackupPlans
 
     def output_language(locale)
       OUTPUT_LANGUAGES.fetch(locale.to_sym, OUTPUT_LANGUAGES.fetch(I18n.default_locale))
-    end
-
-    def output_text(parsed)
-      output = parsed.fetch("output")
-      raise TypeError unless output.is_a?(Array)
-
-      texts = output.flat_map do |item|
-        raise TypeError unless item.is_a?(Hash)
-        next [] unless item["type"] == "message"
-
-        content = item.fetch("content")
-        raise TypeError unless content.is_a?(Array) && content.all?(Hash)
-
-        content.filter_map { |part| part.fetch("text") if part["type"] == "output_text" }
-      end
-      result = texts.join
-      raise TypeError if result.blank?
-
-      result
-    end
-
-    def perform_request(request)
-      Net::HTTP.start(
-        ENDPOINT.host,
-        ENDPOINT.port,
-        use_ssl: true,
-        open_timeout: REQUEST_TIMEOUT,
-        read_timeout: REQUEST_TIMEOUT,
-        write_timeout: REQUEST_TIMEOUT
-      ) { |http| http.request(request) }
-    rescue Timeout::Error, SocketError, SystemCallError, IOError, OpenSSL::SSL::SSLError,
-      Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError
-      raise EventPlans::GenerationError, "Backup plan provider was unavailable"
     end
   end
 end

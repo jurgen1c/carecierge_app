@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe EventPlanWorkspaceComponent, type: :component do
+  include ActiveSupport::Testing::TimeHelpers
+
   it "renders an accessible, user-controlled plan runway" do
     plan = create(:event_plan)
     create(:plan_task, event_plan: plan, kind: "message_draft", title: "Draft the invitation")
@@ -21,6 +23,100 @@ RSpec.describe EventPlanWorkspaceComponent, type: :component do
     expect(page).to have_text("Draft only — nothing is sent")
     expect(page).to have_link("Create reminder")
     expect(page).not_to have_button("Send")
+  end
+
+  it "gives a birthday plan one clear, review-only next action" do
+    plan = create(:event_plan, occasion_type: "birthday", starts_on: Date.current + 21.days)
+    next_task = create(
+      :plan_task,
+      event_plan: plan,
+      kind: "gift_idea",
+      title: "Choose a birthday gift",
+      due_on: Date.current + 2.days
+    )
+    create(:plan_task, event_plan: plan, kind: "message_draft", due_on: Date.current + 3.days, position: 1)
+
+    render_inline(described_class.new(
+      event_plan: plan,
+      event_plans: [ plan ],
+      plan_task: PlanTask.new,
+      private_notes: [],
+      vault_items: [],
+      vault_unlocked: false
+    ))
+
+    expect(page).to have_css("section[aria-labelledby='birthday-next-action-title']")
+    expect(page).to have_text("Your next step")
+    expect(page).to have_text(next_task.title)
+    expect(page).to have_link(
+      "Review gift ideas",
+      href: Rails.application.routes.url_helpers.relationship_profile_path(
+        plan.relationship_profile,
+        anchor: "gift-recommendations"
+      )
+    )
+    expect(page).to have_text("You review every draft and decide what happens next")
+    expect(page).not_to have_button("Buy")
+  end
+
+  it "routes birthday next actions into existing user-controlled workflows" do
+    routes = Rails.application.routes.url_helpers
+    {
+      "message_draft" => [ "Draft a message", ->(plan, _task) { routes.relationship_profile_path(plan.relationship_profile, anchor: "message-drafting") } ],
+      "reminder" => [ "Set a reminder", ->(plan, task) { routes.new_reminder_path(relationship_profile_id: plan.relationship_profile_id, event_plan_id: plan.id, plan_task_id: task.id) } ],
+      "backup_step" => [ "Review backup options", ->(plan, _task) { routes.event_plan_path(plan, anchor: "backup-options") } ],
+      "decision" => [ "Open this step", ->(plan, task) { routes.event_plan_path(plan, anchor: "plan-task-#{task.id}") } ]
+    }.each do |kind, (label, path_for)|
+      plan = create(:event_plan, occasion_type: "birthday")
+      task = create(:plan_task, event_plan: plan, kind:)
+
+      render_inline(described_class.new(
+        event_plan: plan,
+        event_plans: [ plan ],
+        plan_task: PlanTask.new,
+        private_notes: [],
+        vault_items: [],
+        vault_unlocked: false
+      ))
+
+      expect(page).to have_link(label, href: path_for.call(plan, task))
+    end
+  end
+
+  it "does not offer a next action for a completed birthday plan" do
+    plan = create(:event_plan, occasion_type: "birthday", status: "completed", completed_at: Time.current)
+    create(:plan_task, event_plan: plan, kind: "reminder")
+
+    render_inline(described_class.new(
+      event_plan: plan,
+      event_plans: [ plan ],
+      plan_task: PlanTask.new,
+      private_notes: [],
+      vault_items: [],
+      vault_unlocked: false
+    ))
+
+    expect(page).not_to have_css("section[aria-labelledby='birthday-next-action-title']")
+  end
+
+  it "describes birthday timing from the owner's local calendar date" do
+    plan = create(:event_plan, occasion_type: "birthday", starts_on: Date.new(2026, 8, 22))
+    create(:notification_preference, user: plan.user, time_zone: "America/Los_Angeles")
+    create(:plan_task, event_plan: plan)
+
+    travel_to Time.utc(2026, 8, 23, 2) do
+      render_inline(described_class.new(
+        event_plan: plan,
+        event_plans: [ plan ],
+        plan_task: PlanTask.new,
+        private_notes: [],
+        vault_items: [],
+        vault_unlocked: false
+      ))
+    end
+
+    expect(page).to have_text("Birthday is today")
+    expect(page).not_to have_text("Birthday date has passed")
   end
 
   it "does not offer suggestions for a completed plan" do

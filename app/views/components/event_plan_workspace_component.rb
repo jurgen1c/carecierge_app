@@ -43,6 +43,47 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
 
   def progress = event_plan.progress
 
+  def birthday_plan? = event_plan.occasion_type == "birthday"
+
+  def next_action = @next_action ||= event_plan.next_action
+
+  def birthday_timing
+    return unless event_plan.starts_on
+
+    owner_date = OwnerLocalCalendar.date_for(user: event_plan.user)
+    days = (event_plan.starts_on - owner_date).to_i
+    return t("event_plans.birthday.today") if days.zero?
+    return t("event_plans.birthday.passed") if days.negative?
+
+    t("event_plans.birthday.days_away", count: days)
+  end
+
+  def next_action_path
+    case next_action.kind
+    when "gift_idea"
+      relationship_profile_path(event_plan.relationship_profile, anchor: "gift-recommendations")
+    when "message_draft"
+      relationship_profile_path(event_plan.relationship_profile, anchor: "message-drafting")
+    when "reminder"
+      new_reminder_path(
+        relationship_profile_id: event_plan.relationship_profile_id,
+        event_plan_id: event_plan.id,
+        plan_task_id: next_action.id
+      )
+    when "backup_step"
+      event_plan_path(event_plan, anchor: "backup-options")
+    else
+      event_plan_path(event_plan, anchor: "plan-task-#{next_action.id}")
+    end
+  end
+
+  def next_action_label
+    t(
+      "event_plans.birthday.actions.#{next_action.kind}",
+      default: t("event_plans.birthday.actions.default")
+    )
+  end
+
   def tasks_for(phase)
     event_plan.plan_tasks.select { |task| task.phase == phase && !task.superseded? }
   end

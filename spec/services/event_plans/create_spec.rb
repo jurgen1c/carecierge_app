@@ -67,4 +67,19 @@ RSpec.describe EventPlans::Create do
       )
     end.to raise_error(ActiveRecord::RecordNotFound)
   end
+
+  it "revalidates birthday provenance after acquiring the relationship lock" do
+    profile = create(:relationship_profile)
+    important_date = create(:important_date, relationship_profile: profile, date_type: "birthday")
+    important_date.update!(date_type: "anniversary")
+
+    expect do
+      described_class.call(
+        user: profile.user,
+        relationship_profile: profile,
+        important_date_id: important_date.id,
+        attributes: { title: "Birthday plan", occasion_type: "birthday" }
+      )
+    end.to raise_error(ActiveRecord::RecordNotFound)
+  end
 end

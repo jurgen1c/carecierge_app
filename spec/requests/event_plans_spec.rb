@@ -1,10 +1,148 @@
 require "rails_helper"
 
 RSpec.describe "Event plans", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:user) { create(:user) }
   let(:profile) { create(:relationship_profile, user:, first_name: "Maya") }
 
   before { sign_in user }
+
+  it "prefills an owner-scoped birthday plan from an important date" do
+    important_date = create(
+      :important_date,
+      relationship_profile: profile,
+      date_type: "birthday",
+      starts_on: Date.new(2020, 9, 12),
+      recurrence: "yearly"
+    )
+
+    travel_to Time.zone.local(2026, 8, 22, 10) do
+      get new_event_plan_path(relationship_profile_id: profile.id, important_date_id: important_date.id)
+    end
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.at_css("input#event_plan_relationship_profile_id[type='hidden']")["value"]).to eq(profile.id)
+    expect(response.parsed_body.at_css("select#event_plan_relationship_profile_id")).to be_nil
+    expect(response.parsed_body.at_css("#event_plan_title")["value"]).to eq("#{profile.display_name}'s birthday")
+    expect(response.parsed_body.at_css("input#event_plan_occasion_type[type='hidden']")["value"]).to eq("birthday")
+    expect(response.parsed_body.at_css("select#event_plan_occasion_type")).to be_nil
+    expect(response.body).to include("Set from this birthday date")
+    expect(response.parsed_body.at_css("#event_plan_starts_on")["value"]).to eq("2026-09-12")
+  end
+
+  it "prefills the birthday occurrence using the owner's local calendar date" do
+    create(:notification_preference, user:, time_zone: "America/Los_Angeles")
+    important_date = create(
+      :important_date,
+      relationship_profile: profile,
+      date_type: "birthday",
+      starts_on: Date.new(2020, 8, 22),
+      recurrence: "yearly"
+    )
+
+    travel_to Time.utc(2026, 8, 23, 2) do
+      get new_event_plan_path(relationship_profile_id: profile.id, important_date_id: important_date.id)
+    end
+
+    expect(response.parsed_body.at_css("#event_plan_starts_on")["value"]).to eq("2026-08-22")
+  end
+
+  it "does not prefill a birthday plan from another user's important date" do
+    foreign_date = create(:important_date, date_type: "birthday")
+
+    get new_event_plan_path(relationship_profile_id: profile.id, important_date_id: foreign_date.id)
+
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "preserves the authorized important date as birthday-plan provenance" do
+    important_date = create(:important_date, relationship_profile: profile, date_type: "birthday")
+
+    expect do
+      post event_plans_path, params: {
+        important_date_id: important_date.id,
+        event_plan: {
+          relationship_profile_id: profile.id,
+          title: "#{profile.display_name}'s birthday",
+          occasion_type: "birthday",
+          starts_on: important_date.next_occurrence_on.iso8601
+        }
+      }
+    end.to change(EventPlan, :count).by(1)
+
+    expect(EventPlan.order(:created_at).last.source_context).to eq(
+      [
+        {
+          "id" => "important_date:#{important_date.id}",
+          "label" => "Important date",
+          "role" => "birthday_origin"
+        }
+      ]
+    )
+  end
+
+  it "keeps an important-date birthday occasion immutable when editing" do
+    important_date = create(:important_date, relationship_profile: profile, date_type: "birthday")
+    post event_plans_path, params: {
+      important_date_id: important_date.id,
+      event_plan: {
+        relationship_profile_id: profile.id,
+        title: "#{profile.display_name}'s birthday",
+        occasion_type: "birthday",
+        starts_on: important_date.next_occurrence_on.iso8601
+      }
+    }
+    plan = EventPlan.order(:created_at).last
+    original_tasks = plan.plan_tasks.order(:position).pluck(:title)
+
+    get edit_event_plan_path(plan)
+
+    expect(response.parsed_body.at_css("input#event_plan_occasion_type[type='hidden']")["value"]).to eq("birthday")
+    expect(response.parsed_body.at_css("select#event_plan_occasion_type")).to be_nil
+    expect(response.body).to include("Set from this birthday date")
+
+    patch event_plan_path(plan), params: { event_plan: { occasion_type: "custom" } }
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(plan.reload.occasion_type).to eq("birthday")
+    expect(plan.source_context.sole).to include("role" => "birthday_origin")
+    expect(plan.plan_tasks.order(:position).pluck(:title)).to eq(original_tasks)
+  end
+
+  it "does not create a plan from another user's important date" do
+    foreign_date = create(:important_date, date_type: "birthday")
+
+    expect do
+      post event_plans_path, params: {
+        important_date_id: foreign_date.id,
+        event_plan: {
+          relationship_profile_id: profile.id,
+          title: "Foreign birthday",
+          occasion_type: "birthday"
+        }
+      }
+    end.not_to change(EventPlan, :count)
+
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "does not attach birthday-date provenance to another occasion" do
+    important_date = create(:important_date, relationship_profile: profile, date_type: "birthday")
+
+    expect do
+      post event_plans_path, params: {
+        important_date_id: important_date.id,
+        event_plan: {
+          relationship_profile_id: profile.id,
+          title: "Different occasion",
+          occasion_type: "custom"
+        }
+      }
+    end.not_to change(EventPlan, :count)
+
+    expect(response).to have_http_status(:not_found)
+  end
 
   it "renders an owner-scoped global planning workspace" do
     owned = create(:event_plan, user:, relationship_profile: profile, title: "Maya's birthday dinner")

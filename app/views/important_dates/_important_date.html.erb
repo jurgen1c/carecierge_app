@@ -28,7 +28,7 @@
       <div class="flex shrink-0 flex-wrap gap-2">
         <%= link_to t("important_dates.item.add_reminder"), new_reminder_path(relationship_profile_id: relationship_profile.id, important_date_id: important_date.id), data: { turbo_frame: "_top" }, class: "inline-flex min-h-10 items-center justify-center rounded-lg bg-emerald-800 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
         <% if planning_link_available %>
-          <% planning_path = if important_date.date_type == "birthday"
+          <% planning_path = if important_date.date_type.in?(%w[birthday anniversary milestone])
             new_event_plan_path(relationship_profile_id: relationship_profile.id, important_date_id: important_date.id)
           else
             "##{dom_id(important_date, :planning)}"

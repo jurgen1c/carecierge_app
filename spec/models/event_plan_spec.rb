@@ -8,6 +8,7 @@ require "rails_helper"
 #  id                      :uuid             not null, primary key
 #  budget_cents            :integer
 #  completed_at            :datetime
+#  effort_level            :string           default("medium"), not null
 #  generation_version      :bigint           default(0), not null
 #  guest_list              :text
 #  lock_version            :integer          default(0), not null
@@ -17,6 +18,7 @@ require "rails_helper"
 #  starts_on               :date
 #  status                  :string           default("active"), not null
 #  title                   :text             not null
+#  tone                    :string           default("warm"), not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null
@@ -44,6 +46,15 @@ RSpec.describe EventPlan, type: :model do
   it { is_expected.to validate_presence_of(:title) }
   it { is_expected.to validate_inclusion_of(:occasion_type).in_array(EventPlan::OCCASION_TYPES) }
   it { is_expected.to validate_inclusion_of(:status).in_array(EventPlan::STATUSES) }
+
+  it "validates the user-adjustable planning tone and effort" do
+    event_plan.tone = "cheesy"
+    event_plan.effort_level = "impossible"
+
+    expect(event_plan).not_to be_valid
+    expect(event_plan.errors.of_kind?(:tone, :inclusion)).to be(true)
+    expect(event_plan.errors.of_kind?(:effort_level, :inclusion)).to be(true)
+  end
 
   it "requires the plan and relationship to have the same owner" do
     event_plan.relationship_profile = create(:relationship_profile)
@@ -150,5 +161,35 @@ RSpec.describe EventPlan, type: :model do
 
     expect(event_plan).not_to be_valid
     expect(event_plan.errors.of_kind?(:occasion_type, :birthday_origin_immutable)).to be(true)
+  end
+
+  it "requires an anniversary-origin plan to remain an anniversary" do
+    event_plan.source_context = [
+      {
+        "id" => "important_date:#{SecureRandom.uuid}",
+        "label" => "Important date",
+        "role" => "anniversary_origin",
+        "date_type" => "milestone"
+      }
+    ]
+    event_plan.occasion_type = "custom"
+
+    expect(event_plan).not_to be_valid
+    expect(event_plan.errors.of_kind?(:occasion_type, :anniversary_origin_immutable)).to be(true)
+  end
+
+  it "requires a plan with selected prior anniversary context to remain an anniversary" do
+    event_plan.source_context = [
+      {
+        "id" => "event_plan:#{SecureRandom.uuid}",
+        "label" => "Prior anniversary plan — review before reusing",
+        "role" => "prior_anniversary_context",
+        "certainty" => "needs_confirmation"
+      }
+    ]
+    event_plan.occasion_type = "custom"
+
+    expect(event_plan).not_to be_valid
+    expect(event_plan.errors.of_kind?(:occasion_type, :prior_anniversary_context_immutable)).to be(true)
   end
 end

@@ -8,6 +8,34 @@ RSpec.describe "Event plans", type: :request do
 
   before { sign_in user }
 
+  it "renders usable anniversary controls before Stimulus enhances the manual form" do
+    prior_plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      title: "Last year's plan",
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+
+    get new_event_plan_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.at_css("[data-event-plan-form-target='effort']")["hidden"]).to be_nil
+    prior_control = response.parsed_body.at_css("[data-event-plan-form-target='prior']")
+    expect(prior_control["hidden"]).to be_nil
+    expect(prior_control.at_css("option[value='#{prior_plan.id}']")).to be_present
+  end
+
+  it "renders tone guidance that stays accurate when the editable relationship changes" do
+    get new_event_plan_path(relationship_profile_id: profile.id)
+
+    tone_hint = response.parsed_body.at_css("#event_plan_tone + p")
+
+    expect(tone_hint.text.squish).to eq("Choose the voice that fits this relationship; no style is inferred without your choice.")
+  end
+
   it "prefills an owner-scoped birthday plan from an important date" do
     important_date = create(
       :important_date,
@@ -27,8 +55,9 @@ RSpec.describe "Event plans", type: :request do
     expect(response.parsed_body.at_css("#event_plan_title")["value"]).to eq("#{profile.display_name}'s birthday")
     expect(response.parsed_body.at_css("input#event_plan_occasion_type[type='hidden']")["value"]).to eq("birthday")
     expect(response.parsed_body.at_css("select#event_plan_occasion_type")).to be_nil
-    expect(response.body).to include("Set from this birthday date")
+    expect(response.body).to include("Set from this important date")
     expect(response.parsed_body.at_css("#event_plan_starts_on")["value"]).to eq("2026-09-12")
+    expect(response.parsed_body.at_css("[data-event-plan-form-target='effort'][hidden] select#event_plan_effort_level")).to be_present
   end
 
   it "prefills the birthday occurrence using the owner's local calendar date" do
@@ -76,7 +105,8 @@ RSpec.describe "Event plans", type: :request do
         {
           "id" => "important_date:#{important_date.id}",
           "label" => "Important date",
-          "role" => "birthday_origin"
+          "role" => "birthday_origin",
+          "date_type" => "birthday"
         }
       ]
     )
@@ -100,7 +130,7 @@ RSpec.describe "Event plans", type: :request do
 
     expect(response.parsed_body.at_css("input#event_plan_occasion_type[type='hidden']")["value"]).to eq("birthday")
     expect(response.parsed_body.at_css("select#event_plan_occasion_type")).to be_nil
-    expect(response.body).to include("Set from this birthday date")
+    expect(response.body).to include("Set from this important date")
 
     patch event_plan_path(plan), params: { event_plan: { occasion_type: "custom" } }
 
@@ -140,6 +170,157 @@ RSpec.describe "Event plans", type: :request do
         }
       }
     end.not_to change(EventPlan, :count)
+
+    expect(response).to have_http_status(:not_found)
+  end
+
+  it "prefills an anniversary plan from owned anniversary and milestone dates" do
+    %w[anniversary milestone].each do |date_type|
+      important_date = create(
+        :important_date,
+        relationship_profile: profile,
+        date_type:,
+        title: date_type == "milestone" ? "The day we met" : nil,
+        starts_on: Date.new(2020, 9, 12),
+        recurrence: "yearly"
+      )
+
+      get new_event_plan_path(relationship_profile_id: profile.id, important_date_id: important_date.id)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.at_css("input#event_plan_relationship_profile_id[type='hidden']")["value"]).to eq(profile.id)
+      expect(response.parsed_body.at_css("input#event_plan_occasion_type[type='hidden']")["value"]).to eq("anniversary")
+      expect(response.parsed_body.at_css("#event_plan_title")["value"]).to include(important_date.display_title, profile.display_name)
+      expect(response.parsed_body.at_css("select#event_plan_tone option[selected]")["value"]).to eq("warm")
+      expect(response.parsed_body.at_css("select#event_plan_effort_level option[selected]")["value"]).to eq("medium")
+    end
+  end
+
+  it "preserves anniversary-date provenance and only explicitly selected prior context" do
+    important_date = create(:important_date, relationship_profile: profile, date_type: "anniversary")
+    prior_plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+
+    get new_event_plan_path(relationship_profile_id: profile.id, important_date_id: important_date.id)
+    prior_select = response.parsed_body.at_css("select#prior_event_plan_id")
+    expect(prior_select.css("option").map(&:text)).to include(prior_plan.title)
+    expect(response.body).to include("never as a current preference or instruction")
+
+    expect do
+      post event_plans_path, params: {
+        important_date_id: important_date.id,
+        prior_event_plan_id: prior_plan.id,
+        event_plan: {
+          relationship_profile_id: profile.id,
+          title: "Maya anniversary plan",
+          occasion_type: "anniversary",
+          tone: "understated",
+          effort_level: "low",
+          starts_on: important_date.next_occurrence_on.iso8601
+        }
+      }
+    end.to change(EventPlan, :count).by(1)
+
+    plan = EventPlan.where.not(id: prior_plan.id).order(:created_at).last
+    expect(plan).to have_attributes(tone: "understated", effort_level: "low")
+    expect(plan.source_context).to include(
+      hash_including(
+        "id" => "important_date:#{important_date.id}",
+        "role" => "anniversary_origin",
+        "date_type" => "anniversary"
+      ),
+      hash_including(
+        "id" => "event_plan:#{prior_plan.id}",
+        "role" => "prior_anniversary_context",
+        "certainty" => "needs_confirmation"
+      )
+    )
+  end
+
+  it "keeps the occasion fixed while a plan retains prior anniversary context" do
+    plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      source_context: [
+        {
+          "id" => "event_plan:#{SecureRandom.uuid}",
+          "label" => "Prior anniversary plan — review before reusing",
+          "role" => "prior_anniversary_context",
+          "certainty" => "needs_confirmation"
+        }
+      ]
+    )
+
+    get edit_event_plan_path(plan)
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.at_css("input#event_plan_occasion_type[type='hidden']")["value"]).to eq("anniversary")
+    expect(response.parsed_body.at_css("select#event_plan_occasion_type")).to be_nil
+    expect(response.body).to include("fixed while this plan uses prior anniversary context")
+  end
+
+  it "ignores stale prior anniversary context for another occasion" do
+    prior_plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+
+    expect do
+      post event_plans_path, params: {
+        prior_event_plan_id: prior_plan.id,
+        event_plan: {
+          relationship_profile_id: profile.id,
+          title: "Maya's celebration",
+          occasion_type: "custom"
+        }
+      }
+    end.to change(EventPlan, :count).by(1)
+
+    created_plan = EventPlan.where(user:, relationship_profile: profile).where.not(id: prior_plan.id).sole
+    expect(response).to redirect_to(event_plan_path(created_plan))
+    expect(created_plan.source_context).to be_empty
+  end
+
+  it "offers the eight most recent finalized anniversary plans as prior context" do
+    important_date = create(:important_date, relationship_profile: profile, date_type: "anniversary")
+    plans = 9.times.map do |index|
+      create(
+        :event_plan,
+        user:,
+        relationship_profile: profile,
+        title: "Prior anniversary #{index}",
+        occasion_type: "anniversary",
+        status: "completed",
+        completed_at: index.years.ago,
+        starts_on: Date.new(2017 + index, 9, 12)
+      )
+    end
+
+    get new_event_plan_path(relationship_profile_id: profile.id, important_date_id: important_date.id)
+
+    option_values = response.parsed_body.css("select#prior_event_plan_id option").filter_map do |option|
+      option["value"].presence
+    end
+    expect(option_values).to eq(plans.reverse.first(8).map { |plan| plan.id.to_s })
+    expect(option_values).not_to include(plans.first.id.to_s)
+  end
+
+  it "rejects a foreign anniversary or milestone date" do
+    foreign_date = create(:important_date, date_type: "milestone")
+
+    get new_event_plan_path(relationship_profile_id: profile.id, important_date_id: foreign_date.id)
 
     expect(response).to have_http_status(:not_found)
   end
@@ -184,7 +365,12 @@ RSpec.describe "Event plans", type: :request do
 
     plan = EventPlan.find_by!(user:, relationship_profile: profile)
     expect(response).to redirect_to(event_plan_path(plan))
-    expect(plan).to have_attributes(budget_cents: 15_000, relationship_profile_id: profile.id)
+    expect(plan).to have_attributes(
+      budget_cents: 15_000,
+      relationship_profile_id: profile.id,
+      tone: "warm",
+      effort_level: "medium"
+    )
   end
 
   it "returns a form error when the budget is not numeric" do
@@ -204,6 +390,31 @@ RSpec.describe "Event plans", type: :request do
     expect(response).to have_http_status(:unprocessable_content)
     expect(response.body).to include("Budget cents")
     expect(response.parsed_body.at_css("#event_plan_budget")["value"]).to eq(submitted_budget)
+  end
+
+  it "keeps the occasion editable after a failed manual creation with prior anniversary context" do
+    prior_plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+
+    post event_plans_path, params: {
+      prior_event_plan_id: prior_plan.id,
+      event_plan: {
+        relationship_profile_id: profile.id,
+        title: "Maya's anniversary",
+        occasion_type: "anniversary",
+        budget: "not-a-budget"
+      }
+    }
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.parsed_body.at_css("select#event_plan_occasion_type")).to be_present
+    expect(response.parsed_body.at_css("input#event_plan_occasion_type[type='hidden']")).to be_nil
   end
 
   it "rejects an oversized scientific budget before materializing an integer" do
@@ -480,6 +691,40 @@ RSpec.describe "Event plans", type: :request do
     reminder = create(:reminder, user:, relationship_profile: profile, event_plan: plan, plan_task: task)
     expect { delete event_plan_plan_task_path(plan, task) }.to change(PlanTask, :count).by(-1)
     expect(reminder.reload).to have_attributes(event_plan: plan, plan_task: nil)
+  end
+
+  it "does not restore an explicitly deleted template step after an effort round-trip" do
+    plan = EventPlans::Create.call(
+      user:,
+      relationship_profile: profile,
+      attributes: {
+        title: "Anniversary plan",
+        occasion_type: "anniversary",
+        effort_level: "high"
+      }
+    )
+    deleted_task = plan.plan_tasks.find_by!(position: 9)
+    deleted_task.update!(
+      title: "Private childcare arrangement",
+      details: "The private care plan should not survive deletion.",
+      due_on: Date.new(2026, 9, 1)
+    )
+    reminder = create(:reminder, user:, relationship_profile: profile, event_plan: plan, plan_task: deleted_task)
+
+    delete event_plan_plan_task_path(plan, deleted_task)
+    patch event_plan_path(plan), params: { event_plan: { effort_level: "low" } }
+    patch event_plan_path(plan), params: { event_plan: { effort_level: "high" } }
+
+    expect(deleted_task.reload).to have_attributes(
+      superseded_at: be_present,
+      title: "Deleted template step",
+      details: nil,
+      due_on: nil
+    )
+    expect(reminder.reload).to have_attributes(event_plan: plan, plan_task: nil)
+    expect(plan.plan_tasks.current.find_by(position: 9)).to be_nil
+    exported = DataExports::Snapshot.new(user:).to_h.to_json
+    expect(exported).not_to include("Private childcare arrangement", "The private care plan")
   end
 
   it "reloads a concurrently changed task after acquiring the plan lock" do

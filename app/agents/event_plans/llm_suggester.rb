@@ -80,6 +80,8 @@ module EventPlans
         event_plan: {
           title: plan_snapshot.title,
           occasion_type: plan_snapshot.occasion_type,
+          tone: plan_snapshot.tone,
+          effort_level: plan_snapshot.occasion_type == "anniversary" ? plan_snapshot.effort_level : nil,
           starts_on: plan_snapshot.starts_on&.iso8601,
           budget_cents: plan_snapshot.budget_cents,
           guest_list: plan_snapshot.guest_list,
@@ -94,7 +96,7 @@ module EventPlans
               completed: task.completed
             }
           end
-        },
+        }.compact,
         sources: sources.map(&:to_h)
       }
     end
@@ -108,7 +110,8 @@ module EventPlans
         Never send a message or invitation, schedule a reminder, contact vendors or guests, make a booking, purchase
         anything, or claim an external action occurred. Do not infer sensitive traits or expose unnecessary private
         detail. Avoid duplicating existing tasks. The user remains in control of editing, completing, and acting on
-        every suggested step.
+        every suggested step. Follow the selected tone and, when supplied, effort level without cheesy, stereotyped, or
+        surveillance-oriented language. Treat prior anniversary context as history to confirm, not a fact that still applies.
       PROMPT
     end
 

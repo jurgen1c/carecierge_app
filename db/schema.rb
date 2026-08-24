@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_22_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_23_144136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -312,6 +312,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_210000) do
     t.integer "budget_cents"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.string "effort_level", default: "medium", null: false
     t.bigint "generation_version", default: 0, null: false
     t.text "guest_list"
     t.integer "lock_version", default: 0, null: false
@@ -322,6 +323,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_210000) do
     t.date "starts_on"
     t.string "status", default: "active", null: false
     t.text "title", null: false
+    t.string "tone", default: "warm", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["relationship_profile_id", "status", "starts_on"], name: "index_event_plans_on_profile_status_and_start"
@@ -329,7 +331,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_22_210000) do
     t.index ["user_id", "status", "starts_on"], name: "index_event_plans_on_user_id_and_status_and_starts_on"
     t.index ["user_id"], name: "index_event_plans_on_user_id"
     t.check_constraint "budget_cents IS NULL OR budget_cents >= 0", name: "event_plans_budget_nonnegative"
+    t.check_constraint "effort_level::text = ANY (ARRAY['low'::character varying, 'medium'::character varying, 'high'::character varying]::text[])", name: "event_plans_supported_effort_level"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'completed'::character varying, 'archived'::character varying]::text[])", name: "event_plans_supported_status"
+    t.check_constraint "tone::text = ANY (ARRAY['understated'::character varying, 'warm'::character varying, 'celebratory'::character varying, 'romantic'::character varying]::text[])", name: "event_plans_supported_tone"
   end
 
   create_table "extracted_memories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

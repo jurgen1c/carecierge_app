@@ -49,18 +49,19 @@
         </div>
       </header>
 
-      <% if event_plan.active? && birthday_plan? && next_action %>
-        <section aria-labelledby="birthday-next-action-title" class="my-6 rounded-2xl border border-primary/30 bg-surface p-5 sm:p-6">
+      <% if event_plan.active? && concierge_plan? && next_action %>
+        <section aria-labelledby="<%= concierge_key %>-next-action-title" class="my-6 rounded-2xl border border-primary/30 bg-surface p-5 sm:p-6">
           <div class="grid gap-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
             <div>
               <div class="flex flex-wrap items-center gap-2 text-sm font-semibold text-primary">
-                <span><%= t("event_plans.birthday.next_action_kicker") %></span>
-                <% if birthday_timing %><span aria-hidden="true">·</span><span><%= birthday_timing %></span><% end %>
+                <span><%= t("event_plans.#{concierge_key}.next_action_kicker") %></span>
+                <% if concierge_timing %><span aria-hidden="true">·</span><span><%= concierge_timing %></span><% end %>
               </div>
-              <h2 id="birthday-next-action-title" class="mt-2 text-xl font-semibold text-ink"><%= t("event_plans.birthday.next_action_title") %></h2>
+              <h2 id="<%= concierge_key %>-next-action-title" class="mt-2 text-xl font-semibold text-ink"><%= t("event_plans.#{concierge_key}.next_action_title") %></h2>
               <p class="mt-2 text-base font-semibold text-ink"><%= next_action.title %></p>
               <% if next_action.details.present? %><p class="mt-1 max-w-2xl text-sm leading-6 text-quiet-note"><%= next_action.details %></p><% end %>
-              <p class="mt-3 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.birthday.review_only") %></p>
+              <p class="mt-3 text-sm font-semibold text-ink"><%= planning_preference_label %></p>
+              <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.#{concierge_key}.review_only") %></p>
             </div>
             <%= link_to next_action_label, next_action_path, class: style(:primary_button) %>
           </div>

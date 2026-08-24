@@ -5,12 +5,14 @@
 import { application } from "./application"
 import HelloController from "./hello_controller"
 import AutomationPermissionsController from "./automation_permissions_controller"
+import EventPlanFormController from "./event_plan_form_controller"
 import PrivacyVaultController from "./privacy_vault_controller"
 import RelationshipTemplateFieldsController from "./relationship_template_fields_controller"
 import TimezoneController from "./timezone_controller"
 
 application.register("hello", HelloController)
 application.register("automation-permissions", AutomationPermissionsController)
+application.register("event-plan-form", EventPlanFormController)
 application.register("privacy-vault", PrivacyVaultController)
 application.register("relationship-template-fields", RelationshipTemplateFieldsController)
 application.register("timezone", TimezoneController)

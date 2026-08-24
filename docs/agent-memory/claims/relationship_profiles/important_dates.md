@@ -20,9 +20,10 @@ claim: >
   options before completing onboarding. The relationship profile show surface
   presents a richer important-dates work area plus a compact upcoming-dates
   right rail, and create, update, and delete actions refresh those surfaces with
-  Turbo streams when possible instead of requiring a full page reload. Birthday
-  planning links hand off to a prefilled EventPlan for the owned date; other
-  date types target suggestions rendered in the current profile surface.
+  Turbo streams when possible instead of requiring a full page reload. Birthday,
+  anniversary, and milestone planning links hand off to a prefilled EventPlan
+  for the owned date; other date types target suggestions rendered in the
+  current profile surface.
   Planning prompts resolve through date-specific locale keys with a default
   locale-key fallback.
 
@@ -80,8 +81,9 @@ and one-time moments with reminder intent and planning prompts. They are
 localized, scoped through the signed-in user's relationship profiles, can be
 captured during onboarding as optional nested profile details, and are updated
 inline through Turbo streams where possible. Timeline and upcoming-date planning
-links hand birthdays to the owner-scoped EventPlan workflow and otherwise stay
-on the profile when the matching planning suggestion anchor is rendered.
+links hand birthdays, anniversaries, and milestones to the owner-scoped
+EventPlan workflow and otherwise stay on the profile when the matching planning
+suggestion anchor is rendered.
 Planning prompts use date-type-specific translations with a shared default
 fallback key.
 

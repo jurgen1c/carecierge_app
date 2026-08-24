@@ -48,33 +48,24 @@ RSpec.describe "Important dates", type: :request do
       expect(response.body).not_to include("Important dates")
     end
 
-    it "keeps non-birthday planning controls linked to rendered planning suggestions" do
+    it "opens anniversary and milestone planning controls in the event-plan workflow" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
       sign_in user
 
-      5.times do |index|
-        create(
-          :important_date,
-          relationship_profile: profile,
-          date_type: "milestone",
-          title: "Planning date #{index + 1}",
-          starts_on: Date.new(2026, 7, 10 + index),
-          recurrence: "none"
-        )
-      end
+      anniversary = create(:important_date, relationship_profile: profile, date_type: "anniversary", starts_on: Date.new(2026, 7, 10))
+      milestone = create(:important_date, relationship_profile: profile, date_type: "milestone", title: "The day we met", starts_on: Date.new(2026, 7, 11))
 
       travel_to Time.zone.local(2026, 7, 4, 10, 0, 0) do
         get relationship_profile_path(profile)
       end
 
-      document = Nokogiri::HTML(response.body)
-      planning_hrefs = document.css("a[href^='#planning_important_date_']").map { |link| link["href"].delete_prefix("#") }
-      rendered_ids = document.css("[id]").map { |element| element["id"] }
-
       expect(response).to have_http_status(:ok)
-      expect(planning_hrefs).to be_present
-      expect(planning_hrefs - rendered_ids).to be_empty
+      decoded = CGI.unescapeHTML(response.body)
+      expect(decoded).to include(
+        new_event_plan_path(relationship_profile_id: profile.id, important_date_id: anniversary.id),
+        new_event_plan_path(relationship_profile_id: profile.id, important_date_id: milestone.id)
+      )
     end
 
     it "keeps the reminder action available for a one-time date at a timezone boundary" do

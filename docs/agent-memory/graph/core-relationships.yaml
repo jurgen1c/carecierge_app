@@ -1,6 +1,56 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: Anniversary planning specializes the shared EventPlan store, source catalog, deterministic runway, generation fence, owner scope, and review-only lifecycle.
+    strength: 100
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
+    relation: same_area
+    reason: Birthday and anniversary concierge flows share important-date entry and one review-only next action while retaining occasion-specific provenance and templates.
+    strength: 95
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    relation: same_area
+    reason: Anniversary plans host the existing moment-specific checklist while keeping checklist lifecycle and plan tasks separate.
+    strength: 90
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: relationship_profiles.important_dates
+    relation: requires
+    reason: Anniversary and milestone planning links hand off to EventPlan entry, which resolves and revalidates the next occurrence through the existing owner-scoped ImportantDate model.
+    strength: 100
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Anniversary reminder steps hand off to the owner-scoped scheduler and never schedule delivery automatically.
+    strength: 95
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    relation: requires
+    reason: Anniversary gift steps hand off to the existing private, source-backed, user-controlled recommendation workspace.
+    strength: 90
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: requires
+    reason: Anniversary message steps hand off to the private draft workspace and never send content automatically.
+    strength: 90
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    relation: requires
+    reason: High-effort anniversary templates hand off recovery work to the existing source-backed comparison and explicit-promotion workflow.
+    strength: 90
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Owner exports retain anniversary plan state, while selective AI deletion preserves non-AI anniversary and explicitly selected prior-plan provenance.
+    strength: 95
+  - source: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    target: authentication.localization_baseline
+    relation: constrains
+    reason: Anniversary entry, templates, preferences, next-action copy, and historical-context warnings remain available in English and Spanish with English as default.
+    strength: 90
   - source: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_action
     target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
     relation: requires

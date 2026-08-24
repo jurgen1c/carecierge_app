@@ -10,18 +10,25 @@ title: Event plans are owner-scoped, source-backed, and user-controlled
 
 claim: >
   Active relationship owners create encrypted birthday, anniversary, and generic
-  event plans from one deterministic localized template. An owned birthday
+  event plans from deterministic localized occasion templates. An owned birthday
   ImportantDate can prefill the plan and is retained with a birthday-origin
   provenance role whose occasion cannot later be changed; birthday
   plans use localized birthday steps and expose the earliest due incomplete
   current task as one review-only next action. When an unsourced plan changes
   occasion, untouched localized template copy follows the new occasion and
   locale while user-edited wording is preserved; updates that do not change the
-  occasion skip localized template matching. Plans and their phased tasks expose
+  occasion skip localized template matching. Anniversary and milestone
+  ImportantDates can likewise start an immutable anniversary-origin plan.
+  Anniversary plans retain an adjustable tone and effort level, and only reuse a
+  same-relationship finalized prior plan after explicit selection; prior context
+  is marked inferred and needing confirmation. Plans and their phased tasks expose
   progress, decisions, and explicit lifecycle actions. Scheduling or
   rescheduling a plan rebases untouched template deadlines, including
-  superseded work that selective AI deletion may later restore, while preserving
-  user-customized dates. New task
+  work superseded by an actually promoted backup option that selective AI
+  deletion may later restore. Preference reconciliation includes that promoted,
+  superseded template work so removed managed steps cannot reappear, while
+  preserving user-deleted template tombstones
+  without retaining their authored content, and preserving user-customized dates. New task
   reminders require active plans and incomplete tasks, and deleting a task
   detaches rather than deletes its reminder history. Optional AI planning is
   requested manually through a swappable RubyLLM provider boundary, uses bounded
@@ -41,16 +48,22 @@ claim: >
   require current suggestion approval, an identifiable unlocked choice, and a
   revalidated vault lease. Source dates use the owner's local calendar. Later
   requests reuse sourced prior tasks only when every persisted source remains in
-  the currently authorized catalog. Known source IDs and a complete context
-  fingerprint preserve provenance; lifecycle changes advance the generation
-  fence. Account-profile-plan locking plus
+  the currently authorized catalog. Current relationship identity and hard
+  constraints precede prior history in the bounded catalog, and aggregate prior
+  history remains sensitive whenever included copy depends on a currently
+  authorized sensitive source. Prior-history aggregate IDs are fingerprinted
+  from the included content and each current source-dependency snapshot so a later request cannot
+  reuse a task whose aggregate is no longer authorized. Known source IDs and a
+  complete context fingerprint preserve provenance; lifecycle changes advance
+  the generation fence. Account-profile-plan locking plus
   profile-lock participation by eligible source writers, a generation fence,
   and active-profile revalidation under mutation locks reject stale work. Authored content is filtered
   from request logs and sensitive plan pages disable Turbo snapshots. Superseded
   tasks are excluded from later provider snapshots and interactive task flows,
   with their current state rechecked inside held mutation locks. Plans and
   tasks participate in owner exports. Selective AI deletion clears aggregate AI
-  provenance while retaining non-AI birthday-origin provenance, deletes
+  provenance while retaining non-AI birthday, anniversary, and explicitly
+  selected prior-plan provenance, deletes
   AI-origin tasks, advances the fence, and detaches rather than deletes explicit
   reminders while preserving plans and template/manual work.
 
@@ -69,6 +82,7 @@ source_files:
   - config/initializers/ruby_llm.rb
   - db/migrate/20260821040000_create_event_plans.rb
   - db/migrate/20260821040001_add_event_plan_references_to_reminders.rb
+  - db/migrate/20260823144136_add_planning_preferences_to_event_plans.rb
 
 related_files:
   - app/models/concerns/briefing_source_lock.rb
@@ -91,6 +105,7 @@ related_files:
   - config/locales/daily_feed.en.yml
   - config/locales/daily_feed.es.yml
   - docs/features/06-03-general-event-planning-assistant.md
+  - docs/features/06-02-anniversary-concierge.md
   - spec/models/event_plan_spec.rb
   - spec/models/plan_task_spec.rb
   - spec/services/event_plans/update_spec.rb

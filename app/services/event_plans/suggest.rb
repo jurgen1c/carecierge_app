@@ -5,6 +5,8 @@ module EventPlans
     PlanSnapshot = Data.define(
       :title,
       :occasion_type,
+      :tone,
+      :effort_level,
       :starts_on,
       :budget_cents,
       :guest_list,
@@ -138,6 +140,8 @@ module EventPlans
       PlanSnapshot.new(
         title: event_plan.title,
         occasion_type: event_plan.occasion_type,
+        tone: event_plan.tone,
+        effort_level: event_plan.effort_level,
         starts_on: event_plan.starts_on,
         budget_cents: event_plan.budget_cents,
         guest_list: event_plan.guest_list,

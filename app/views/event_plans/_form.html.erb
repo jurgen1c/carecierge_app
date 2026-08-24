@@ -1,4 +1,6 @@
-<%= form_with model: event_plan, class: "mt-6 grid gap-5" do |form| %>
+<% hide_anniversary_controls = event_plan.occasion_type.present? && event_plan.occasion_type != "anniversary" %>
+<% fixed_occasion = @important_date || (event_plan.persisted? && event_plan.occasion_locked?) %>
+<%= form_with model: event_plan, class: "mt-6 grid gap-5", data: { controller: "event-plan-form" } do |form| %>
   <%= hidden_field_tag :important_date_id, @important_date.id if @important_date %>
   <% if event_plan.errors.any? %>
     <div class="rounded-xl border border-danger-border bg-danger-surface p-4 text-sm text-danger-ink" role="alert">
@@ -8,32 +10,58 @@
   <% end %>
   <% unless event_plan.persisted? %>
     <% if @important_date %>
-      <%= form.hidden_field :relationship_profile_id %>
+      <%= form.hidden_field :relationship_profile_id, data: { event_plan_form_target: "relationship" } %>
       <div>
         <p class="text-sm font-semibold text-ink"><%= t("event_plans.form.relationship") %></p>
         <p class="mt-2 rounded-lg border border-private-line bg-surface px-3 py-3 text-base font-semibold text-ink"><%= event_plan.relationship_profile.display_name %></p>
-        <p class="mt-2 text-sm text-quiet-note"><%= t("event_plans.form.birthday_context_fixed") %></p>
+        <p class="mt-2 text-sm text-quiet-note"><%= t("event_plans.form.important_date_context_fixed") %></p>
       </div>
     <% else %>
       <div>
         <%= form.label :relationship_profile_id, t("event_plans.form.relationship"), class: "block text-sm font-semibold text-ink" %>
-        <%= form.collection_select :relationship_profile_id, @relationship_profiles, :id, :display_name, { prompt: t("event_plans.form.relationship_prompt") }, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+        <%= form.collection_select :relationship_profile_id, @relationship_profiles, :id, :display_name, { prompt: t("event_plans.form.relationship_prompt") }, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink", data: { event_plan_form_target: "relationship", action: "change->event-plan-form#refresh" } %>
       </div>
     <% end %>
   <% end %>
   <div class="grid gap-5 sm:grid-cols-2">
     <div class="sm:col-span-2"><%= form.label :title, t("event_plans.form.title"), class: "block text-sm font-semibold text-ink" %><%= form.text_field :title, required: true, maxlength: EventPlan::MAX_TITLE_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
-    <% if @important_date || event_plan.birthday_origin? %>
-      <%= form.hidden_field :occasion_type %>
+    <% if fixed_occasion %>
+      <%= form.hidden_field :occasion_type, data: { event_plan_form_target: "occasion" } %>
       <div>
         <p class="text-sm font-semibold text-ink"><%= t("event_plans.form.occasion_type") %></p>
-        <p class="mt-2 rounded-lg border border-private-line bg-surface px-3 py-3 text-base text-ink"><%= t("event_plans.occasion_types.birthday") %></p>
-        <p class="mt-2 text-sm text-quiet-note"><%= t("event_plans.form.birthday_context_fixed") %></p>
+        <p class="mt-2 rounded-lg border border-private-line bg-surface px-3 py-3 text-base text-ink"><%= t("event_plans.occasion_types.#{event_plan.occasion_type}") %></p>
+        <p class="mt-2 text-sm text-quiet-note"><%= t(event_plan.important_date_origin? || @important_date ? "event_plans.form.important_date_context_fixed" : "event_plans.form.prior_plan_context_fixed") %></p>
       </div>
     <% else %>
-      <div><%= form.label :occasion_type, t("event_plans.form.occasion_type"), class: "block text-sm font-semibold text-ink" %><%= form.select :occasion_type, EventPlan::OCCASION_TYPES.map { |value| [ t("event_plans.occasion_types.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+      <div><%= form.label :occasion_type, t("event_plans.form.occasion_type"), class: "block text-sm font-semibold text-ink" %><%= form.select :occasion_type, EventPlan::OCCASION_TYPES.map { |value| [ t("event_plans.occasion_types.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink", data: { event_plan_form_target: "occasion", action: "change->event-plan-form#refresh" } %></div>
     <% end %>
     <div><%= form.label :starts_on, t("event_plans.form.starts_on"), class: "block text-sm font-semibold text-ink" %><%= form.date_field :starts_on, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+    <div>
+      <%= form.label :tone, t("event_plans.form.tone"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :tone, EventPlan::TONES.map { |value| [ t("event_plans.tones.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+      <p class="mt-2 text-sm text-quiet-note"><%= t("event_plans.form.tone_hint") %></p>
+    </div>
+    <div data-event-plan-form-target="effort" <%= "hidden" if hide_anniversary_controls %>>
+      <%= form.label :effort_level, t("event_plans.form.effort_level"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :effort_level, EventPlan::EFFORT_LEVELS.map { |value| [ t("event_plans.effort_levels.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+      <p class="mt-2 text-sm text-quiet-note"><%= t("event_plans.form.effort_hint") %></p>
+    </div>
+    <% if !event_plan.persisted? && @prior_anniversary_plans.present? %>
+      <div class="sm:col-span-2" data-event-plan-form-target="prior" <%= "hidden" if hide_anniversary_controls %>>
+        <%= label_tag :prior_event_plan_id, t("event_plans.form.prior_plan"), class: "block text-sm font-semibold text-ink" %>
+        <%= select_tag :prior_event_plan_id,
+          options_for_select(
+            @prior_anniversary_plans.map do |plan|
+              [ plan.title, plan.id, { data: { relationship_profile_id: plan.relationship_profile_id } } ]
+            end,
+            params[:prior_event_plan_id]
+          ),
+          include_blank: t("event_plans.form.prior_plan_none"),
+          class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink",
+          data: { event_plan_form_target: "priorSelect" } %>
+        <p class="mt-2 text-sm text-quiet-note"><%= t("event_plans.form.prior_plan_hint") %></p>
+      </div>
+    <% end %>
     <div><%= label_tag "event_plan_budget", t("event_plans.form.budget"), class: "block text-sm font-semibold text-ink" %><%= text_field_tag "event_plan[budget]", @budget_input.nil? ? (event_plan.budget_cents && format("%.2f", event_plan.budget_cents / 100.0)) : @budget_input, inputmode: "decimal", maxlength: EventPlansController::MAX_BUDGET_INPUT_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
     <div class="sm:col-span-2"><%= form.label :guest_list, t("event_plans.form.guest_list"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :guest_list, rows: 3, maxlength: EventPlan::MAX_GUEST_LIST_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
     <div class="sm:col-span-2"><%= form.label :notes, t("event_plans.form.notes"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :notes, rows: 4, maxlength: EventPlan::MAX_NOTES_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>

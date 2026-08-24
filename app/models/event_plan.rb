@@ -6,6 +6,7 @@
 #  id                      :uuid             not null, primary key
 #  budget_cents            :integer
 #  completed_at            :datetime
+#  effort_level            :string           default("medium"), not null
 #  generation_version      :bigint           default(0), not null
 #  guest_list              :text
 #  lock_version            :integer          default(0), not null
@@ -15,6 +16,7 @@
 #  starts_on               :date
 #  status                  :string           default("active"), not null
 #  title                   :text             not null
+#  tone                    :string           default("warm"), not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null
@@ -37,6 +39,8 @@ class EventPlan < ApplicationRecord
     birthday anniversary graduation baby_shower retirement promotion family_reunion
     date_night childrens_party holiday_event apology custom
   ].freeze
+  TONES = %w[understated warm celebratory romantic].freeze
+  EFFORT_LEVELS = %w[low medium high].freeze
   STATUSES = %w[active completed archived].freeze
   MAX_TITLE_LENGTH = 200
   MAX_NOTES_LENGTH = 4_000
@@ -62,6 +66,8 @@ class EventPlan < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: MAX_TITLE_LENGTH }
   validates :occasion_type, inclusion: { in: OCCASION_TYPES }
+  validates :tone, inclusion: { in: TONES }
+  validates :effort_level, inclusion: { in: EFFORT_LEVELS }
   validates :status, inclusion: { in: STATUSES }
   validates :budget_cents,
     numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: MAX_BUDGET_CENTS },
@@ -71,6 +77,8 @@ class EventPlan < ApplicationRecord
   validate :relationship_profile_belongs_to_user
   validate :source_context_is_supported
   validate :birthday_origin_requires_birthday_occasion
+  validate :anniversary_origin_requires_anniversary_occasion
+  validate :prior_anniversary_context_requires_anniversary_occasion
 
   scope :visible, -> { where.not(status: "archived") }
   scope :for_active_relationships, -> { joins(:relationship_profile).merge(RelationshipProfile.active) }
@@ -133,6 +141,26 @@ class EventPlan < ApplicationRecord
 
   def birthday_origin? = birthday_origin_context.any?
 
+  def anniversary_origin_context
+    Array(source_context).select do |source|
+      source.is_a?(Hash) && source["role"] == "anniversary_origin" && source["id"].to_s.start_with?("important_date:")
+    end
+  end
+
+  def anniversary_origin? = anniversary_origin_context.any?
+
+  def prior_anniversary_context
+    Array(source_context).select do |source|
+      source.is_a?(Hash) && source["role"] == "prior_anniversary_context" && source["id"].to_s.start_with?("event_plan:")
+    end
+  end
+
+  def important_date_origin? = birthday_origin? || anniversary_origin?
+
+  def planning_origin_context = birthday_origin_context + anniversary_origin_context + prior_anniversary_context
+
+  def occasion_locked? = planning_origin_context.any?
+
   def with_active_relationship_lock
     relationship_profile.with_lock do
       raise ActiveRecord::RecordNotFound unless relationship_profile.kept?
@@ -182,5 +210,17 @@ class EventPlan < ApplicationRecord
 
   def birthday_origin_requires_birthday_occasion
     errors.add(:occasion_type, :birthday_origin_immutable) if birthday_origin? && occasion_type != "birthday"
+  end
+
+  def anniversary_origin_requires_anniversary_occasion
+    return unless anniversary_origin? && occasion_type != "anniversary"
+
+    errors.add(:occasion_type, :anniversary_origin_immutable)
+  end
+
+  def prior_anniversary_context_requires_anniversary_occasion
+    return unless prior_anniversary_context.any? && occasion_type != "anniversary"
+
+    errors.add(:occasion_type, :prior_anniversary_context_immutable)
   end
 end

@@ -16,6 +16,8 @@ RSpec.describe EventPlans::LlmSuggester do
     EventPlans::Suggest::PlanSnapshot.new(
       title: plan.title,
       occasion_type: plan.occasion_type,
+      tone: "understated",
+      effort_level: "low",
       starts_on: plan.starts_on,
       budget_cents: plan.budget_cents,
       guest_list: plan.guest_list,
@@ -43,7 +45,7 @@ RSpec.describe EventPlans::LlmSuggester do
     expect(RubyLLM).to receive(:chat)
       .with(model: "claude-haiku-4-5", provider: :anthropic, assume_model_exists: true)
       .and_return(chat)
-    expect(chat).to receive(:with_instructions).with(include("untrusted", "Never send", "purchase")).and_return(chat)
+    expect(chat).to receive(:with_instructions).with(include("untrusted", "Never send", "purchase", "cheesy", "surveillance")).and_return(chat)
     expect(chat).to receive(:with_schema).with(hash_including(name: "event_plan_suggestions", schema: described_class::SCHEMA)).and_return(chat)
     expect(chat).to receive(:with_params).with(max_tokens: 2_000).and_return(chat)
     expect(chat).to receive(:ask) { |payload| input = JSON.parse(payload); response }
@@ -51,9 +53,35 @@ RSpec.describe EventPlans::LlmSuggester do
     result = described_class.new(model: "claude-haiku-4-5", provider: "anthropic")
       .generate(plan_snapshot:, sources: [ source ], locale: :en)
 
-    expect(input.fetch("event_plan")).to include("occasion_type" => "birthday", "budget_cents" => 15_000)
+    expect(input.fetch("event_plan")).to include(
+      "occasion_type" => "birthday",
+      "tone" => "understated",
+      "budget_cents" => 15_000
+    )
+    expect(input.fetch("event_plan")).not_to have_key("effort_level")
     expect(input.fetch("sources").sole).to include("id" => "memory:123")
     expect(result.sole.fetch("title")).to eq("Ask about a quiet table")
+  end
+
+  it "supplies the visible effort preference for anniversary suggestions" do
+    chat = double("RubyLLM chat")
+    input = nil
+    allow(chat).to receive(:with_instructions).and_return(chat)
+    allow(chat).to receive(:with_schema).and_return(chat)
+    allow(chat).to receive(:with_params).and_return(chat)
+    allow(chat).to receive(:ask) do |payload|
+      input = JSON.parse(payload)
+      double(content: { "suggestions" => [] })
+    end
+    allow(RubyLLM).to receive(:chat).and_return(chat)
+
+    anniversary_snapshot = EventPlans::Suggest::PlanSnapshot.new(
+      **plan_snapshot.to_h.merge(occasion_type: "anniversary", effort_level: "low")
+    )
+
+    described_class.new.generate(plan_snapshot: anniversary_snapshot, sources: [ source ], locale: :en)
+
+    expect(input.fetch("event_plan")).to include("occasion_type" => "anniversary", "effort_level" => "low")
   end
 
   it "disables OpenAI response storage without coupling other providers to that option" do

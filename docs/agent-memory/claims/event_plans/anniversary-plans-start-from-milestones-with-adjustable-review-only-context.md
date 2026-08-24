@@ -15,7 +15,9 @@ claim: >
   and keeps the occasion immutable. English and Spanish anniversary templates
   provide effort-adjusted review steps for activities, reservations, gifts,
   flowers or another welcome gesture, messages, reminders, personal touches,
-  practical support, backup planning, and day-of review. The user selects a
+  practical support, backup planning, and day-of review. Practical-support
+  confirmation remains an ordinary plan task so its action opens the plan step;
+  it does not impersonate the separate reminder workflow. The user selects a
   tone and, for anniversary plans, a low, medium, or high effort level; both
   remain editable plan context, while effort is supplied to optional non-stored
   suggestions only for anniversary plans where the control is exposed.

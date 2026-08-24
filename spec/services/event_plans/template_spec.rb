@@ -41,6 +41,13 @@ RSpec.describe EventPlans::Template do
       effort_level: "low",
       locale: :en
     )
+    high_effort = described_class.for(
+      occasion_type: "anniversary",
+      starts_on: Date.new(2026, 9, 12),
+      tone: "warm",
+      effort_level: "high",
+      locale: :en
+    )
 
     expect(english.pluck(:kind)).to include("gift_idea", "message_draft", "reminder", "vendor_need")
     expect(english.pluck(:title)).to include(
@@ -53,6 +60,8 @@ RSpec.describe EventPlans::Template do
       "Revisar una reservación antes de hacerla",
       "Agregar un detalle personal"
     )
+    expect(high_effort.find { |task| task[:title] == "Confirm childcare or other practical support" })
+      .to include(kind: "task")
     expect(low_effort.length).to be < english.length
   end
 end

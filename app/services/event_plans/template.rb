@@ -24,7 +24,7 @@ module EventPlans
       Seed.new("arrange", "reminder", "set_anniversary_reminder", "set_anniversary_reminder", 10, "low"),
       Seed.new("follow_through", "task", "add_personal_touch", "add_personal_touch", 7, "low"),
       Seed.new("follow_through", "backup_step", "prepare_anniversary_backup", "prepare_anniversary_backup", 3, "high"),
-      Seed.new("follow_through", "reminder", "confirm_childcare", "confirm_childcare", 2, "high"),
+      Seed.new("follow_through", "task", "confirm_childcare", "confirm_childcare", 2, "high"),
       Seed.new("follow_through", "milestone", "anniversary_day", "anniversary_day", 0, "low")
     ].freeze
     EFFORT_RANK = { "low" => 0, "medium" => 1, "high" => 2 }.freeze

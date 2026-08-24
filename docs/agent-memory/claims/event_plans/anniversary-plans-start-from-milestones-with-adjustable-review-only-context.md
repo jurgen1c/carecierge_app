@@ -2,8 +2,8 @@
 id: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
 type: fact
 system: event_plans
-status: needs_verification
-confidence: high
+status: current
+confidence: verified
 severity: critical
 
 title: Anniversary plans start from milestones with adjustable review-only context
@@ -129,7 +129,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 2c2f30f403674a08d03966791e3c7b1d963e06e2
 ---
 
 # Anniversary plans start from milestones with adjustable review-only context

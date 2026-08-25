@@ -91,7 +91,7 @@ gem "shoulda-matchers", "~> 8.0", group: :test
 
 gem "discard", "~> 2.0"
 
-gem "lexxy", "~> 0.9.30"
+gem "lexxy", "~> 0.9.31"
 
 gem "timecop", "~> 0.9.11", groups: [ :development, :test ]
 

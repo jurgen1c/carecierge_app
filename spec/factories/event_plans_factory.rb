@@ -6,6 +6,7 @@
 #  id                      :uuid             not null, primary key
 #  budget_cents            :integer
 #  completed_at            :datetime
+#  effort_level            :string           default("medium"), not null
 #  generation_version      :bigint           default(0), not null
 #  guest_list              :text
 #  lock_version            :integer          default(0), not null
@@ -15,6 +16,7 @@
 #  starts_on               :date
 #  status                  :string           default("active"), not null
 #  title                   :text             not null
+#  tone                    :string           default("warm"), not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #  relationship_profile_id :uuid             not null

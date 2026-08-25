@@ -82,4 +82,97 @@ RSpec.describe EventPlans::Create do
       )
     end.to raise_error(ActiveRecord::RecordNotFound)
   end
+
+  it "creates an anniversary plan from an owned anniversary or milestone date" do
+    profile = create(:relationship_profile)
+
+    %w[anniversary milestone].each do |date_type|
+      important_date = create(:important_date, relationship_profile: profile, date_type:)
+      plan = described_class.call(
+        user: profile.user,
+        relationship_profile: profile,
+        important_date_id: important_date.id,
+        attributes: {
+          title: "Meaningful milestone",
+          occasion_type: "anniversary",
+          tone: "warm",
+          effort_level: "medium"
+        }
+      )
+
+      expect(plan.source_context.sole).to include(
+        "id" => "important_date:#{important_date.id}",
+        "role" => "anniversary_origin",
+        "date_type" => date_type
+      )
+    end
+  end
+
+  it "reuses a prior anniversary plan only after an explicit, owner-scoped selection" do
+    profile = create(:relationship_profile)
+    prior_plan = create(
+      :event_plan,
+      user: profile.user,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+
+    plan = described_class.call(
+      user: profile.user,
+      relationship_profile: profile,
+      prior_event_plan_id: prior_plan.id,
+      attributes: {
+        title: "This year's anniversary",
+        occasion_type: "anniversary",
+        tone: "understated",
+        effort_level: "low"
+      }
+    )
+
+    expect(plan.source_context.sole).to include(
+      "id" => "event_plan:#{prior_plan.id}",
+      "role" => "prior_anniversary_context",
+      "certainty" => "needs_confirmation"
+    )
+  end
+
+  it "ignores unavailable prior anniversary context instead of blocking plan creation" do
+    profile = create(:relationship_profile)
+    foreign_prior = create(:event_plan, occasion_type: "anniversary", status: "completed", completed_at: 1.year.ago)
+    active_prior = create(:event_plan, user: profile.user, relationship_profile: profile, occasion_type: "anniversary")
+
+    [ foreign_prior, active_prior ].each do |prior_plan|
+      plan = described_class.call(
+        user: profile.user,
+        relationship_profile: profile,
+        prior_event_plan_id: prior_plan.id,
+        attributes: { title: "New plan", occasion_type: "anniversary" }
+      )
+
+      expect(plan.source_context).to be_empty
+    end
+  end
+
+  it "ignores prior anniversary context when creating a different occasion" do
+    profile = create(:relationship_profile)
+    prior_plan = create(
+      :event_plan,
+      user: profile.user,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+
+    plan = described_class.call(
+      user: profile.user,
+      relationship_profile: profile,
+      prior_event_plan_id: prior_plan.id,
+      attributes: { title: "Birthday plan", occasion_type: "birthday" }
+    )
+
+    expect(plan.source_context).to be_empty
+  end
 end

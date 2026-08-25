@@ -18,10 +18,19 @@ en:
     form:
       relationship: "Relationship"
       relationship_prompt: "Choose a relationship"
-      birthday_context_fixed: "Set from this birthday date. Start a separate plan to choose another relationship or occasion."
+      important_date_context_fixed: "Set from this important date. Start a separate plan to choose another relationship or occasion."
       title: "Plan title"
       occasion_type: "Occasion"
       starts_on: "Event date"
+      tone: "Tone"
+      tone_hint: "Choose the voice that fits this relationship; no style is inferred without your choice."
+      effort_level: "Effort level"
+      effort_hint: "Effort changes the starting runway. You can still add, edit, or remove any step."
+      selected_relationship: "selected"
+      prior_plan: "Prior anniversary context"
+      prior_plan_none: "Do not use a prior plan"
+      prior_plan_hint: "Optional. Prior work is supplied as history to review, never as a current preference or instruction."
+      prior_plan_context_fixed: "Anniversary is fixed while this plan uses prior anniversary context."
       budget: "Maximum budget"
       guest_list: "Guest list or participants"
       notes: "Planning notes"
@@ -58,6 +67,7 @@ en:
       relationship_sources_title: "Relationship sources"
       relationship_sources_body: "Optional AI steps keep the source labels used to shape them."
       no_sources: "No AI source context has been added to this plan."
+      planning_preferences: "%{tone} · %{effort}"
     birthday:
       plan_title: "%{name}'s birthday"
       days_away:
@@ -75,6 +85,31 @@ en:
         reminder: "Set a reminder"
         backup_step: "Review backup options"
         default: "Open this step"
+    anniversary:
+      plan_title: "%{milestone} plan for %{name}"
+      days_away:
+        one: "Anniversary in 1 day"
+        other: "Anniversary in %{count} days"
+      today: "Anniversary is today"
+      passed: "Anniversary date has passed"
+      next_action_kicker: "Anniversary concierge"
+      next_action_title: "Your next step"
+      review_only: "Nothing is sent, booked, purchased, or shared automatically. You review the context and choose every action."
+      actions:
+        gift_idea: "Review gift ideas"
+        message_draft: "Draft a message"
+        reminder: "Set a reminder"
+        backup_step: "Review backup options"
+        default: "Open this step"
+    tones:
+      understated: "Understated tone"
+      warm: "Warm tone"
+      celebratory: "Celebratory tone"
+      romantic: "Romantic tone"
+    effort_levels:
+      low: "Low effort"
+      medium: "Medium effort"
+      high: "High effort"
     suggestions:
       title: "Suggest next steps"
       body: "Ask for source-backed planning ideas. Suggestions are added for your review and never send, book, contact, or purchase anything."
@@ -241,6 +276,7 @@ en:
       public_note: "Relationship note"
       private_note: "Selected private note"
       vault: "Selected Privacy Vault item"
+      prior_anniversary_plan: "Prior anniversary plan — review before reusing"
     relationship_section:
       title: "Event plans"
       body: "Prepare upcoming moments with %{name} without losing the relationship context behind each step."
@@ -248,6 +284,31 @@ en:
       all: "View all event plans"
       empty: "No event plan is active for this relationship yet."
     templates:
+      anniversary:
+        titles:
+          define_anniversary: "Define what this anniversary should acknowledge"
+          choose_activity: "Choose an activity that fits this relationship"
+          review_reservation: "Review a reservation before making it"
+          choose_anniversary_gift: "Choose a gift or useful gesture"
+          consider_flowers: "Decide whether flowers or another gesture fit"
+          draft_anniversary_message: "Draft an anniversary message"
+          set_anniversary_reminder: "Set anniversary planning reminders"
+          add_personal_touch: "Add one personal touch"
+          prepare_anniversary_backup: "Prepare an anniversary backup plan"
+          confirm_childcare: "Confirm childcare or other practical support"
+          anniversary_day: "Review the anniversary day-of plan"
+        details:
+          define_anniversary: "Name the milestone, practical constraints, and what would make the moment feel appropriate."
+          choose_activity: "Review an activity that fits the relationship and current circumstances before committing."
+          review_reservation: "Compare availability and constraints; Carecierge will not contact or book a venue."
+          choose_anniversary_gift: "Review current preferences and prior gift outcomes before deciding."
+          consider_flowers: "Confirm that flowers or another gesture are welcome instead of assuming."
+          draft_anniversary_message: "Prepare wording in a %{tone} for review; Carecierge will not send it."
+          set_anniversary_reminder: "Create reminders for the decisions you choose to revisit."
+          add_personal_touch: "Add a specific detail you know is current and welcome."
+          prepare_anniversary_backup: "Keep a practical alternative for availability, timing, delivery, or weather changes."
+          confirm_childcare: "Confirm care, transport, access, or scheduling needs without inferring private circumstances."
+          anniversary_day: "Review the message, gift, activity, reminders, and personal touches before the date."
       birthday:
         titles:
           define_moment: "Set the birthday intention"
@@ -297,6 +358,8 @@ en:
           attributes:
             occasion_type:
               birthday_origin_immutable: "must remain birthday because this plan was started from a birthday date"
+              anniversary_origin_immutable: "must remain anniversary because this plan was started from an anniversary or milestone date"
+              prior_anniversary_context_immutable: "must remain anniversary while prior anniversary context is attached"
             relationship_profile:
               owner_mismatch: "must belong to you"
             source_context:

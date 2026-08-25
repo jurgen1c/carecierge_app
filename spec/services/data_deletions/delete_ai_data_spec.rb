@@ -80,7 +80,8 @@ RSpec.describe DataDeletions::DeleteAiData do
     backup_option = create(
       :backup_option,
       backup_plan:,
-      replacement_task_ids: [ template_task.id, manual_task.id ]
+      replacement_task_ids: [ template_task.id, manual_task.id ],
+      promoted_at: 1.hour.ago
     )
     ai_task.update!(backup_option:)
     reminder = create(:reminder, user:, relationship_profile: profile, event_plan: plan, plan_task: ai_task)
@@ -109,6 +110,60 @@ RSpec.describe DataDeletions::DeleteAiData do
     expect(reminder.reload).to have_attributes(event_plan: plan, plan_task: nil)
   end
 
+  it "does not restore a user-deleted template task referenced only by an unpromoted backup option" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    plan = create(:event_plan, user:, relationship_profile: profile)
+    deleted_task = create(
+      :plan_task,
+      event_plan: plan,
+      origin: "template",
+      superseded_at: 1.hour.ago
+    )
+    backup_plan = create(:backup_plan, user:, event_plan: plan)
+    create(:backup_option, backup_plan:, replacement_task_ids: [ deleted_task.id ])
+
+    described_class.call(user:)
+
+    expect(deleted_task.reload).to be_superseded
+    expect(plan.backup_plans.reload).to be_empty
+  end
+
+  it "does not restore a promoted high-effort template step after the owner lowers effort" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    plan = EventPlans::Create.call(
+      user:,
+      relationship_profile: profile,
+      attributes: {
+        title: "Anniversary plan",
+        occasion_type: "anniversary",
+        effort_level: "high"
+      }
+    )
+    high_effort_task = plan.plan_tasks.find_by!(position: 8)
+    backup_plan = create(
+      :backup_plan,
+      user:,
+      event_plan: plan,
+      status: "promoted",
+      promoted_at: 1.hour.ago
+    )
+    backup_option = create(
+      :backup_option,
+      backup_plan:,
+      replacement_task_ids: [ high_effort_task.id ],
+      promoted_at: 1.hour.ago
+    )
+    high_effort_task.update!(superseded_at: 1.hour.ago)
+    create(:plan_task, event_plan: plan, origin: "ai", backup_option:)
+
+    EventPlans::Update.call(event_plan: plan, attributes: { effort_level: "low" })
+    described_class.call(user:)
+
+    expect(plan.plan_tasks.reload).not_to include(high_effort_task)
+  end
+
   it "uses a profile lock compatible with extraction foreign-key checks" do
     user = create(:user)
     profile = create(:relationship_profile, user:)
@@ -124,6 +179,39 @@ RSpec.describe DataDeletions::DeleteAiData do
     end
 
     expect(profile_lock_sql).to include(a_string_including("FOR NO KEY UPDATE"))
+  end
+
+  it "preserves anniversary origins and explicitly selected prior-plan context when deleting AI data" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      source_context: [
+        {
+          "id" => "important_date:anniversary-123",
+          "label" => "Important date",
+          "role" => "anniversary_origin",
+          "date_type" => "anniversary"
+        },
+        {
+          "id" => "event_plan:prior-123",
+          "label" => "Prior anniversary plan — review before reusing",
+          "role" => "prior_anniversary_context",
+          "certainty" => "needs_confirmation"
+        },
+        { "id" => "memory:generated", "label" => "Relationship memory" }
+      ]
+    )
+
+    described_class.call(user:)
+
+    expect(plan.reload.source_context).to contain_exactly(
+      hash_including("role" => "anniversary_origin"),
+      hash_including("role" => "prior_anniversary_context")
+    )
   end
 
   it "locks and resets extraction state before deleting proposals" do

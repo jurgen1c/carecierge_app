@@ -1,6 +1,83 @@
 require "rails_helper"
 
 RSpec.describe "Event plan workspace", type: :system do
+  it "reveals anniversary effort and relationship-specific prior context during manual creation" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:, preferred_name: "Maya")
+    other_profile = create(:relationship_profile, user:, preferred_name: "Jordan")
+    prior_plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: profile,
+      title: "Last year's quiet dinner",
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+    create(
+      :event_plan,
+      user:,
+      relationship_profile: other_profile,
+      title: "Jordan's prior anniversary",
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+    sign_in user
+
+    visit new_event_plan_path
+    select profile.display_name, from: "Relationship"
+    select "Anniversary", from: "Occasion"
+
+    expect(page).to have_select("Effort level", visible: true)
+    expect(page).to have_select(
+      "Prior anniversary context",
+      options: [ "Do not use a prior plan", prior_plan.title ],
+      visible: true
+    )
+    expect(page).not_to have_select("Prior anniversary context", with_options: [ "Jordan's prior anniversary" ])
+
+    page.execute_script("document.dispatchEvent(new Event('turbo:before-cache'))")
+    expect(page).to have_select(
+      "Prior anniversary context",
+      with_options: [ prior_plan.title, "Jordan's prior anniversary" ],
+      visible: true
+    )
+
+    select prior_plan.title, from: "Prior anniversary context"
+    select "Birthday", from: "Occasion"
+
+    expect(page).not_to have_select("Prior anniversary context", visible: true)
+    expect(page.evaluate_script("document.getElementById('prior_event_plan_id').disabled")).to be(true)
+    expect(page.evaluate_script("document.getElementById('prior_event_plan_id').value")).to eq("")
+  end
+
+  it "loads prior anniversary choices for every relationship when a manual form is preselected" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:, preferred_name: "Maya")
+    other_profile = create(:relationship_profile, user:, preferred_name: "Jordan")
+    other_prior_plan = create(
+      :event_plan,
+      user:,
+      relationship_profile: other_profile,
+      title: "Jordan's prior anniversary",
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+    sign_in user
+
+    visit new_event_plan_path(relationship_profile_id: profile.id)
+    select other_profile.display_name, from: "Relationship"
+    select "Anniversary", from: "Occasion"
+
+    expect(page).to have_select(
+      "Prior anniversary context",
+      options: [ "Do not use a prior plan", other_prior_plan.title ],
+      visible: true
+    )
+  end
+
   it "keeps planning relationship-aware, review-only, actionable, and responsive" do
     user = create(:user)
     profile = create(:relationship_profile, user:, preferred_name: "Maya")

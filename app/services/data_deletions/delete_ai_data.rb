@@ -46,7 +46,10 @@ module DataDeletions
         .each do |plan|
           backup_plans = plan.backup_plans.reorder(:id).lock.to_a
           backup_options = BackupOption.where(backup_plan: backup_plans).reorder(:id).lock.to_a
-          replacement_task_ids = backup_options.flat_map(&:replacement_task_ids).uniq
+          replacement_task_ids = backup_options
+            .select { |option| option.promoted_at.present? }
+            .flat_map(&:replacement_task_ids)
+            .uniq
           plan.plan_tasks
             .where(id: replacement_task_ids, origin: %w[manual template])
             .reorder(:id)
@@ -57,7 +60,7 @@ module DataDeletions
           Reminder.where(plan_task: ai_tasks).order(:id).lock.each { |reminder| reminder.update!(plan_task: nil) }
           ai_tasks.each(&:destroy!)
           plan.update!(
-            source_context: plan.birthday_origin_context,
+            source_context: plan.planning_origin_context,
             generation_version: plan.generation_version + 1
           )
         end

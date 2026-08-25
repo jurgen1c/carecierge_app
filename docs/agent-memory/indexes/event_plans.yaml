@@ -6,12 +6,14 @@ claim_globs:
 default_queries:
   - event plan birthday anniversary generic occasion template task phase progress
   - birthday important date prefill next occurrence next action gift message backup review only
+  - anniversary milestone important date tone effort prior year history confirm reservation activity flowers personal touch
   - event plan AI suggestion source provenance private note privacy vault lease
   - event plan reminder scheduling completion archive selective AI deletion export
   - personal touch checklist event plan important date birthday anniversary preference provenance reorder dismiss
   - backup plan recovery weather vendor gift delay restaurant transportation cancellation compare promote supersede
 watched_files:
   - app/controllers/event_plans_controller.rb
+  - app/javascript/controllers/event_plan_form_controller.js
   - app/controllers/plan_tasks_controller.rb
   - app/controllers/personal_touch_checklists_controller.rb
   - app/controllers/personal_touch_items_controller.rb
@@ -26,6 +28,7 @@ watched_files:
   - app/policies/plan_task_policy.rb
   - app/policies/personal_touch_checklist_policy.rb
   - app/policies/personal_touch_item_policy.rb
+  - app/queries/event_plans/prior_anniversary_plans.rb
   - app/services/event_plans/**/*.rb
   - app/agents/event_plans/**/*.rb
   - app/services/personal_touch_checklists/**/*.rb
@@ -46,6 +49,7 @@ watched_files:
   - db/migrate/*personal_touch_checklists*.rb
   - docs/features/06-03-general-event-planning-assistant.md
   - docs/features/06-01-birthday-concierge.md
+  - docs/features/06-02-anniversary-concierge.md
   - docs/features/06-04-personal-touch-checklist.md
   - docs/features/06-05-backup-plan-generator.md
   - spec/components/event_plan_workspace_component_spec.rb
@@ -77,3 +81,4 @@ tags:
   - backup_plans
   - recovery
   - birthdays
+  - anniversaries

@@ -40,6 +40,7 @@ class PlanTask < ApplicationRecord
   MAX_TITLE_LENGTH = 200
   MAX_DETAILS_LENGTH = 2_000
   MAX_SOURCES = 8
+  DELETED_TEMPLATE_TITLE = "Deleted template step".freeze
 
   belongs_to :event_plan
   belongs_to :backup_option, optional: true
@@ -90,6 +91,21 @@ class PlanTask < ApplicationRecord
         event_plan.increment!(:generation_version)
       end
     end
+  end
+
+  def remove_from_plan!(at: Time.current)
+    return destroy! unless origin == "template"
+
+    reminders.order(:id).lock.each { |reminder| reminder.update!(plan_task: nil) }
+    update!(
+      title: DELETED_TEMPLATE_TITLE,
+      details: nil,
+      due_on: nil,
+      completed_at: nil,
+      source_context: [],
+      backup_option: nil,
+      superseded_at: at
+    )
   end
 
   private

@@ -18,10 +18,19 @@ es:
     form:
       relationship: "Relación"
       relationship_prompt: "Elige una relación"
-      birthday_context_fixed: "Se define a partir de esta fecha de cumpleaños. Inicia otro plan para elegir otra relación u ocasión."
+      important_date_context_fixed: "Se define a partir de esta fecha importante. Inicia otro plan para elegir otra relación u ocasión."
       title: "Título del plan"
       occasion_type: "Ocasión"
       starts_on: "Fecha del evento"
+      tone: "Tono"
+      tone_hint: "Elige la voz que encaje con esta relación; no se infiere ningún estilo sin tu elección."
+      effort_level: "Nivel de esfuerzo"
+      effort_hint: "El esfuerzo cambia la ruta inicial. Puedes agregar, editar o eliminar cualquier paso."
+      selected_relationship: "seleccionada"
+      prior_plan: "Contexto de un aniversario anterior"
+      prior_plan_none: "No usar un plan anterior"
+      prior_plan_hint: "Opcional. El trabajo anterior se aporta como historia para revisar, nunca como preferencia o instrucción vigente."
+      prior_plan_context_fixed: "El aniversario queda fijo mientras este plan use contexto de un aniversario anterior."
       budget: "Presupuesto máximo"
       guest_list: "Lista de invitados o participantes"
       notes: "Notas de planificación"
@@ -58,6 +67,7 @@ es:
       relationship_sources_title: "Fuentes de la relación"
       relationship_sources_body: "Los pasos opcionales de IA conservan las etiquetas de las fuentes que los orientaron."
       no_sources: "Este plan todavía no tiene contexto de fuentes de IA."
+      planning_preferences: "%{tone} · %{effort}"
     birthday:
       plan_title: "Cumpleaños de %{name}"
       days_away:
@@ -75,6 +85,31 @@ es:
         reminder: "Configurar un recordatorio"
         backup_step: "Revisar opciones alternativas"
         default: "Abrir este paso"
+    anniversary:
+      plan_title: "Plan de %{milestone} para %{name}"
+      days_away:
+        one: "Aniversario en 1 día"
+        other: "Aniversario en %{count} días"
+      today: "El aniversario es hoy"
+      passed: "La fecha del aniversario ya pasó"
+      next_action_kicker: "Asistente de aniversarios"
+      next_action_title: "Tu próximo paso"
+      review_only: "Nada se envía, reserva, compra ni comparte automáticamente. Tú revisas el contexto y eliges cada acción."
+      actions:
+        gift_idea: "Revisar ideas de regalos"
+        message_draft: "Redactar un mensaje"
+        reminder: "Configurar un recordatorio"
+        backup_step: "Revisar opciones alternativas"
+        default: "Abrir este paso"
+    tones:
+      understated: "Tono discreto"
+      warm: "Tono cálido"
+      celebratory: "Tono de celebración"
+      romantic: "Tono romántico"
+    effort_levels:
+      low: "Esfuerzo bajo"
+      medium: "Esfuerzo medio"
+      high: "Esfuerzo alto"
     suggestions:
       title: "Sugerir próximos pasos"
       body: "Pide ideas de planificación con fuentes. Las sugerencias quedan para tu revisión y nunca envían, reservan, contactan ni compran nada."
@@ -241,6 +276,7 @@ es:
       public_note: "Nota de la relación"
       private_note: "Nota privada seleccionada"
       vault: "Elemento seleccionado de la Bóveda de privacidad"
+      prior_anniversary_plan: "Plan de aniversario anterior — revisar antes de reutilizar"
     relationship_section:
       title: "Planes de eventos"
       body: "Prepara próximos momentos con %{name} sin perder el contexto de la relación detrás de cada paso."
@@ -248,6 +284,31 @@ es:
       all: "Ver todos los planes"
       empty: "Todavía no hay un plan de evento activo para esta relación."
     templates:
+      anniversary:
+        titles:
+          define_anniversary: "Definir qué debe reconocer este aniversario"
+          choose_activity: "Elegir una actividad que encaje con esta relación"
+          review_reservation: "Revisar una reservación antes de hacerla"
+          choose_anniversary_gift: "Elegir un regalo o gesto útil"
+          consider_flowers: "Decidir si las flores u otro gesto encajan"
+          draft_anniversary_message: "Redactar un mensaje de aniversario"
+          set_anniversary_reminder: "Configurar recordatorios para el aniversario"
+          add_personal_touch: "Agregar un detalle personal"
+          prepare_anniversary_backup: "Preparar un plan alternativo para el aniversario"
+          confirm_childcare: "Confirmar cuidado infantil u otro apoyo práctico"
+          anniversary_day: "Revisar el plan para el día del aniversario"
+        details:
+          define_anniversary: "Nombra el hito, las restricciones prácticas y qué haría que el momento se sienta apropiado."
+          choose_activity: "Revisa una actividad que encaje con la relación y las circunstancias actuales antes de comprometerte."
+          review_reservation: "Compara disponibilidad y restricciones; Carecierge no contactará ni reservará un lugar."
+          choose_anniversary_gift: "Revisa las preferencias actuales y resultados de regalos anteriores antes de decidir."
+          consider_flowers: "Confirma que las flores u otro gesto sean bienvenidos en vez de asumirlo."
+          draft_anniversary_message: "Prepara un texto con %{tone} para revisión; Carecierge no lo enviará."
+          set_anniversary_reminder: "Crea recordatorios para las decisiones que elijas retomar."
+          add_personal_touch: "Agrega un detalle específico que sabes que sigue vigente y es bienvenido."
+          prepare_anniversary_backup: "Mantén una alternativa práctica para cambios de disponibilidad, horario, entrega o clima."
+          confirm_childcare: "Confirma necesidades de cuidado, transporte, acceso u horario sin inferir circunstancias privadas."
+          anniversary_day: "Revisa el mensaje, regalo, actividad, recordatorios y detalles personales antes de la fecha."
       birthday:
         titles:
           define_moment: "Definir la intención del cumpleaños"
@@ -297,6 +358,8 @@ es:
           attributes:
             occasion_type:
               birthday_origin_immutable: "debe seguir siendo cumpleaños porque este plan se inició desde una fecha de cumpleaños"
+              anniversary_origin_immutable: "debe seguir siendo aniversario porque este plan se inició desde una fecha de aniversario o hito"
+              prior_anniversary_context_immutable: "debe seguir siendo aniversario mientras tenga contexto de un aniversario anterior"
             relationship_profile:
               owner_mismatch: "debe pertenecerte"
             source_context:

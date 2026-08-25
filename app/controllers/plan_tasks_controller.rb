@@ -24,7 +24,7 @@ class PlanTasksController < ApplicationController
   end
 
   def destroy
-    mutate_plan { @plan_task.destroy! }
+    mutate_plan { @plan_task.remove_from_plan! }
     redirect_with_notice("event_plans.plan_tasks.destroy.notice")
   end
 

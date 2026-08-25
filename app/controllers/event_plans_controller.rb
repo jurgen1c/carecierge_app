@@ -19,21 +19,21 @@ class EventPlansController < ApplicationController
   end
 
   def new
-    @important_date = selected_birthday_date
+    @important_date = selected_planning_date
     relationship_profile = relationship_profile_for_new_plan(@important_date)
     @event_plan = current_user.event_plans.new(
       relationship_profile:,
-      **birthday_plan_attributes(@important_date)
+      **important_date_plan_attributes(@important_date)
     )
     authorize @event_plan
     prepare_form_options
   end
 
   def create
-    @important_date = selected_birthday_date
+    @important_date = selected_planning_date
     relationship_profile = current_user.relationship_profiles.active.find(event_plan_params[:relationship_profile_id])
     raise ActiveRecord::RecordNotFound if @important_date && @important_date.relationship_profile_id != relationship_profile.id
-    raise ActiveRecord::RecordNotFound if @important_date && event_plan_params[:occasion_type] != "birthday"
+    raise ActiveRecord::RecordNotFound if @important_date && event_plan_params[:occasion_type] != occasion_type_for(@important_date)
 
     @event_plan = current_user.event_plans.new(relationship_profile:)
     authorize @event_plan
@@ -42,6 +42,7 @@ class EventPlansController < ApplicationController
       relationship_profile:,
       attributes: plan_attributes,
       important_date_id: @important_date&.id,
+      prior_event_plan_id: params[:prior_event_plan_id].presence,
       locale: I18n.locale
     )
     redirect_to event_plan_path(@event_plan), notice: t("event_plans.create.notice")
@@ -114,13 +115,13 @@ class EventPlansController < ApplicationController
     current_user.relationship_profiles.active.find(params[:relationship_profile_id])
   end
 
-  def selected_birthday_date
+  def selected_planning_date
     return if params[:important_date_id].blank?
 
     important_date = ImportantDate.joins(:relationship_profile)
       .merge(current_user.relationship_profiles.active)
       .find(params[:important_date_id])
-    raise ActiveRecord::RecordNotFound unless important_date.date_type == "birthday"
+    raise ActiveRecord::RecordNotFound unless important_date.date_type.in?(%w[birthday anniversary milestone])
 
     important_date
   end
@@ -133,16 +134,27 @@ class EventPlansController < ApplicationController
     selected
   end
 
-  def birthday_plan_attributes(important_date)
+  def important_date_plan_attributes(important_date)
     return {} unless important_date
 
+    occasion_type = occasion_type_for(important_date)
     {
-      title: t("event_plans.birthday.plan_title", name: important_date.relationship_profile.display_name),
-      occasion_type: "birthday",
+      title: t(
+        "event_plans.#{occasion_type}.plan_title",
+        name: important_date.relationship_profile.display_name,
+        milestone: important_date.display_title
+      ),
+      occasion_type:,
       starts_on: important_date.next_occurrence_on(
         as_of: OwnerLocalCalendar.date_for(user: current_user)
-      )
+      ),
+      tone: "warm",
+      effort_level: "medium"
     }
+  end
+
+  def occasion_type_for(important_date)
+    important_date.date_type == "birthday" ? "birthday" : "anniversary"
   end
 
   def event_plan_params
@@ -150,6 +162,8 @@ class EventPlansController < ApplicationController
       :relationship_profile_id,
       :title,
       :occasion_type,
+      :tone,
+      :effort_level,
       :starts_on,
       :budget,
       :guest_list,
@@ -218,6 +232,13 @@ class EventPlansController < ApplicationController
 
   def prepare_form_options
     @relationship_profiles = current_user.relationship_profiles.active.ordered
+    profile = @important_date&.relationship_profile
+    profile ||= @event_plan.relationship_profile if @event_plan&.persisted?
+    @prior_anniversary_plans = EventPlans::PriorAnniversaryPlans.call(
+      user: current_user,
+      relationship_profile: profile,
+      excluding: @event_plan
+    )
   end
 
   def require_vault_unlock

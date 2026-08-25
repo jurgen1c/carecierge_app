@@ -18,7 +18,7 @@
                 <p class="mt-1 text-xs font-medium text-stone-600"><%= l(occurrence || date.starts_on, format: :important_date) %></p>
               </div>
               <% if planning_date_ids.include?(date.id) %>
-                <% planning_path = if date.date_type == "birthday"
+                <% planning_path = if date.date_type.in?(%w[birthday anniversary milestone])
                   new_event_plan_path(relationship_profile_id: relationship_profile.id, important_date_id: date.id)
                 else
                   "##{dom_id(date, :planning)}"

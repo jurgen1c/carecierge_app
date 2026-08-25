@@ -8,6 +8,7 @@ module EventPlans
     MAX_SOURCE_CHARACTERS = 700
     MAX_SENSITIVE_SOURCE_CHARACTERS = 400
     MAX_TOTAL_CHARACTERS = 12_000
+    MAX_PRIOR_TASK_CANDIDATES = 50
 
     Source = Data.define(:id, :kind, :content, :certainty, :label, :sensitive)
     Result = Data.define(:sources, :categories, :fingerprint)
@@ -40,9 +41,17 @@ module EventPlans
     attr_reader :event_plan, :relationship_profile, :private_note_ids, :vault_item_ids, :locale, :as_of
 
     def sources
-      selected_private_note_sources + selected_vault_sources + [ profile_source ] +
-        preference_sources + memory_sources + important_date_sources + commitment_sources +
-        gift_sources + desire_sources + public_note_sources
+      private_sources = selected_private_note_sources
+      vault_sources = selected_vault_sources
+      ordinary_sources = [ profile_source ] + preference_sources + memory_sources + important_date_sources +
+        commitment_sources + gift_sources + desire_sources + public_note_sources
+      authorized_source_ids = (private_sources + vault_sources + ordinary_sources).index_by(&:id)
+      current_priority_sources, secondary_sources = ordinary_sources.partition do |source|
+        source.kind.in?(%w[relationship constraint])
+      end
+
+      private_sources + vault_sources + current_priority_sources +
+        prior_anniversary_plan_sources(authorized_source_ids:) + secondary_sources
     end
 
     def profile_source
@@ -156,6 +165,72 @@ module EventPlans
       )
     end
 
+    def prior_anniversary_plan_sources(authorized_source_ids:)
+      ids = event_plan.prior_anniversary_context.filter_map do |entry|
+        entry["id"].delete_prefix("event_plan:") if entry["id"].to_s.start_with?("event_plan:")
+      end
+      return [] if ids.empty?
+
+      relationship_profile.event_plans
+        .where(id: ids, occasion_type: "anniversary", status: %w[completed archived])
+        .order(starts_on: :desc, created_at: :desc, id: :desc)
+        .limit(MAX_PER_KIND)
+        .map do |prior_plan|
+          reusable_tasks = prior_plan.plan_tasks.current.ordered
+            .limit(MAX_PRIOR_TASK_CANDIDATES)
+            .select { |task| reusable_prior_task?(task, authorized_source_ids:) }
+            .first(6)
+          content = ([ prior_plan.title ] + reusable_tasks.map(&:title)).join("; ")
+          sensitive = reusable_tasks.any? do |task|
+            sensitive_prior_task?(task, authorized_source_ids:)
+          end
+          source(
+            id: prior_plan_source_id(
+              prior_plan:,
+              reusable_tasks:,
+              authorized_source_ids:,
+              content:,
+              sensitive:
+            ),
+            kind: "prior_anniversary_plan",
+            content:,
+            certainty: "inferred",
+            sensitive:
+          )
+        end
+    end
+
+    def prior_plan_source_id(prior_plan:, reusable_tasks:, authorized_source_ids:, content:, sensitive:)
+      fingerprint = Digest::SHA256.hexdigest(JSON.generate(
+        content:,
+        sensitive:,
+        tasks: reusable_tasks.map do |task|
+          {
+            id: task.id,
+            sources: task.source_context.filter_map do |task_source|
+              authorized_source_ids[task_source["id"]]&.to_h
+            end.sort_by { |source| source.fetch(:id) }
+          }
+        end
+      ))
+      "prior_event_plan:#{prior_plan.id}:#{fingerprint}"
+    end
+
+    def reusable_prior_task?(task, authorized_source_ids:)
+      return true unless task.origin == "ai"
+      return false if task.source_context.empty?
+
+      task.source_context.all? do |task_source|
+        task_source.is_a?(Hash) && authorized_source_ids.key?(task_source["id"])
+      end
+    end
+
+    def sensitive_prior_task?(task, authorized_source_ids:)
+      task.source_context.any? do |task_source|
+        task_source.is_a?(Hash) && authorized_source_ids[task_source["id"]]&.sensitive
+      end
+    end
+
     def selected_private_note_sources
       return [] if private_note_ids.empty?
 
@@ -217,7 +292,10 @@ module EventPlans
         id: event_plan.id,
         title: event_plan.title,
         occasion_type: event_plan.occasion_type,
+        tone: event_plan.tone,
+        effort_level: event_plan.effort_level,
         starts_on: event_plan.starts_on&.iso8601,
+        source_context: event_plan.source_context,
         budget_cents: event_plan.budget_cents,
         guest_list: event_plan.guest_list,
         notes: event_plan.notes,

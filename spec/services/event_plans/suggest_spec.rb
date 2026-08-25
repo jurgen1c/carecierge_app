@@ -163,4 +163,85 @@ RSpec.describe EventPlans::Suggest do
     event = AuditEvent.find_by!(user: plan.user, action: "sensitive_record.accessed", target: plan.relationship_profile)
     expect(event.metadata).to eq("result" => "event_plan_suggestion")
   end
+
+  it "does not reuse a prior-plan-derived task after its sensitive context is no longer selected" do
+    profile = create(:relationship_profile)
+    private_note = create(:relationship_note, relationship_profile: profile, private: true)
+    prior_plan = create(
+      :event_plan,
+      user: profile.user,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      status: "completed",
+      completed_at: 1.year.ago
+    )
+    create(
+      :plan_task,
+      event_plan: prior_plan,
+      title: "Reuse the private anniversary detail",
+      origin: "ai",
+      source_context: [
+        {
+          "id" => "private_note:#{private_note.id}",
+          "label" => "Private note",
+          "certainty" => "confirmed",
+          "sensitive" => true
+        }
+      ]
+    )
+    plan = create(
+      :event_plan,
+      user: profile.user,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      source_context: [
+        {
+          "id" => "event_plan:#{prior_plan.id}",
+          "label" => "Prior anniversary plan",
+          "role" => "prior_anniversary_context",
+          "certainty" => "needs_confirmation"
+        }
+      ]
+    )
+    first_generator = double
+    allow(first_generator).to receive(:generate) do |sources:, **|
+      prior_source = sources.find { |source| source.kind == "prior_anniversary_plan" }
+      [
+        {
+          "phase" => "decide",
+          "kind" => "task",
+          "title" => "Sensitive prior-plan suggestion",
+          "details" => nil,
+          "due_on" => nil,
+          "source_ids" => [ prior_source.id ]
+        }
+      ]
+    end
+    described_class.call(
+      actor: plan.user,
+      event_plan: plan,
+      private_note_ids: [ private_note.id ],
+      generator: first_generator
+    )
+
+    captured_snapshot = nil
+    second_generator = double
+    allow(second_generator).to receive(:generate) do |plan_snapshot:, **|
+      captured_snapshot = plan_snapshot
+      [
+        {
+          "phase" => "decide",
+          "kind" => "task",
+          "title" => "Current-context suggestion",
+          "details" => nil,
+          "due_on" => nil,
+          "source_ids" => [ "profile:#{profile.id}" ]
+        }
+      ]
+    end
+
+    described_class.call(actor: plan.user, event_plan: plan, generator: second_generator)
+
+    expect(captured_snapshot.existing_tasks.map(&:title)).not_to include("Sensitive prior-plan suggestion")
+  end
 end

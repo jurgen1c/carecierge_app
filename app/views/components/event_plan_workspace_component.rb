@@ -45,6 +45,12 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
 
   def birthday_plan? = event_plan.occasion_type == "birthday"
 
+  def anniversary_plan? = event_plan.occasion_type == "anniversary"
+
+  def concierge_plan? = birthday_plan? || anniversary_plan?
+
+  def concierge_key = birthday_plan? ? "birthday" : "anniversary"
+
   def next_action = @next_action ||= event_plan.next_action
 
   def birthday_timing
@@ -56,6 +62,18 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
     return t("event_plans.birthday.passed") if days.negative?
 
     t("event_plans.birthday.days_away", count: days)
+  end
+
+  def concierge_timing
+    return birthday_timing if birthday_plan?
+    return unless event_plan.starts_on
+
+    owner_date = OwnerLocalCalendar.date_for(user: event_plan.user)
+    days = (event_plan.starts_on - owner_date).to_i
+    return t("event_plans.anniversary.today") if days.zero?
+    return t("event_plans.anniversary.passed") if days.negative?
+
+    t("event_plans.anniversary.days_away", count: days)
   end
 
   def next_action_path
@@ -79,8 +97,18 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
 
   def next_action_label
     t(
-      "event_plans.birthday.actions.#{next_action.kind}",
-      default: t("event_plans.birthday.actions.default")
+      "event_plans.#{concierge_key}.actions.#{next_action.kind}",
+      default: t("event_plans.#{concierge_key}.actions.default")
+    )
+  end
+
+  def planning_preference_label
+    return t("event_plans.tones.#{event_plan.tone}") unless anniversary_plan?
+
+    t(
+      "event_plans.workspace.planning_preferences",
+      tone: t("event_plans.tones.#{event_plan.tone}"),
+      effort: t("event_plans.effort_levels.#{event_plan.effort_level}")
     )
   end
 

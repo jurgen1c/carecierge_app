@@ -19,15 +19,17 @@ claim: >
   metadata, while their internal generation fences stay excluded. Ordinary
   exports keep sensitive backup-source provenance but redact the plaintext
   source content. Vault payloads and unredacted sensitive backup sources require
-  reauthentication; internal errors, leases,
-  fences, recipient keys, and ownership keys stay excluded. Serialization
+  reauthentication; internal secrets, leases, fences, and ownership keys stay
+  excluded. Serialization
   neutralizes CSV formulas, preserves recurrences, uses the configured PDF
   origin, and audits only successful exports. Selective AI deletion preserves
   corrected memories, authored notes, and gifts accepted from recommendations;
   deletes relationship briefings, gift recommendations, and AI-origin plan
-  tasks while retaining non-AI birthday-origin provenance; restores
-  template/manual work superseded by deleted AI backup options
-  with untouched template deadlines aligned to any rescheduled event date,
+  tasks while retaining non-AI birthday, anniversary, and selected prior-plan
+  provenance; restores template/manual work superseded by actually promoted AI
+  backup options only after template preferences have reconciled that superseded
+  work, without reviving removed managed steps or user-deleted template tombstones
+  or retaining their authored content, with untouched template deadlines aligned after rescheduling,
   and preserves event plans and explicit plan reminders even for terminal plans; clears note analysis
   without rereading unchanged screenshots; and fences delayed results. Profile and account
   deletion lock snapshots, revokes outstanding authenticated upload grants, and
@@ -126,8 +128,8 @@ require password reauthentication. JSON and CSV include privacy-safe evidence,
   errors, leases, and fences.
   Serialization neutralizes
 formulas, preserves recurrences, and audits only success. Selective AI deletion
-preserves authored content, accepted gifts, event plans, manual/template plan
-work, non-AI birthday-origin provenance, and explicit reminders while deleting
+preserves authored content, accepted gifts, event plans, manual/template work,
+non-AI planning provenance, and explicit reminders while deleting
 briefings, gift recommendations, and AI-origin plan suggestions and clearing and
 fencing other inferred state. Profile and
 account deletion snapshot under owned locks; upload writes share the account lock,

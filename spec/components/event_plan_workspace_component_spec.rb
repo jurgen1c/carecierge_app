@@ -56,7 +56,39 @@ RSpec.describe EventPlanWorkspaceComponent, type: :component do
       )
     )
     expect(page).to have_text("You review every draft and decide what happens next")
+    expect(page).to have_text("Warm tone")
+    expect(page).not_to have_text("Medium effort")
     expect(page).not_to have_button("Buy")
+  end
+
+
+  it "gives an anniversary plan one respectful, review-only next action and visible planning preferences" do
+    plan = create(
+      :event_plan,
+      occasion_type: "anniversary",
+      tone: "understated",
+      effort_level: "low",
+      starts_on: Date.current + 21.days
+    )
+    next_task = create(:plan_task, event_plan: plan, kind: "message_draft", title: "Draft a simple note")
+
+    render_inline(described_class.new(
+      event_plan: plan,
+      event_plans: [ plan ],
+      plan_task: PlanTask.new,
+      private_notes: [],
+      vault_items: [],
+      vault_unlocked: false
+    ))
+
+    expect(page).to have_css("section[aria-labelledby='anniversary-next-action-title']")
+    expect(page).to have_text("Anniversary concierge")
+    expect(page).to have_text(next_task.title)
+    expect(page).to have_text("Understated tone")
+    expect(page).to have_text("Low effort")
+    expect(page).to have_link("Draft a message")
+    expect(page).to have_text("Nothing is sent, booked, purchased, or shared automatically")
+    expect(page).not_to have_button("Book")
   end
 
   it "routes birthday next actions into existing user-controlled workflows" do

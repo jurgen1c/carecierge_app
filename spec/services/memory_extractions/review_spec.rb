@@ -42,6 +42,24 @@ RSpec.describe MemoryExtractions::Review do
     expect(proposal.reload).to have_attributes(status: "rejected", reviewed_by: user)
   end
 
+  it "closes an existing queue request when reviewed from the relationship profile" do
+    proposal = create(:extracted_memory, conversation_recap: recap, relationship_profile: profile)
+    approval_request = create(:approval_request, user:, subject: proposal)
+
+    expect do
+      described_class.call(extracted_memory: proposal, reviewer: user, decision: "reject")
+    end.to change(ApprovalDecision, :count).by(1)
+      .and change(AuditEvent, :count).by(1)
+
+    expect(approval_request.reload).to have_attributes(status: "rejected", decided_at: be_within(1.second).of(Time.current))
+    expect(approval_request.approval_decisions.sole).to have_attributes(decision: "reject", user:)
+    expect(user.audit_events.last).to have_attributes(
+      action: "approval.rejected",
+      target: approval_request,
+      metadata: { "request_kind" => "extracted_memory", "result" => "reject" }
+    )
+  end
+
   it "corrects a proposal while retaining the original and recording user-confirmed content" do
     proposal = create(
       :extracted_memory,

@@ -8,6 +8,7 @@ Rails.application.config.filter_parameters += [
   :memory_query, :situation,
   "conversation_recap.body", "conversation_recap.transcript",
   "extracted_memory.corrected_title", "extracted_memory.corrected_body",
+  "approval_request.corrected_title", "approval_request.corrected_body",
   "message_draft.content", "message_draft.situation",
   "relationship_briefing.interaction_context",
   "gift_recommendation.occasion",

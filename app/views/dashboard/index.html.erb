@@ -10,6 +10,7 @@
 
       <nav class="mt-8 flex flex-col gap-1">
         <%= link_to t("daily_feed.navigation.queue"), dashboard_path, aria: { current: "page" }, class: "min-h-11 rounded-lg bg-canvas px-3 py-3 text-sm font-semibold text-primary" %>
+        <%= link_to t("daily_feed.navigation.approvals"), approvals_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <%= link_to t("daily_feed.navigation.people"), relationship_profiles_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <%= link_to t("daily_feed.navigation.reminders"), reminders_path, aria: { label: t("daily_feed.navigation.open_reminders") }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <%= link_to t("daily_feed.navigation.event_plans"), event_plans_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
@@ -40,6 +41,7 @@
               <%= t("daily_feed.navigation.menu") %>
             </summary>
             <nav class="mt-2 grid min-w-56 gap-1 rounded-xl border border-private-line bg-canvas p-2 shadow-sm" aria-label="<%= t("daily_feed.navigation.mobile_label") %>">
+              <%= link_to t("daily_feed.navigation.approvals"), approvals_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
               <%= link_to t("daily_feed.navigation.people"), relationship_profiles_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
               <%= link_to t("daily_feed.navigation.reminders"), reminders_path, aria: { label: t("daily_feed.navigation.open_reminders") }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
               <%= link_to t("daily_feed.navigation.event_plans"), event_plans_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>

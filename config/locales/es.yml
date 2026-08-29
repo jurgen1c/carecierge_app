@@ -640,6 +640,15 @@ es:
       approval_granted:
         title: "Aprobación concedida"
         description: "Aprobaste una acción para %{target}."
+      approval_rejected:
+        title: "Aprobación rechazada"
+        description: "Rechazaste una acción para %{target}."
+      approval_deferred:
+        title: "Aprobación aplazada"
+        description: "Dejaste una acción para revisarla después para %{target}."
+      approval_dismissed:
+        title: "Aprobación descartada"
+        description: "Descartaste un elemento de aprobación para %{target}."
       permission_changed:
         title: "Permiso de automatización modificado"
         description: "Cambiaste un permiso de automatización para %{target}."
@@ -1419,6 +1428,7 @@ es:
       error: "No se pudo marcar la memoria como revisada."
     approve_high_impact_automation:
       notice: "La memoria fue aprobada para automatización de alto impacto."
+      error: "No se pudo aprobar la memoria para automatización de alto impacto."
     destroy:
       notice: "La memoria fue eliminada."
   conversation_recaps:
@@ -1545,6 +1555,7 @@ es:
         correct: "La memoria corregida fue guardada."
       invalid_correction: "Agrega un título y una memoria antes de guardar la corrección."
       invalid_decision: "Elige aprobar, rechazar o corregir antes de continuar."
+      already_reviewed: "Esta sugerencia ya fue revisada. Actualiza la página antes de elegir una decisión diferente."
     timeline:
       title: "Sugerencias de memoria de IA preparadas"
       body:

@@ -12,7 +12,8 @@ claim: >
   Owner-scoped JSON, CSV, PDF, and private-calendar exports include recordings,
   social context and screenshots, relationships, localized labels, privacy-safe
   audit and reminder evidence, feed dismissal and snooze state, suggestion
-  feedback/save/completion state, and effective
+  feedback/save/completion state, approval requests and append-only decisions,
+  and effective
   message-draft response settings and revisions. Relationship briefings and
   gift recommendations, event plans, and plan tasks are included with
   source-backed output and consent
@@ -63,6 +64,8 @@ source_files:
   - db/migrate/20260821040001_add_event_plan_references_to_reminders.rb
 
 related_files:
+  - app/models/approval_request.rb
+  - app/models/approval_decision.rb
   - app/models/relationship_briefing.rb
   - app/models/gift_recommendation.rb
   - app/models/event_plan.rb
@@ -122,7 +125,8 @@ last_verified_commit: null
 
 Every export format uses the same owner scope, and decrypted vault payloads
 require password reauthentication. JSON and CSV include privacy-safe evidence,
-  message revisions, relationship briefings, gift recommendations, event plans,
+  approval requests and decisions, message revisions, relationship briefings,
+  gift recommendations, event plans,
   plan tasks, social notes, consent state,
   screenshot bytes, and feed visibility state while excluding internal keys,
   errors, leases, and fences.

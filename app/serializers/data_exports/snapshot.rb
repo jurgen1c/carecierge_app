@@ -15,7 +15,7 @@ module DataExports
         "scope" => relationship_profile ? "relationship_profile" : "account",
         "account" => account_attributes,
         "relationship_profiles" => profiles.map { |profile| profile_attributes(profile) }
-      }.merge(account_data)
+      }.merge(approval_data).merge(account_data)
     end
 
     private
@@ -50,6 +50,19 @@ module DataExports
         "automation_permission_changes" => records(user.automation_permission_changes),
         "audit_events" => records(user.audit_events, except: %w[user_id actor_id]),
         "deletion_requests" => records(user.deletion_requests, except: %w[user_id account_digest])
+      }
+    end
+
+    def approval_data
+      scope = user.approval_requests
+      if relationship_profile
+        extracted = scope.where(subject_type: "ExtractedMemory", subject_id: relationship_profile.extracted_memories.select(:id))
+        memories = scope.where(subject_type: "MemoryRecord", subject_id: relationship_profile.memory_records.select(:id))
+        scope = extracted.or(memories)
+      end
+
+      {
+        "approval_requests" => scope.includes(:approval_decisions).map { |request| approval_request_attributes(request) }
       }
     end
 
@@ -207,6 +220,12 @@ module DataExports
       @relationship_notification_preferences ||= RelationshipNotificationPreference
         .where(relationship_profile_id: profiles.map(&:id))
         .index_by(&:relationship_profile_id)
+    end
+
+    def approval_request_attributes(request)
+      attributes_for(request, except: %w[user_id lock_version]).merge(
+        "approval_decisions" => records(request.approval_decisions, except: %w[user_id approval_request_id])
+      )
     end
 
     def records(scope, except: [])

@@ -45,6 +45,7 @@ class ExtractedMemory < ApplicationRecord
   belongs_to :conversation_recap
   belongs_to :reviewed_by, class_name: "User", optional: true
   belongs_to :canonical_memory_record, class_name: "MemoryRecord", optional: true
+  has_many :approval_requests, as: :subject, dependent: :destroy
 
   before_validation :normalize_text_fields
 

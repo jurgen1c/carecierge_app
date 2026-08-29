@@ -17,7 +17,9 @@ claim: >
   records are not reviewable, failed review transitions report errors, trust resets use
   normalized comparisons, user forms cannot set system-managed statuses, risky
   records require explicit automation approval, edit re-renders preserve
-  correction notes, and section counts use one load.
+  correction notes, and section counts use one load. Approving a blocked fact
+  from its relationship profile finalizes an open ApprovalRequest or creates a
+  new envelope after a terminal decision, without executing automation.
 
 source_files:
   - app/models/memory_record.rb
@@ -31,6 +33,7 @@ source_files:
   - db/migrate/20260708120100_create_memory_revisions.rb
 
 related_files:
+  - app/services/approval_decisions/apply.rb
   - spec/models/memory_record_spec.rb
   - spec/policies/memory_record_policy_spec.rb
   - spec/requests/memory_records_spec.rb
@@ -75,7 +78,10 @@ failed review transitions report errors, trust resets use normalized
 comparisons, and user-facing forms can only manage active, needs-review, and
 archived statuses. Stale and corrected statuses remain system-managed, risky
 records require explicit automation approval, edit re-renders preserve
-correction notes, and section counts use one ordered collection load.
+correction notes, and section counts use one ordered collection load. The
+relationship-profile control finalizes an open approval request or creates a
+new history envelope when reversing a terminal decision; this timestamp still
+authorizes only the fact's future consideration and performs no action.
 
 ## Why It Matters
 

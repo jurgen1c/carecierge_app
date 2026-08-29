@@ -3,7 +3,7 @@ id: daily_feed.concierge_queue_is_derived_and_owner_scoped
 type: fact
 system: daily_feed
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: The Concierge Queue is derived, owner-scoped, and source-authoritative
@@ -27,7 +27,9 @@ claim: >
   notification time zone. Feed state is exported with the account, pruned with
   permanently deleted sources or relationships, and cascades on account deletion.
   Recent interaction candidates are bounded per active relationship before they
-  can ground spontaneous gestures.
+  can ground spontaneous gestures. The dashboard links to the separate approval
+  queue in both desktop and mobile navigation without mixing approval lifecycle
+  state into the derived Concierge Queue.
 
 source_files:
   - app/controllers/dashboard_controller.rb
@@ -59,6 +61,7 @@ related_files:
   - app/services/daily_feed/item.rb
   - app/services/daily_feed/result.rb
   - app/services/suggestions/for_profile.rb
+  - app/controllers/approval_requests_controller.rb
   - app/views/components/daily_feed_item_component.rb
   - app/views/components/daily_feed_item_component.html.erb
   - config/locales/daily_feed.en.yml
@@ -82,6 +85,7 @@ symbols:
 
 routes:
   - dashboard
+  - approvals
   - dismiss_feed_item
   - snooze_feed_item
 
@@ -99,7 +103,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 05aec403efdcb51bff5689047fa3f3a8cf66c318
+last_verified_commit: null
 ---
 
 # The Concierge Queue is derived, owner-scoped, and source-authoritative
@@ -116,6 +120,8 @@ Candidate bounds preserve independent section capacity and final direct-item
 ordering. Event-suggestion bounds preserve canonical suggestion source ordering.
 Active reminders remain queued by effective scheduled-or-snoozed delivery time
 after their delivery reservation is claimed.
+Approval work remains a separate owner-scoped destination linked from both
+dashboard navigation variants rather than a derived feed item lifecycle.
 Visibility writes lock the account and then source through persistence so account
 deletion uses the same order and source-deletion races cannot leave orphaned state.
 

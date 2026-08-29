@@ -34,6 +34,9 @@
 class AuditEvent < ApplicationRecord
   ACTIONS = %w[
     approval.granted
+    approval.rejected
+    approval.deferred
+    approval.dismissed
     permission.changed
     sensitive_record.accessed
     data_export.requested
@@ -92,7 +95,7 @@ class AuditEvent < ApplicationRecord
     scenario
     superseded_count
   ].freeze
-  TARGET_TYPES = %w[AutomationPermission EventPlan PrivacyVaultItem RelationshipProfile Reminder User].freeze
+  TARGET_TYPES = %w[ApprovalRequest AutomationPermission EventPlan PrivacyVaultItem RelationshipProfile Reminder User].freeze
   MAX_METADATA_VALUE_LENGTH = 120
 
   belongs_to :user
@@ -175,6 +178,7 @@ class AuditEvent < ApplicationRecord
 
     owner_id = case target
     when User then target.id
+    when ApprovalRequest then target.user_id
     when RelationshipProfile, Reminder, AutomationPermission, EventPlan then target.user_id
     when PrivacyVaultItem then target.relationship_profile.user_id
     end

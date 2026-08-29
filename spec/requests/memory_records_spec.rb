@@ -444,6 +444,139 @@ RSpec.describe "Memory records", type: :request do
       expect(record.reload).to be_high_impact_automation_allowed
       expect(record.high_impact_automation_approved_at).to be_present
     end
+
+    it "treats a repeated successful approval as an idempotent retry" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+      sign_in user
+
+      patch approve_high_impact_automation_relationship_profile_memory_record_path(profile, record), as: :turbo_stream
+
+      expect do
+        patch approve_high_impact_automation_relationship_profile_memory_record_path(profile, record), as: :turbo_stream
+      end.not_to change(ApprovalRequest, :count)
+      expect(response).to have_http_status(:ok)
+      expect(record.reload).to be_high_impact_automation_allowed
+    end
+
+    it "returns controlled feedback when the memory is archived" do
+      user = create(:user)
+      sign_in user
+
+      archived_profile = create(:relationship_profile, user:)
+      archived_record = create(:memory_record, relationship_profile: archived_profile, status: "archived", source: "ai_inferred", confidence: "low")
+      patch approve_high_impact_automation_relationship_profile_memory_record_path(archived_profile, archived_record), as: :turbo_stream
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("Memory could not be approved for high-impact automation.")
+      expect(archived_record.reload).not_to be_high_impact_automation_allowed
+    end
+
+    it "closes an existing queue request through the same decision history" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+      approval_request = create(
+        :approval_request,
+        user:,
+        subject: record,
+        kind: "memory_record",
+        action_key: "approve_high_impact_memory",
+        risk_level: "high",
+        confidence: "low"
+      )
+      sign_in user
+
+      expect do
+        patch approve_high_impact_automation_relationship_profile_memory_record_path(profile, record), as: :turbo_stream
+      end.to change(ApprovalDecision, :count).by(1)
+
+      expect(record.reload).to be_high_impact_automation_allowed
+      expect(approval_request.reload.status).to eq("approved")
+      expect(approval_request.approval_decisions.sole).to have_attributes(decision: "approve", user:)
+    end
+
+    it "treats the source approval control as an explicit override of queue deferral" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+      approval_request = create(
+        :approval_request,
+        user:,
+        subject: record,
+        kind: "memory_record",
+        action_key: "approve_high_impact_memory",
+        risk_level: "high",
+        confidence: "low",
+        status: "deferred",
+        deferred_until: 1.day.from_now
+      )
+      sign_in user
+
+      patch approve_high_impact_automation_relationship_profile_memory_record_path(profile, record), as: :turbo_stream
+
+      expect(response).to have_http_status(:ok)
+      expect(record.reload).to be_high_impact_automation_allowed
+      expect(approval_request.reload.status).to eq("approved")
+    end
+
+    it "binds an existing queue request to the current source before explicit approval" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+      approval_request = create(
+        :approval_request,
+        user:,
+        subject: record,
+        kind: "memory_record",
+        action_key: "approve_high_impact_memory",
+        risk_level: "high",
+        confidence: "low"
+      )
+      record.update!(body: "Current source-backed detail", confidence: "inferred")
+      reviewed_source_version = record.updated_at
+      sign_in user
+
+      patch approve_high_impact_automation_relationship_profile_memory_record_path(profile, record), as: :turbo_stream
+
+      expect(response).to have_http_status(:ok)
+      expect(record.reload).to be_high_impact_automation_allowed
+      expect(approval_request.reload).to have_attributes(
+        status: "approved",
+        confidence: "inferred",
+        subject_updated_at: reviewed_source_version
+      )
+    end
+
+    it "records an explicit source reversal after a terminal queue decision" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:)
+      record = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+      rejected_request = create(
+        :approval_request,
+        user:,
+        subject: record,
+        kind: "memory_record",
+        action_key: "approve_high_impact_memory",
+        risk_level: "high",
+        confidence: "low",
+        status: "rejected",
+        decided_at: Time.current
+      )
+      ApprovalDecision.create!(approval_request: rejected_request, user:, decision: "reject", occurred_at: Time.current)
+      sign_in user
+
+      expect do
+        patch approve_high_impact_automation_relationship_profile_memory_record_path(profile, record), as: :turbo_stream
+      end.to change(ApprovalRequest, :count).by(1)
+        .and change(ApprovalDecision, :count).by(1)
+
+      reversal = user.approval_requests.where(subject: record).order(:created_at).last
+      expect(record.reload).to be_high_impact_automation_allowed
+      expect(reversal).to have_attributes(status: "approved", action_key: "approve_high_impact_memory")
+      expect(reversal.approval_decisions.sole).to have_attributes(decision: "approve", user:)
+    end
   end
 
   describe "DELETE /relationship_profiles/:relationship_profile_id/memory_records/:id" do

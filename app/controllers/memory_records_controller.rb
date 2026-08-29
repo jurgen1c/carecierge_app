@@ -64,9 +64,11 @@ class MemoryRecordsController < ApplicationController
   end
 
   def approve_high_impact_automation
-    @memory_record.approve_high_impact_automation!
+    ApprovalQueue::RecordSourceDecision.call(user: current_user, subject: @memory_record, decision: "approve")
 
     refresh_memory_records(t(".notice"))
+  rescue ActiveRecord::RecordInvalid
+    refresh_memory_records(t(".error"), alert: true, status: :unprocessable_entity)
   end
 
   def destroy

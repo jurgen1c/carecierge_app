@@ -111,7 +111,11 @@ module ApprovalDecisions
 
       approval_request.update!(
         subject_updated_at: approval_request.subject.updated_at,
-        confidence: approval_request.subject.confidence
+        confidence: approval_request.subject.confidence,
+        risk_level: ApprovalQueue::Eligibility.risk_level(
+          approval_request.subject,
+          action_key: approval_request.action_key
+        )
       )
     end
 
@@ -120,13 +124,15 @@ module ApprovalDecisions
       profile = subject.respond_to?(:relationship_profile) ? subject.relationship_profile : nil
 
       ApplicationRecord.transaction do
-        if profile
-          profile.with_lock do
-            subject.lock!
-            block.call
+        actor.with_lock("FOR NO KEY UPDATE") do
+          if profile
+            profile.with_lock do
+              subject.lock!
+              block.call
+            end
+          else
+            subject.with_lock(&block)
           end
-        else
-          subject.with_lock(&block)
         end
       end
     end
@@ -169,6 +175,7 @@ module ApprovalDecisions
       when "dismiss" then { status: "dismissed", decided_at: Time.current, deferred_until: nil }
       when "defer" then { status: "deferred", deferred_until: parsed_deferred_until, decided_at: nil }
       end
+      attributes[:subject_updated_at] = approval_request.subject.updated_at unless decision == "defer"
       approval_request.update!(attributes)
     end
 

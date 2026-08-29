@@ -1,7 +1,7 @@
 class MemoryRecordsController < ApplicationController
   before_action :set_relationship_profile
   before_action :set_memory_record, only: %i[edit update review approve_high_impact_automation destroy]
-  around_action :serialize_memory_mutation_with_privacy_vault, only: %i[update review approve_high_impact_automation destroy]
+  around_action :serialize_memory_mutation_with_privacy_vault, only: %i[update review destroy]
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 

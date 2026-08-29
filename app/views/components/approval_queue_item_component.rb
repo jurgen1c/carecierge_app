@@ -47,7 +47,9 @@ class ApprovalQueueItemComponent < ApplicationViewComponent
   end
 
   def deferral_min
-    1.minute.from_now.in_time_zone(owner_time_zone).strftime("%Y-%m-%dT%H:%M")
+    minimum = 1.minute.from_now.in_time_zone(owner_time_zone)
+    minimum = minimum.beginning_of_minute + 1.minute unless minimum.sec.zero?
+    minimum.strftime("%Y-%m-%dT%H:%M")
   end
 
   private

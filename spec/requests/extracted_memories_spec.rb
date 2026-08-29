@@ -109,6 +109,43 @@ RSpec.describe "Extracted memory reviews", type: :request do
     expect(proposal.reload.canonical_memory_record).to have_attributes(source: "user_corrected", confidence: "confirmed")
   end
 
+  it "reports a conflicting stale correction instead of silently retaining it" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    proposal = create(
+      :extracted_memory,
+      relationship_profile: profile,
+      conversation_recap: create(:conversation_recap, relationship_profile: profile, extraction_status: "ready_for_review")
+    )
+    sign_in user
+
+    patch review_relationship_profile_extracted_memory_path(profile, proposal), params: {
+      extracted_memory: {
+        decision: "correct",
+        corrected_title: "Enjoys jasmine tea",
+        corrected_body: "Enjoys jasmine tea on quiet evenings."
+      }
+    }
+    canonical_memory = proposal.reload.canonical_memory_record
+
+    patch review_relationship_profile_extracted_memory_path(profile, proposal), params: {
+      extracted_memory: {
+        decision: "correct",
+        corrected_title: "Enjoys oolong tea",
+        corrected_body: "Enjoys oolong tea with friends."
+      }
+    }
+
+    expect(response).to redirect_to(
+      relationship_profile_path(profile, memory_proposal: proposal.id, anchor: "memory-review")
+    )
+    expect(flash[:alert]).to eq(I18n.t("extracted_memories.review.already_reviewed"))
+    expect(canonical_memory.reload).to have_attributes(
+      title: "Enjoys jasmine tea",
+      body: "Enjoys jasmine tea on quiet evenings."
+    )
+  end
+
   it "reports an unsupported review decision separately from an invalid correction" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

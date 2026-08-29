@@ -521,7 +521,7 @@ RSpec.describe "Memory records", type: :request do
       expect(approval_request.reload.status).to eq("approved")
     end
 
-    it "binds an existing queue request to the current source before explicit approval" do
+    it "binds an existing queue request to the reviewed source and resulting approval version" do
       user = create(:user)
       profile = create(:relationship_profile, user:)
       record = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
@@ -542,10 +542,11 @@ RSpec.describe "Memory records", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(record.reload).to be_high_impact_automation_allowed
+      expect(record.updated_at).to be > reviewed_source_version
       expect(approval_request.reload).to have_attributes(
         status: "approved",
         confidence: "inferred",
-        subject_updated_at: reviewed_source_version
+        subject_updated_at: record.updated_at
       )
     end
 

@@ -63,6 +63,19 @@ en:
       reversibility: "Reversibility"
       decision_help: "Choose the outcome that matches your intent. Carecierge records the decision without exposing the private content in audit logs."
       completed: "This item is %{status}. Its decision history remains available below."
+      reviewed_source: "Reviewed source"
+      superseded_title: "Approval item no longer current"
+      superseded_source: "Queue reconciliation"
+      superseded_context: "Carecierge removed this item because its source or eligibility changed. Supersession was automatic, not an approval decision."
+      superseded_action: "No approval action was taken when this item left the queue."
+      superseded_consequence: "The automatic transition did not approve, reject, or execute anything."
+      superseded_will_not_happen: "No external action or automation was authorized."
+      superseded_reversibility: "There is no approval decision to reverse."
+      superseded_completed: "This item is %{status}. It left the queue automatically; this transition was not a user decision."
+      source_changed_title: "Source changed after this decision"
+      source_changed_source: "Earlier source version"
+      source_changed_context: "The source was updated after this decision. Its current content is not shown as part of this earlier review."
+      source_changed_action: "This decision applied to an earlier source version."
     actions:
       review_extracted_memory:
         proposal: "Save “%{title}” as a reviewed relationship memory."
@@ -91,6 +104,7 @@ en:
     history:
       title: "Decision history"
       queued: "Queued for review on %{date}."
+      superseded: "Carecierge removed this item when it was no longer eligible for review. Any earlier user actions appear above."
     decisions:
       approve: "Approved"
       reject: "Rejected"

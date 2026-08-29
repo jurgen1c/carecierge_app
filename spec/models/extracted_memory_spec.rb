@@ -62,4 +62,26 @@ RSpec.describe ExtractedMemory, type: :model do
     expect(extracted_memory.errors[:corrected_title]).to be_present
     expect(extracted_memory.errors[:corrected_body]).to be_present
   end
+
+  it "compares correction retries using its persisted normalization rules" do
+    extracted_memory.assign_attributes(
+      status: "corrected",
+      corrected_title: "Enjoys jasmine tea",
+      corrected_body: "Enjoys jasmine tea on quiet evenings."
+    )
+    extracted_memory.validate
+
+    expect(
+      extracted_memory.correction_matches?(
+        title: "  Enjoys   jasmine tea  ",
+        body: "  Enjoys jasmine tea on quiet evenings.  "
+      )
+    ).to be(true)
+    expect(
+      extracted_memory.correction_matches?(
+        title: "Enjoys oolong tea",
+        body: "Enjoys jasmine tea on quiet evenings."
+      )
+    ).to be(false)
+  end
 end

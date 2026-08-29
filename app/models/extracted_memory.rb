@@ -65,6 +65,11 @@ class ExtractedMemory < ApplicationRecord
     corrected? ? corrected_title : title
   end
 
+  def correction_matches?(title:, body:)
+    corrected_title == normalize_corrected_title(title) &&
+      corrected_body == normalize_corrected_body(body)
+  end
+
   def category_label
     I18n.t("extracted_memories.categories.#{category}")
   end
@@ -79,8 +84,16 @@ class ExtractedMemory < ApplicationRecord
     self.title = title.to_s.squish
     self.body = body.to_s.strip
     self.source_excerpt = source_excerpt.to_s.strip
-    self.corrected_title = corrected_title.to_s.squish.presence
-    self.corrected_body = corrected_body.to_s.strip.presence
+    self.corrected_title = normalize_corrected_title(corrected_title)
+    self.corrected_body = normalize_corrected_body(corrected_body)
+  end
+
+  def normalize_corrected_title(value)
+    value.to_s.squish.presence
+  end
+
+  def normalize_corrected_body(value)
+    value.to_s.strip.presence
   end
 
   def conversation_recap_matches_profile

@@ -63,6 +63,19 @@ es:
       reversibility: "Reversibilidad"
       decision_help: "Elige el resultado que coincide con tu intención. Carecierge registra la decisión sin exponer el contenido privado en los registros de auditoría."
       completed: "Este elemento está %{status}. Su historial de decisiones permanece disponible abajo."
+      reviewed_source: "Fuente revisada"
+      superseded_title: "El elemento de aprobación ya no está vigente"
+      superseded_source: "Reconciliación de la fila"
+      superseded_context: "Carecierge retiró este elemento porque cambió su fuente o elegibilidad. La sustitución fue automática, no una decisión de aprobación."
+      superseded_action: "No se tomó ninguna acción de aprobación cuando este elemento salió de la fila."
+      superseded_consequence: "La transición automática no aprobó, rechazó ni ejecutó nada."
+      superseded_will_not_happen: "No se autorizó ninguna acción externa ni automatización."
+      superseded_reversibility: "No hay una decisión de aprobación que revertir."
+      superseded_completed: "Este elemento está %{status}. Salió de la fila automáticamente; esta transición no fue una decisión del usuario."
+      source_changed_title: "La fuente cambió después de esta decisión"
+      source_changed_source: "Versión anterior de la fuente"
+      source_changed_context: "La fuente se actualizó después de esta decisión. Su contenido actual no se muestra como parte de esta revisión anterior."
+      source_changed_action: "Esta decisión se aplicó a una versión anterior de la fuente."
     actions:
       review_extracted_memory:
         proposal: "Guardar “%{title}” como una memoria de relación revisada."
@@ -91,6 +104,7 @@ es:
     history:
       title: "Historial de decisiones"
       queued: "Enviada a revisión el %{date}."
+      superseded: "Carecierge retiró este elemento cuando dejó de ser elegible para revisión. Las acciones anteriores del usuario aparecen arriba."
     decisions:
       approve: "Aprobada"
       reject: "Rechazada"

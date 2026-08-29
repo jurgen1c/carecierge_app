@@ -10,6 +10,44 @@ RSpec.describe ApprovalQueue::Synchronize do
     described_class.call(user:)
   end
 
+  it "locks every candidate profile in UUID order before processing work" do
+    profiles = 2.times.map { create(:relationship_profile, user:) }
+    memories = profiles.map do |relationship_profile|
+      create(:memory_record, relationship_profile:, source: "ai_inferred", confidence: "low")
+    end
+    expected_profile_ids = profiles.map(&:id).sort
+    lock_sequence = []
+
+    allow_any_instance_of(RelationshipProfile).to receive(:with_lock).and_wrap_original do |method, *args, &block|
+      lock_sequence << method.receiver.id
+      method.call(*args, &block)
+    end
+
+    described_class.new(user:).send(:with_ordered_profile_locks, memories.reverse) do
+      lock_sequence << :work
+    end
+
+    expect(lock_sequence).to eq([ *expected_profile_ids, :work ])
+  end
+
+  it "preloads candidate profiles in one query before constructing the lock order" do
+    profiles = 2.times.map { create(:relationship_profile, user:) }
+    subjects = profiles.flat_map do |relationship_profile|
+      2.times.map do
+        create(:memory_record, relationship_profile:, source: "ai_inferred", confidence: "low")
+      end
+    end.map { |subject| MemoryRecord.find(subject.id) }
+    synchronizer = described_class.new(user:)
+
+    queries = capture_sql do
+      @ordered_profiles = synchronizer.send(:preload_ordered_profiles, subjects)
+    end
+
+    expect(@ordered_profiles.map(&:id)).to eq(profiles.map(&:id).sort)
+    expect(subjects).to all(satisfy { |subject| subject.association(:relationship_profile).loaded? })
+    expect(queries.grep(/SELECT .* FROM "relationship_profiles"/).size).to eq(1)
+  end
+
   it "queues pending extracted memories and blocked high-impact memories once" do
     recap = create(:conversation_recap, relationship_profile: profile, extraction_status: "ready_for_review")
     proposal = create(:extracted_memory, relationship_profile: profile, conversation_recap: recap, confidence: "low")
@@ -96,6 +134,23 @@ RSpec.describe ApprovalQueue::Synchronize do
     expect(ApprovalRequest.find_by(subject: proposal)).to be_nil
   end
 
+  it "removes an open request whose source disappeared before reconciliation" do
+    memory = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+    approval_request = create(
+      :approval_request,
+      user:,
+      subject: memory,
+      kind: "memory_record",
+      action_key: "approve_high_impact_memory",
+      risk_level: "high",
+      confidence: "low"
+    )
+    memory.delete
+
+    expect { described_class.call(user:) }.to change(ApprovalRequest, :count).by(-1)
+    expect(ApprovalRequest.exists?(approval_request.id)).to be(false)
+  end
+
   it "does not queue protected high-impact memory" do
     memory = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
     PrivacyVault::Protect.call(actor: user, protectable: memory)
@@ -144,6 +199,25 @@ RSpec.describe ApprovalQueue::Synchronize do
 
     expect(approval_request.reload.status).to eq("superseded")
     expect(user.approval_requests.open.find_by(subject: memory)).to be_nil
+  end
+
+  it "requeues superseded work when temporary ineligibility ends without a source edit" do
+    memory = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+    described_class.call(user:)
+    approval_request = user.approval_requests.find_by!(subject: memory)
+    source_updated_at = memory.updated_at
+
+    profile.archive!
+    described_class.call(user:)
+    profile.undiscard!
+
+    expect { described_class.call(user:) }.to change(ApprovalRequest, :count).by(1)
+    expect(approval_request.reload.status).to eq("superseded")
+    expect(memory.reload.updated_at).to eq(source_updated_at)
+    expect(user.approval_requests.open.find_by!(subject: memory)).to have_attributes(
+      status: "pending",
+      subject_updated_at: source_updated_at
+    )
   end
 
   it "revalidates a stale source instance immediately before enqueueing" do
@@ -216,5 +290,18 @@ RSpec.describe ApprovalQueue::Synchronize do
 
     expect { described_class.call(user:) }.not_to change(ApprovalRequest, :count)
     expect(user.approval_requests.open.find_by(subject: proposal)).to be_nil
+  end
+
+
+  def capture_sql
+    queries = []
+    subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == "SCHEMA"
+
+      queries << payload[:sql]
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { yield }
+    queries
   end
 end

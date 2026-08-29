@@ -12,7 +12,8 @@ claim: >
   Feature-flagged recaps enqueue strict, non-stored extraction. Source-backed
   proposals remain separate until owner review. Either review surface finalizes
   or creates an owner-scoped ApprovalRequest with append-only, content-free
-  evidence. Locking matches selective deletion order. Exports include proposals;
+  evidence. Repeated corrections are idempotent only when normalized content
+  matches the saved correction. Locking matches selective deletion order. Exports include proposals;
   deletion fences delayed recreation and preserves corrections. Only approved
   or corrected canonical memories may feed relationship personas.
 
@@ -97,6 +98,8 @@ Proposals retain source and review state. Approval creates `ai_inferred` memory,
 correction creates confirmed `user_corrected` memory, and rejection creates none.
 Reviews are idempotent, follow profile-to-source lock order, and use the same
 queue history boundary from either surface, including reversals after dismissal.
+Correction retries compare normalized submitted and persisted content so a
+conflicting stale form fails instead of silently retaining another correction.
 
 Exports include proposals, correction inputs stay filtered from logs, and
 deletion fences delayed recreation while preserving user corrections.

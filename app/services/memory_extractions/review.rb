@@ -150,7 +150,12 @@ module MemoryExtractions
       queue_decision = decision == "correct" ? "edit" : decision
       status = queue_decision.in?(%w[approve edit]) ? "approved" : "rejected"
       occurred_at = Time.current
-      queue_request.update!(status:, decided_at: occurred_at, deferred_until: nil)
+      queue_request.update!(
+        status:,
+        subject_updated_at: extracted_memory.updated_at,
+        decided_at: occurred_at,
+        deferred_until: nil
+      )
       queue_request.approval_decisions.create!(user: reviewer, decision: queue_decision, occurred_at:)
       return unless queue_decision == "reject"
 

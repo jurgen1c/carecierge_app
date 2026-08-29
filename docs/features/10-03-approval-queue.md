@@ -47,28 +47,44 @@ out of the active queue until its source changes. A source control used after
 deferral is treated as a current explicit decision and closes the deferred item;
 a source control used after a terminal decision creates a new request envelope
 so the reversal remains visible in the append-only history.
-Every request records the source version that was presented. Source edits bump
-the request lock and refresh eligible work, while work that becomes ineligible
-is marked superseded without inventing a user decision. Decisions recheck that
-source version under the relationship and source locks, and an explicit source
-review carries the refreshed request version into the canonical mutation.
+Every open request records the source version that was presented. Source edits
+bump the request lock and refresh eligible work, while work that becomes
+ineligible is marked superseded without inventing a user decision. Superseded
+work can re-enter the queue when temporary ineligibility ends even if the source
+itself was not edited; rejected or dismissed work still requires a source
+change. Completed superseded items use neutral automatic-transition copy rather
+than presenting the transition as an approval decision. Decisions recheck the presented version under the relationship and
+source locks, refresh confidence and risk together when explicitly accepting a
+changed version, then bind a completed envelope to the resulting source version.
+If that source changes later, completed history shows an explicit earlier-
+version state instead of attributing mutable live content to the old decision.
+Completed extracted-memory history also uses a neutral reviewed-source label
+instead of rendering mutable conversation-recap metadata.
 Protected memory stays outside the queue, owner-entered deferral times use the
-owner's saved time zone, and an explicitly selected owned item is resolved from
+owner's saved time zone and a safely rounded future-minute minimum, and an
+explicitly selected owned item is resolved from
 the active status scope independently of the current page. Edit/defer mode links
 preserve that page through failed submissions. Replaying the matching completed
 extracted-memory decision or successful high-impact memory approval is a no-op
-and does not append duplicate history. A mismatched terminal retry and other
+and does not append duplicate history. Corrected-memory retries are idempotent
+only when their normalized title and body match the saved correction. A mismatched terminal retry and other
 ineligible source controls return localized feedback without mutation.
 
 Queue visits reconcile bounded batches of current source snapshots and open
 requests. Sources without a current snapshot remain eligible for a later batch,
 while open-request reconciliation selects only work that is no longer eligible,
-so unchanged work cannot starve a later obsolete item. Queue synchronization
-uses a no-key account lock before relationship so decision evidence can take its
-foreign-key lock safely. Request kind, risk, confidence, and source version are
-derived only after the relationship and source have been locked and reloaded.
+so unchanged work cannot starve a later obsolete item. Open envelopes whose
+polymorphic source disappeared are removed before reconciliation and rendering.
+Queue synchronization
+uses a no-key account lock, preselects only bounded candidate work, and locks
+every involved relationship in UUID order before source processing. Candidate
+relationships are preloaded in one query before that order is built. This keeps
+the order compatible with other multi-profile workflows while allowing decision
+evidence to take its foreign-key lock safely. Request kind, risk, confidence,
+and source version are derived only after the relationship and source have been
+locked and reloaded.
 Explicit source controls keep request discovery and
-application atomic under relationship/source locks without acquiring account,
+application atomic under compatible no-key account/relationship/source locks,
 and accept only the source surface's approve, reject, or correct vocabulary.
 
 Completed extracted-memory approvals present the corrected title that was

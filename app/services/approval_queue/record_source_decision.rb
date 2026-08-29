@@ -22,21 +22,23 @@ module ApprovalQueue
 
     def call
       validate_decision!
-      subject.relationship_profile.with_lock do
-        subject.lock!
-        request = find_or_create_request
-        return subject unless request
+      user.with_lock("FOR NO KEY UPDATE") do
+        subject.relationship_profile.with_lock do
+          subject.lock!
+          request = find_or_create_request
+          return subject unless request
 
-        ApprovalDecisions::Apply.call(
-          approval_request: request,
-          actor: user,
-          decision: queue_decision,
-          lock_version: request.lock_version,
-          corrected_title:,
-          corrected_body:,
-          override_deferral: true,
-          override_source_version: true
-        )
+          ApprovalDecisions::Apply.call(
+            approval_request: request,
+            actor: user,
+            decision: queue_decision,
+            lock_version: request.lock_version,
+            corrected_title:,
+            corrected_body:,
+            override_deferral: true,
+            override_source_version: true
+          )
+        end
       end
     end
 
@@ -80,7 +82,11 @@ module ApprovalQueue
 
     def decision_already_applied?
       case subject
-      when ExtractedMemory then EXTRACTED_MEMORY_DECISIONS[subject.status] == queue_decision
+      when ExtractedMemory
+        return false unless EXTRACTED_MEMORY_DECISIONS[subject.status] == queue_decision
+        return true unless queue_decision == "edit"
+
+        subject.correction_matches?(title: corrected_title, body: corrected_body)
       when MemoryRecord then queue_decision == "approve" && subject.high_impact_automation_allowed?
       else false
       end

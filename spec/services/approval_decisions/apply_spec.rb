@@ -7,6 +7,18 @@ RSpec.describe ApprovalDecisions::Apply do
   let(:proposal) { create(:extracted_memory, relationship_profile: profile, conversation_recap: recap, confidence: "medium") }
   let(:approval_request) { create(:approval_request, user:, subject: proposal, confidence: proposal.confidence) }
 
+  it "locks the account before the relationship" do
+    expect(user).to receive(:with_lock).with("FOR NO KEY UPDATE").ordered.and_yield
+    expect(profile).to receive(:with_lock).ordered.and_yield
+
+    described_class.call(
+      approval_request:,
+      actor: user,
+      decision: "dismiss",
+      lock_version: approval_request.lock_version
+    )
+  end
+
   it "approves the underlying proposal and records immutable, privacy-minimized history" do
     expect do
       described_class.call(approval_request:, actor: user, decision: "approve", lock_version: approval_request.lock_version)
@@ -16,6 +28,7 @@ RSpec.describe ApprovalDecisions::Apply do
 
     expect(approval_request.reload).to have_attributes(status: "approved", decided_at: be_within(1.second).of(Time.current))
     expect(proposal.reload.status).to eq("approved")
+    expect(approval_request.subject_updated_at).to eq(proposal.updated_at)
     expect(approval_request.approval_decisions.sole).to have_attributes(decision: "approve", user:)
     expect(user.audit_events.last).to have_attributes(
       action: "approval.granted",
@@ -106,7 +119,10 @@ RSpec.describe ApprovalDecisions::Apply do
     end.not_to change { user.audit_events.where(action: "automation.performed").count }
 
     expect(memory.reload.high_impact_automation_approved_at).to be_present
-    expect(request_record.reload.status).to eq("approved")
+    expect(request_record.reload).to have_attributes(
+      status: "approved",
+      subject_updated_at: memory.updated_at
+    )
   end
 
   it "rejects approval when the memory is protected by the privacy vault" do
@@ -174,8 +190,28 @@ RSpec.describe ApprovalDecisions::Apply do
       )
     end.to change(MemoryRecord, :count).by(1)
 
-    expect(approval_request.reload).to have_attributes(status: "approved", subject_updated_at: proposal.updated_at)
     expect(proposal.reload.status).to eq("approved")
+    expect(approval_request.reload).to have_attributes(status: "approved", subject_updated_at: proposal.updated_at)
+  end
+
+  it "recomputes reviewed risk when explicitly accepting a changed source version" do
+    approval_request.update!(risk_level: "low", confidence: "high")
+    proposal.update!(confidence: "low")
+
+    described_class.call(
+      approval_request:,
+      actor: user,
+      decision: "dismiss",
+      lock_version: approval_request.lock_version,
+      override_source_version: true
+    )
+
+    expect(approval_request.reload).to have_attributes(
+      status: "dismissed",
+      risk_level: "medium",
+      confidence: "low",
+      subject_updated_at: proposal.updated_at
+    )
   end
 
   it "does not finalize an extracted-memory request before its deferral is due" do

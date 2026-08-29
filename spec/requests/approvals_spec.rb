@@ -44,6 +44,25 @@ RSpec.describe "Approval queue", type: :request do
     expect(response.body).not_to include("Foreign private memory", "Translation missing")
   end
 
+  it "renders the queue after removing an open envelope whose source is missing" do
+    memory = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+    orphaned_request = create(
+      :approval_request,
+      user:,
+      subject: memory,
+      kind: "memory_record",
+      action_key: "approve_high_impact_memory",
+      risk_level: "high",
+      confidence: "low"
+    )
+    memory.delete
+
+    get approvals_path
+
+    expect(response).to have_http_status(:ok)
+    expect(ApprovalRequest.exists?(orphaned_request.id)).to be(false)
+  end
+
   it "keeps the complete queue localized in Spanish" do
     I18n.with_locale(:es) { get approvals_path }
 

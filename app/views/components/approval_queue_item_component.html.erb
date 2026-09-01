@@ -9,7 +9,7 @@
         <h2 id="approval-item-title" class="mt-2 break-words text-2xl font-semibold text-ink"><%= item.title %></h2>
         <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("approvals.detail.relationship", relationship: item.relationship_name) %></p>
       </div>
-      <p class="shrink-0 text-sm text-quiet-note"><%= l(item.created_at, format: :approval) %></p>
+      <p class="shrink-0 text-sm text-quiet-note"><%= l(owner_local_time(item.created_at), format: :approval) %></p>
     </div>
   </header>
 
@@ -113,7 +113,11 @@
           </div>
         <% end %>
       <% else %>
-        <p class="mt-6 rounded-xl bg-surface px-4 py-4 text-sm leading-6 text-quiet-note"><%= t(item.superseded? ? "approvals.detail.superseded_completed" : "approvals.detail.completed", status: t("approvals.statuses.#{item.status}")) %></p>
+        <% if item.status == "deferred" && item.deferred_until.present? %>
+          <p class="mt-6 rounded-xl bg-surface px-4 py-4 text-sm leading-6 text-quiet-note"><%= t("approvals.detail.deferred_until", date: l(owner_local_time(item.deferred_until), format: :approval)) %></p>
+        <% else %>
+          <p class="mt-6 rounded-xl bg-surface px-4 py-4 text-sm leading-6 text-quiet-note"><%= t(item.superseded? ? "approvals.detail.superseded_completed" : "approvals.detail.completed", status: t("approvals.statuses.#{item.status}")) %></p>
+        <% end %>
       <% end %>
     </section>
   </div>
@@ -125,7 +129,7 @@
         <% item.approval_decisions.each do |entry| %>
           <li class="flex flex-col gap-1 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
             <span class="font-semibold text-ink"><%= t("approvals.decisions.#{entry.decision}") %></span>
-            <time class="text-quiet-note" datetime="<%= entry.occurred_at.iso8601 %>"><%= l(entry.occurred_at, format: :approval) %></time>
+            <time class="text-quiet-note" datetime="<%= entry.occurred_at.iso8601 %>"><%= l(owner_local_time(entry.occurred_at), format: :approval) %></time>
           </li>
         <% end %>
       </ol>
@@ -133,7 +137,7 @@
     <% if item.superseded? %>
       <p class="mt-3 text-sm leading-6 text-quiet-note"><%= t("approvals.history.superseded") %></p>
     <% elsif item.approval_decisions.empty? %>
-      <p class="mt-3 text-sm leading-6 text-quiet-note"><%= t("approvals.history.queued", date: l(item.created_at, format: :approval)) %></p>
+      <p class="mt-3 text-sm leading-6 text-quiet-note"><%= t("approvals.history.queued", date: l(owner_local_time(item.created_at), format: :approval)) %></p>
     <% end %>
   </section>
 </article>

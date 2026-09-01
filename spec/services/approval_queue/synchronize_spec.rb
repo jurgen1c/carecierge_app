@@ -48,6 +48,41 @@ RSpec.describe ApprovalQueue::Synchronize do
     expect(queries.grep(/SELECT .* FROM "relationship_profiles"/).size).to eq(1)
   end
 
+  it "reuses the batch profile lock while processing each source" do
+    3.times do
+      create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+    end
+
+    queries = capture_sql { described_class.call(user:) }
+    profile_lock_queries = queries.grep(/SELECT .* FROM "relationship_profiles".*FOR UPDATE/)
+
+    expect(profile_lock_queries.size).to eq(1)
+  end
+
+  it "does not reload a preloaded profile after locking each source" do
+    3.times do
+      create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+    end
+
+    queries = capture_sql { described_class.call(user:) }
+    per_source_profile_queries = queries.grep(
+      /SELECT .* FROM "relationship_profiles" WHERE "relationship_profiles"\."id" = .* LIMIT/
+    ).reject { |query| query.include?("FOR UPDATE") }
+
+    expect(per_source_profile_queries).to be_empty
+  end
+
+  it "loads privacy-vault state once for the locked memory batch" do
+    3.times do
+      create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
+    end
+
+    queries = capture_sql { described_class.call(user:) }
+    vault_queries = queries.grep(/SELECT .* FROM "privacy_vault_items"/)
+
+    expect(vault_queries.size).to eq(1)
+  end
+
   it "queues pending extracted memories and blocked high-impact memories once" do
     recap = create(:conversation_recap, relationship_profile: profile, extraction_status: "ready_for_review")
     proposal = create(:extracted_memory, relationship_profile: profile, conversation_recap: recap, confidence: "low")

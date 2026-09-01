@@ -52,6 +52,10 @@ class ApprovalQueueItemComponent < ApplicationViewComponent
     minimum.strftime("%Y-%m-%dT%H:%M")
   end
 
+  def owner_local_time(time)
+    time.in_time_zone(owner_time_zone)
+  end
+
   private
 
   def owner_time_zone

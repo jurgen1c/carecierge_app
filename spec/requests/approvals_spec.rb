@@ -44,6 +44,16 @@ RSpec.describe "Approval queue", type: :request do
     expect(response.body).not_to include("Foreign private memory", "Translation missing")
   end
 
+  it "places the selected approval before the queue rail for narrow layouts" do
+    get approvals_path
+
+    document = Nokogiri::HTML(response.body)
+    layout = document.at_css("[data-approval-queue-layout]")
+
+    expect(layout.element_children.first["data-approval-selected-item"]).to eq("true")
+    expect(layout.element_children.last.name).to eq("aside")
+  end
+
   it "renders the queue after removing an open envelope whose source is missing" do
     memory = create(:memory_record, relationship_profile: profile, source: "ai_inferred", confidence: "low")
     orphaned_request = create(
@@ -69,6 +79,67 @@ RSpec.describe "Approval queue", type: :request do
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Aprobaciones", "Comprende la fuente", "Revisa la consecuencia", "Decide")
     expect(response.body).not_to include("Translation missing")
+  end
+
+  it "renders queue rail timestamps in the owner's time zone" do
+    create(:notification_preference, user:, time_zone: "America/Costa_Rica")
+    queued_at = Time.utc(2026, 8, 29, 2, 30)
+    zone = ActiveSupport::TimeZone["America/Costa_Rica"]
+
+    Timecop.freeze(Time.utc(2026, 8, 29, 12)) do
+      ApprovalQueue::Synchronize.call(user:)
+      user.approval_requests.find_by!(subject: proposal).update_column(:created_at, queued_at)
+
+      get approvals_path
+    end
+
+    expect(response.body).to include(I18n.l(queued_at.in_time_zone(zone), format: :approval))
+    expect(response.body).not_to include(I18n.l(queued_at, format: :approval))
+  end
+
+  it "preloads canonical memory vault state for completed extracted-memory rows" do
+    3.times do |index|
+      memory = create(
+        :memory_record,
+        relationship_profile: profile,
+        source: "user_confirmed",
+        confidence: "confirmed"
+      )
+      reviewed_proposal = create(
+        :extracted_memory,
+        relationship_profile: profile,
+        conversation_recap: recap,
+        canonical_memory_record: memory,
+        status: "approved",
+        title: "Reviewed proposal #{index}"
+      )
+      create(
+        :approval_request,
+        user:,
+        subject: reviewed_proposal,
+        status: "approved",
+        decided_at: Time.current
+      )
+    end
+
+    queries = capture_sql { get approvals_path(status: "completed") }
+    canonical_memory_batch_queries = queries.grep(
+      /FROM "memory_records" WHERE "memory_records"\."id" IN \(/
+    )
+    canonical_memory_singular_queries = queries.grep(
+      /FROM "memory_records" WHERE "memory_records"\."id" = .* LIMIT/
+    )
+    vault_state_batch_queries = queries.grep(
+      /FROM "privacy_vault_items" WHERE .*"privacy_vault_items"\."protectable_id" IN \(/
+    )
+    vault_state_singular_queries = queries.grep(
+      /FROM "privacy_vault_items" WHERE .*"privacy_vault_items"\."protectable_id" = .* LIMIT/
+    )
+
+    expect(canonical_memory_batch_queries.size).to eq(1)
+    expect(vault_state_batch_queries.size).to eq(1)
+    expect(canonical_memory_singular_queries.size).to be <= 1
+    expect(vault_state_singular_queries.size).to be <= 1
   end
 
   it "updates the selected underlying object through an owner-scoped decision" do
@@ -153,5 +224,17 @@ RSpec.describe "Approval queue", type: :request do
 
     edit_form = Nokogiri::HTML(response.body).at_css("form[action*='/approvals/#{proposal_request.id}']")
     expect(Rack::Utils.parse_query(URI.parse(edit_form["action"]).query)).to include("page" => "2", "mode" => "edit")
+  end
+
+  def capture_sql
+    queries = []
+    subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+      next if payload[:cached] || payload[:name] == "SCHEMA"
+
+      queries << payload[:sql]
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { yield }
+    queries
   end
 end

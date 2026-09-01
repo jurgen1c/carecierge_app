@@ -62,6 +62,7 @@ en:
       what_will_not_happen: "What will not happen"
       reversibility: "Reversibility"
       decision_help: "Choose the outcome that matches your intent. Carecierge records the decision without exposing the private content in audit logs."
+      deferred_until: "Deferred. Returns to Pending on %{date}."
       completed: "This item is %{status}. Its decision history remains available below."
       reviewed_source: "Reviewed source"
       superseded_title: "Approval item no longer current"

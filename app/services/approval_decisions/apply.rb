@@ -109,14 +109,16 @@ module ApprovalDecisions
         raise ActiveRecord::StaleObjectError.new(approval_request, "update")
       end
 
-      approval_request.update!(
+      attributes = {
         subject_updated_at: approval_request.subject.updated_at,
         confidence: approval_request.subject.confidence,
         risk_level: ApprovalQueue::Eligibility.risk_level(
           approval_request.subject,
           action_key: approval_request.action_key
         )
-      )
+      }
+      attributes.merge!(status: "pending", deferred_until: nil) if approval_request.open_for_decision?
+      approval_request.update!(attributes)
     end
 
     def lock_subject(&block)

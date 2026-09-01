@@ -69,7 +69,9 @@ class ApprovalRequest < ApplicationRecord
   scope :open, -> { where(status: %w[pending deferred]) }
 
   def open_for_decision?
-    status == "pending" || status == "deferred" && deferred_until <= Time.current
+    return true if status == "pending"
+
+    status == "deferred" && deferred_until.present? && deferred_until <= Time.current
   end
 
   private

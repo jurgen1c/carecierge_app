@@ -24,8 +24,12 @@
         <%= link_to t("approvals.empty.action"), dashboard_path, class: "mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
       </section>
     <% else %>
-      <div class="grid lg:grid-cols-[19rem_minmax(0,1fr)]">
-        <aside class="border-b border-private-line bg-surface lg:border-b-0 lg:border-r" aria-label="<%= t("approvals.queue.label") %>">
+      <div class="grid lg:grid-cols-[19rem_minmax(0,1fr)]" data-approval-queue-layout>
+        <div class="min-w-0 lg:col-start-2 lg:row-start-1" data-approval-selected-item="true">
+          <%= component "approval_queue_item", item: @item, mode: params[:mode], status: @status, page: @pagy.page %>
+        </div>
+
+        <aside class="border-t border-private-line bg-surface lg:col-start-1 lg:row-start-1 lg:border-t-0 lg:border-r" aria-label="<%= t("approvals.queue.label") %>">
           <ol class="divide-y divide-private-line">
             <% @approval_requests.each do |request_record| %>
               <% rail_item = ApprovalQueue::Item.new(approval_request: request_record) %>
@@ -33,7 +37,7 @@
                 <%= link_to approvals_path(status: @status, page: @pagy.page, id: request_record.id), aria: { current: request_record == @selected_request ? "true" : nil }, class: "block px-5 py-5 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary #{request_record == @selected_request ? "bg-canvas" : "hover:bg-canvas"}" do %>
                   <div class="flex items-start justify-between gap-3">
                     <p class="text-sm font-semibold text-primary"><%= rail_item.type_label %></p>
-                    <span class="text-xs text-quiet-note"><%= l(rail_item.created_at, format: :approval) %></span>
+                    <span class="text-xs text-quiet-note"><%= l(rail_item.created_at.in_time_zone(@owner_time_zone), format: :approval) %></span>
                   </div>
                   <h2 class="mt-2 break-words text-base font-semibold text-ink"><%= rail_item.title %></h2>
                   <p class="mt-1 text-sm text-quiet-note"><%= rail_item.relationship_name %></p>
@@ -55,10 +59,6 @@
             </nav>
           <% end %>
         </aside>
-
-        <div class="min-w-0">
-          <%= component "approval_queue_item", item: @item, mode: params[:mode], status: @status, page: @pagy.page %>
-        </div>
       </div>
     <% end %>
   </div>

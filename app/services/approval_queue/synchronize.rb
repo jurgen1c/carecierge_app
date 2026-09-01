@@ -20,9 +20,10 @@ module ApprovalQueue
         subjects = requests.filter_map(&:subject) + extracted_memories + high_impact_memories
 
         with_ordered_profile_locks(subjects) do
-          reconcile_open_requests(requests)
-          queue_extracted_memories(extracted_memories)
-          queue_high_impact_memories(high_impact_memories)
+          protected_memory_ids = load_protected_memory_ids(subjects)
+          reconcile_open_requests(requests, profile_locked: true, protected_memory_ids:)
+          queue_extracted_memories(extracted_memories, profile_locked: true, protected_memory_ids:)
+          queue_high_impact_memories(high_impact_memories, profile_locked: true, protected_memory_ids:)
         end
       end
     end
@@ -38,9 +39,9 @@ module ApprovalQueue
         .limit(SOURCE_LIMIT)
     end
 
-    def queue_extracted_memories(subjects)
+    def queue_extracted_memories(subjects, profile_locked: false, protected_memory_ids: nil)
       subjects.each do |subject|
-        enqueue(subject:, action_key: "review_extracted_memory")
+        enqueue(subject:, action_key: "review_extracted_memory", profile_locked:, protected_memory_ids:)
       end
     end
 
@@ -56,15 +57,15 @@ module ApprovalQueue
         .limit(SOURCE_LIMIT)
     end
 
-    def queue_high_impact_memories(subjects)
+    def queue_high_impact_memories(subjects, profile_locked: false, protected_memory_ids: nil)
       subjects.each do |subject|
-        enqueue(subject:, action_key: "approve_high_impact_memory")
+        enqueue(subject:, action_key: "approve_high_impact_memory", profile_locked:, protected_memory_ids:)
       end
     end
 
-    def enqueue(subject:, action_key:)
-      with_subject_lock(subject) do
-        return unless Eligibility.eligible?(subject, action_key:)
+    def enqueue(subject:, action_key:, profile_locked: false, protected_memory_ids: nil)
+      with_subject_lock(subject, profile_locked:) do
+        return unless Eligibility.eligible?(subject, action_key:, protected_memory_ids:)
 
         kind = Eligibility.kind(subject)
         risk_level = Eligibility.risk_level(subject, action_key:)
@@ -86,12 +87,12 @@ module ApprovalQueue
       nil
     end
 
-    def reconcile_open_requests(requests)
+    def reconcile_open_requests(requests, profile_locked: false, protected_memory_ids: nil)
       requests.each do |request|
         subject = request.subject
-        with_subject_lock(subject) do
+        with_subject_lock(subject, profile_locked:) do
           request.lock!
-          if Eligibility.eligible?(subject, action_key: request.action_key)
+          if Eligibility.eligible?(subject, action_key: request.action_key, protected_memory_ids:)
             refresh_open_request(
               request,
               subject:,
@@ -178,18 +179,38 @@ module ApprovalQueue
       request
     end
 
-    def with_subject_lock(subject)
+    def with_subject_lock(subject, profile_locked: false)
       profile = subject.relationship_profile
+      if profile_locked
+        lock_subject_with_profile(subject, profile)
+        return yield
+      end
+
       profile.with_lock do
-        subject.lock!
+        lock_subject_with_profile(subject, profile)
         yield
       end
+    end
+
+    def lock_subject_with_profile(subject, profile)
+      subject.lock!
+      subject.association(:relationship_profile).target = profile
     end
 
     def with_ordered_profile_locks(subjects, &block)
       profiles = preload_ordered_profiles(subjects)
 
       with_profile_locks(profiles, &block)
+    end
+
+    def load_protected_memory_ids(subjects)
+      memory_ids = subjects.grep(MemoryRecord).map(&:id).uniq
+      return {} if memory_ids.empty?
+
+      PrivacyVaultItem
+        .where(protectable_type: "MemoryRecord", protectable_id: memory_ids)
+        .pluck(:protectable_id)
+        .index_with(true)
     end
 
     def preload_ordered_profiles(subjects)

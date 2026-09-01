@@ -10,17 +10,15 @@ title: Approval queue centralizes owner decisions without external execution
 
 claim: >
   ApprovalRequest is an owner-scoped, source-versioned envelope with append-only
-  history. Synchronization bounds candidates, preloads and locks profiles in UUID order,
-  excludes protected memory, derives metadata under source locks, refreshes
-  eligible work, removes missing-source envelopes, supersedes obsolete work, and
-  requeues work after temporary ineligibility. Decisions use compatible no-key owner locks, verify presented
-  versions, refresh risk with accepted source changes, and bind terminal envelopes to
-  resulting source versions, mask later live and associated-source content in
-  completed history, distinguish automatic supersession from user decisions,
-  preserve off-page and failed-form context, use owner-local deferral, delegate
-  canonical mutation, and record content-free evidence. Source decisions are
-  allowlisted and idempotent only for matching normalized corrections;
-  mismatched or ineligible controls fail safely.
+  history. Synchronization bounds candidates, locks preloaded profiles in UUID order,
+  preserves those associations across source reloads, batch-loads vault state,
+  excludes protected memory, and reconciles missing, stale, or temporarily
+  ineligible work. Decisions use compatible no-key owner locks, verify source
+  versions, normalize due deferrals before accepted refreshes, bind terminal
+  source versions, mask mutable or vaulted associated content, preserve workflow
+  context, use owner-local times, delegate canonical mutation, and record
+  content-free evidence. Source decisions are allowlisted and idempotent only for
+  matching normalized corrections; malformed, mismatched, or ineligible state fails closed.
   Future kinds fail closed, and high-impact approval never has an external effect.
 
 source_files:
@@ -104,18 +102,20 @@ Queue items derive from owner-scoped sources and explain risk, consequence,
 non-effects, and reversibility. Requests store source versions, not private
 content; evidence is allowlisted and scalar.
 
-Bounded synchronization takes a no-key account lock, preloads candidate
-profiles once, locks them in UUID order, and derives metadata under source
+Bounded synchronization takes a no-key account lock, preloads
+profiles once, locks them in UUID order, reattaches them after source reloads,
+and derives metadata under source
 locks. Missing-source envelopes are removed before reconciliation. Superseded
 work uses automatic-transition copy and may re-enter after temporary ineligibility, while
 rejected and dismissed snapshots remain excluded until their source changes.
 
 Decisions take a compatible no-key account lock before profile/source locks,
-verify versions, refresh confidence and risk together for accepted changes,
-and bind terminal envelopes to resulting source versions. Completed history
-masks divergent live content and mutable recap labels. Both adapters preserve
-canonical mutations, off-page and failed-form context, safely rounded
-owner-local deferral, normalized correction retry checks, safe retries, and the
+verify versions, return due deferrals to pending before refreshing accepted
+changes, refresh confidence and risk together, and bind terminal envelopes to
+resulting source versions. Completed history preloads and masks live content,
+vaulted canonical memory, and recap labels. Both adapters preserve
+canonical mutations, off-page and failed-form context,
+owner-local deferral and evidence timestamps, normalized correction retry checks, safe retries, and the
 no-external-execution boundary.
 
 ## Why It Matters

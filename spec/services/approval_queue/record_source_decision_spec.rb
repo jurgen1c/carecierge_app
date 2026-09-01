@@ -63,6 +63,43 @@ RSpec.describe ApprovalQueue::RecordSourceDecision do
     end
   end
 
+  it "closes a due deferral when explicitly reviewing a changed source" do
+    now = Time.zone.local(2026, 8, 29, 9)
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    proposal = create(
+      :extracted_memory,
+      relationship_profile: profile,
+      conversation_recap: create(:conversation_recap, relationship_profile: profile, extraction_status: "ready_for_review")
+    )
+    request_record = nil
+
+    Timecop.freeze(now) do
+      request_record = create(
+        :approval_request,
+        user:,
+        subject: proposal,
+        status: "deferred",
+        deferred_until: 1.hour.from_now
+      )
+    end
+
+    Timecop.freeze(now + 2.hours) do
+      proposal.update!(body: "Updated source ready for explicit review")
+
+      expect do
+        described_class.call(user:, subject: proposal, decision: "approve")
+      end.to change(MemoryRecord, :count).by(1)
+    end
+
+    expect(proposal.reload.status).to eq("approved")
+    expect(request_record.reload).to have_attributes(
+      status: "approved",
+      deferred_until: nil,
+      subject_updated_at: proposal.updated_at
+    )
+  end
+
   it "rejects a stale correction retry when its normalized content differs" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

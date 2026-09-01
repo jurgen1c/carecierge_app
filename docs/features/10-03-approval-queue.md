@@ -56,12 +56,20 @@ change. Completed superseded items use neutral automatic-transition copy rather
 than presenting the transition as an approval decision. Decisions recheck the presented version under the relationship and
 source locks, refresh confidence and risk together when explicitly accepting a
 changed version, then bind a completed envelope to the resulting source version.
-If that source changes later, completed history shows an explicit earlier-
-version state instead of attributing mutable live content to the old decision.
+If that source changes later, or an approved extracted memory's canonical record
+moves into the privacy vault, completed history shows an explicit earlier-
+version state instead of attributing mutable or protected content to the old decision.
 Completed extracted-memory history also uses a neutral reviewed-source label
-instead of rendering mutable conversation-recap metadata.
-Protected memory stays outside the queue, owner-entered deferral times use the
-owner's saved time zone and a safely rounded future-minute minimum, and an
+instead of rendering mutable conversation-recap metadata. Completed pages
+preload canonical memory and vault state before evaluating those masks.
+Protected memory stays outside the queue, owner-entered deferral times,
+scheduled return times, and displayed queue evidence use the owner's saved time
+zone. On narrow layouts, the selected approval appears before the bounded queue
+rail so the current decision remains immediately reachable. Deferral inputs use
+a safely rounded future-minute minimum. A due deferral returns to pending
+before an explicitly accepted source-version refresh is persisted, while an
+invalid deferred envelope without a review time fails closed instead of
+rendering decision controls or raising. An
 explicitly selected owned item is resolved from
 the active status scope independently of the current page. Edit/defer mode links
 preserve that page through failed submissions. Replaying the matching completed
@@ -78,7 +86,10 @@ polymorphic source disappeared are removed before reconciliation and rendering.
 Queue synchronization
 uses a no-key account lock, preselects only bounded candidate work, and locks
 every involved relationship in UUID order before source processing. Candidate
-relationships are preloaded in one query before that order is built. This keeps
+relationships are preloaded in one query before that order is built. The batch
+reuses those relationship locks, reattaches the locked profile after each source
+reload, and loads privacy-vault state once before
+per-source revalidation. This keeps
 the order compatible with other multi-profile workflows while allowing decision
 evidence to take its foreign-key lock safely. Request kind, risk, confidence,
 and source version are derived only after the relationship and source have been

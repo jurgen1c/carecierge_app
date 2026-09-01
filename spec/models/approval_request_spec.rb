@@ -69,6 +69,13 @@ RSpec.describe ApprovalRequest do
     end
   end
 
+  it "fails closed when a malformed deferred request has no review time" do
+    request_record = create(:approval_request, user:, subject:)
+    request_record.update_columns(status: "deferred", deferred_until: nil)
+
+    expect(request_record.reload).not_to be_open_for_decision
+  end
+
   it "preserves audit history when its source request is deleted" do
     approval_request = create(:approval_request, user:, subject:)
     approval_request.approval_decisions.create!(user:, decision: "dismiss", occurred_at: Time.current)

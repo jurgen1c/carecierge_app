@@ -5,6 +5,7 @@ class ApprovalRequestsController < ApplicationController
     authorize ApprovalRequest
     ApprovalQueue::Synchronize.call(user: current_user)
     response.headers["Cache-Control"] = "no-store"
+    @owner_time_zone = OwnerLocalCalendar.time_zone_for(user: current_user)
 
     @status = params[:status].to_s.in?(%w[pending deferred completed]) ? params[:status].to_s : "pending"
     scope = approval_scope
@@ -66,6 +67,11 @@ class ApprovalRequestsController < ApplicationController
     subjects = (@approval_requests.to_a + [ @selected_request ]).compact.map(&:subject).uniq
     ActiveRecord::Associations::Preloader.new(records: subjects, associations: :relationship_profile).call
     extracted_memories = subjects.grep(ExtractedMemory)
-    ActiveRecord::Associations::Preloader.new(records: extracted_memories, associations: :conversation_recap).call if extracted_memories.any?
+    if extracted_memories.any?
+      ActiveRecord::Associations::Preloader.new(
+        records: extracted_memories,
+        associations: [ :conversation_recap, { canonical_memory_record: :privacy_vault_item } ]
+      ).call
+    end
   end
 end

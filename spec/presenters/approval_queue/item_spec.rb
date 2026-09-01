@@ -80,6 +80,49 @@ RSpec.describe ApprovalQueue::Item do
     expect(item.source_label).not_to include("Later private recap")
   end
 
+  it "masks completed extracted-memory content when its canonical memory is protected" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    canonical_memory = create(
+      :memory_record,
+      relationship_profile: profile,
+      title: "Private canonical title",
+      body: "Private canonical context",
+      source: "ai_inferred",
+      confidence: "low"
+    )
+    proposal = create(
+      :extracted_memory,
+      relationship_profile: profile,
+      conversation_recap: create(:conversation_recap, relationship_profile: profile),
+      canonical_memory_record: canonical_memory,
+      status: "approved",
+      title: "Original proposal title",
+      body: "Original proposal body",
+      source_excerpt: "Original private excerpt"
+    )
+    approval_request = create(
+      :approval_request,
+      user:,
+      subject: proposal,
+      status: "approved",
+      decided_at: Time.current
+    )
+    PrivacyVault::Protect.call(actor: user, protectable: canonical_memory)
+
+    item = described_class.new(approval_request:)
+
+    expect(item).to be_source_changed_since_review
+    expect(item.title).to eq(I18n.t("approvals.detail.source_changed_title"))
+    expect(item.source_label).to eq(I18n.t("approvals.detail.source_changed_source"))
+    expect(item.source_context).to eq(I18n.t("approvals.detail.source_changed_context"))
+    expect([ item.title, item.source_label, item.source_context, item.proposed_action ].join).not_to include(
+      proposal.title,
+      proposal.body,
+      proposal.source_excerpt
+    )
+  end
+
   it "presents superseded work as an automatic queue transition, not a user decision" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

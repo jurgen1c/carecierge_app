@@ -62,6 +62,7 @@ es:
       what_will_not_happen: "Qué no ocurrirá"
       reversibility: "Reversibilidad"
       decision_help: "Elige el resultado que coincide con tu intención. Carecierge registra la decisión sin exponer el contenido privado en los registros de auditoría."
+      deferred_until: "Para después. Volverá a Pendientes el %{date}."
       completed: "Este elemento está %{status}. Su historial de decisiones permanece disponible abajo."
       reviewed_source: "Fuente revisada"
       superseded_title: "El elemento de aprobación ya no está vigente"

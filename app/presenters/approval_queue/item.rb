@@ -57,7 +57,7 @@ module ApprovalQueue
     end
 
     def source_changed_since_review?
-      decision_recorded? && subject_updated_at != subject.updated_at
+      decision_recorded? && (subject_updated_at != subject.updated_at || associated_source_protected?)
     end
 
     def superseded?
@@ -95,6 +95,10 @@ module ApprovalQueue
     end
 
     private
+
+    def associated_source_protected?
+      subject.is_a?(ExtractedMemory) && subject.canonical_memory_record&.vault_protected?
+    end
 
     def decision_recorded?
       status.in?(%w[approved rejected dismissed])

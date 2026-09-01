@@ -517,7 +517,7 @@ GEM
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.13)
-    view_component (4.12.0)
+    view_component (4.15.0)
       actionview (>= 7.1.0)
       activesupport (>= 7.1.0)
       concurrent-ruby (~> 1)
@@ -596,7 +596,7 @@ DEPENDENCIES
   timecop (~> 0.9.11)
   turbo-rails
   tzinfo-data
-  view_component (~> 4.12)
+  view_component (~> 4.15)
   web-console
 
 BUNDLED WITH

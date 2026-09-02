@@ -1,11 +1,12 @@
 require "rails_helper"
 
 RSpec.describe EventPlanVendors::Attach do
-  it "serializes attachment under the event plan mutation lock" do
+  it "locks the owner before serializing attachment under the event plan mutation lock" do
     plan = create(:event_plan)
     vendor = create(:vendor, user: plan.user)
 
-    expect(plan).to receive(:with_mutation_lock).and_call_original
+    expect(plan.user).to receive(:with_lock).with("FOR NO KEY UPDATE").ordered.and_call_original
+    expect(plan).to receive(:with_mutation_lock).ordered.and_call_original
 
     expect do
       described_class.call(event_plan: plan, vendor:)

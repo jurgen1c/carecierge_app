@@ -3,7 +3,7 @@ id: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
 type: fact
 system: vendor_discovery
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Saved vendors are owner-scoped, sourced, and review-only
@@ -19,10 +19,11 @@ claim: >
   budget, and timing; event-plan context supplies occasion and budget defaults
   that submitted blank filters can explicitly clear.
   A vendor can be attached only to an active event plan owned by the same user;
-  attachment and detachment serialize under the plan mutation lock and reload
-  activity before mutating the join. Attaching, detaching, saving, editing, or
-  deleting never contacts, books, purchases from, or otherwise acts through a
-  vendor. Account exports include
+  attachment acquires the owner lock before the plan mutation locks, and both
+  attachment and detachment reload plan activity before mutating the join.
+  Detachment re-resolves the join through the locked plan. Attaching, detaching,
+  saving, editing, or deleting never contacts, books, purchases from, or
+  otherwise acts through a vendor. Account exports include
   decrypted vendor details, provenance, and event-plan attachments, while
   ownership foreign keys cascade through account deletion. The surface is
   available in English and Spanish. External provider discovery and vendor
@@ -96,7 +97,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 81509be0eac81ec5c4dd8d8eb14891f15688cbef
+last_verified_commit: null
 ---
 
 # Saved vendors are owner-scoped, sourced, and review-only

@@ -26,4 +26,28 @@ RSpec.describe EventPlanVendors::Detach do
       end.to raise_error(ActiveRecord::RecordNotFound)
     end.not_to change(EventPlanVendor, :count)
   end
+
+  it "re-finds the assignment inside the lock and rejects a raced deletion" do
+    assignment = create(:event_plan_vendor)
+    plan = assignment.event_plan
+    allow(plan).to receive(:with_mutation_lock) do |&operation|
+      assignment.delete
+      operation.call
+    end
+
+    expect do
+      described_class.call(event_plan: plan, assignment:)
+    end.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it "does not detach an assignment from a different plan" do
+    assignment = create(:event_plan_vendor)
+    other_plan = create(:event_plan, user: assignment.event_plan.user)
+
+    expect do
+      expect do
+        described_class.call(event_plan: other_plan, assignment:)
+      end.to raise_error(ActiveRecord::RecordNotFound)
+    end.not_to change(EventPlanVendor, :count)
+  end
 end

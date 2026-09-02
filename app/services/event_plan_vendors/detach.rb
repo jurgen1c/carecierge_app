@@ -12,7 +12,7 @@ module EventPlanVendors
         event_plan.reload
         raise ActiveRecord::RecordNotFound unless event_plan.active?
 
-        assignment.destroy!
+        event_plan.event_plan_vendors.find(assignment.id).destroy!
       end
     end
 

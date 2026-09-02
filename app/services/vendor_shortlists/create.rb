@@ -35,6 +35,8 @@ module VendorShortlists
       return if shortlist.relationship_profile_id
 
       shortlist.validate
+      return if shortlist.relationship_profile_id
+
       raise ActiveRecord::RecordInvalid, shortlist
     end
 

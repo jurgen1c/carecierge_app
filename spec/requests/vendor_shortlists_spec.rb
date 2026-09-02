@@ -255,6 +255,21 @@ RSpec.describe "Vendor shortlists", type: :request do
     expect(option.vendor.reload).to be_persisted
   end
 
+  it "keeps an invalid removal render read-only when its event plan is archived" do
+    option = create(:vendor_option)
+    shortlist = option.vendor_shortlist
+    shortlist.event_plan.archive!
+    option.errors.add(:base, "Could not remove this option")
+    allow_any_instance_of(VendorOption).to receive(:remove!).and_raise(ActiveRecord::RecordInvalid, option)
+    sign_in shortlist.user
+
+    delete vendor_shortlist_vendor_option_path(shortlist, option)
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("Could not remove this option", "Remove from shortlist")
+    expect(response.body).not_to include("Save comparison notes", "Mark as favorite", "Select vendor")
+  end
+
   it "keeps an archived relationship shortlist reachable for explicit option removal" do
     option = create(:vendor_option, notes: "Owner-authored comparison")
     shortlist = option.vendor_shortlist

@@ -82,8 +82,8 @@ class VendorOptionsController < ApplicationController
       @options[index] = error.record if index
     end
     @available_vendors = policy_scope(Vendor).where.not(id: @options.map(&:vendor_id)).ordered
-    @editable = true
-    @removable = true
+    @editable = policy(@vendor_shortlist).update?
+    @removable = policy(@vendor_shortlist).remove_options?
     @mutation_errors = error.record.errors.full_messages
     render "vendor_shortlists/show", status: :unprocessable_content
   end

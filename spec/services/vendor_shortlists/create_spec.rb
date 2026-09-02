@@ -16,6 +16,19 @@ RSpec.describe VendorShortlists::Create do
     expect(shortlist.vendors).to contain_exactly(*vendors)
   end
 
+  it "derives the relationship when called with event-plan context only" do
+    plan = create(:event_plan)
+
+    shortlist = described_class.call(
+      user: plan.user,
+      attributes: { title: "Plan options", event_plan: plan },
+      vendors: []
+    )
+
+    expect(shortlist).to be_persisted
+    expect(shortlist.relationship_profile_id).to eq(plan.relationship_profile_id)
+  end
+
   it "rejects foreign vendors atomically" do
     user = create(:user)
     profile = create(:relationship_profile, user:)

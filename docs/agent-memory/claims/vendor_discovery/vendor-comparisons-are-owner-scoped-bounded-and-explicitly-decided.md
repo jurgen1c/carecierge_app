@@ -2,8 +2,8 @@
 id: vendor_discovery.vendor_comparisons_are_owner_scoped_bounded_and_explicitly_decided
 type: fact
 system: vendor_discovery
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Vendor comparisons are owner-scoped, bounded, and explicitly decided
@@ -114,7 +114,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: a04c05d742f024c56624d94f9373e4b1302ccc75
+last_verified_commit: null
 ---
 
 # Vendor comparisons are owner-scoped, bounded, and explicitly decided

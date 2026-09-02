@@ -2,8 +2,8 @@
 id: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
 type: fact
 system: vendor_discovery
-status: needs_verification
-confidence: high
+status: current
+confidence: verified
 severity: critical
 
 title: Saved vendors are owner-scoped, sourced, and review-only
@@ -108,7 +108,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 6649e99218e57519a24dde95af0d989ce2ff048d
 ---
 
 # Saved vendors are owner-scoped, sourced, and review-only

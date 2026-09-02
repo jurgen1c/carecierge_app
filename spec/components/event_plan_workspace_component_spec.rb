@@ -25,6 +25,28 @@ RSpec.describe EventPlanWorkspaceComponent, type: :component do
     expect(page).not_to have_button("Send")
   end
 
+  it "shows attached vendors and a direct, review-only discovery path" do
+    plan = create(:event_plan)
+    vendor = create(:vendor, user: plan.user, name: "Casa Verde", category: "restaurant")
+    create(:event_plan_vendor, event_plan: plan, vendor:)
+
+    render_inline(described_class.new(
+      event_plan: plan,
+      event_plans: [ plan ],
+      plan_task: PlanTask.new,
+      private_notes: [],
+      vault_items: [],
+      vendors: [ vendor ]
+    ))
+
+    expected_path = Rails.application.routes.url_helpers.vendors_path(event_plan_id: plan.id)
+    expect(page).to have_link("Find vendors", href: expected_path, count: 2)
+    expect(page).to have_css("section[aria-labelledby='saved-vendors-title']")
+    expect(page).to have_content("Casa Verde")
+    expect(page).to have_content("Restaurant")
+    expect(page).to have_no_button("Book")
+  end
+
   it "gives a birthday plan one clear, review-only next action" do
     plan = create(:event_plan, occasion_type: "birthday", starts_on: Date.current + 21.days)
     next_task = create(
@@ -129,6 +151,7 @@ RSpec.describe EventPlanWorkspaceComponent, type: :component do
     ))
 
     expect(page).not_to have_css("section[aria-labelledby='birthday-next-action-title']")
+    expect(page).to have_no_link("Find vendors")
   end
 
   it "describes birthday timing from the owner's local calendar date" do

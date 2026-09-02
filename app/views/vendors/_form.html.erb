@@ -1,0 +1,80 @@
+<%= form_with model: vendor, class: "space-y-6" do |form| %>
+  <%= hidden_field_tag :event_plan_id, event_plan.id if event_plan %>
+  <% if vendor.errors.any? %>
+    <div role="alert" class="rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink">
+      <h2 class="font-semibold"><%= t("vendors.form.errors", count: vendor.errors.count) %></h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm"><% vendor.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <%= form.label :name, t("vendors.form.name"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :name, required: true, maxlength: Vendor::MAX_NAME_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :category, t("vendors.form.category"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :category, Vendor::CATEGORIES.map { |value| [ t("vendors.categories.#{value}"), value ] }, { include_blank: t("vendors.form.category_prompt") }, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :location, t("vendors.form.location"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :location, maxlength: Vendor::MAX_LOCATION_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :minimum_price, t("vendors.form.minimum_price"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.number_field :minimum_price, min: 0, step: "0.01", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :maximum_price, t("vendors.form.maximum_price"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.number_field :maximum_price, min: 0, step: "0.01", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= form.label :availability, t("vendors.form.availability"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_area :availability, rows: 2, maxlength: Vendor::MAX_AVAILABILITY_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+      <p class="mt-1 text-xs leading-5 text-quiet-note"><%= t("vendors.form.availability_hint") %></p>
+    </div>
+    <fieldset data-vendor-occasions class="rounded-xl border border-private-line p-4">
+      <legend class="px-1 text-sm font-semibold text-ink"><%= t("vendors.form.occasions") %></legend>
+      <p class="mb-3 text-xs leading-5 text-quiet-note"><%= t("vendors.form.occasions_hint") %></p>
+      <div class="grid gap-2 sm:grid-cols-2">
+        <%= form.collection_check_boxes :occasion_types, EventPlan::OCCASION_TYPES, :to_s, ->(value) { t("event_plans.occasion_types.#{value}") } do |choice| %>
+          <%= choice.label(class: "flex min-h-11 items-center gap-3 rounded-lg px-2 py-2 text-sm text-ink hover:bg-surface") do %>
+            <%= choice.check_box(class: "size-5 rounded border-stone-300 text-primary focus:ring-primary") %>
+            <span><%= choice.text %></span>
+          <% end %>
+        <% end %>
+      </div>
+    </fieldset>
+    <div>
+      <%= form.label :preference_tags_text, t("vendors.form.preferences"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :preference_tags_text, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+      <p class="mt-1 text-xs leading-5 text-quiet-note"><%= t("vendors.form.preferences_hint") %></p>
+    </div>
+    <div class="sm:col-span-2">
+      <%= form.label :fit_notes, t("vendors.form.fit_notes"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_area :fit_notes, rows: 3, maxlength: Vendor::MAX_FIT_NOTES_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+  </div>
+
+  <fieldset class="grid gap-5 border-t border-private-line pt-6 sm:grid-cols-2">
+    <legend class="text-lg font-semibold text-ink"><%= t("vendors.form.source_title") %></legend>
+    <p class="sm:col-span-2 text-sm leading-6 text-quiet-note"><%= t("vendors.form.source_body") %></p>
+    <div>
+      <%= form.label :source_kind, t("vendors.form.source_kind"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :source_kind, Vendor::SOURCE_KINDS.map { |value| [ t("vendors.sources.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :source_name, t("vendors.form.source_name"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :source_name, maxlength: Vendor::MAX_SOURCE_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= form.label :source_url, t("vendors.form.source_url"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.url_field :source_url, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+  </fieldset>
+
+  <div class="flex flex-wrap gap-3 border-t border-private-line pt-5">
+    <%= form.submit t("vendors.form.#{vendor.persisted? ? 'update' : 'create'}"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover" %>
+    <%= link_to t("vendors.form.cancel"), vendors_path(event_plan_id: event_plan&.id), class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-surface" %>
+  </div>
+<% end %>

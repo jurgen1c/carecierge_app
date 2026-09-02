@@ -8,6 +8,7 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
   option :next_reminder, default: -> { nil }
   option :backup_plan, default: -> { nil }
   option :personal_touch_checklist, default: -> { nil }
+  option :vendors, default: -> { [] }
 
   style :primary_button do
     base do

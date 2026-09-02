@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_28_133138) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -343,6 +343,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_133138) do
     t.index ["message_draft_id", "position"], name: "index_draft_revisions_on_message_draft_id_and_position", unique: true
     t.index ["message_draft_id"], name: "index_draft_revisions_on_message_draft_id"
     t.check_constraint "\"position\" > 0", name: "draft_revisions_position_positive"
+  end
+
+  create_table "event_plan_vendors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "event_plan_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "vendor_id", null: false
+    t.index ["event_plan_id", "vendor_id"], name: "index_event_plan_vendors_on_event_plan_id_and_vendor_id", unique: true
+    t.index ["event_plan_id"], name: "index_event_plan_vendors_on_event_plan_id"
+    t.index ["vendor_id"], name: "index_event_plan_vendors_on_vendor_id"
   end
 
   create_table "event_plans", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1082,6 +1092,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_133138) do
     t.check_constraint "event_type::text = ANY (ARRAY['unlock_failed'::character varying, 'unlocked'::character varying, 'locked'::character varying, 'viewed'::character varying, 'protected'::character varying, 'restored'::character varying, 'suggestion_usage_changed'::character varying]::text[])", name: "vault_access_events_supported_event_type"
   end
 
+  create_table "vendors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "availability"
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.text "fit_notes"
+    t.string "location"
+    t.integer "maximum_price_cents"
+    t.integer "minimum_price_cents"
+    t.string "name", null: false
+    t.jsonb "occasion_types", default: [], null: false
+    t.jsonb "preference_tags", default: [], null: false
+    t.string "source_kind", default: "manual", null: false
+    t.string "source_name"
+    t.string "source_url"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index "user_id, lower((name)::text)", name: "index_vendors_on_user_and_lower_name"
+    t.index ["occasion_types"], name: "index_vendors_on_occasion_types", using: :gin
+    t.index ["preference_tags"], name: "index_vendors_on_preference_tags", using: :gin
+    t.index ["user_id", "category"], name: "index_vendors_on_user_id_and_category"
+    t.index ["user_id"], name: "index_vendors_on_user_id"
+    t.check_constraint "maximum_price_cents IS NULL OR maximum_price_cents >= 0", name: "vendors_maximum_price_nonnegative"
+    t.check_constraint "minimum_price_cents IS NULL OR maximum_price_cents IS NULL OR minimum_price_cents <= maximum_price_cents", name: "vendors_price_range_ordered"
+    t.check_constraint "minimum_price_cents IS NULL OR minimum_price_cents >= 0", name: "vendors_minimum_price_nonnegative"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_blobs", "users", column: "uploaded_by_user_id", on_delete: :nullify
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
@@ -1106,6 +1142,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_133138) do
   add_foreign_key "desires", "relationship_profiles"
   add_foreign_key "digest_deliveries", "users"
   add_foreign_key "draft_revisions", "message_drafts", on_delete: :cascade
+  add_foreign_key "event_plan_vendors", "event_plans", on_delete: :cascade
+  add_foreign_key "event_plan_vendors", "vendors", on_delete: :cascade
   add_foreign_key "event_plans", "relationship_profiles", on_delete: :cascade
   add_foreign_key "event_plans", "users", on_delete: :cascade
   add_foreign_key "extracted_memories", "conversation_recaps", on_delete: :cascade
@@ -1167,4 +1205,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_28_133138) do
   add_foreign_key "vault_access_events", "privacy_vault_items", on_delete: :nullify
   add_foreign_key "vault_access_events", "relationship_profiles", on_delete: :nullify
   add_foreign_key "vault_access_events", "users", on_delete: :cascade
+  add_foreign_key "vendors", "users", on_delete: :cascade
 end

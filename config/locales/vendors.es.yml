@@ -1,0 +1,130 @@
+es:
+  vendors:
+    index:
+      title: "Buscar un proveedor"
+      body: "Guarda opciones con su fuente en una lista privada y fíltralas por los detalles importantes para el momento."
+      add: "Agregar proveedor"
+      plan_budget: "Presupuesto %{amount}"
+      results:
+        one: "1 proveedor guardado"
+        other: "%{count} proveedores guardados"
+      saved_shortlist: "Tu lista privada"
+      empty_title: "Agrega el primer proveedor a tu lista"
+      empty_body: "Guarda una opción de tu propia investigación. Puedes registrar su fuente, detalles prácticos y por qué podría encajar."
+      empty_action: "Agregar un proveedor manualmente"
+      review_only: "Carecierge no contacta ni reserva proveedores. Tú revisas cada fuente y decides qué sucede después."
+    search:
+      query: "Nombre, servicio o palabra clave"
+      category: "Categoría"
+      any_category: "Cualquier categoría"
+      location: "Ubicación"
+      occasion: "Ocasión"
+      any_occasion: "Cualquier ocasión"
+      preference: "Preferencia"
+      maximum_budget: "Presupuesto máximo"
+      timing: "Horario o disponibilidad"
+      action: "Buscar proveedores guardados"
+      clear: "Limpiar filtros"
+    result:
+      price: "Rango de precio"
+      availability: "Señal de disponibilidad"
+      source: "Fuente"
+      fit: "Por qué podría encajar"
+      not_provided: "No indicado"
+      attach: "Adjuntar al plan"
+      detach: "Quitar del plan"
+      edit: "Editar proveedor"
+    new:
+      title: "Agregar un proveedor"
+      body: "Guarda una opción de tu propia investigación. Los detalles externos permanecen atribuidos y bajo tu revisión."
+    edit:
+      title: "Editar proveedor"
+      body: "Mantén al día los detalles prácticos, las notas de afinidad y la procedencia."
+    form:
+      name: "Nombre del proveedor"
+      category: "Categoría"
+      category_prompt: "Elige una categoría"
+      location: "Ubicación o área de servicio"
+      minimum_price: "Precio mínimo"
+      maximum_price: "Precio máximo"
+      availability: "Señal de disponibilidad"
+      availability_hint: "Registra solo lo que indica la fuente, como horarios o una ventana de servicio conocida."
+      occasions: "Ocasiones"
+      occasions_hint: "Elige todas las ocasiones para las que este proveedor podría ser adecuado."
+      preferences: "Etiquetas de preferencia"
+      preferences_hint: "Términos separados por comas, como tranquilo, vegetariano, local o accesible."
+      fit_notes: "Por qué podría encajar"
+      source_title: "Fuente y procedencia"
+      source_body: "Los datos externos pueden estar incompletos o desactualizados. Nombra la fuente para mantenerlos revisables."
+      source_kind: "Tipo de fuente"
+      source_name: "Nombre de la fuente"
+      source_url: "Enlace de la fuente"
+      create: "Guardar proveedor"
+      update: "Guardar cambios"
+      cancel: "Cancelar"
+      delete: "Eliminar proveedor"
+      delete_confirm: "¿Eliminar este proveedor de tu lista y de todos los planes adjuntos?"
+      errors:
+        one: "Revisa este detalle del proveedor"
+        other: "Revisa estos %{count} detalles del proveedor"
+    create:
+      notice: "Proveedor guardado."
+    update:
+      notice: "Proveedor actualizado."
+    destroy:
+      notice: "Proveedor eliminado de tu lista."
+    attach:
+      notice: "Proveedor adjuntado al plan."
+    detach:
+      notice: "Proveedor eliminado del plan."
+    sources:
+      manual: "Investigación personal"
+      external: "Fuente externa"
+    price:
+      up_to: "Hasta %{amount}"
+    matches:
+      category: "categoría"
+      location: "ubicación"
+      occasion: "ocasión"
+      preference: "preferencia"
+      budget: "presupuesto"
+      timing: "horario"
+      saved: "tu investigación guardada"
+      summary: "Coincide con %{matches}."
+      default: "Guardado para tu revisión. Agrega una nota para conservar por qué destaca esta opción."
+      join:
+        words: ", "
+        two: " y "
+        last: " y "
+    pagination:
+      label: "Resultados de proveedores"
+      previous: "Anterior"
+      next: "Siguiente"
+      page: "Página %{page} de %{pages}"
+    categories:
+      restaurant: "Restaurante"
+      florist: "Florista"
+      bakery: "Panadería"
+      caterer: "Catering"
+      private_chef: "Chef privado"
+      photographer: "Fotógrafo"
+      venue: "Lugar para eventos"
+      musician: "Músico"
+      entertainer: "Artista"
+      decorator: "Decorador"
+      gift_shop: "Tienda de regalos"
+      local_artisan: "Artesano local"
+      spa: "Spa"
+      tour_operator: "Operador turístico"
+      transportation: "Transporte"
+      childcare: "Cuidado infantil"
+      party_rental: "Alquiler para fiestas"
+  activerecord:
+    errors:
+      models:
+        event_plan_vendor:
+          attributes:
+            vendor:
+              different_owner: "debe pertenecer al dueño del plan"
+            event_plan:
+              inactive: "debe estar activo"

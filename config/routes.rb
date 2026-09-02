@@ -48,7 +48,9 @@ Rails.application.routes.draw do
       patch :complete, on: :member
       patch :reopen, on: :member
     end
+    resources :vendors, only: %i[create destroy], controller: "event_plan_vendors"
   end
+  resources :vendors, except: :show
   resources :personal_touch_checklists, only: [] do
     resources :personal_touch_items, only: :create do
       patch :complete, on: :member

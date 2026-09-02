@@ -228,6 +228,7 @@ class EventPlansController < ApplicationController
     @backup_plan = @event_plan.backup_plans.includes(:backup_options).recent_first.first
     @personal_touch_checklist = @event_plan.personal_touch_checklist
     @personal_touch_checklist&.visible_personal_touch_items&.load
+    @vendors = @event_plan.vendors.ordered.to_a
   end
 
   def prepare_form_options

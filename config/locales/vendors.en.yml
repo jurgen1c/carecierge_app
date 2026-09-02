@@ -1,0 +1,130 @@
+en:
+  vendors:
+    index:
+      title: "Find a vendor"
+      body: "Keep sourced options in one private shortlist, then narrow them by the details that matter for the moment."
+      add: "Add a vendor"
+      plan_budget: "Budget %{amount}"
+      results:
+        one: "1 saved vendor"
+        other: "%{count} saved vendors"
+      saved_shortlist: "Your private shortlist"
+      empty_title: "Add the first vendor to your shortlist"
+      empty_body: "Save an option from your own research. You can record its source, practical details, and why it may fit."
+      empty_action: "Add a vendor manually"
+      review_only: "Carecierge does not contact or book vendors. You review every source and decide what happens next."
+    search:
+      query: "Vendor name, service, or keyword"
+      category: "Category"
+      any_category: "Any category"
+      location: "Location"
+      occasion: "Occasion"
+      any_occasion: "Any occasion"
+      preference: "Preference"
+      maximum_budget: "Maximum budget"
+      timing: "Timing or availability"
+      action: "Search saved vendors"
+      clear: "Clear filters"
+    result:
+      price: "Price range"
+      availability: "Availability signal"
+      source: "Source"
+      fit: "Why it may fit"
+      not_provided: "Not provided"
+      attach: "Attach to plan"
+      detach: "Remove from plan"
+      edit: "Edit vendor"
+    new:
+      title: "Add a vendor"
+      body: "Save an option from your own research. External details remain clearly attributed and under your review."
+    edit:
+      title: "Edit vendor"
+      body: "Keep practical details, fit notes, and provenance current."
+    form:
+      name: "Vendor name"
+      category: "Category"
+      category_prompt: "Choose a category"
+      location: "Location or service area"
+      minimum_price: "Minimum price"
+      maximum_price: "Maximum price"
+      availability: "Availability signal"
+      availability_hint: "Record only what the source states, such as opening hours or a known service window."
+      occasions: "Occasions"
+      occasions_hint: "Choose every occasion this vendor may suit."
+      preferences: "Preference tags"
+      preferences_hint: "Comma-separated terms such as quiet, vegetarian, local, or accessible."
+      fit_notes: "Why it may fit"
+      source_title: "Source and provenance"
+      source_body: "External data may be incomplete or outdated. Name the source so it stays reviewable."
+      source_kind: "Source type"
+      source_name: "Source name"
+      source_url: "Source link"
+      create: "Save vendor"
+      update: "Save changes"
+      cancel: "Cancel"
+      delete: "Delete vendor"
+      delete_confirm: "Delete this saved vendor from your shortlist and every attached plan?"
+      errors:
+        one: "Review this vendor detail"
+        other: "Review these %{count} vendor details"
+    create:
+      notice: "Vendor saved."
+    update:
+      notice: "Vendor updated."
+    destroy:
+      notice: "Vendor removed from your shortlist."
+    attach:
+      notice: "Vendor attached to the plan."
+    detach:
+      notice: "Vendor removed from the plan."
+    sources:
+      manual: "Personal research"
+      external: "External source"
+    price:
+      up_to: "Up to %{amount}"
+    matches:
+      category: "category"
+      location: "location"
+      occasion: "occasion"
+      preference: "preference"
+      budget: "budget"
+      timing: "timing"
+      saved: "your saved research"
+      summary: "Matches %{matches}."
+      default: "Saved for your review. Add a fit note to preserve why this option stands out."
+      join:
+        words: ", "
+        two: " and "
+        last: ", and "
+    pagination:
+      label: "Vendor results"
+      previous: "Previous"
+      next: "Next"
+      page: "Page %{page} of %{pages}"
+    categories:
+      restaurant: "Restaurant"
+      florist: "Florist"
+      bakery: "Bakery"
+      caterer: "Caterer"
+      private_chef: "Private chef"
+      photographer: "Photographer"
+      venue: "Venue"
+      musician: "Musician"
+      entertainer: "Entertainer"
+      decorator: "Decorator"
+      gift_shop: "Gift shop"
+      local_artisan: "Local artisan"
+      spa: "Spa"
+      tour_operator: "Tour operator"
+      transportation: "Transportation"
+      childcare: "Childcare"
+      party_rental: "Party rental"
+  activerecord:
+    errors:
+      models:
+        event_plan_vendor:
+          attributes:
+            vendor:
+              different_owner: "must belong to the plan owner"
+            event_plan:
+              inactive: "must be active"

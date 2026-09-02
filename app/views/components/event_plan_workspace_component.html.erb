@@ -32,6 +32,7 @@
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
+            <% if event_plan.active? %><%= link_to t("event_plans.workspace.find_vendors"), vendors_path(event_plan_id: event_plan.id), class: style(:primary_button) %><% end %>
             <%= link_to t("event_plans.workspace.edit_plan"), edit_event_plan_path(event_plan), class: style(:secondary_button) %>
             <% if event_plan.active? %>
               <%= button_to t("event_plans.workspace.complete_plan"), complete_event_plan_path(event_plan), method: :patch, class: style(:secondary_button) %>
@@ -391,6 +392,23 @@
         <% else %>
           <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("event_plans.workspace.no_reminder") %></p>
         <% end %>
+      </section>
+
+      <section aria-labelledby="saved-vendors-title" class="border-t border-private-line pt-5">
+        <h2 id="saved-vendors-title" class="text-base font-semibold text-ink"><%= t("event_plans.workspace.vendors_title") %></h2>
+        <% if vendors.any? %>
+          <ul class="mt-3 divide-y divide-private-line border-y border-private-line">
+            <% vendors.each do |vendor| %>
+              <li class="py-3">
+                <p class="text-sm font-semibold text-ink"><%= vendor.name %></p>
+                <p class="mt-1 text-xs text-quiet-note"><%= vendor.category_label %><% if vendor.location.present? %> · <%= vendor.location %><% end %></p>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("event_plans.workspace.no_vendors") %></p>
+        <% end %>
+        <% if event_plan.active? %><%= link_to t("event_plans.workspace.find_vendors"), vendors_path(event_plan_id: event_plan.id), class: "mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %><% end %>
       </section>
 
       <section aria-labelledby="relationship-sources-title" class="border-t border-private-line pt-5">

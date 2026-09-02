@@ -86,6 +86,60 @@ RSpec.describe "Data controls", type: :request do
     )
   end
 
+  it "exports saved vendors with provenance and plan attachments" do
+    user = create(:user)
+    plan = create(:event_plan, user:)
+    vendor = create(
+      :vendor,
+      user:,
+      name: "Casa Verde",
+      source_kind: "external",
+      source_name: "Vendor website",
+      source_url: "https://example.com/casa-verde",
+      fit_notes: "Quiet dining room."
+    )
+    create(:event_plan_vendor, event_plan: plan, vendor:)
+    sign_in user
+
+    post data_exports_path, params: { data_export: { format: "json", scope: "account" } }
+
+    exported_vendor = response.parsed_body.fetch("vendors").sole
+    expect(exported_vendor).to include(
+      "id" => vendor.id,
+      "name" => "Casa Verde",
+      "source_kind" => "external",
+      "source_name" => "Vendor website",
+      "source_url" => "https://example.com/casa-verde",
+      "fit_notes" => "Quiet dining room.",
+      "event_plan_ids" => [ plan.id ]
+    )
+    expect(exported_vendor).not_to have_key("user_id")
+    expect(response.parsed_body.dig("relationship_profiles", 0, "event_plans", 0, "vendors", 0)).to include(
+      "id" => vendor.id,
+      "event_plan_ids" => [ plan.id ]
+    )
+  end
+
+  it "limits vendor attachment identifiers to the selected relationship profile" do
+    user = create(:user)
+    selected_profile = create(:relationship_profile, user:)
+    other_profile = create(:relationship_profile, user:)
+    selected_plan = create(:event_plan, user:, relationship_profile: selected_profile)
+    other_plan = create(:event_plan, user:, relationship_profile: other_profile)
+    vendor = create(:vendor, user:)
+    create(:event_plan_vendor, event_plan: selected_plan, vendor:)
+    create(:event_plan_vendor, event_plan: other_plan, vendor:)
+    sign_in user
+
+    post data_exports_path, params: {
+      data_export: { format: "json", scope: "relationship_profile", relationship_profile_id: selected_profile.id }
+    }
+
+    exported_vendor = response.parsed_body.dig("relationship_profiles", 0, "event_plans", 0, "vendors", 0)
+    expect(exported_vendor.fetch("event_plan_ids")).to eq([ selected_plan.id ])
+    expect(response.body).not_to include(other_plan.id)
+  end
+
   let(:password) { "careful-password" }
   let(:user) { create(:user, email: "owner@example.com", password:) }
   let(:profile) { create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera") }

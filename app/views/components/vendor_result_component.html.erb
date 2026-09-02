@@ -1,0 +1,43 @@
+<article class="grid gap-4 py-5 sm:grid-cols-2 lg:grid-cols-[minmax(11rem,1.1fr)_minmax(8rem,.7fr)_minmax(10rem,1fr)_minmax(12rem,1.2fr)_auto] lg:items-start">
+  <div class="min-w-0">
+    <h2 class="text-base font-semibold text-ink"><%= vendor.name %></h2>
+    <p class="mt-1 text-sm text-quiet-note"><%= vendor.category_label %></p>
+    <% if vendor.location.present? %><p class="mt-2 text-sm text-quiet-note"><%= vendor.location %></p><% end %>
+  </div>
+
+  <dl class="grid gap-3 text-sm">
+    <div>
+      <dt class="font-semibold text-ink"><%= t("vendors.result.price") %></dt>
+      <dd class="mt-1 text-quiet-note"><%= vendor.price_range || t("vendors.result.not_provided") %></dd>
+    </div>
+    <div>
+      <dt class="font-semibold text-ink"><%= t("vendors.result.availability") %></dt>
+      <dd class="mt-1 text-quiet-note"><%= vendor.availability.presence || t("vendors.result.not_provided") %></dd>
+    </div>
+  </dl>
+
+  <div>
+    <h3 class="text-sm font-semibold text-ink"><%= t("vendors.result.source") %></h3>
+    <% if vendor.source_url.present? %>
+      <%= link_to vendor.source_label, vendor.source_url, target: "_blank", rel: "noopener noreferrer", class: "mt-1 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
+    <% else %>
+      <p class="mt-1 text-sm text-quiet-note"><%= vendor.source_label %></p>
+    <% end %>
+  </div>
+
+  <div>
+    <h3 class="text-sm font-semibold text-ink"><%= t("vendors.result.fit") %></h3>
+    <p class="mt-1 text-sm leading-6 text-quiet-note"><%= fit_explanation %></p>
+  </div>
+
+  <div class="flex flex-wrap gap-2 lg:w-40 lg:flex-col">
+    <% if event_plan %>
+      <% if assignment %>
+        <%= button_to t("vendors.result.detach"), event_plan_vendor_path(event_plan, assignment), method: :delete, class: style(:secondary_button) %>
+      <% else %>
+        <%= button_to t("vendors.result.attach"), event_plan_vendors_path(event_plan), params: { vendor_id: vendor.id }, class: style(:primary_button) %>
+      <% end %>
+    <% end %>
+    <%= link_to t("vendors.result.edit"), edit_vendor_path(vendor, event_plan_id: event_plan&.id), class: style(:secondary_button) %>
+  </div>
+</article>

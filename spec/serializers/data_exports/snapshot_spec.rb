@@ -3,11 +3,13 @@ require "rails_helper"
 RSpec.describe DataExports::Snapshot do
   it "preloads plan tasks for relationship exports" do
     profile = create(:relationship_profile)
+    vendor = create(:vendor, user: profile.user)
     2.times do
       plan = create(:event_plan, user: profile.user, relationship_profile: profile)
       create(:plan_task, event_plan: plan)
       backup_plan = create(:backup_plan, user: profile.user, event_plan: plan)
       create(:backup_option, backup_plan:)
+      create(:event_plan_vendor, event_plan: plan, vendor:)
     end
 
     queries = capture_sql do
@@ -16,10 +18,14 @@ RSpec.describe DataExports::Snapshot do
     task_queries = queries.select { |query| query.include?('FROM "plan_tasks"') }
     backup_plan_queries = queries.select { |query| query.include?('FROM "backup_plans"') }
     backup_option_queries = queries.select { |query| query.include?('FROM "backup_options"') }
+    vendor_queries = queries.select { |query| query.include?('FROM "vendors"') }
+    event_plan_vendor_queries = queries.select { |query| query.include?('FROM "event_plan_vendors"') }
 
     expect(task_queries.length).to eq(1)
     expect(backup_plan_queries.length).to eq(1)
     expect(backup_option_queries.length).to eq(1)
+    expect(vendor_queries.length).to eq(1)
+    expect(event_plan_vendor_queries.length).to eq(2)
   end
 
   it "exports attached personal touch checklists and their items" do

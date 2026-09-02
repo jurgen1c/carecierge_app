@@ -2,7 +2,10 @@
 
 **Area:** 7. Vendor, Booking, and Marketplace Layer
 
-The app recommends vendors based on the recipient profile, event type, budget, location, and preferences.
+Carecierge provides a private, owner-scoped vendor shortlist that can be searched
+on its own or opened from an active event plan. The current provider-neutral MVP
+uses vendor records saved by the user; external discovery providers can populate
+the same sourced records in a later integration.
 
 ## Vendor Categories
 
@@ -24,24 +27,32 @@ The app recommends vendors based on the recipient profile, event type, budget, l
 - Childcare
 - Party rentals
 
-## Capabilities
+## Current Capabilities
 
-- Search vendors.
-- Filter by category.
-- Match vendors to profile/persona.
-- Save preferred vendors.
-- Add manual vendor records.
-- Show comparison.
+- Search saved vendors by name and source details.
+- Filter by category, location, occasion, preference, budget, and timing.
+- Use an event plan's occasion and budget as search defaults.
+- Explain fit from an encrypted owner-authored note or matched criteria.
+- Save, edit, and remove manual or externally sourced vendor records.
+- Attribute external records to a named source and optional validated HTTP(S)
+  source URL.
+- Attach or detach a saved vendor from an active event plan owned by the same
+  user.
+- Export saved vendor details, provenance, and plan attachments with account
+  data.
+- Present the complete workflow in English and Spanish.
 
-## Possible Data Objects
+Saving or attaching a vendor is review-only. Carecierge does not contact, book,
+purchase from, pay, or otherwise act through a vendor.
+
+## Data Objects
 
 - `Vendor`
-- `VendorCategory`
-- `VendorLocation`
-- `VendorOffering`
-- `VendorReview`
-- `VendorFavorite`
+- `EventPlanVendor`
 
 ## Implementation Notes
 
-MVP can support manually curated vendor options or external search links. Full marketplace can come later.
+The current search is intentionally provider-neutral and queries only the
+authenticated owner's saved catalog. Commerce and booking provider integration
+is tracked separately in CAR-74. Vendor registration and management of
+marketplace profiles is tracked separately in CAR-83.

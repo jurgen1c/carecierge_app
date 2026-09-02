@@ -1,6 +1,26 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: Plan-context search and vendor attachments reuse the owner-scoped active EventPlan lifecycle while retaining a distinct saved-vendor catalog.
+    strength: 100
+  - source: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Account exports include decrypted saved-vendor provenance and plan attachments, while ownership cascades remove vendor records and joins during account deletion.
+    strength: 95
+  - source: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
+    target: authentication.localization_baseline
+    relation: constrains
+    reason: Vendor search, forms, results, source explanations, and plan actions remain available in English and Spanish with English as default.
+    strength: 90
+  - source: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
+    target: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    relation: same_area
+    reason: Both surfaces show private sourced options for owner review, and neither contacts a vendor or performs a purchase.
+    strength: 85
   - source: approvals.owner_scoped_review_queue
     target: relationship_profiles.ai_memory_extraction
     relation: requires

@@ -50,6 +50,8 @@ class Vendor < ApplicationRecord
   belongs_to :user
   has_many :event_plan_vendors, dependent: :destroy
   has_many :event_plans, through: :event_plan_vendors
+  has_many :vendor_options, dependent: :restrict_with_error
+  has_many :vendor_shortlists, through: :vendor_options
 
   encrypts :fit_notes
 

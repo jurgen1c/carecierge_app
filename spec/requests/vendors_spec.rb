@@ -184,6 +184,20 @@ RSpec.describe "Vendors", type: :request do
     )
   end
 
+  it "preserves a vendor and its private notes while it belongs to a comparison" do
+    option = create(:vendor_option, notes: "Keep this comparison context")
+    vendor = option.vendor
+    sign_in vendor.user
+
+    expect do
+      delete vendor_path(vendor)
+    end.not_to change(Vendor, :count)
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("Remove this vendor from every comparison before deleting it")
+    expect(option.reload.notes).to eq("Keep this comparison context")
+  end
+
   it "does not open mutable vendor context for a completed plan" do
     plan = create(:event_plan, status: "completed", completed_at: Time.current)
     sign_in plan.user

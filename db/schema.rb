@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_145635) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -1092,6 +1092,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_120000) do
     t.check_constraint "event_type::text = ANY (ARRAY['unlock_failed'::character varying, 'unlocked'::character varying, 'locked'::character varying, 'viewed'::character varying, 'protected'::character varying, 'restored'::character varying, 'suggestion_usage_changed'::character varying]::text[])", name: "vault_access_events_supported_event_type"
   end
 
+  create_table "vendor_options", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "constraints"
+    t.datetime "created_at", null: false
+    t.string "decision", default: "considering", null: false
+    t.boolean "favorite", default: false, null: false
+    t.integer "lock_version", default: 0, null: false
+    t.text "next_action"
+    t.text "notes"
+    t.datetime "rejected_at"
+    t.datetime "selected_at"
+    t.datetime "updated_at", null: false
+    t.uuid "vendor_id", null: false
+    t.uuid "vendor_shortlist_id", null: false
+    t.index ["vendor_id"], name: "index_vendor_options_on_vendor_id"
+    t.index ["vendor_shortlist_id", "vendor_id"], name: "index_vendor_options_on_vendor_shortlist_id_and_vendor_id", unique: true
+    t.index ["vendor_shortlist_id"], name: "index_vendor_options_on_one_selected_per_shortlist", unique: true, where: "((decision)::text = 'selected'::text)"
+    t.index ["vendor_shortlist_id"], name: "index_vendor_options_on_vendor_shortlist_id"
+    t.check_constraint "decision::text = ANY (ARRAY['considering'::character varying, 'rejected'::character varying, 'selected'::character varying]::text[])", name: "vendor_options_decision_check"
+  end
+
+  create_table "vendor_shortlists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "event_plan_id"
+    t.integer "lock_version", default: 0, null: false
+    t.uuid "relationship_profile_id", null: false
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["event_plan_id"], name: "index_vendor_shortlists_on_event_plan_id"
+    t.index ["relationship_profile_id", "created_at"], name: "index_vendor_shortlists_on_profile_and_created_at"
+    t.index ["relationship_profile_id"], name: "index_vendor_shortlists_on_relationship_profile_id"
+    t.index ["user_id", "created_at"], name: "index_vendor_shortlists_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_vendor_shortlists_on_user_id"
+  end
+
   create_table "vendors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "availability"
     t.string "category", null: false
@@ -1205,5 +1240,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_120000) do
   add_foreign_key "vault_access_events", "privacy_vault_items", on_delete: :nullify
   add_foreign_key "vault_access_events", "relationship_profiles", on_delete: :nullify
   add_foreign_key "vault_access_events", "users", on_delete: :cascade
+  add_foreign_key "vendor_options", "vendor_shortlists", on_delete: :cascade
+  add_foreign_key "vendor_options", "vendors"
+  add_foreign_key "vendor_shortlists", "event_plans", on_delete: :cascade
+  add_foreign_key "vendor_shortlists", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "vendor_shortlists", "users", on_delete: :cascade
   add_foreign_key "vendors", "users", on_delete: :cascade
 end

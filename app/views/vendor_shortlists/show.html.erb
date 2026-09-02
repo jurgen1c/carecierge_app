@@ -1,0 +1,56 @@
+<% disable_turbo_cache %>
+<main aria-labelledby="vendor-shortlist-title" class="mx-auto w-full max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
+  <header class="border-b border-private-line pb-6">
+    <%= link_to t("vendor_shortlists.show.back"), vendor_shortlists_path, class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
+    <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div class="min-w-0">
+        <p class="text-sm font-semibold text-primary"><%= @vendor_shortlist.relationship_profile.display_name %></p>
+        <h1 id="vendor-shortlist-title" class="mt-1 break-words text-3xl font-semibold text-ink"><%= @vendor_shortlist.title %></h1>
+        <p class="mt-2 text-sm leading-6 text-quiet-note"><%= @vendor_shortlist.event_plan ? t("vendor_shortlists.show.event_plan", plan: @vendor_shortlist.event_plan.title) : t("vendor_shortlists.show.relationship_need") %></p>
+      </div>
+      <% if @vendor_shortlist.selected_option %>
+        <div class="rounded-xl border border-primary/30 bg-surface p-4 sm:max-w-sm">
+          <p class="text-sm font-semibold text-primary"><%= t("vendor_shortlists.show.selected_label") %></p>
+          <p class="mt-1 text-base font-semibold text-ink"><%= @vendor_shortlist.selected_option.vendor.name %></p>
+          <% if @vendor_shortlist.selected_option.next_action.present? %><p class="mt-2 text-sm leading-6 text-quiet-note"><%= @vendor_shortlist.selected_option.next_action %></p><% end %>
+        </div>
+      <% end %>
+    </div>
+  </header>
+
+  <% unless @editable %>
+    <p role="status" class="my-5 rounded-xl border border-private-line bg-surface p-4 text-sm font-semibold text-quiet-note"><%= t("vendor_shortlists.show.read_only") %></p>
+  <% end %>
+
+  <% if @mutation_errors.present? %>
+    <section role="alert" aria-labelledby="vendor-option-errors-title" class="my-5 rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink">
+      <h2 id="vendor-option-errors-title" class="font-semibold"><%= t("vendor_shortlists.show.errors") %></h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm"><% @mutation_errors.each do |message| %><li><%= message %></li><% end %></ul>
+    </section>
+  <% end %>
+
+  <% if @options.any? %>
+    <div class="py-6"><%= component "vendor_shortlist_comparison", shortlist: @vendor_shortlist, options: @options, editable: @editable, removable: @removable %></div>
+  <% else %>
+    <section aria-labelledby="shortlist-empty-title" class="py-8">
+      <h2 id="shortlist-empty-title" class="text-xl font-semibold text-ink"><%= t("vendor_shortlists.show.empty_title") %></h2>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("vendor_shortlists.show.empty_body") %></p>
+    </section>
+  <% end %>
+
+  <% if @editable && @available_vendors.any? && @options.length < VendorShortlist::MAX_OPTIONS %>
+    <section aria-labelledby="add-shortlist-vendor-title" class="border-t border-private-line py-6">
+      <h2 id="add-shortlist-vendor-title" class="text-lg font-semibold text-ink"><%= t("vendor_shortlists.show.add_title") %></h2>
+      <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("vendor_shortlists.show.add_body") %></p>
+      <%= form_with url: vendor_shortlist_vendor_options_path(@vendor_shortlist), scope: :vendor_option, class: "mt-4 flex flex-col gap-3 sm:flex-row sm:items-end" do |form| %>
+        <div class="w-full max-w-xl">
+          <%= form.label :vendor_id, t("vendor_shortlists.show.vendor"), class: "block text-sm font-semibold text-ink" %>
+          <%= form.select :vendor_id, @available_vendors.map { |vendor| [ "#{vendor.name} — #{vendor.category_label}", vendor.id ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+        </div>
+        <%= form.submit t("vendor_shortlists.show.add_action"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <% end %>
+    </section>
+  <% end %>
+
+  <p class="border-t border-private-line pt-5 text-sm leading-6 text-quiet-note"><%= t("vendor_shortlists.review_only") %></p>
+</main>

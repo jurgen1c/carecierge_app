@@ -82,6 +82,7 @@ module DataExports
         "gifts" => records(profile.gifts),
         "gift_recommendations" => profile.gift_recommendations.recent_first.map { |recommendation| gift_recommendation_attributes(recommendation) },
         "event_plans" => event_plans_for(profile).map { |plan| event_plan_attributes(plan) },
+        "vendor_shortlists" => vendor_shortlists_for(profile).map { |shortlist| vendor_shortlist_attributes(shortlist) },
         "personal_touch_checklists" => profile.personal_touch_checklists.includes(:personal_touch_items).order(:created_at, :id).map do |checklist|
           personal_touch_checklist_attributes(checklist)
         end,
@@ -155,6 +156,20 @@ module DataExports
 
       attributes_for(vendor, except: %w[user_id]).merge(
         "event_plan_ids" => event_plan_ids.sort
+      )
+    end
+
+    def vendor_shortlists_for(profile)
+      profile.vendor_shortlists.recent_first.includes(vendor_options: { vendor: :event_plan_vendors })
+    end
+
+    def vendor_shortlist_attributes(shortlist)
+      attributes_for(shortlist, except: %w[user_id relationship_profile_id lock_version]).merge(
+        "vendor_options" => shortlist.vendor_options.map do |option|
+          attributes_for(option, except: %w[vendor_shortlist_id vendor_id lock_version]).merge(
+            "vendor" => vendor_attributes(option.vendor)
+          )
+        end
       )
     end
 

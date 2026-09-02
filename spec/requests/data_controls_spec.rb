@@ -140,6 +140,55 @@ RSpec.describe "Data controls", type: :request do
     expect(response.body).not_to include(other_plan.id)
   end
 
+  it "exports decrypted vendor shortlists with comparison notes, decisions, and source provenance" do
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    plan = create(:event_plan, user:, relationship_profile: profile)
+    shortlist = create(:vendor_shortlist, user:, relationship_profile: profile, event_plan: plan, title: "Birthday dinner")
+    vendor = create(
+      :vendor,
+      user:,
+      source_kind: "external",
+      source_name: "Vendor website",
+      source_url: "https://example.com/vendor"
+    )
+    option = create(
+      :vendor_option,
+      vendor_shortlist: shortlist,
+      vendor:,
+      notes: "Warm private room.",
+      constraints: "Confirm deposit.",
+      next_action: "Review the menu.",
+      favorite: true,
+      decision: "selected",
+      selected_at: Time.current
+    )
+    sign_in user
+
+    post data_exports_path, params: { data_export: { format: "json", scope: "relationship_profile", relationship_profile_id: profile.id } }
+
+    exported = response.parsed_body.dig("relationship_profiles", 0, "vendor_shortlists", 0)
+    expect(exported).to include("id" => shortlist.id, "title" => "Birthday dinner", "event_plan_id" => plan.id)
+    expect(exported).not_to have_key("user_id")
+    expect(exported).not_to have_key("relationship_profile_id")
+    expect(exported).not_to have_key("lock_version")
+    exported_option = exported.fetch("vendor_options").sole
+    expect(exported_option).to include(
+      "id" => option.id,
+      "notes" => "Warm private room.",
+      "constraints" => "Confirm deposit.",
+      "next_action" => "Review the menu.",
+      "favorite" => true,
+      "decision" => "selected"
+    )
+    expect(exported_option).not_to have_key("vendor_shortlist_id")
+    expect(exported_option.fetch("vendor")).to include(
+      "id" => vendor.id,
+      "source_name" => "Vendor website",
+      "source_url" => "https://example.com/vendor"
+    )
+  end
+
   let(:password) { "careful-password" }
   let(:user) { create(:user, email: "owner@example.com", password:) }
   let(:profile) { create(:relationship_profile, user:, first_name: "Maya", last_name: "Rivera") }
@@ -640,6 +689,8 @@ RSpec.describe "Data controls", type: :request do
 
     it "deletes the account only after email and password confirmation and preserves deletion evidence" do
       profile
+      shortlist = create(:vendor_shortlist, :relationship_need, user:, relationship_profile: profile)
+      create(:vendor_option, vendor_shortlist: shortlist, vendor: create(:vendor, user:))
 
       recap = create(:conversation_recap, relationship_profile: profile)
       recap.audio_recording.attach(

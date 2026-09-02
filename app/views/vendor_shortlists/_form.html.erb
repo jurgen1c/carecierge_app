@@ -1,0 +1,50 @@
+<%= form_with model: @vendor_shortlist, class: "grid gap-6 py-6" do |form| %>
+  <% if @vendor_shortlist.errors.any? %>
+    <section role="alert" aria-labelledby="vendor-shortlist-errors-title" class="rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink">
+      <h2 id="vendor-shortlist-errors-title" class="font-semibold"><%= t("vendor_shortlists.form.errors", count: @vendor_shortlist.errors.count) %></h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm"><% @vendor_shortlist.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </section>
+  <% end %>
+
+  <div>
+    <%= form.label :title, t("vendor_shortlists.form.title"), class: "block text-sm font-semibold text-ink" %>
+    <%= form.text_field :title, required: true, maxlength: VendorShortlist::MAX_TITLE_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+  </div>
+
+  <fieldset class="rounded-xl border border-private-line bg-surface p-4">
+    <legend class="px-1 text-sm font-semibold text-ink"><%= t("vendor_shortlists.form.context_title") %></legend>
+    <p class="mb-4 text-sm leading-6 text-quiet-note"><%= t("vendor_shortlists.form.context_body") %></p>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <%= form.label :event_plan_id, t("vendor_shortlists.form.event_plan"), class: "block text-sm font-semibold text-ink" %>
+        <%= form.select :event_plan_id, @event_plans.map { |plan| [ "#{plan.title} — #{plan.relationship_profile.display_name}", plan.id ] }, { include_blank: t("vendor_shortlists.form.no_event_plan") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+      </div>
+      <div>
+        <%= form.label :relationship_profile_id, t("vendor_shortlists.form.relationship"), class: "block text-sm font-semibold text-ink" %>
+        <%= form.select :relationship_profile_id, @relationship_profiles.map { |profile| [ profile.display_name, profile.id ] }, { include_blank: t("vendor_shortlists.form.choose_relationship") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="text-sm font-semibold text-ink"><%= t("vendor_shortlists.form.vendors") %></legend>
+    <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("vendor_shortlists.form.vendors_body", count: VendorShortlist::MAX_OPTIONS) %></p>
+    <% if @vendors.any? %>
+      <div class="mt-3 divide-y divide-private-line border-y border-private-line">
+        <%= form.collection_check_boxes :vendor_ids, @vendors, :id, :name, { checked: @selected_vendor_ids } do |builder| %>
+          <label class="flex min-h-11 items-start gap-3 py-3 text-sm text-ink">
+            <%= builder.check_box class: "mt-0.5 size-5 rounded border-stone-300 text-primary focus:ring-primary" %>
+            <span><span class="font-semibold"><%= builder.text %></span><span class="mt-1 block text-quiet-note"><%= builder.object.category_label %> · <%= builder.object.price_range || t("vendor_shortlists.comparison.not_provided") %></span></span>
+          </label>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="mt-3 text-sm text-quiet-note"><%= t("vendor_shortlists.form.no_vendors") %> <%= link_to t("vendor_shortlists.form.add_vendor"), new_vendor_path, class: "font-semibold text-primary underline underline-offset-4" %></p>
+    <% end %>
+  </fieldset>
+
+  <div class="flex flex-wrap gap-2 border-t border-private-line pt-5">
+    <%= form.submit t("vendor_shortlists.form.create"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    <%= link_to t("vendor_shortlists.form.cancel"), vendor_shortlists_path, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-surface" %>
+  </div>
+<% end %>

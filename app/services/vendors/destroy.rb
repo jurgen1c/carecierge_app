@@ -9,6 +9,11 @@ module Vendors
     def call
       vendor.user.with_lock("FOR NO KEY UPDATE") do
         vendor.lock!
+        if vendor.vendor_options.exists?
+          vendor.errors.add(:base, :used_in_comparisons)
+          raise ActiveRecord::RecordInvalid, vendor
+        end
+
         vendor.destroy!
       end
     end

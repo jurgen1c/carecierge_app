@@ -17,6 +17,7 @@ Rails.application.config.filter_parameters += [
   "vendor.availability", "vendor.occasion_types", "vendor.occasion_types_text",
   "vendor.preference_tags", "vendor.preference_tags_text", "vendor.fit_notes",
   "vendor.source_name", "vendor.source_url",
+  "vendor_shortlist.title", "vendor_option.notes", "vendor_option.constraints", "vendor_option.next_action",
   "vendor_search.query", "vendor_search.category", "vendor_search.location",
   "vendor_search.occasion_type", "vendor_search.preference", "vendor_search.maximum_budget",
   "vendor_search.timing",

@@ -3,7 +3,7 @@ id: approvals.owner_scoped_review_queue
 type: fact
 system: approvals
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Approval queue centralizes owner decisions without external execution
@@ -91,7 +91,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: b09b29a4cca35dd172fa52fd1213bd1910898720
 ---
 
 # Approval queue centralizes owner decisions without external execution

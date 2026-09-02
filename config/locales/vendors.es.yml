@@ -120,6 +120,21 @@ es:
       childcare: "Cuidado infantil"
       party_rental: "Alquiler para fiestas"
   activerecord:
+    attributes:
+      vendor:
+        name: "Nombre del proveedor"
+        category: "Categoría"
+        location: "Ubicación o área de servicio"
+        minimum_price: "Precio mínimo"
+        maximum_price: "Precio máximo"
+        availability: "Señal de disponibilidad"
+        occasion_types: "Ocasiones"
+        preference_tags: "Etiquetas de preferencia"
+        preference_tags_text: "Etiquetas de preferencia"
+        fit_notes: "Por qué podría encajar"
+        source_kind: "Tipo de fuente"
+        source_name: "Nombre de la fuente"
+        source_url: "Enlace de la fuente"
     errors:
       models:
         event_plan_vendor:

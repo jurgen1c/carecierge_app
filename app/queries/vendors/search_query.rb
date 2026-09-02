@@ -59,11 +59,16 @@ module Vendors
       return scope if query.blank?
 
       term = like(query)
-      scope.where(
+      text_matches = scope.where(
         "lower(vendors.name) LIKE :term OR lower(vendors.category) LIKE :term OR " \
           "lower(vendors.location) LIKE :term OR lower(vendors.availability) LIKE :term OR lower(vendors.source_name) LIKE :term",
         term:
       )
+      matching_categories = Vendor::CATEGORIES.select do |value|
+        I18n.t("vendors.categories.#{value}").downcase.include?(query.downcase)
+      end
+
+      matching_categories.empty? ? text_matches : text_matches.or(scope.where(category: matching_categories))
     end
 
     def bounded(value, maximum)

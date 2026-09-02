@@ -54,7 +54,7 @@
     </div>
     <div class="flex flex-wrap items-end gap-2 lg:col-span-4">
       <%= form.submit t("vendors.search.action"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-      <%= link_to t("vendors.search.clear"), vendors_path(event_plan_id: @event_plan&.id), class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-surface" %>
+      <%= link_to t("vendors.search.clear"), vendors_path(event_plan_id: @event_plan&.id, vendor_search: { occasion_type: "", maximum_budget: "" }), class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-surface" %>
     </div>
   <% end %>
 

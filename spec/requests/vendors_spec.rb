@@ -17,6 +17,19 @@ RSpec.describe "Vendors", type: :request do
     expect(response.body).to include(new_vendor_path(event_plan_id: plan.id))
   end
 
+  it "makes the clear link explicitly remove event-plan search defaults" do
+    plan = create(:event_plan, occasion_type: "birthday", budget_cents: 50_000)
+    sign_in plan.user
+
+    get vendors_path, params: { event_plan_id: plan.id }
+
+    document = Nokogiri::HTML5(response.body)
+    clear_link = document.css("a").find { |link| link.text.strip == "Clear filters" }
+    query = Rack::Utils.parse_nested_query(URI.parse(clear_link["href"]).query)
+    expect(query).to include("event_plan_id" => plan.id)
+    expect(query.fetch("vendor_search")).to include("occasion_type" => "", "maximum_budget" => "")
+  end
+
   it "renders the catalog in Spanish" do
     user = create(:user)
     create(:vendor, user:, name: "Flores del Valle")
@@ -136,7 +149,24 @@ RSpec.describe "Vendors", type: :request do
     end.not_to change(Vendor, :count)
 
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.body).to include("Add a vendor", "Name can&#39;t be blank")
+    expect(response.body).to include("Add a vendor", "Vendor name can&#39;t be blank")
+  end
+
+  it "renders Spanish validation messages with localized vendor attributes" do
+    user = create(:user)
+    sign_in user
+
+    I18n.with_locale(:es) do
+      post vendors_path, params: { vendor: { name: "", category: "unknown", source_kind: "external" } }
+    end
+
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include(
+      "Nombre del proveedor no puede estar en blanco",
+      "Categoría no está incluido en la lista",
+      "Nombre de la fuente no puede estar en blanco"
+    )
+    expect(response.body).not_to include("Name no puede", "Category no está", "Source name no puede")
   end
 
   it "keeps update and delete in separate semantic forms" do

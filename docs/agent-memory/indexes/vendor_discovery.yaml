@@ -16,6 +16,8 @@ watched_files:
   - app/policies/vendor_policy.rb
   - app/queries/vendors/**/*.rb
   - app/services/event_plan_vendors/**/*.rb
+  - app/services/vendors/**/*.rb
+  - app/views/dashboard/index.html.erb
   - app/views/vendors/**/*.erb
   - app/views/components/vendor_result_component.*
   - config/locales/vendors.*.yml
@@ -26,7 +28,9 @@ watched_files:
   - spec/policies/vendor_policy_spec.rb
   - spec/queries/vendors/**/*.rb
   - spec/requests/vendors_spec.rb
+  - spec/requests/daily_feed_spec.rb
   - spec/services/event_plan_vendors/**/*.rb
+  - spec/services/vendors/**/*.rb
 tags:
   - vendor_discovery
   - event_plans

@@ -120,6 +120,21 @@ en:
       childcare: "Childcare"
       party_rental: "Party rental"
   activerecord:
+    attributes:
+      vendor:
+        name: "Vendor name"
+        category: "Category"
+        location: "Location or service area"
+        minimum_price: "Minimum price"
+        maximum_price: "Maximum price"
+        availability: "Availability signal"
+        occasion_types: "Occasions"
+        preference_tags: "Preference tags"
+        preference_tags_text: "Preference tags"
+        fit_notes: "Why it may fit"
+        source_kind: "Source type"
+        source_name: "Source name"
+        source_url: "Source link"
     errors:
       models:
         event_plan_vendor:

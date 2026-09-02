@@ -17,6 +17,11 @@ edges:
     reason: Vendor search, forms, results, source explanations, and plan actions remain available in English and Spanish with English as default.
     strength: 90
   - source: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
+    target: daily_feed.concierge_queue_is_derived_and_owner_scoped
+    relation: requires
+    reason: The authenticated dashboard exposes the standalone saved-vendor catalog in desktop and mobile navigation without turning vendor records into derived feed items.
+    strength: 85
+  - source: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
     target: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
     relation: same_area
     reason: Both surfaces show private sourced options for owner review, and neither contacts a vendor or performs a purchase.

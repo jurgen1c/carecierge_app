@@ -28,8 +28,8 @@ claim: >
   permanently deleted sources or relationships, and cascades on account deletion.
   Recent interaction candidates are bounded per active relationship before they
   can ground spontaneous gestures. The dashboard links to the separate approval
-  queue in both desktop and mobile navigation without mixing approval lifecycle
-  state into the derived Concierge Queue.
+  queue and standalone vendor catalog in both desktop and mobile navigation
+  without mixing either lifecycle into the derived Concierge Queue.
 
 source_files:
   - app/controllers/dashboard_controller.rb
@@ -86,6 +86,7 @@ symbols:
 routes:
   - dashboard
   - approvals
+  - vendors
   - dismiss_feed_item
   - snooze_feed_item
 
@@ -120,8 +121,9 @@ Candidate bounds preserve independent section capacity and final direct-item
 ordering. Event-suggestion bounds preserve canonical suggestion source ordering.
 Active reminders remain queued by effective scheduled-or-snoozed delivery time
 after their delivery reservation is claimed.
-Approval work remains a separate owner-scoped destination linked from both
-dashboard navigation variants rather than a derived feed item lifecycle.
+Approval work and the saved-vendor catalog remain separate owner-scoped
+destinations linked from both dashboard navigation variants rather than derived
+feed item lifecycles.
 Visibility writes lock the account and then source through persistence so account
 deletion uses the same order and source-deletion races cannot leave orphaned state.
 

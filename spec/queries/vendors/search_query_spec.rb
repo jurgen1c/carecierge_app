@@ -92,4 +92,15 @@ RSpec.describe Vendors::SearchQuery do
     expect(search.category).to be_nil
     expect(search.maximum_budget).to be_nil
   end
+
+  it "matches keyword searches against localized category labels" do
+    user = create(:user)
+    gift_shop = create(:vendor, user:, category: "gift_shop")
+    florist = create(:vendor, user:, category: "florist")
+
+    expect(described_class.new(user.vendors, params: { query: "Gift shop" }).resolve).to contain_exactly(gift_shop)
+    expect(I18n.with_locale(:es) do
+      described_class.new(user.vendors, params: { query: "Florista" }).resolve
+    end).to contain_exactly(florist)
+  end
 end

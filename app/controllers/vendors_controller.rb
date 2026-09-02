@@ -41,7 +41,7 @@ class VendorsController < ApplicationController
   end
 
   def destroy
-    @vendor.destroy!
+    Vendors::Destroy.call(vendor: @vendor)
     redirect_to vendors_path(event_plan_id: @event_plan&.id), notice: t("vendors.destroy.notice")
   end
 

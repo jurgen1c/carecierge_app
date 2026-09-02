@@ -27,4 +27,17 @@ RSpec.describe EventPlanVendors::Attach do
       end.to raise_error(ActiveRecord::RecordNotFound)
     end.not_to change(EventPlanVendor, :count)
   end
+
+  it "re-finds a persisted vendor inside the locks and rejects a raced deletion" do
+    plan = create(:event_plan)
+    vendor = create(:vendor, user: plan.user)
+    allow(plan).to receive(:with_mutation_lock) do |&operation|
+      vendor.delete
+      operation.call
+    end
+
+    expect do
+      described_class.call(event_plan: plan, vendor:)
+    end.to raise_error(ActiveRecord::RecordNotFound)
+  end
 end

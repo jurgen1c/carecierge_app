@@ -1,7 +1,7 @@
 es:
   time:
     formats:
-      approval: "%d/%m/%Y %H:%M"
+      approval: "%-d/%-m/%Y %H:%M"
   errors:
     messages:
       in_future: "debe ser en el futuro"

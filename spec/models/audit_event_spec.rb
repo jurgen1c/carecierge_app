@@ -71,6 +71,9 @@ RSpec.describe AuditEvent, type: :model do
   it "supports the trust-sensitive action catalog without requiring nonexistent workflows" do
     expect(described_class::ACTIONS).to include(
       "approval.granted",
+      "approval.rejected",
+      "approval.deferred",
+      "approval.dismissed",
       "permission.changed",
       "sensitive_record.accessed",
       "data_export.requested",
@@ -88,6 +91,22 @@ RSpec.describe AuditEvent, type: :model do
       "event_plan.backup_options_generated",
       "event_plan.backup_option_promoted"
     )
+  end
+
+  it "accepts an owner-scoped approval request without storing its private source content" do
+    request_record = create(:approval_request)
+
+    event = build(
+      :audit_event,
+      user: request_record.user,
+      actor: request_record.user,
+      action: "approval.deferred",
+      target: request_record,
+      metadata: { request_kind: request_record.kind, result: "defer" }
+    )
+
+    expect(event).to be_valid
+    expect(event.metadata.to_json).not_to include(request_record.subject.title)
   end
 
   it "accepts an owner-scoped event plan target" do

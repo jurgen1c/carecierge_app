@@ -5,9 +5,9 @@ class ExtractedMemoriesController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: -> { head :not_found }
 
   def review
-    MemoryExtractions::Review.call(
-      extracted_memory: @extracted_memory,
-      reviewer: current_user,
+    ApprovalQueue::RecordSourceDecision.call(
+      user: current_user,
+      subject: @extracted_memory,
       decision: review_params[:decision],
       corrected_title: review_params[:corrected_title],
       corrected_body: review_params[:corrected_body]
@@ -18,6 +18,9 @@ class ExtractedMemoriesController < ApplicationController
   rescue ActiveRecord::RecordInvalid
     redirect_to relationship_profile_path(@relationship_profile, memory_proposal: @extracted_memory.id, anchor: "memory-review"),
       alert: t(".invalid_correction")
+  rescue ApprovalQueue::RecordSourceDecision::DecisionConflict
+    redirect_to relationship_profile_path(@relationship_profile, memory_proposal: @extracted_memory.id, anchor: "memory-review"),
+      alert: t(".already_reviewed")
   rescue ArgumentError
     redirect_to relationship_profile_path(@relationship_profile, memory_proposal: @extracted_memory.id, anchor: "memory-review"),
       alert: t(".invalid_decision")

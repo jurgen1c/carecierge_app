@@ -44,6 +44,7 @@ class MemoryRecord < ApplicationRecord
   has_many :memory_revisions, dependent: :destroy
   has_one :extracted_memory, foreign_key: :canonical_memory_record_id, dependent: :nullify
   has_one :privacy_vault_item, as: :protectable, dependent: :destroy
+  has_many :approval_requests, as: :subject, dependent: :destroy
 
   before_validation :normalize_text_fields
 

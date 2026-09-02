@@ -146,7 +146,9 @@ RSpec.describe "Data controls", type: :request do
 
     it "exports all owned account data as JSON and records privacy-minimized evidence" do
       recap = create(:conversation_recap, relationship_profile: profile, extraction_status: "ready_for_review")
-      create(:extracted_memory, relationship_profile: profile, conversation_recap: recap, category: "boundary", confidence: "medium")
+      extracted_memory = create(:extracted_memory, relationship_profile: profile, conversation_recap: recap, category: "boundary", confidence: "medium")
+      approval_request = create(:approval_request, user:, subject: extracted_memory)
+      approval_request.approval_decisions.create!(user:, decision: "defer", occurred_at: Time.current)
       saved_at = Time.zone.local(2026, 8, 19, 9)
       create(:suggestion_feedback, user:, relationship_profile: profile, fingerprint: "saved-gesture", saved_at:)
 
@@ -168,6 +170,12 @@ RSpec.describe "Data controls", type: :request do
         "fingerprint" => "saved-gesture",
         "saved_at" => saved_at.as_json
       )
+      expect(response.parsed_body.dig("approval_requests", 0)).to include(
+        "kind" => "extracted_memory",
+        "status" => "pending",
+        "subject_type" => "ExtractedMemory"
+      )
+      expect(response.parsed_body.dig("approval_requests", 0, "approval_decisions", 0, "decision")).to eq("defer")
       expect(user.audit_events.reload.last).to have_attributes(
         action: "data_export.requested",
         metadata: { "request_kind" => "account_json", "result" => "completed" }
@@ -326,6 +334,20 @@ RSpec.describe "Data controls", type: :request do
 
     it "exports only an owned relationship profile" do
       hidden_profile = create(:relationship_profile, first_name: "Hidden")
+      selected_request = create(
+        :approval_request,
+        user:,
+        subject: create(:memory_record, relationship_profile: profile),
+        kind: "memory_record",
+        action_key: "approve_high_impact_memory"
+      )
+      hidden_request = create(
+        :approval_request,
+        user:,
+        subject: create(:memory_record, relationship_profile: create(:relationship_profile, user:)),
+        kind: "memory_record",
+        action_key: "approve_high_impact_memory"
+      )
 
       post data_exports_path, params: {
         data_export: { scope: "relationship_profile", relationship_profile_id: profile.id, format: "json" }
@@ -333,7 +355,9 @@ RSpec.describe "Data controls", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.parsed_body.fetch("relationship_profiles").pluck("id")).to eq([ profile.id ])
+      expect(response.parsed_body.fetch("approval_requests").pluck("id")).to eq([ selected_request.id ])
       expect(response.body).not_to include(hidden_profile.id)
+      expect(response.body).not_to include(hidden_request.id)
     end
 
     it "preserves profile tag, group, and notification-preference joins" do

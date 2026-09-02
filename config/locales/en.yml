@@ -323,6 +323,15 @@ en:
       approval_granted:
         title: "Approval granted"
         description: "You approved an action for %{target}."
+      approval_rejected:
+        title: "Approval rejected"
+        description: "You rejected an action for %{target}."
+      approval_deferred:
+        title: "Approval deferred"
+        description: "You kept an action for later review for %{target}."
+      approval_dismissed:
+        title: "Approval dismissed"
+        description: "You dismissed an approval item for %{target}."
       permission_changed:
         title: "Automation permission changed"
         description: "You changed an automation permission for %{target}."
@@ -1102,6 +1111,7 @@ en:
       error: "Memory could not be marked reviewed."
     approve_high_impact_automation:
       notice: "Memory was approved for high-impact automation."
+      error: "Memory could not be approved for high-impact automation."
     destroy:
       notice: "Memory was deleted."
   conversation_recaps:
@@ -1228,6 +1238,7 @@ en:
         correct: "Corrected memory was saved."
       invalid_correction: "Add a title and memory before saving the correction."
       invalid_decision: "Choose approve, reject, or correct before continuing."
+      already_reviewed: "This suggestion was already reviewed. Refresh the page before choosing a different decision."
     timeline:
       title: "AI memory suggestions prepared"
       body:

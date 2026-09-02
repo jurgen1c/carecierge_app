@@ -9,12 +9,14 @@ severity: critical
 title: AI memory extraction is asynchronous, source-backed, and owner-approved
 
 claim: >
-  Feature-flagged recaps enqueue strict, non-stored OpenAI Responses extraction.
-  Source excerpts must occur in the recap, and proposals remain separate until
-  owner review. Reviews lock the profile before proposal and recap rows, matching
-  selective deletion's deterministic order. Exports include proposals; deletion
-  prevents delayed recreation while preserving user-corrected memories. Only
-  approved or corrected canonical memories may feed relationship personas.
+  Feature-flagged recaps enqueue strict, non-stored extraction. Source-backed
+  proposals remain separate until owner review. Either review surface finalizes
+  or creates an owner-scoped ApprovalRequest with append-only, content-free
+  evidence, including result-only rejection evidence when no queue envelope exists.
+  Repeated corrections are idempotent only when normalized content
+  matches the saved correction. Locking matches selective deletion order. Exports include proposals;
+  deletion fences delayed recreation and preserves corrections. Only approved
+  or corrected canonical memories may feed relationship personas.
 
 source_files:
   - app/models/extracted_memory.rb
@@ -37,6 +39,8 @@ related_files:
   - app/controllers/conversation_recaps_controller.rb
   - app/models/conversation_recap.rb
   - app/serializers/data_exports/snapshot.rb
+  - app/models/approval_request.rb
+  - app/services/approval_decisions/apply.rb
   - app/services/data_deletions/delete_ai_data.rb
   - config/deploy.yml
   - config/initializers/filter_parameter_logging.rb
@@ -88,26 +92,24 @@ last_verified_commit: null
 ## Claim
 
 AI extraction is owner-gated. The adapter uses a strict schema, disables
-provider storage, and records generic errors. The rollout is off by default;
-disabled requested or processing jobs become retryable with stale start time
-cleared, while retries reclaim interrupted work.
+provider storage, and records generic errors. The rollout defaults off, and
+interrupted work remains safely retryable.
 
-Proposals preserve their source excerpt, original content, confidence, and
-review state. Approval creates `ai_inferred` memory at that confidence;
-correction preserves the proposal and creates confirmed `user_corrected`
-memory; rejection creates none. Reviews lock the profile before proposal and
-recap rows, remain idempotent, and distinguish unsupported decisions from
-invalid corrections.
+Proposals retain source and review state. Approval creates `ai_inferred` memory,
+correction creates confirmed `user_corrected` memory, and rejection creates none.
+Reviews are idempotent, follow profile-to-source lock order, and use the same
+queue history boundary from either surface, including reversals after dismissal.
+Direct rejection without a queue envelope records result-only evidence against
+the owning relationship profile.
+Correction retries compare normalized submitted and persisted content so a
+conflicting stale form fails instead of silently retaining another correction.
 
-The queue shows evidence and uncertainty, exports include proposals, and
-correction inputs stay filtered from logs. Deletion locks and resets recaps
-before deleting proposals so delayed results cannot recreate AI data;
-user-corrected memories remain.
+Exports include proposals, correction inputs stay filtered from logs, and
+deletion fences delayed recreation while preserving user corrections.
 
-Approved `ai_inferred` canonical memory can feed relationship personas only
-after review and remains visibly inferred there regardless of confidence.
-Corrected proposals create `user_corrected` memory that personas treat as
-confirmed. Pending proposals are not persona inputs.
+Only approved or corrected canonical memory feeds personas. Inferred provenance
+remains visible; corrected provenance is confirmed. Pending proposals never feed
+personas.
 
 ## Why It Matters
 

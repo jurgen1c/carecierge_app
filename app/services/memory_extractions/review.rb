@@ -2,22 +2,34 @@ module MemoryExtractions
   class Review
     DECISIONS = %w[approve reject correct].freeze
 
-    def self.call(extracted_memory:, reviewer:, decision:, corrected_title: nil, corrected_body: nil)
+    def self.call(
+      extracted_memory:,
+      reviewer:,
+      decision:,
+      corrected_title: nil,
+      corrected_body: nil,
+      approval_request: nil,
+      expected_lock_version: nil
+    )
       new(
         extracted_memory:,
         reviewer:,
         decision: decision.to_s,
         corrected_title:,
-        corrected_body:
+        corrected_body:,
+        approval_request:,
+        expected_lock_version:
       ).call
     end
 
-    def initialize(extracted_memory:, reviewer:, decision:, corrected_title:, corrected_body:)
+    def initialize(extracted_memory:, reviewer:, decision:, corrected_title:, corrected_body:, approval_request:, expected_lock_version:)
       @extracted_memory = extracted_memory
       @reviewer = reviewer
       @decision = decision
       @corrected_title = corrected_title
       @corrected_body = corrected_body
+      @approval_request = approval_request
+      @expected_lock_version = expected_lock_version
     end
 
     def call
@@ -27,10 +39,12 @@ module MemoryExtractions
       ApplicationRecord.transaction do
         extracted_memory.relationship_profile.with_lock do
           extracted_memory.lock!
+          @queue_request = lock_queue_request
           return extracted_memory unless extracted_memory.pending?
 
           apply_decision
           complete_recap_if_reviewed
+          finalize_queue_request! if queue_request
           extracted_memory
         end
       end
@@ -38,7 +52,8 @@ module MemoryExtractions
 
     private
 
-    attr_reader :extracted_memory, :reviewer, :decision, :corrected_title, :corrected_body
+    attr_reader :extracted_memory, :reviewer, :decision, :corrected_title, :corrected_body,
+      :approval_request, :expected_lock_version, :queue_request
 
     def authorize!
       return if reviewer.present? && extracted_memory.relationship_profile.user_id == reviewer.id
@@ -54,6 +69,21 @@ module MemoryExtractions
       end
     end
 
+    def lock_queue_request
+      request = approval_request || extracted_memory.approval_requests.open.find_by(action_key: "review_extracted_memory")
+      return unless request
+
+      unless request.user_id == reviewer.id && request.subject == extracted_memory
+        raise Pundit::NotAuthorizedError, "not allowed to decide this approval"
+      end
+
+      request.lock!
+      if expected_lock_version.present? && request.lock_version != Integer(expected_lock_version)
+        raise ActiveRecord::StaleObjectError.new(request, "update")
+      end
+      request
+    end
+
     def approve
       memory_record = create_memory_record(
         title: extracted_memory.title,
@@ -67,6 +97,7 @@ module MemoryExtractions
 
     def reject
       extracted_memory.update!(review_attributes(status: "rejected"))
+      record_rejection unless queue_request
     end
 
     def correct
@@ -102,13 +133,38 @@ module MemoryExtractions
     end
 
     def record_approval(result)
+      result = result == "corrected" ? "edit" : "approve" if queue_request
+      record_review_event(action: "approval.granted", result:)
+    end
+
+    def record_rejection(occurred_at: Time.current)
+      record_review_event(action: "approval.rejected", result: "reject", occurred_at:)
+    end
+
+    def record_review_event(action:, result:, occurred_at: Time.current)
+      metadata = queue_request ? { request_kind: queue_request.kind, result: } : { result: }
       AuditEvent.record!(
         user: reviewer,
         actor: reviewer,
-        action: "approval.granted",
-        target: extracted_memory.relationship_profile,
-        metadata: { result: }
+        action:,
+        target: queue_request || extracted_memory.relationship_profile,
+        metadata:,
+        occurred_at:
       )
+    end
+
+    def finalize_queue_request!
+      queue_decision = decision == "correct" ? "edit" : decision
+      status = queue_decision.in?(%w[approve edit]) ? "approved" : "rejected"
+      occurred_at = Time.current
+      queue_request.update!(
+        status:,
+        subject_updated_at: extracted_memory.updated_at,
+        decided_at: occurred_at,
+        deferred_until: nil
+      )
+      queue_request.approval_decisions.create!(user: reviewer, decision: queue_decision, occurred_at:)
+      record_rejection(occurred_at:) if queue_decision == "reject"
     end
   end
 end

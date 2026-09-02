@@ -1,0 +1,138 @@
+en:
+  time:
+    formats:
+      approval: "%b %-d, %Y, %-I:%M %p"
+  errors:
+    messages:
+      in_future: "must be in the future"
+  approvals:
+    index:
+      title: "Approval queue"
+      heading: "Approval queue"
+      body: "Review the source, understand the consequence, and decide what Carecierge may do next. Nothing here runs silently."
+      back: "Back to Concierge Queue"
+    tabs:
+      label: "Approval queue views"
+      pending: "Pending"
+      deferred: "Deferred"
+      completed: "Completed"
+    queue:
+      label: "Approval items"
+    kinds:
+      extracted_memory: "Extracted memory"
+      memory_record: "High-impact memory"
+      message_draft: "Message draft"
+      reminder_change: "Reminder change"
+      automation_action: "Automation action"
+      vendor_message: "Vendor message"
+      quote_request: "Quote request"
+      booking_confirmation: "Booking confirmation"
+      purchase_request: "Purchase request"
+      deposit_payment: "Deposit payment"
+      invitation: "Invitation"
+      calendar_invite: "Calendar invite"
+    risks:
+      low: "Low risk"
+      medium: "Medium risk"
+      high: "High risk"
+      sensitive: "Sensitive"
+    confidences:
+      confirmed: "Confirmed"
+      high: "High confidence"
+      medium: "Medium confidence"
+      low: "Low confidence"
+      inferred: "Inferred"
+    statuses:
+      pending: "Pending"
+      deferred: "Deferred"
+      approved: "Approved"
+      rejected: "Rejected"
+      dismissed: "Dismissed"
+      superseded: "No longer current"
+    detail:
+      relationship: "For %{relationship}"
+      understand_source: "Understand the source"
+      review_consequence: "Review the consequence"
+      decide: "Decide"
+      source: "Source"
+      context: "Source context"
+      confidence: "Confidence"
+      proposed_action: "Proposed action"
+      what_will_happen: "What will happen"
+      what_will_not_happen: "What will not happen"
+      reversibility: "Reversibility"
+      decision_help: "Choose the outcome that matches your intent. Carecierge records the decision without exposing the private content in audit logs."
+      deferred_until: "Deferred. Returns to Pending on %{date}."
+      completed: "This item is %{status}. Its decision history remains available below."
+      reviewed_source: "Reviewed source"
+      superseded_title: "Approval item no longer current"
+      superseded_source: "Queue reconciliation"
+      superseded_context: "Carecierge removed this item because its source or eligibility changed. Supersession was automatic, not an approval decision."
+      superseded_action: "No approval action was taken when this item left the queue."
+      superseded_consequence: "The automatic transition did not approve, reject, or execute anything."
+      superseded_will_not_happen: "No external action or automation was authorized."
+      superseded_reversibility: "There is no approval decision to reverse."
+      superseded_completed: "This item is %{status}. It left the queue automatically; this transition was not a user decision."
+      source_changed_title: "Source changed after this decision"
+      source_changed_source: "Earlier source version"
+      source_changed_context: "The source was updated after this decision. Its current content is not shown as part of this earlier review."
+      source_changed_action: "This decision applied to an earlier source version."
+    actions:
+      review_extracted_memory:
+        proposal: "Save “%{title}” as a reviewed relationship memory."
+        consequence: "Carecierge may use this memory to tailor future suggestions and plans for %{relationship}."
+        will_not_happen: "No message will be sent, and no booking, purchase, payment, invitation, or external contact will occur."
+        reversible: "You can edit, archive, protect, or delete the saved memory from the relationship profile."
+      approve_high_impact_memory:
+        proposal: "Allow “%{title}” to support future high-impact automation decisions."
+        consequence: "This memory may be considered when you separately approve a sensitive action for %{relationship}."
+        will_not_happen: "This does not run an automation or contact, book, purchase, or pay anything. Each sensitive action still requires its own approval."
+        reversible: "Editing trust-relevant memory details clears this approval automatically."
+      approve: "Approve"
+      edit: "Edit"
+      reject: "Reject"
+      keep_for_later: "Keep for later"
+      dismiss: "Dismiss"
+      save_and_approve: "Save and approve"
+      keep_editing: "Keep reviewing"
+      keep_reviewing: "Keep reviewing"
+    edit:
+      title: "Corrected memory title"
+      body: "Corrected memory details"
+    defer:
+      label: "Review again"
+      hint: "Choose a future date and time. The item will return to Pending then."
+    history:
+      title: "Decision history"
+      queued: "Queued for review on %{date}."
+      superseded: "Carecierge removed this item when it was no longer eligible for review. Any earlier user actions appear above."
+    decisions:
+      approve: "Approved"
+      reject: "Rejected"
+      edit: "Edited and approved"
+      defer: "Kept for later"
+      dismiss: "Dismissed"
+    empty:
+      pending:
+        title: "Nothing needs your approval"
+        body: "New suggested memories and sensitive actions will appear here before Carecierge can use them."
+      deferred:
+        title: "Nothing is waiting for later"
+        body: "Items you defer stay here until their review time arrives."
+      completed:
+        title: "No completed decisions yet"
+        body: "Approved, rejected, and dismissed items will remain available here as a decision record."
+      action: "Return to Concierge Queue"
+    pagination:
+      label: "Approval pages"
+      previous: "Previous"
+      next: "Next"
+      page: "Page %{page} of %{pages}"
+    update:
+      notice:
+        approve: "Approval recorded."
+        edit: "Changes saved and approval recorded."
+        reject: "Rejection recorded."
+        defer: "The item will return at the selected time."
+        dismiss: "The item was dismissed from the active queue."
+      error: "We could not record that decision. Review the current item and try again."

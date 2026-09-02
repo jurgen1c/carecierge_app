@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   get "dashboard" => "dashboard#index", as: :dashboard
+  resources :approvals, controller: "approval_requests", only: %i[index update]
   resources :feed_items, only: [] do
     patch :dismiss, on: :member
     patch :snooze, on: :member

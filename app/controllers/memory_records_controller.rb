@@ -1,7 +1,7 @@
 class MemoryRecordsController < ApplicationController
   before_action :set_relationship_profile
   before_action :set_memory_record, only: %i[edit update review approve_high_impact_automation destroy]
-  around_action :serialize_memory_mutation_with_privacy_vault, only: %i[update review approve_high_impact_automation destroy]
+  around_action :serialize_memory_mutation_with_privacy_vault, only: %i[update review destroy]
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
@@ -64,9 +64,11 @@ class MemoryRecordsController < ApplicationController
   end
 
   def approve_high_impact_automation
-    @memory_record.approve_high_impact_automation!
+    ApprovalQueue::RecordSourceDecision.call(user: current_user, subject: @memory_record, decision: "approve")
 
     refresh_memory_records(t(".notice"))
+  rescue ActiveRecord::RecordInvalid
+    refresh_memory_records(t(".error"), alert: true, status: :unprocessable_entity)
   end
 
   def destroy

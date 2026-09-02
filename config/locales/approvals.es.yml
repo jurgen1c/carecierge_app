@@ -1,0 +1,138 @@
+es:
+  time:
+    formats:
+      approval: "%-d/%-m/%Y %H:%M"
+  errors:
+    messages:
+      in_future: "debe ser en el futuro"
+  approvals:
+    index:
+      title: "Aprobaciones"
+      heading: "Aprobaciones"
+      body: "Revisa la fuente, comprende la consecuencia y decide qué puede hacer Carecierge después. Nada aquí se ejecuta en silencio."
+      back: "Volver a la fila de conserjería"
+    tabs:
+      label: "Vistas de aprobaciones"
+      pending: "Pendientes"
+      deferred: "Para después"
+      completed: "Completadas"
+    queue:
+      label: "Elementos de aprobación"
+    kinds:
+      extracted_memory: "Memoria extraída"
+      memory_record: "Memoria de alto impacto"
+      message_draft: "Borrador de mensaje"
+      reminder_change: "Cambio de recordatorio"
+      automation_action: "Acción automatizada"
+      vendor_message: "Mensaje a proveedor"
+      quote_request: "Solicitud de cotización"
+      booking_confirmation: "Confirmación de reserva"
+      purchase_request: "Solicitud de compra"
+      deposit_payment: "Pago de depósito"
+      invitation: "Invitación"
+      calendar_invite: "Invitación de calendario"
+    risks:
+      low: "Riesgo bajo"
+      medium: "Riesgo medio"
+      high: "Riesgo alto"
+      sensitive: "Sensible"
+    confidences:
+      confirmed: "Confirmada"
+      high: "Confianza alta"
+      medium: "Confianza media"
+      low: "Confianza baja"
+      inferred: "Inferida"
+    statuses:
+      pending: "Pendiente"
+      deferred: "Para después"
+      approved: "Aprobada"
+      rejected: "Rechazada"
+      dismissed: "Descartada"
+      superseded: "Ya no está vigente"
+    detail:
+      relationship: "Para %{relationship}"
+      understand_source: "Comprende la fuente"
+      review_consequence: "Revisa la consecuencia"
+      decide: "Decide"
+      source: "Fuente"
+      context: "Contexto de la fuente"
+      confidence: "Confianza"
+      proposed_action: "Acción propuesta"
+      what_will_happen: "Qué ocurrirá"
+      what_will_not_happen: "Qué no ocurrirá"
+      reversibility: "Reversibilidad"
+      decision_help: "Elige el resultado que coincide con tu intención. Carecierge registra la decisión sin exponer el contenido privado en los registros de auditoría."
+      deferred_until: "Para después. Volverá a Pendientes el %{date}."
+      completed: "Este elemento está %{status}. Su historial de decisiones permanece disponible abajo."
+      reviewed_source: "Fuente revisada"
+      superseded_title: "El elemento de aprobación ya no está vigente"
+      superseded_source: "Reconciliación de la fila"
+      superseded_context: "Carecierge retiró este elemento porque cambió su fuente o elegibilidad. La sustitución fue automática, no una decisión de aprobación."
+      superseded_action: "No se tomó ninguna acción de aprobación cuando este elemento salió de la fila."
+      superseded_consequence: "La transición automática no aprobó, rechazó ni ejecutó nada."
+      superseded_will_not_happen: "No se autorizó ninguna acción externa ni automatización."
+      superseded_reversibility: "No hay una decisión de aprobación que revertir."
+      superseded_completed: "Este elemento está %{status}. Salió de la fila automáticamente; esta transición no fue una decisión del usuario."
+      source_changed_title: "La fuente cambió después de esta decisión"
+      source_changed_source: "Versión anterior de la fuente"
+      source_changed_context: "La fuente se actualizó después de esta decisión. Su contenido actual no se muestra como parte de esta revisión anterior."
+      source_changed_action: "Esta decisión se aplicó a una versión anterior de la fuente."
+    actions:
+      review_extracted_memory:
+        proposal: "Guardar “%{title}” como una memoria de relación revisada."
+        consequence: "Carecierge podrá usar esta memoria para adaptar sugerencias y planes futuros para %{relationship}."
+        will_not_happen: "No se enviará ningún mensaje ni se realizará ninguna reserva, compra, pago, invitación o contacto externo."
+        reversible: "Puedes editar, archivar, proteger o eliminar la memoria guardada desde el perfil de la relación."
+      approve_high_impact_memory:
+        proposal: "Permitir que “%{title}” apoye decisiones futuras de automatización de alto impacto."
+        consequence: "Esta memoria podrá considerarse cuando apruebes por separado una acción sensible para %{relationship}."
+        will_not_happen: "Esto no ejecuta una automatización ni contacta, reserva, compra o paga nada. Cada acción sensible todavía requiere su propia aprobación."
+        reversible: "Editar detalles relevantes para la confianza elimina esta aprobación automáticamente."
+      approve: "Aprobar"
+      edit: "Editar"
+      reject: "Rechazar"
+      keep_for_later: "Dejar para después"
+      dismiss: "Descartar"
+      save_and_approve: "Guardar y aprobar"
+      keep_editing: "Seguir revisando"
+      keep_reviewing: "Seguir revisando"
+    edit:
+      title: "Título corregido de la memoria"
+      body: "Detalles corregidos de la memoria"
+    defer:
+      label: "Revisar de nuevo"
+      hint: "Elige una fecha y hora futuras. El elemento volverá a Pendientes en ese momento."
+    history:
+      title: "Historial de decisiones"
+      queued: "Enviada a revisión el %{date}."
+      superseded: "Carecierge retiró este elemento cuando dejó de ser elegible para revisión. Las acciones anteriores del usuario aparecen arriba."
+    decisions:
+      approve: "Aprobada"
+      reject: "Rechazada"
+      edit: "Editada y aprobada"
+      defer: "Dejada para después"
+      dismiss: "Descartada"
+    empty:
+      pending:
+        title: "Nada necesita tu aprobación"
+        body: "Las nuevas memorias sugeridas y acciones sensibles aparecerán aquí antes de que Carecierge pueda usarlas."
+      deferred:
+        title: "Nada está esperando para después"
+        body: "Los elementos que pospongas permanecerán aquí hasta que llegue el momento de revisarlos."
+      completed:
+        title: "Todavía no hay decisiones completadas"
+        body: "Los elementos aprobados, rechazados y descartados permanecerán aquí como registro de decisiones."
+      action: "Volver a la fila de conserjería"
+    pagination:
+      label: "Páginas de aprobaciones"
+      previous: "Anterior"
+      next: "Siguiente"
+      page: "Página %{page} de %{pages}"
+    update:
+      notice:
+        approve: "Aprobación registrada."
+        edit: "Cambios guardados y aprobación registrada."
+        reject: "Rechazo registrado."
+        defer: "El elemento volverá a la hora seleccionada."
+        dismiss: "El elemento se descartó de la fila activa."
+      error: "No pudimos registrar esa decisión. Revisa el elemento actual e inténtalo de nuevo."

@@ -1,0 +1,11 @@
+id: car_66_spanish_approval_date_format
+status: active
+reason: >
+  Narrow PR review cleanup aligns the Spanish approval timestamp with the
+  repository's existing non-padded day and month convention. This presentation
+  change does not alter approval eligibility, owner scope, decision history,
+  authorization, audit evidence, or external-effect guardrails recorded in the
+  existing approvals claim.
+files:
+  - config/locales/approvals.es.yml
+expires_at: 2026-09-09

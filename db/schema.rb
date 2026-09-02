@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_23_144136) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_28_133138) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -53,6 +53,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_144136) do
     t.uuid "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "approval_decisions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "approval_request_id", null: false
+    t.datetime "created_at", null: false
+    t.string "decision", null: false
+    t.datetime "occurred_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["approval_request_id", "occurred_at"], name: "idx_on_approval_request_id_occurred_at_2164c1d00e"
+    t.index ["approval_request_id"], name: "index_approval_decisions_on_approval_request_id"
+    t.index ["user_id"], name: "index_approval_decisions_on_user_id"
+    t.check_constraint "decision::text = ANY (ARRAY['approve'::character varying, 'reject'::character varying, 'edit'::character varying, 'defer'::character varying, 'dismiss'::character varying]::text[])", name: "approval_decisions_supported_decision"
+  end
+
+  create_table "approval_requests", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "action_key", null: false
+    t.string "confidence"
+    t.datetime "created_at", null: false
+    t.datetime "decided_at"
+    t.datetime "deferred_until"
+    t.string "kind", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.string "risk_level", null: false
+    t.string "status", default: "pending", null: false
+    t.uuid "subject_id", null: false
+    t.string "subject_type", null: false
+    t.datetime "subject_updated_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["subject_type", "subject_id"], name: "index_approval_requests_on_subject"
+    t.index ["user_id", "status", "created_at"], name: "index_approval_requests_on_user_id_and_status_and_created_at"
+    t.index ["user_id", "subject_type", "subject_id", "action_key"], name: "idx_approval_requests_one_open_action", unique: true, where: "((status)::text = ANY ((ARRAY['pending'::character varying, 'deferred'::character varying])::text[]))"
+    t.index ["user_id"], name: "index_approval_requests_on_user_id"
+    t.check_constraint "confidence IS NULL OR (confidence::text = ANY (ARRAY['confirmed'::character varying, 'high'::character varying, 'medium'::character varying, 'low'::character varying, 'inferred'::character varying]::text[]))", name: "approval_requests_supported_confidence"
+    t.check_constraint "risk_level::text = ANY (ARRAY['low'::character varying, 'medium'::character varying, 'high'::character varying, 'sensitive'::character varying]::text[])", name: "approval_requests_supported_risk"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'deferred'::character varying, 'approved'::character varying, 'rejected'::character varying, 'dismissed'::character varying, 'superseded'::character varying]::text[])", name: "approval_requests_supported_status"
   end
 
   create_table "audit_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1048,6 +1085,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_23_144136) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_blobs", "users", column: "uploaded_by_user_id", on_delete: :nullify
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "approval_decisions", "approval_requests", on_delete: :cascade
+  add_foreign_key "approval_decisions", "users", on_delete: :cascade
+  add_foreign_key "approval_requests", "users", on_delete: :cascade
   add_foreign_key "audit_events", "users", column: "actor_id", on_delete: :nullify
   add_foreign_key "audit_events", "users", on_delete: :cascade
   add_foreign_key "automation_permission_changes", "users"

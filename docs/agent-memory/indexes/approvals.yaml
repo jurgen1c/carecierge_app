@@ -1,0 +1,43 @@
+id: approvals
+name: Approval Queue
+summary: Owner-scoped review envelopes, immutable decision history, source adapters, and no-silent-external-effect guardrails.
+claim_globs:
+  - claims/approvals/**/*.md
+default_queries:
+  - approval queue source confidence risk consequence reversible
+  - approve reject edit defer dismiss decision history
+  - extracted memory approval high impact memory automation
+  - future approval action adapter external effects
+watched_files:
+  - app/controllers/approval_requests_controller.rb
+  - app/controllers/memory_records_controller.rb
+  - app/models/approval_request.rb
+  - app/models/approval_decision.rb
+  - app/models/audit_event.rb
+  - app/models/extracted_memory.rb
+  - app/models/memory_record.rb
+  - app/models/user.rb
+  - app/policies/approval_request_policy.rb
+  - app/presenters/approval_queue/**/*.rb
+  - app/serializers/data_exports/snapshot.rb
+  - app/services/approval_queue/**/*.rb
+  - app/services/approval_decisions/**/*.rb
+  - app/services/memory_extractions/review.rb
+  - app/views/approval_requests/**/*.erb
+  - app/views/components/approval_queue_*
+  - config/locales/approvals.*.yml
+  - config/routes.rb
+  - db/migrate/*approval_queue*.rb
+  - docs/features/10-03-approval-queue.md
+  - spec/models/approval_request_spec.rb
+  - spec/policies/approval_request_policy_spec.rb
+  - spec/requests/approvals_spec.rb
+  - spec/services/approval_queue/**/*.rb
+  - spec/services/approval_decisions/**/*.rb
+  - spec/system/approval_queue_spec.rb
+tags:
+  - approvals
+  - owner_scope
+  - audit
+  - privacy
+  - automation_guardrails

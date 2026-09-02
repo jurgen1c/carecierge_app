@@ -56,4 +56,12 @@ RSpec.describe AuditEventPresenter do
       end
     end
   end
+
+  it "has complete English and Spanish labels for every approval action" do
+    action_keys = %w[approval_granted approval_rejected approval_deferred approval_dismissed]
+
+    %i[en es].product(action_keys, %w[title description]).each do |locale, action_key, attribute|
+      expect(I18n.exists?("audit_events.actions.#{action_key}.#{attribute}", locale)).to be(true)
+    end
+  end
 end

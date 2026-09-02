@@ -176,7 +176,7 @@ class Vendor < ApplicationRecord
     return if source_url.blank?
 
     uri = URI.parse(source_url)
-    return if uri.is_a?(URI::HTTP) && uri.host.present?
+    return if uri.is_a?(URI::HTTP) && uri.host.present? && uri.userinfo.blank?
 
     errors.add(:source_url, :invalid)
   rescue URI::InvalidURIError

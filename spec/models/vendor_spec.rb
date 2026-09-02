@@ -73,6 +73,18 @@ RSpec.describe Vendor, type: :model do
     expect(vendor.errors).to include(:category, :maximum_price, :source_url)
   end
 
+  it "rejects source URLs containing embedded credentials" do
+    vendor = build(
+      :vendor,
+      source_kind: "external",
+      source_name: "Vendor website",
+      source_url: "https://private-user:secret@example.com/vendor"
+    )
+
+    expect(vendor).not_to be_valid
+    expect(vendor.errors).to include(:source_url)
+  end
+
   it "requires named provenance for external records" do
     vendor = build(:vendor, source_kind: "external", source_name: nil, source_url: "https://example.com/vendor")
 

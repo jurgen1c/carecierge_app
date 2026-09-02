@@ -80,6 +80,23 @@ RSpec.describe "Vendors", type: :request do
     expect(response).to redirect_to(vendors_path(event_plan_id: plan.id))
   end
 
+  it "requires plan update authorization when creation would attach a vendor" do
+    user = create(:user)
+    plan = create(:event_plan, user:)
+    sign_in user
+    allow_any_instance_of(EventPlanPolicy).to receive(:show?).and_return(true)
+    allow_any_instance_of(EventPlanPolicy).to receive(:update?).and_return(false)
+
+    expect do
+      post vendors_path, params: {
+        event_plan_id: plan.id,
+        vendor: { name: "Casa Verde", category: "restaurant", source_kind: "manual" }
+      }
+    end.not_to change(Vendor, :count)
+
+    expect(response).to have_http_status(:forbidden)
+  end
+
   it "does not expose or attach vendors and plans across owners" do
     user = create(:user)
     foreign_vendor = create(:vendor)

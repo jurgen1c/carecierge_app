@@ -51,7 +51,7 @@ class VendorsController < ApplicationController
     return if params[:event_plan_id].blank?
 
     @event_plan = policy_scope(EventPlan).for_active_relationships.where(status: "active").find(params[:event_plan_id])
-    authorize @event_plan, :show?
+    authorize @event_plan, action_name == "create" ? :update? : :show?
   end
 
   def set_vendor

@@ -12,7 +12,8 @@ claim: >
   Authenticated owners maintain a private saved-vendor catalog whose records are
   scoped through VendorPolicy, bounded at validation and query boundaries, and
   attributed either to manual entry or to a named external source with an
-  optional validated HTTP(S) URL. Vendor fit notes are encrypted, and private
+  optional validated, credential-free HTTP(S) URL. Plan-attaching creation
+  requires EventPlan update authorization. Vendor fit notes are encrypted, and private
   vendor form and search inputs are filtered from request logs. Owners can
   search their saved catalog by text, category, location, occasion, preference,
   budget, and timing; event-plan context supplies occasion and budget defaults

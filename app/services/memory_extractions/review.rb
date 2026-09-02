@@ -97,6 +97,7 @@ module MemoryExtractions
 
     def reject
       extracted_memory.update!(review_attributes(status: "rejected"))
+      record_rejection unless queue_request
     end
 
     def correct
@@ -132,17 +133,23 @@ module MemoryExtractions
     end
 
     def record_approval(result)
-      metadata = if queue_request
-        { request_kind: queue_request.kind, result: result == "corrected" ? "edit" : "approve" }
-      else
-        { result: }
-      end
+      result = result == "corrected" ? "edit" : "approve" if queue_request
+      record_review_event(action: "approval.granted", result:)
+    end
+
+    def record_rejection(occurred_at: Time.current)
+      record_review_event(action: "approval.rejected", result: "reject", occurred_at:)
+    end
+
+    def record_review_event(action:, result:, occurred_at: Time.current)
+      metadata = queue_request ? { request_kind: queue_request.kind, result: } : { result: }
       AuditEvent.record!(
         user: reviewer,
         actor: reviewer,
-        action: "approval.granted",
+        action:,
         target: queue_request || extracted_memory.relationship_profile,
-        metadata:
+        metadata:,
+        occurred_at:
       )
     end
 
@@ -157,16 +164,7 @@ module MemoryExtractions
         deferred_until: nil
       )
       queue_request.approval_decisions.create!(user: reviewer, decision: queue_decision, occurred_at:)
-      return unless queue_decision == "reject"
-
-      AuditEvent.record!(
-        user: reviewer,
-        actor: reviewer,
-        action: "approval.rejected",
-        target: queue_request,
-        metadata: { request_kind: queue_request.kind, result: queue_decision },
-        occurred_at:
-      )
+      record_rejection(occurred_at:) if queue_decision == "reject"
     end
   end
 end

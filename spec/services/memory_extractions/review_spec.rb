@@ -36,10 +36,18 @@ RSpec.describe MemoryExtractions::Review do
   it "rejects a proposal without canonical mutation" do
     proposal = create(:extracted_memory, conversation_recap: recap, relationship_profile: profile)
 
-    expect { described_class.call(extracted_memory: proposal, reviewer: user, decision: "reject") }
-      .not_to change(MemoryRecord, :count)
+    expect do
+      described_class.call(extracted_memory: proposal, reviewer: user, decision: "reject")
+    end.to change(AuditEvent, :count).by(1)
+      .and change(MemoryRecord, :count).by(0)
 
     expect(proposal.reload).to have_attributes(status: "rejected", reviewed_by: user)
+    expect(user.audit_events.last).to have_attributes(
+      action: "approval.rejected",
+      target_type: "RelationshipProfile",
+      target_id: profile.id,
+      metadata: { "result" => "reject" }
+    )
   end
 
   it "closes an existing queue request when reviewed from the relationship profile" do

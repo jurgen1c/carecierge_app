@@ -66,7 +66,8 @@ Protected memory stays outside the queue, owner-entered deferral times,
 scheduled return times, and displayed queue evidence use the owner's saved time
 zone. On narrow layouts, the selected approval appears before the bounded queue
 rail so the current decision remains immediately reachable. Deferral inputs use
-a safely rounded future-minute minimum. A due deferral returns to pending
+a safely rounded future-minute minimum, and a successful deferral returns to
+that selected item in the deferred tab. A due deferral returns to pending
 before an explicitly accepted source-version refresh is persisted, while an
 invalid deferred envelope without a review time fails closed instead of
 rendering decision controls or raising. An
@@ -96,7 +97,9 @@ and source version are derived only after the relationship and source have been
 locked and reloaded.
 Explicit source controls keep request discovery and
 application atomic under compatible no-key account/relationship/source locks,
-and accept only the source surface's approve, reject, or correct vocabulary.
+and accept only the source surface's approve, reject, or correct vocabulary. A
+rejection from the relationship-profile review surface records content-free
+result evidence against the owning relationship even when no queue envelope exists.
 
 Completed extracted-memory approvals present the corrected title that was
 actually saved rather than the superseded proposal title.

@@ -18,17 +18,19 @@ class ApprovalRequestsController < ApplicationController
   def update
     approval_request = current_user.approval_requests.find(params[:id])
     authorize approval_request
+    attributes = decision_params
     ApprovalDecisions::Apply.call(
       approval_request:,
       actor: current_user,
-      decision: decision_params[:decision],
-      lock_version: decision_params[:lock_version],
-      corrected_title: decision_params[:corrected_title],
-      corrected_body: decision_params[:corrected_body],
-      deferred_until: decision_params[:deferred_until]
+      decision: attributes[:decision],
+      lock_version: attributes[:lock_version],
+      corrected_title: attributes[:corrected_title],
+      corrected_body: attributes[:corrected_body],
+      deferred_until: attributes[:deferred_until]
     )
 
-    redirect_to approvals_path(status: "pending"), notice: t("approvals.update.notice.#{decision_params[:decision]}")
+    redirect_to decision_success_path(approval_request:, decision: attributes[:decision]),
+      notice: t("approvals.update.notice.#{attributes[:decision]}")
   rescue ActiveRecord::RecordInvalid, ActiveRecord::StaleObjectError, ArgumentError
     redirect_to approvals_path(status: "pending", id: params[:id], **queue_context), alert: t("approvals.update.error")
   end
@@ -37,6 +39,12 @@ class ApprovalRequestsController < ApplicationController
 
   def decision_params
     params.require(:approval_request).permit(:decision, :lock_version, :corrected_title, :corrected_body, :deferred_until)
+  end
+
+  def decision_success_path(approval_request:, decision:)
+    return approvals_path(status: "pending") unless decision == "defer"
+
+    approvals_path(status: "deferred", id: approval_request.id)
   end
 
   def queue_context

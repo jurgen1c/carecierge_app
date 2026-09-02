@@ -98,25 +98,21 @@ last_verified_commit: null
 
 ## Claim
 
-Queue items derive from owner-scoped sources and explain risk, consequence,
-non-effects, and reversibility. Requests store source versions, not private
-content; evidence is allowlisted and scalar.
+Queue items derive from owner-scoped sources and explain source, risk,
+consequence, non-effects, and reversibility. Requests store versions rather than
+private content; evidence is allowlisted and scalar.
 
-Bounded synchronization takes a no-key account lock, preloads
-profiles once, locks them in UUID order, reattaches them after source reloads,
-and derives metadata under source
-locks. Missing-source envelopes are removed before reconciliation. Superseded
-work uses automatic-transition copy and may re-enter after temporary ineligibility, while
-rejected and dismissed snapshots remain excluded until their source changes.
+Synchronization takes a no-key account lock, preloads and UUID-locks profiles,
+reattaches them after source reloads, and derives metadata under source locks.
+Missing sources are removed. Superseded work may re-enter after temporary
+ineligibility; rejected and dismissed snapshots require a source change.
 
 Decisions take a compatible no-key account lock before profile/source locks,
-verify versions, return due deferrals to pending before refreshing accepted
-changes, refresh confidence and risk together, and bind terminal envelopes to
-resulting source versions. Completed history preloads and masks live content,
-vaulted canonical memory, and recap labels. Both adapters preserve
-canonical mutations, off-page and failed-form context,
-owner-local deferral and evidence timestamps, normalized correction retry checks, safe retries, and the
-no-external-execution boundary.
+verify versions, return due deferrals before accepted refreshes, refresh
+confidence and risk, and bind terminal versions. Completed history masks live
+or vaulted content and recap labels. Both adapters preserve canonical mutation,
+off-page and failed-form context, selected deferred outcomes, owner-local times,
+normalized retries, safe retries, and the no-external-execution boundary.
 
 ## Why It Matters
 

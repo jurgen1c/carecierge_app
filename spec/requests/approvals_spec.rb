@@ -155,6 +155,28 @@ RSpec.describe "Approval queue", type: :request do
     expect(proposal.reload.status).to eq("approved")
   end
 
+  it "keeps a deferred decision visible in the deferred tab" do
+    ApprovalQueue::Synchronize.call(user:)
+    request_record = user.approval_requests.find_by!(subject: proposal)
+
+    Timecop.freeze(Time.zone.local(2026, 9, 1, 9)) do
+      patch approval_path(request_record), params: {
+        approval_request: {
+          decision: "defer",
+          lock_version: request_record.lock_version,
+          deferred_until: 1.day.from_now.strftime("%Y-%m-%dT%H:%M")
+        }
+      }
+
+      expect(response).to redirect_to(approvals_path(status: "deferred", id: request_record.id))
+      expect(request_record.reload.status).to eq("deferred")
+
+      follow_redirect!
+
+      expect(Nokogiri::HTML(response.body).at_css("#approval-item-title").text).to include(proposal.title)
+    end
+  end
+
   it "returns not found for another owner's request" do
     foreign_request = create(:approval_request)
 

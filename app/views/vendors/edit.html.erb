@@ -1,0 +1,12 @@
+<main aria-labelledby="vendor-form-title" class="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+  <header class="border-b border-private-line pb-6">
+    <h1 id="vendor-form-title" class="text-3xl font-semibold text-ink"><%= t("vendors.edit.title") %></h1>
+    <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("vendors.edit.body") %></p>
+  </header>
+  <div class="pt-6">
+    <%= render "form", vendor: @vendor, event_plan: @event_plan %>
+    <div class="mt-3">
+      <%= button_to t("vendors.form.delete"), vendor_path(@vendor, event_plan_id: @event_plan&.id), method: :delete, form: { data: { turbo_confirm: t("vendors.form.delete_confirm") } }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-danger-ink hover:bg-danger-surface" %>
+    </div>
+  </div>
+</main>

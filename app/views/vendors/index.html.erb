@@ -1,0 +1,89 @@
+<% disable_turbo_cache %>
+<main aria-labelledby="vendors-title" class="mx-auto w-full max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
+  <header class="border-b border-private-line pb-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <h1 id="vendors-title" class="text-3xl font-semibold text-ink"><%= t("vendors.index.title") %></h1>
+        <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("vendors.index.body") %></p>
+      </div>
+      <%= link_to t("vendors.index.add"), new_vendor_path(event_plan_id: @event_plan&.id), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    </div>
+
+    <% if @event_plan %>
+      <section aria-labelledby="vendor-plan-context-title" class="mt-5 rounded-xl border border-private-line bg-surface p-4">
+        <p class="text-sm font-semibold text-primary"><%= @event_plan.relationship_profile.display_name %></p>
+        <h2 id="vendor-plan-context-title" class="mt-1 text-lg font-semibold text-ink"><%= @event_plan.title %></h2>
+        <p class="mt-2 text-sm leading-6 text-quiet-note">
+          <%= @event_plan.occasion_type_label %>
+          <% if @event_plan.starts_on %> · <%= l(@event_plan.starts_on, format: :important_date) %><% end %>
+          <% if @event_plan.budget_cents %> · <%= t("vendors.index.plan_budget", amount: number_to_currency(@event_plan.budget_cents / 100.0)) %><% end %>
+        </p>
+      </section>
+    <% end %>
+  </header>
+
+  <%= form_with url: vendors_path, method: :get, class: "grid gap-4 border-b border-private-line py-6 lg:grid-cols-4", scope: :vendor_search do |form| %>
+    <%= hidden_field_tag :event_plan_id, @event_plan.id if @event_plan %>
+    <div class="lg:col-span-2">
+      <%= form.label :query, t("vendors.search.query"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.search_field :query, value: @search.query, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+    </div>
+    <div>
+      <%= form.label :category, t("vendors.search.category"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :category, Vendor::CATEGORIES.map { |value| [ t("vendors.categories.#{value}"), value ] }, { include_blank: t("vendors.search.any_category"), selected: @search.category }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :location, t("vendors.search.location"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :location, value: @search.location, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :occasion_type, t("vendors.search.occasion"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :occasion_type, EventPlan::OCCASION_TYPES.map { |value| [ t("event_plans.occasion_types.#{value}"), value ] }, { include_blank: t("vendors.search.any_occasion"), selected: @search.occasion_type }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :preference, t("vendors.search.preference"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :preference, value: @search.preference, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :maximum_budget, t("vendors.search.maximum_budget"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.number_field :maximum_budget, value: @search.maximum_budget, min: 0, step: "0.01", class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :timing, t("vendors.search.timing"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :timing, value: @search.timing, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div class="flex flex-wrap items-end gap-2 lg:col-span-4">
+      <%= form.submit t("vendors.search.action"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <%= link_to t("vendors.search.clear"), vendors_path(event_plan_id: @event_plan&.id, vendor_search: { occasion_type: "", maximum_budget: "" }), class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-surface" %>
+    </div>
+  <% end %>
+
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-private-line py-4">
+    <p class="text-sm font-semibold text-ink"><%= t("vendors.index.results", count: @pagy.count) %></p>
+    <p class="text-sm text-quiet-note"><%= t("vendors.index.saved_shortlist") %></p>
+  </div>
+
+  <% if @vendors.any? %>
+    <ol class="divide-y divide-private-line">
+      <% @vendors.each do |vendor| %>
+        <li><%= component "vendor_result", vendor:, event_plan: @event_plan, search: @search %></li>
+      <% end %>
+    </ol>
+  <% else %>
+    <section aria-labelledby="vendors-empty-title" class="py-10">
+      <h2 id="vendors-empty-title" class="text-xl font-semibold text-ink"><%= t("vendors.index.empty_title") %></h2>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("vendors.index.empty_body") %></p>
+      <%= link_to t("vendors.index.empty_action"), new_vendor_path(event_plan_id: @event_plan&.id), class: "mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
+    </section>
+  <% end %>
+
+  <% if @pagy.last > 1 %>
+    <nav aria-label="<%= t("vendors.pagination.label") %>" class="flex items-center justify-between border-t border-private-line py-5">
+      <% if @pagy.previous %><%= link_to t("vendors.pagination.previous"), url_for(request.query_parameters.merge("page" => @pagy.previous)), class: "min-h-11 rounded-lg px-4 py-3 text-sm font-semibold text-primary hover:bg-surface" %><% else %><span></span><% end %>
+      <span class="text-sm text-quiet-note"><%= t("vendors.pagination.page", page: @pagy.page, pages: @pagy.last) %></span>
+      <% if @pagy.next %><%= link_to t("vendors.pagination.next"), url_for(request.query_parameters.merge("page" => @pagy.next)), class: "min-h-11 rounded-lg px-4 py-3 text-sm font-semibold text-primary hover:bg-surface" %><% end %>
+    </nav>
+  <% end %>
+
+  <p class="border-t border-private-line pt-5 text-sm leading-6 text-quiet-note"><%= t("vendors.index.review_only") %></p>
+</main>

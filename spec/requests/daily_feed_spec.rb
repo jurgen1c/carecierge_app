@@ -1,6 +1,17 @@
 require "rails_helper"
 
 RSpec.describe "Daily relationship feed", type: :request do
+  it "links to the standalone vendor catalog in English and Spanish" do
+    user = create(:user)
+    sign_in user
+
+    get dashboard_path
+    expect(response.body).to include(vendors_path, ">Vendors<")
+
+    I18n.with_locale(:es) { get dashboard_path }
+    expect(response.body).to include(vendors_path, ">Proveedores<")
+  end
+
   it "renders an owner-scoped concierge queue with source context and real navigation" do
     now = Time.zone.local(2026, 8, 14, 9)
     user = create(:user)

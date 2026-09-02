@@ -48,6 +48,7 @@ en:
       all_plans: "View all event plans"
       unscheduled: "Date not set"
       edit_plan: "Edit plan"
+      find_vendors: "Find vendors"
       complete_plan: "Complete plan"
       reopen_plan: "Reopen plan"
       progress: "%{completed} of %{total} steps completed"
@@ -67,6 +68,8 @@ en:
       relationship_sources_title: "Relationship sources"
       relationship_sources_body: "Optional AI steps keep the source labels used to shape them."
       no_sources: "No AI source context has been added to this plan."
+      vendors_title: "Saved vendors"
+      no_vendors: "No vendors are attached to this plan yet."
       planning_preferences: "%{tone} · %{effort}"
     birthday:
       plan_title: "%{name}'s birthday"

@@ -48,6 +48,7 @@ es:
       all_plans: "Ver todos los planes"
       unscheduled: "Fecha sin definir"
       edit_plan: "Editar plan"
+      find_vendors: "Buscar proveedores"
       complete_plan: "Completar plan"
       reopen_plan: "Reabrir plan"
       progress: "%{completed} de %{total} pasos completados"
@@ -67,6 +68,8 @@ es:
       relationship_sources_title: "Fuentes de la relación"
       relationship_sources_body: "Los pasos opcionales de IA conservan las etiquetas de las fuentes que los orientaron."
       no_sources: "Este plan todavía no tiene contexto de fuentes de IA."
+      vendors_title: "Proveedores guardados"
+      no_vendors: "Todavía no hay proveedores adjuntos a este plan."
       planning_preferences: "%{tone} · %{effort}"
     birthday:
       plan_title: "Cumpleaños de %{name}"

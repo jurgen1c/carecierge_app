@@ -61,6 +61,28 @@ RSpec.describe "Parameter filtering" do
         "notes" => "Private planning notes",
         "occasion_type" => "birthday"
       },
+      "vendor" => {
+        "name" => "Private vendor lead",
+        "location" => "Near Maya's home",
+        "minimum_price" => "125",
+        "maximum_price" => "300",
+        "availability" => "Saturday evening",
+        "occasion_types" => [ "birthday" ],
+        "preference_tags_text" => "wheelchair accessible, quiet",
+        "fit_notes" => "Private relationship context",
+        "source_name" => "Personal referral",
+        "source_url" => "https://private-user:secret@example.com/vendor",
+        "source_kind" => "external"
+      },
+      "vendor_search" => {
+        "query" => "private dinner",
+        "category" => "restaurant",
+        "location" => "Near Maya's home",
+        "occasion_type" => "birthday",
+        "preference" => "quiet",
+        "maximum_budget" => "300",
+        "timing" => "Saturday evening"
+      },
       "plan_task" => {
         "title" => "Private planning step",
         "details" => "Private step details",
@@ -114,6 +136,9 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("event_plan", "guest_list")).to eq("[FILTERED]")
     expect(filtered.dig("event_plan", "notes")).to eq("[FILTERED]")
     expect(filtered.dig("event_plan", "occasion_type")).to eq("birthday")
+    expect(filtered.fetch("vendor").except("source_kind").values).to all(eq("[FILTERED]"))
+    expect(filtered.dig("vendor", "source_kind")).to eq("external")
+    expect(filtered.fetch("vendor_search").values).to all(eq("[FILTERED]"))
     expect(filtered.dig("plan_task", "title")).to eq("[FILTERED]")
     expect(filtered.dig("plan_task", "details")).to eq("[FILTERED]")
     expect(filtered.dig("plan_task", "phase")).to eq("arrange")

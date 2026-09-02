@@ -41,6 +41,7 @@ module DataExports
         "notification_preference" => attributes_for(user.notification_preference),
         "relationship_tags" => records(user.relationship_tags),
         "relationship_groups" => records(user.relationship_groups),
+        "vendors" => user.vendors.ordered.includes(:event_plan_vendors).map { |vendor| vendor_attributes(vendor) },
         "feed_item_states" => records(user.feed_item_states, except: %w[user_id]),
         "reminders" => user.reminders.includes(:reminder_deliveries).map { |reminder| reminder_attributes(reminder) },
         "digest_deliveries" => records(user.digest_deliveries),
@@ -80,7 +81,7 @@ module DataExports
         "important_dates" => records(profile.important_dates),
         "gifts" => records(profile.gifts),
         "gift_recommendations" => profile.gift_recommendations.recent_first.map { |recommendation| gift_recommendation_attributes(recommendation) },
-        "event_plans" => profile.event_plans.ordered.includes(:plan_tasks, backup_plans: :backup_options).map { |plan| event_plan_attributes(plan) },
+        "event_plans" => event_plans_for(profile).map { |plan| event_plan_attributes(plan) },
         "personal_touch_checklists" => profile.personal_touch_checklists.includes(:personal_touch_items).order(:created_at, :id).map do |checklist|
           personal_touch_checklist_attributes(checklist)
         end,
@@ -143,8 +144,32 @@ module DataExports
         "plan_tasks" => plan.plan_tasks.map do |task|
           attributes_for(task, except: %w[event_plan_id lock_version])
         end,
+        "vendors" => plan.vendors.map { |vendor| vendor_attributes(vendor) },
         "backup_plans" => plan.backup_plans.map { |backup_plan| backup_plan_attributes(backup_plan) }
       )
+    end
+
+    def vendor_attributes(vendor)
+      event_plan_ids = vendor.event_plan_vendors.map(&:event_plan_id)
+      event_plan_ids.select! { |id| id.in?(exported_event_plan_ids) } if exported_event_plan_ids
+
+      attributes_for(vendor, except: %w[user_id]).merge(
+        "event_plan_ids" => event_plan_ids.sort
+      )
+    end
+
+    def event_plans_for(profile)
+      @event_plans_by_profile_id ||= {}
+      @event_plans_by_profile_id[profile.id] ||= profile.event_plans
+        .ordered
+        .includes(:plan_tasks, { vendors: :event_plan_vendors }, backup_plans: :backup_options)
+        .to_a
+    end
+
+    def exported_event_plan_ids
+      return unless relationship_profile
+
+      @exported_event_plan_ids ||= event_plans_for(relationship_profile).map(&:id).to_set
     end
 
     def backup_plan_attributes(backup_plan)

@@ -12,6 +12,7 @@ es:
       people: "Personas"
       reminders: "Recordatorios"
       event_plans: "Planes de eventos"
+      vendors: "Proveedores"
       open_reminders: "Abrir recordatorios"
       activity: "Actividad"
       data_controls: "Controles de datos"

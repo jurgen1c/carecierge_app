@@ -21,8 +21,9 @@ claim: >
   ImportantDates can likewise start an immutable anniversary-origin plan.
   Anniversary plans retain an adjustable tone and effort level, and only reuse a
   same-relationship finalized prior plan after explicit selection; prior context
-  is marked inferred and needing confirmation. Plans and their phased tasks expose
-  progress, decisions, and explicit lifecycle actions. Scheduling or
+  is marked inferred and needing confirmation. Plans remain discoverable from
+  the dashboard's English and Spanish primary navigation, and their phased tasks
+  expose progress, decisions, and explicit lifecycle actions. Scheduling or
   rescheduling a plan rebases untouched template deadlines, including
   work superseded by an actually promoted backup option that selective AI
   deletion may later restore. Preference reconciliation includes that promoted,

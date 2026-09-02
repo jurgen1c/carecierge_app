@@ -1,0 +1,39 @@
+id: vendor_discovery
+name: Vendor Discovery
+summary: Owner-scoped sourced vendor shortlists with bounded search, event-plan attachment, data portability, and no external action.
+claim_globs:
+  - claims/vendor_discovery/**/*.md
+default_queries:
+  - vendor discovery shortlist category location occasion preference budget timing
+  - vendor source provenance manual external source URL fit explanation
+  - event plan vendor attach detach owner scope active review only booking contact purchase
+  - vendor export deletion localization English Spanish
+watched_files:
+  - app/controllers/vendors_controller.rb
+  - app/controllers/event_plan_vendors_controller.rb
+  - app/models/vendor.rb
+  - app/models/event_plan_vendor.rb
+  - app/policies/vendor_policy.rb
+  - app/queries/vendors/**/*.rb
+  - app/services/event_plan_vendors/**/*.rb
+  - app/services/vendors/**/*.rb
+  - app/views/dashboard/index.html.erb
+  - app/views/vendors/**/*.erb
+  - app/views/components/vendor_result_component.*
+  - config/locales/vendors.*.yml
+  - db/migrate/*vendor*.rb
+  - docs/features/07-01-vendor-discovery.md
+  - spec/components/vendor_result_component_spec.rb
+  - spec/models/vendor_spec.rb
+  - spec/policies/vendor_policy_spec.rb
+  - spec/queries/vendors/**/*.rb
+  - spec/requests/vendors_spec.rb
+  - spec/requests/daily_feed_spec.rb
+  - spec/services/event_plan_vendors/**/*.rb
+  - spec/services/vendors/**/*.rb
+tags:
+  - vendor_discovery
+  - event_plans
+  - privacy
+  - source_provenance
+  - review_only

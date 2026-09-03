@@ -3,7 +3,7 @@ id: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
 type: fact
 system: vendor_discovery
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Vendor quotes are owner-scoped, manual, and review-only
@@ -90,7 +90,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 4390cc8d2f5d6896696c013af41b2f7b6e60cd5f
 ---
 
 # Vendor quotes are owner-scoped, manual, and review-only

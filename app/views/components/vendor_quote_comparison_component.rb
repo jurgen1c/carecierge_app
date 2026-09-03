@@ -51,7 +51,7 @@ class VendorQuoteComparisonComponent < ApplicationViewComponent
 
   def amount_label(quote)
     amount = number_with_precision(
-      quote.amount_cents / 100.0,
+      BigDecimal(quote.amount_cents.to_s) / 100,
       precision: 2,
       delimiter: t("vendor_quotes.comparison.number.delimiter"),
       separator: t("vendor_quotes.comparison.number.separator")

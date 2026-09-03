@@ -48,4 +48,18 @@ RSpec.describe VendorQuoteComparisonComponent, type: :component do
 
     expect(page).to have_content("$1.250,50 USD")
   end
+
+  it "keeps cents exact while formatting the largest supported amount" do
+    quote = create(:vendor_quote, amount_cents: VendorQuote::MAX_AMOUNT_CENTS)
+    component = described_class.new(event_plan: quote.event_plan, quotes: [ quote ], as_of: Date.new(2026, 9, 3), editable: true)
+
+    expect(component).to receive(:number_with_precision)
+      .with(instance_of(BigDecimal), hash_including(precision: 2))
+      .at_least(:once)
+      .and_call_original
+
+    render_inline(component)
+
+    expect(page).to have_content("$21,474,836.47 USD")
+  end
 end

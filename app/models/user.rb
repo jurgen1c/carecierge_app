@@ -57,6 +57,7 @@ class User < ApplicationRecord
   has_many :gift_recommendations, dependent: :destroy
   has_many :event_plans, dependent: :destroy
   has_many :vendors, dependent: :destroy
+  has_many :vendor_shortlists, dependent: :destroy
   has_many :backup_plans, dependent: :destroy
   has_many :commitments, through: :relationship_profiles
   has_many :relationship_tags, dependent: :destroy

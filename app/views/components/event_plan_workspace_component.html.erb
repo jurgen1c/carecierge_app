@@ -33,6 +33,7 @@
           </div>
           <div class="flex flex-wrap gap-2">
             <% if event_plan.active? %><%= link_to t("event_plans.workspace.find_vendors"), vendors_path(event_plan_id: event_plan.id), class: style(:primary_button) %><% end %>
+            <% if event_plan.active? %><%= link_to t("event_plans.workspace.compare_vendors"), new_vendor_shortlist_path(event_plan_id: event_plan.id), class: style(:secondary_button) %><% end %>
             <%= link_to t("event_plans.workspace.edit_plan"), edit_event_plan_path(event_plan), class: style(:secondary_button) %>
             <% if event_plan.active? %>
               <%= button_to t("event_plans.workspace.complete_plan"), complete_event_plan_path(event_plan), method: :patch, class: style(:secondary_button) %>

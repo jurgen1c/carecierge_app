@@ -1,0 +1,103 @@
+<section aria-labelledby="vendor-comparison-title">
+  <div class="flex flex-col gap-3 border-b border-private-line pb-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h2 id="vendor-comparison-title" class="text-xl font-semibold text-ink"><%= t("vendor_shortlists.comparison.title") %></h2>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("vendor_shortlists.comparison.body", count: options.length) %></p>
+    </div>
+    <p class="text-sm font-semibold text-quiet-note"><%= t("vendor_shortlists.comparison.limit", count: VendorShortlist::MAX_OPTIONS) %></p>
+  </div>
+
+  <div role="region" aria-labelledby="vendor-comparison-title" tabindex="0" class="mt-4 overflow-x-auto rounded-xl border border-private-line bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+    <table aria-label="<%= t("vendor_shortlists.comparison.table_label") %>" class="min-w-[48rem] w-full table-fixed border-collapse text-left">
+      <caption class="sr-only"><%= t("vendor_shortlists.comparison.table_caption") %></caption>
+      <thead>
+        <tr class="border-b border-private-line bg-surface">
+          <th scope="col" class="w-40 px-4 py-3 text-sm font-semibold text-ink"><%= t("vendor_shortlists.comparison.criterion") %></th>
+          <% options.each do |option| %>
+            <th scope="col" class="min-w-56 border-l border-private-line px-4 py-3 align-top">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-sm font-semibold text-ink"><%= option.vendor.name %></span>
+                <% if option.favorite? %><span aria-label="<%= t("vendor_shortlists.comparison.favorite") %>" class="text-primary">★</span><% end %>
+              </div>
+              <p class="mt-1 text-xs text-quiet-note"><%= option.vendor.category_label %></p>
+              <span class="mt-2 <%= style(:status_badge, decision: option.decision.to_sym) %>"><%= t("vendor_shortlists.decisions.#{option.decision}") %></span>
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-private-line">
+        <% comparison_rows.each do |row| %>
+          <tr>
+            <th scope="row" class="bg-surface px-4 py-3 text-sm font-semibold text-ink"><%= t("vendor_shortlists.comparison.rows.#{row}") %></th>
+            <% options.each do |option| %>
+              <td class="border-l border-private-line px-4 py-3 align-top text-sm leading-6 text-quiet-note"><%= comparison_value(option, row) %></td>
+            <% end %>
+          </tr>
+        <% end %>
+        <tr>
+          <th scope="row" class="bg-surface px-4 py-3 text-sm font-semibold text-ink"><%= t("vendor_shortlists.comparison.rows.source") %></th>
+          <% options.each do |option| %>
+            <td class="border-l border-private-line px-4 py-3 align-top text-sm leading-6 text-quiet-note">
+              <% if option.vendor.source_url.present? %>
+                <%= link_to option.vendor.source_label, option.vendor.source_url, target: "_blank", rel: "noopener noreferrer", class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+              <% else %>
+                <%= option.vendor.source_label %>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <% if editable || removable %>
+    <div class="mt-6 divide-y divide-private-line border-y border-private-line">
+      <% options.each do |option| %>
+        <details class="py-2" <%= "open" if option.selected? %>>
+          <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 py-2 text-sm font-semibold text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+            <span><%= t("vendor_shortlists.options.review", vendor: option.vendor.name) %></span>
+            <span class="text-quiet-note"><%= t("vendor_shortlists.decisions.#{option.decision}") %></span>
+          </summary>
+
+          <div class="pb-4 pt-2">
+            <% if editable %>
+              <%= form_with model: [ shortlist, option ], class: "grid gap-4 lg:grid-cols-3" do |form| %>
+              <%= form.hidden_field :lock_version, value: option.lock_version %>
+              <div>
+                <%= tag.label t("vendor_shortlists.options.fields.notes"), for: "#{dom_id(option)}_notes", class: "block text-sm font-semibold text-ink" %>
+                <%= form.text_area :notes, id: "#{dom_id(option)}_notes", rows: 4, maxlength: VendorOption::MAX_NOTES_LENGTH, class: "mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+              </div>
+              <div>
+                <%= tag.label t("vendor_shortlists.options.fields.constraints"), for: "#{dom_id(option)}_constraints", class: "block text-sm font-semibold text-ink" %>
+                <%= form.text_area :constraints, id: "#{dom_id(option)}_constraints", rows: 4, maxlength: VendorOption::MAX_CONSTRAINTS_LENGTH, class: "mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+              </div>
+              <div>
+                <%= tag.label t("vendor_shortlists.options.fields.next_action"), for: "#{dom_id(option)}_next_action", class: "block text-sm font-semibold text-ink" %>
+                <%= form.text_area :next_action, id: "#{dom_id(option)}_next_action", rows: 4, maxlength: VendorOption::MAX_NEXT_ACTION_LENGTH, class: "mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+              </div>
+              <div class="lg:col-span-3">
+                <%= form.submit t("vendor_shortlists.options.actions.save"), class: style(:secondary_button) %>
+              </div>
+              <% end %>
+
+              <div class="mt-4 flex flex-wrap gap-2">
+                <%= button_to favorite_label(option), favorite_vendor_shortlist_vendor_option_path(shortlist, option), method: :patch, class: style(:secondary_button) %>
+                <% if option.rejected? %>
+                  <%= button_to t("vendor_shortlists.options.actions.restore"), restore_vendor_shortlist_vendor_option_path(shortlist, option), method: :patch, class: style(:secondary_button) %>
+                <% else %>
+                  <% unless option.selected? %><%= button_to t("vendor_shortlists.options.actions.select"), select_vendor_shortlist_vendor_option_path(shortlist, option), method: :patch, class: style(:primary_button) %><% end %>
+                  <%= button_to t("vendor_shortlists.options.actions.reject"), reject_vendor_shortlist_vendor_option_path(shortlist, option), method: :patch, class: style(:secondary_button) %>
+                <% end %>
+              </div>
+            <% end %>
+            <% if removable %>
+              <div class="mt-4 flex flex-wrap gap-2">
+              <%= button_to t("vendor_shortlists.options.actions.remove"), vendor_shortlist_vendor_option_path(shortlist, option), method: :delete, class: style(:danger_button), form: { data: { turbo_confirm: t("vendor_shortlists.options.actions.remove_confirm", vendor: option.vendor.name) } } %>
+              </div>
+            <% end %>
+          </div>
+        </details>
+      <% end %>
+    </div>
+  <% end %>
+</section>

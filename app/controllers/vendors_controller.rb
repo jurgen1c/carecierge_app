@@ -43,6 +43,8 @@ class VendorsController < ApplicationController
   def destroy
     Vendors::Destroy.call(vendor: @vendor)
     redirect_to vendors_path(event_plan_id: @event_plan&.id), notice: t("vendors.destroy.notice")
+  rescue ActiveRecord::RecordInvalid
+    render :edit, status: :unprocessable_content
   end
 
   private

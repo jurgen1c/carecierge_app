@@ -33,7 +33,9 @@ the same sourced records in a later integration.
 - Filter by category, location, occasion, preference, budget, and timing.
 - Use an event plan's occasion and budget as search defaults.
 - Explain fit from an encrypted owner-authored note or matched criteria.
-- Save, edit, and remove manual or externally sourced vendor records.
+- Save and edit manual or externally sourced vendor records. A saved vendor can
+  be deleted after the owner removes it from every comparison, preserving any
+  comparison notes and decisions until that explicit removal.
 - Attribute external records to a named source and optional validated HTTP(S)
   source URL.
 - Attach or detach a saved vendor from an active event plan owned by the same

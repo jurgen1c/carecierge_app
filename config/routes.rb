@@ -51,6 +51,14 @@ Rails.application.routes.draw do
     resources :vendors, only: %i[create destroy], controller: "event_plan_vendors"
   end
   resources :vendors, except: :show
+  resources :vendor_shortlists, only: %i[index new create show] do
+    resources :vendor_options, only: %i[create update destroy] do
+      patch :favorite, on: :member
+      patch :reject, on: :member
+      patch :select, on: :member
+      patch :restore, on: :member
+    end
+  end
   resources :personal_touch_checklists, only: [] do
     resources :personal_touch_items, only: :create do
       patch :complete, on: :member

@@ -25,7 +25,9 @@ claim: >
   and detachment reload plan activity before mutating the join. Attachment and
   detachment re-resolve their vendor or join inside those locks. Attaching,
   detaching, saving, editing, or deleting never contacts, books, purchases from,
-  or otherwise acts through a vendor. Account exports include
+  or otherwise acts through a vendor. A saved vendor cannot be deleted while it
+  belongs to a comparison, preserving private notes and decisions until the
+  owner explicitly removes the option. Account exports include
   decrypted vendor details, provenance, and event-plan attachments, while
   ownership foreign keys cascade through account deletion. The surface is
   available in English and Spanish. External provider discovery and vendor
@@ -106,7 +108,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 6041e8f48992404b17cc73c52a81d086998f4398
+last_verified_commit: bd1bb48cb483d0891b9342e2f18c3f465f7d8784
 ---
 
 # Saved vendors are owner-scoped, sourced, and review-only

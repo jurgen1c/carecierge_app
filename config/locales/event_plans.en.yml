@@ -49,6 +49,7 @@ en:
       unscheduled: "Date not set"
       edit_plan: "Edit plan"
       find_vendors: "Find vendors"
+      compare_vendors: "Compare vendors"
       complete_plan: "Complete plan"
       reopen_plan: "Reopen plan"
       progress: "%{completed} of %{total} steps completed"

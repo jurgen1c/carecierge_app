@@ -1,6 +1,6 @@
 id: vendor_discovery
 name: Vendor Discovery
-summary: Owner-scoped sourced vendor shortlists with bounded search, event-plan attachment, data portability, and no external action.
+summary: Owner-scoped sourced vendor discovery and bounded comparisons with explicit decisions, data portability, and no external action.
 claim_globs:
   - claims/vendor_discovery/**/*.md
 default_queries:
@@ -8,26 +8,44 @@ default_queries:
   - vendor source provenance manual external source URL fit explanation
   - event plan vendor attach detach owner scope active review only booking contact purchase
   - vendor export deletion localization English Spanish
+  - vendor shortlist comparison favorite reject restore selected notes constraints next action
 watched_files:
   - app/controllers/vendors_controller.rb
   - app/controllers/event_plan_vendors_controller.rb
+  - app/controllers/vendor_shortlists_controller.rb
+  - app/controllers/vendor_options_controller.rb
   - app/models/vendor.rb
   - app/models/event_plan_vendor.rb
+  - app/models/vendor_shortlist.rb
+  - app/models/vendor_option.rb
   - app/policies/vendor_policy.rb
+  - app/policies/vendor_shortlist_policy.rb
+  - app/policies/vendor_option_policy.rb
   - app/queries/vendors/**/*.rb
   - app/services/event_plan_vendors/**/*.rb
   - app/services/vendors/**/*.rb
+  - app/services/vendor_shortlists/**/*.rb
   - app/views/dashboard/index.html.erb
   - app/views/vendors/**/*.erb
+  - app/views/vendor_shortlists/**/*.erb
   - app/views/components/vendor_result_component.*
+  - app/views/components/vendor_shortlist_comparison_component.*
   - config/locales/vendors.*.yml
+  - config/locales/vendor_shortlists.*.yml
   - db/migrate/*vendor*.rb
   - docs/features/07-01-vendor-discovery.md
+  - docs/features/07-02-vendor-shortlisting-and-comparison.md
   - spec/components/vendor_result_component_spec.rb
   - spec/models/vendor_spec.rb
+  - spec/models/vendor_shortlist_spec.rb
+  - spec/models/vendor_option_spec.rb
   - spec/policies/vendor_policy_spec.rb
+  - spec/policies/vendor_shortlist_policy_spec.rb
   - spec/queries/vendors/**/*.rb
   - spec/requests/vendors_spec.rb
+  - spec/requests/vendor_shortlists_spec.rb
+  - spec/services/vendor_shortlists/**/*.rb
+  - spec/system/vendor_shortlists_spec.rb
   - spec/requests/daily_feed_spec.rb
   - spec/services/event_plan_vendors/**/*.rb
   - spec/services/vendors/**/*.rb

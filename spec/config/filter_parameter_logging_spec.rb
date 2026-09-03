@@ -83,6 +83,16 @@ RSpec.describe "Parameter filtering" do
         "maximum_budget" => "300",
         "timing" => "Saturday evening"
       },
+      "vendor_shortlist" => {
+        "title" => "Private birthday dinner options",
+        "relationship_profile_id" => SecureRandom.uuid
+      },
+      "vendor_option" => {
+        "notes" => "Private comparison notes",
+        "constraints" => "Private family constraint",
+        "next_action" => "Private next step",
+        "vendor_id" => SecureRandom.uuid
+      },
       "plan_task" => {
         "title" => "Private planning step",
         "details" => "Private step details",
@@ -139,6 +149,10 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.fetch("vendor").except("source_kind").values).to all(eq("[FILTERED]"))
     expect(filtered.dig("vendor", "source_kind")).to eq("external")
     expect(filtered.fetch("vendor_search").values).to all(eq("[FILTERED]"))
+    expect(filtered.dig("vendor_shortlist", "title")).to eq("[FILTERED]")
+    expect(filtered.dig("vendor_shortlist", "relationship_profile_id")).not_to eq("[FILTERED]")
+    expect(filtered.fetch("vendor_option").except("vendor_id").values).to all(eq("[FILTERED]"))
+    expect(filtered.dig("vendor_option", "vendor_id")).not_to eq("[FILTERED]")
     expect(filtered.dig("plan_task", "title")).to eq("[FILTERED]")
     expect(filtered.dig("plan_task", "details")).to eq("[FILTERED]")
     expect(filtered.dig("plan_task", "phase")).to eq("arrange")

@@ -4,6 +4,7 @@ en:
       title: "Find a vendor"
       body: "Keep sourced options in one private shortlist, then narrow them by the details that matter for the moment."
       add: "Add a vendor"
+      compare: "Compare shortlists"
       plan_budget: "Budget %{amount}"
       results:
         one: "1 saved vendor"
@@ -137,6 +138,10 @@ en:
         source_url: "Source link"
     errors:
       models:
+        vendor:
+          attributes:
+            base:
+              used_in_comparisons: "Remove this vendor from every comparison before deleting it"
         event_plan_vendor:
           attributes:
             vendor:

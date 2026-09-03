@@ -1,0 +1,137 @@
+es:
+  vendor_shortlists:
+    review_only: "Carecierge no contacta ni reserva proveedores. Tú revisas cada fuente y tomas cada decisión."
+    index:
+      title: "Listas de proveedores"
+      body: "Compara unas pocas opciones con fuente para una relación o evento y conserva la decisión junto con el próximo paso."
+      create: "Crear una lista"
+      option_count:
+        one: "1 opción"
+        other: "%{count} opciones"
+      selected: "Seleccionado: %{vendor}"
+      empty_title: "Crea una comparación enfocada"
+      empty_body: "Empieza con una relación o plan de evento y agrega hasta cinco proveedores guardados para mantener visibles las diferencias útiles."
+    new:
+      title: "Crear una lista de proveedores"
+      body: "Elige una relación o un plan de evento activo y un grupo pequeño de proveedores guardados. Podrás agregar notas de decisión en la siguiente pantalla."
+    form:
+      title: "Nombre de la lista"
+      context_title: "¿Para qué es esta decisión?"
+      context_body: "Elige un plan de evento cuando la decisión pertenezca a un plan. De lo contrario, elige una relación. El plan establece la relación automáticamente."
+      event_plan: "Plan de evento (opcional)"
+      no_event_plan: "Sin plan de evento"
+      relationship: "Relación"
+      choose_relationship: "Elige una relación"
+      vendors: "Proveedores iniciales"
+      vendors_body: "Elige hasta %{count}. Una lista corta facilita revisar las diferencias."
+      no_vendors: "Aún no tienes proveedores guardados."
+      add_vendor: "Agregar un proveedor guardado"
+      create: "Crear lista"
+      cancel: "Cancelar"
+      errors:
+        one: "Revisa este detalle de la lista"
+        other: "Revisa estos %{count} detalles de la lista"
+    create:
+      notice: "Lista creada."
+    show:
+      back: "Volver a las listas"
+      event_plan: "Para el plan de evento: %{plan}"
+      relationship_need: "Para una necesidad de la relación"
+      selected_label: "Proveedor seleccionado"
+      read_only: "Los detalles de la comparación son de solo lectura porque esta relación o plan de evento ya no está activo. Aún puedes quitar una opción."
+      errors: "Revisa esta opción"
+      empty_title: "Agrega la primera opción"
+      empty_body: "Agrega un proveedor guardado para comparar detalles prácticos y registrar tu decisión."
+      add_title: "Agregar otro proveedor guardado"
+      add_body: "Mantén la comparación enfocada. Puedes incluir hasta cinco opciones."
+      vendor: "Proveedor guardado"
+      add_action: "Agregar a la lista"
+    comparison:
+      title: "Comparar proveedores"
+      body:
+        one: "Revisa los detalles prácticos de esta opción y registra lo que falta confirmar."
+        other: "Revisa %{count} opciones lado a lado y registra lo que falta confirmar."
+      limit: "Hasta %{count} opciones"
+      table_label: "Comparación de proveedores"
+      table_caption: "Opciones de proveedores guardados comparadas por detalles prácticos, notas, restricciones y próximo paso."
+      criterion: "Comparar"
+      favorite: "Favorito"
+      not_provided: "No indicado"
+      rows:
+        price: "Rango de precio"
+        availability: "Disponibilidad"
+        location: "Ubicación"
+        fit: "Por qué podría encajar"
+        notes: "Notas"
+        constraints: "Restricciones"
+        next_action: "Próximo paso"
+        source: "Fuente"
+    decisions:
+      considering: "En consideración"
+      rejected: "Rechazado"
+      selected: "Proveedor seleccionado"
+    options:
+      review: "Revisar %{vendor}"
+      fields:
+        notes: "Tus notas"
+        constraints: "Restricciones por confirmar"
+        next_action: "Próximo paso"
+      actions:
+        save: "Guardar notas de comparación"
+        favorite: "Marcar como favorito"
+        remove_favorite: "Quitar de favoritos"
+        reject: "Rechazar opción"
+        select: "Seleccionar proveedor"
+        restore: "Volver a considerar"
+        remove: "Quitar de la lista"
+        remove_confirm: "¿Quitar %{vendor} y sus notas de comparación de esta lista?"
+      add:
+        notice: "Proveedor agregado a la lista."
+      update:
+        notice: "Notas de comparación guardadas."
+        changed: "La comparación cambió antes de guardar tus notas. Revísala e inténtalo de nuevo."
+      favorite:
+        notice: "Favorito actualizado."
+      reject:
+        notice: "Proveedor rechazado."
+      select:
+        notice: "Proveedor seleccionado."
+      restore:
+        notice: "Proveedor devuelto a consideración."
+      remove:
+        notice: "Proveedor quitado de la lista."
+    pagination:
+      label: "Listas de proveedores"
+      previous: "Anterior"
+      next: "Siguiente"
+      page: "Página %{page} de %{pages}"
+  activerecord:
+    attributes:
+      vendor_shortlist:
+        title: "Nombre de la lista"
+        relationship_profile: "Relación"
+        event_plan: "Plan de evento"
+        vendor_options: "Opciones de proveedor"
+      vendor_option:
+        notes: "Notas"
+        constraints: "Restricciones"
+        next_action: "Próximo paso"
+        vendor: "Proveedor"
+    errors:
+      models:
+        vendor_shortlist:
+          attributes:
+            relationship_profile:
+              owner_mismatch: "debe pertenecerte"
+              inactive: "debe estar activa"
+            event_plan:
+              context_mismatch: "debe pertenecer a la relación seleccionada"
+              inactive: "debe estar activo"
+            vendor_options:
+              too_many: "puede incluir como máximo %{count} proveedores"
+        vendor_option:
+          attributes:
+            vendor:
+              different_owner: "debe pertenecer al dueño de la lista"
+            vendor_shortlist:
+              inactive: "debe estar activa"

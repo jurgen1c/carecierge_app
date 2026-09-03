@@ -1,0 +1,137 @@
+en:
+  vendor_shortlists:
+    review_only: "Carecierge does not contact or book vendors. You review every source and make each decision yourself."
+    index:
+      title: "Vendor shortlists"
+      body: "Compare a few sourced options for one relationship or event, then keep the decision and next step together."
+      create: "Create a shortlist"
+      option_count:
+        one: "1 option"
+        other: "%{count} options"
+      selected: "Selected: %{vendor}"
+      empty_title: "Create a focused comparison"
+      empty_body: "Start with a relationship or event plan, then add up to five saved vendors so the useful differences stay visible."
+    new:
+      title: "Create a vendor shortlist"
+      body: "Choose one relationship or active event plan and a small set of saved vendors. You can add decision notes on the next screen."
+    form:
+      title: "Shortlist name"
+      context_title: "What is this decision for?"
+      context_body: "Choose an event plan when this decision belongs to a plan. Otherwise choose a relationship need. An event plan sets the relationship automatically."
+      event_plan: "Event plan (optional)"
+      no_event_plan: "No event plan"
+      relationship: "Relationship"
+      choose_relationship: "Choose a relationship"
+      vendors: "Starting vendors"
+      vendors_body: "Choose up to %{count}. A shorter list makes the tradeoffs easier to scan."
+      no_vendors: "You have no saved vendors yet."
+      add_vendor: "Add a saved vendor"
+      create: "Create shortlist"
+      cancel: "Cancel"
+      errors:
+        one: "Review this shortlist detail"
+        other: "Review these %{count} shortlist details"
+    create:
+      notice: "Shortlist created."
+    show:
+      back: "Back to shortlists"
+      event_plan: "For event plan: %{plan}"
+      relationship_need: "For a relationship need"
+      selected_label: "Selected vendor"
+      read_only: "Comparison details are read-only because this relationship or event plan is no longer active. You can still remove an option."
+      errors: "Review this option"
+      empty_title: "Add the first option"
+      empty_body: "Add a saved vendor to begin comparing practical details and recording your decision."
+      add_title: "Add another saved vendor"
+      add_body: "Keep the comparison focused. You can include up to five options."
+      vendor: "Saved vendor"
+      add_action: "Add to shortlist"
+    comparison:
+      title: "Compare vendors"
+      body:
+        one: "Review the practical details for this option, then record what still needs confirmation."
+        other: "Review %{count} options side by side, then record what still needs confirmation."
+      limit: "Up to %{count} options"
+      table_label: "Vendor comparison"
+      table_caption: "Saved vendor options compared by practical details, notes, constraints, and next action."
+      criterion: "Compare"
+      favorite: "Favorite"
+      not_provided: "Not provided"
+      rows:
+        price: "Price range"
+        availability: "Availability"
+        location: "Location"
+        fit: "Why it may fit"
+        notes: "Notes"
+        constraints: "Constraints"
+        next_action: "Next action"
+        source: "Source"
+    decisions:
+      considering: "Considering"
+      rejected: "Rejected"
+      selected: "Selected vendor"
+    options:
+      review: "Review %{vendor}"
+      fields:
+        notes: "Your notes"
+        constraints: "Constraints to confirm"
+        next_action: "Next action"
+      actions:
+        save: "Save comparison notes"
+        favorite: "Mark as favorite"
+        remove_favorite: "Remove favorite"
+        reject: "Reject option"
+        select: "Select vendor"
+        restore: "Return to consideration"
+        remove: "Remove from shortlist"
+        remove_confirm: "Remove %{vendor} and its comparison notes from this shortlist?"
+      add:
+        notice: "Vendor added to the shortlist."
+      update:
+        notice: "Comparison notes saved."
+        changed: "The comparison changed before your notes were saved. Review it and try again."
+      favorite:
+        notice: "Favorite updated."
+      reject:
+        notice: "Vendor rejected."
+      select:
+        notice: "Vendor selected."
+      restore:
+        notice: "Vendor returned to consideration."
+      remove:
+        notice: "Vendor removed from the shortlist."
+    pagination:
+      label: "Vendor shortlists"
+      previous: "Previous"
+      next: "Next"
+      page: "Page %{page} of %{pages}"
+  activerecord:
+    attributes:
+      vendor_shortlist:
+        title: "Shortlist name"
+        relationship_profile: "Relationship"
+        event_plan: "Event plan"
+        vendor_options: "Vendor options"
+      vendor_option:
+        notes: "Notes"
+        constraints: "Constraints"
+        next_action: "Next action"
+        vendor: "Vendor"
+    errors:
+      models:
+        vendor_shortlist:
+          attributes:
+            relationship_profile:
+              owner_mismatch: "must belong to you"
+              inactive: "must be active"
+            event_plan:
+              context_mismatch: "must belong to the selected relationship"
+              inactive: "must be active"
+            vendor_options:
+              too_many: "can include at most %{count} vendors"
+        vendor_option:
+          attributes:
+            vendor:
+              different_owner: "must belong to the shortlist owner"
+            vendor_shortlist:
+              inactive: "must be active"

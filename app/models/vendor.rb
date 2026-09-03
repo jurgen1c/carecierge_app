@@ -52,6 +52,7 @@ class Vendor < ApplicationRecord
   has_many :event_plans, through: :event_plan_vendors
   has_many :vendor_options, dependent: :restrict_with_error
   has_many :vendor_shortlists, through: :vendor_options
+  has_many :vendor_quotes, dependent: :restrict_with_error
 
   encrypts :fit_notes
 

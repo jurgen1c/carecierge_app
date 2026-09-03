@@ -10,14 +10,14 @@ title: Data exports and permanent deletion stay owner-scoped and privacy-minimiz
 
 claim: >
   Owner-scoped JSON, CSV, PDF, and private-calendar exports include recordings,
-  social context and screenshots, relationships, localized labels, privacy-safe
+  social context and screenshots, relationships, localized labels,
   audit and reminder evidence, feed dismissal and snooze state, suggestion
   feedback/save/completion state, approval requests and append-only decisions,
-  and effective
   message-draft response settings and revisions. Relationship briefings and
-  gift recommendations, event plans, and plan tasks are included with
-  source-backed output and consent
-  metadata, while their internal generation fences stay excluded. Ordinary
+  gift recommendations, event plans, plan tasks, and decrypted manual vendor
+  quotes with embedded vendor provenance are included with source-backed output
+  and consent
+  metadata, while generation fences stay excluded. Ordinary
   exports keep sensitive backup-source provenance but redact the plaintext
   source content. Vault payloads and unredacted sensitive backup sources require
   reauthentication; internal secrets, leases, fences, and ownership keys stay
@@ -33,11 +33,11 @@ claim: >
   or retaining their authored content, with untouched template deadlines aligned after rescheduling,
   and preserves event plans and explicit plan reminders even for terminal plans; clears note analysis
   without rereading unchanged screenshots; and fences delayed results. Profile and account
-  deletion lock snapshots, revokes outstanding authenticated upload grants, and
-  idempotently cleans attached or abandoned owner blobs. Feed visibility state
-  is pruned when its source or relationship is permanently deleted and cascades
+  deletion lock snapshots, revokes outstanding upload grants, and
+  idempotently cleans attached or abandoned owner blobs. Feed state is pruned
+  when its source or relationship is deleted and cascades
   with the account. Ownership stays in the nullifying foreign key rather than
-  retained blob metadata. Completed account deletion retains only a one-way
+  retained blob metadata. Account deletion retains only a one-way
   digest; OAuth users receive password setup.
 
 source_files:
@@ -62,6 +62,8 @@ source_files:
   - db/migrate/20260820034510_add_saved_at_to_suggestion_feedbacks.rb
   - db/migrate/20260821040000_create_event_plans.rb
   - db/migrate/20260821040001_add_event_plan_references_to_reminders.rb
+  - db/migrate/20260903042850_create_vendor_quotes.rb
+  - db/migrate/20260903044916_add_vendor_quote_reference_to_reminders.rb
 
 related_files:
   - app/models/approval_request.rb
@@ -70,6 +72,7 @@ related_files:
   - app/models/gift_recommendation.rb
   - app/models/event_plan.rb
   - app/models/plan_task.rb
+  - app/models/vendor_quote.rb
   - app/serializers/data_exports/csv_serializer.rb
   - app/serializers/data_exports/calendar_serializer.rb
   - app/views/data_controls/show.html.erb
@@ -80,6 +83,8 @@ related_files:
   - spec/jobs/purge_abandoned_social_context_upload_job_spec.rb
   - spec/services/data_deletions/delete_ai_data_spec.rb
   - spec/system/data_controls_spec.rb
+  - spec/serializers/data_exports/snapshot_spec.rb
+  - spec/requests/vendor_quotes_spec.rb
 
 symbols:
   - DirectUploadsController
@@ -95,6 +100,7 @@ symbols:
   - DataDeletions::DeleteAccount
   - DataDeletions::DeleteAiData
   - DeletionRequest
+  - VendorQuote
 
 routes:
   - social_context_direct_upload
@@ -123,13 +129,12 @@ last_verified_commit: null
 
 ## Claim
 
-Every export format uses the same owner scope, and decrypted vault payloads
-require password reauthentication. JSON and CSV include privacy-safe evidence,
+Exports are owner-scoped; decrypted vault payloads require reauthentication.
+JSON and CSV include privacy-safe evidence,
   approval requests and decisions, message revisions, relationship briefings,
-  gift recommendations, event plans,
-  plan tasks, social notes, consent state,
-  screenshot bytes, and feed visibility state while excluding internal keys,
-  errors, leases, and fences.
+  gift recommendations, event plans, plan tasks, manual vendor quotes with
+  vendor provenance, social notes, consent state, screenshot bytes, and feed
+  visibility state while excluding internal keys, errors, leases, and fences.
   Serialization neutralizes
 formulas, preserves recurrences, and audits only success. Selective AI deletion
 preserves authored content, accepted gifts, event plans, manual/template work,

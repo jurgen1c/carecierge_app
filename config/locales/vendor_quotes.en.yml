@@ -1,0 +1,130 @@
+en:
+  vendor_quotes:
+    index:
+      title: "Vendor quotes"
+      body: "Compare offers, dates, and follow-up for %{plan} in one private place."
+      back: "Back to event plan"
+      history_fallback: "Back to quote history"
+      history_title: "Quote history"
+      history_body: "Return to quote details from active, completed, or archived plans."
+      history_back: "Back to vendors"
+      history_empty_title: "No quote history yet"
+      history_empty_body: "Quotes you save for an event plan will appear here."
+      history_review: "Review plan quotes"
+      read_only: "Quote details are read-only because this event plan is no longer active. You can still remove saved quotes."
+      empty_title: "No quotes yet"
+      empty_body: "Add the first quote to compare offers for this plan."
+    new:
+      title: "Add a vendor quote"
+      body: "Record an offer for %{plan}. Nothing is sent to the vendor."
+    edit:
+      title: "Review vendor quote"
+      body: "Keep %{vendor}'s offer for %{plan} accurate and decide your next step."
+    comparison:
+      title: "Compare quotes"
+      body:
+        one: "Review 1 quote for this plan."
+        other: "Review %{count} quotes for this plan."
+      caption: "Vendor quote comparison"
+      amount_display: "%{amount} %{currency}"
+      number:
+        delimiter: ","
+        separator: "."
+      no_deadline: "No deadline"
+      not_provided: "Not provided"
+      columns:
+        vendor: "Vendor"
+        amount: "Amount"
+        status: "Status"
+        deadline: "Deadlines"
+        scope: "Scope"
+        notes: "Private notes"
+        next_action: "Next action"
+        actions: "Actions"
+      deadline_labels:
+        decision_due_on: "Decision due"
+        expires_on: "Expires"
+    actions:
+      add: "Add quote"
+      review: "Review quote"
+      reminder: "Set reminder"
+      delete: "Remove quote"
+      delete_confirm: "Remove the saved quote from %{vendor}? Existing reminders will remain."
+    form:
+      vendor: "Vendor"
+      vendor_prompt: "Choose a saved vendor"
+      no_vendors: "No vendors are saved yet."
+      add_vendor: "Add a vendor first"
+      amount: "Quote amount"
+      currency: "Currency"
+      scope: "Scope and terms"
+      scope_hint: "Record what the offer includes, important exclusions, and payment terms."
+      expires_on: "Quote expires"
+      decision_due_on: "Decision due"
+      status: "Status"
+      next_action: "Next action"
+      notes: "Private notes"
+      notes_hint: "These notes stay in your account and are never sent to the vendor."
+      create: "Save quote"
+      update: "Save changes"
+      cancel: "Cancel"
+      errors:
+        one: "Review this quote detail"
+        other: "Review these %{count} quote details"
+    statuses:
+      draft: "Draft"
+      awaiting_response: "Awaiting response"
+      received: "Received"
+      under_review: "Under review"
+      accepted: "Accepted"
+      declined: "Declined"
+      expired: "Expired"
+    create:
+      notice: "Vendor quote saved."
+    update:
+      notice: "Vendor quote updated."
+      changed: "The quote changed before your update was saved. Review it and try again."
+    destroy:
+      notice: "Vendor quote removed."
+    reminder:
+      title: "Follow up with %{vendor}"
+      context: "Vendor quote for %{vendor}"
+    pagination:
+      label: "Quote history pages"
+      previous: "Previous"
+      next: "Next"
+      page: "Page %{page} of %{pages}"
+    review_only: "Carecierge stores this comparison for your review. It does not contact vendors, accept offers, book services, purchase, or pay."
+  activerecord:
+    attributes:
+      vendor_quote:
+        vendor: "Vendor"
+        amount: "Quote amount"
+        amount_cents: "Quote amount"
+        currency: "Currency"
+        scope_details: "Scope and terms"
+        expires_on: "Quote expiration"
+        decision_due_on: "Decision due date"
+        status: "Status"
+        next_action: "Next action"
+        notes: "Private notes"
+    errors:
+      models:
+        vendor_quote:
+          attributes:
+            amount:
+              invalid_scale: "must use no more than two decimal places"
+            event_plan:
+              different_owner: "must belong to you"
+              inactive: "must be active"
+            vendor:
+              different_owner: "must belong to you"
+            relationship_profile:
+              inactive: "must be active"
+            decision_due_on:
+              after_expiration: "must be on or before the quote expiration"
+        reminder:
+          attributes:
+            vendor_quote:
+              different_owner: "must belong to you"
+              different_plan: "must belong to the selected event plan"

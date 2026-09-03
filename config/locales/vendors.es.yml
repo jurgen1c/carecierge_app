@@ -4,6 +4,7 @@ es:
       title: "Buscar un proveedor"
       body: "Guarda opciones con su fuente en una lista privada y fíltralas por los detalles importantes para el momento."
       add: "Agregar proveedor"
+      quotes: "Historial de cotizaciones"
       compare: "Comparar listas"
       plan_budget: "Presupuesto %{amount}"
       results:
@@ -141,7 +142,7 @@ es:
         vendor:
           attributes:
             base:
-              used_in_comparisons: "Quita este proveedor de cada comparación antes de eliminarlo"
+              used_in_quotes_or_comparisons: "Quita este proveedor de cada cotización o comparación antes de eliminarlo"
         event_plan_vendor:
           attributes:
             vendor:

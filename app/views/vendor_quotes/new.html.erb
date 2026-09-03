@@ -1,0 +1,8 @@
+<% disable_turbo_cache %>
+<main aria-labelledby="new-vendor-quote-title" class="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 lg:px-8">
+  <header class="border-b border-private-line pb-6">
+    <h1 id="new-vendor-quote-title" class="text-3xl font-semibold text-ink"><%= t("vendor_quotes.new.title") %></h1>
+    <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("vendor_quotes.new.body", plan: @event_plan.title) %></p>
+  </header>
+  <%= render "form" %>
+</main>

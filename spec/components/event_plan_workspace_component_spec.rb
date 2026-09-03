@@ -42,6 +42,7 @@ RSpec.describe EventPlanWorkspaceComponent, type: :component do
     expected_path = Rails.application.routes.url_helpers.vendors_path(event_plan_id: plan.id)
     expect(page).to have_link("Find vendors", href: expected_path, count: 2)
     expect(page).to have_css("section[aria-labelledby='saved-vendors-title']")
+    expect(page).to have_link("Compare quotes", href: Rails.application.routes.url_helpers.event_plan_vendor_quotes_path(plan))
     expect(page).to have_content("Casa Verde")
     expect(page).to have_content("Restaurant")
     expect(page).to have_no_button("Book")

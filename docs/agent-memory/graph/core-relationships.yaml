@@ -1,6 +1,31 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
+    target: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
+    relation: requires
+    reason: Quotes reuse owner-scoped saved vendors and prevent vendor deletion while private quote evidence still references the vendor.
+    strength: 100
+  - source: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: Every quote belongs to one owner-scoped event plan, is mutable only while the plan and relationship are active, and remains readable afterward.
+    strength: 100
+  - source: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Quote deadlines hand off to the existing owner-controlled reminder scheduler without automatically scheduling or delivering anything.
+    strength: 95
+  - source: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Owner exports include decrypted quote details and vendor provenance, while account and plan ownership cascades remove quote records.
+    strength: 95
+  - source: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
+    target: authentication.localization_baseline
+    relation: constrains
+    reason: Quote recording, comparison, lifecycle, reminders, and errors remain available in English and Spanish with English as default.
+    strength: 90
   - source: vendor_discovery.vendor_comparisons_are_owner_scoped_bounded_and_explicitly_decided
     target: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
     relation: requires

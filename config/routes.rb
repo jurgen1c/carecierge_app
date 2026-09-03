@@ -49,7 +49,9 @@ Rails.application.routes.draw do
       patch :reopen, on: :member
     end
     resources :vendors, only: %i[create destroy], controller: "event_plan_vendors"
+    resources :vendor_quotes, only: %i[index new create]
   end
+  resources :vendor_quotes, only: %i[index edit update destroy]
   resources :vendors, except: :show
   resources :vendor_shortlists, only: %i[index new create show] do
     resources :vendor_options, only: %i[create update destroy] do

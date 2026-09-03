@@ -1,6 +1,6 @@
 id: event_plans
 name: Event Plans
-summary: Owner-scoped relationship event plans with deterministic templates, user-controlled source-backed suggestions and recovery options, and reminder reuse.
+summary: Owner-scoped relationship event plans with deterministic templates, user-controlled source-backed suggestions and recovery options, reminder reuse, and manual vendor quote comparison.
 claim_globs:
   - claims/event_plans/**/*.md
 default_queries:
@@ -11,6 +11,7 @@ default_queries:
   - event plan reminder scheduling completion archive selective AI deletion export
   - personal touch checklist event plan important date birthday anniversary preference provenance reorder dismiss
   - backup plan recovery weather vendor gift delay restaurant transportation cancellation compare promote supersede
+  - event plan vendor quote comparison deadline reminder completed archived read only
 watched_files:
   - app/controllers/event_plans_controller.rb
   - app/javascript/controllers/event_plan_form_controller.js
@@ -18,12 +19,14 @@ watched_files:
   - app/controllers/personal_touch_checklists_controller.rb
   - app/controllers/personal_touch_items_controller.rb
   - app/controllers/backup_plans_controller.rb
+  - app/controllers/vendor_quotes_controller.rb
   - app/models/backup_plan.rb
   - app/models/backup_option.rb
   - app/models/event_plan.rb
   - app/models/plan_task.rb
   - app/models/personal_touch_checklist.rb
   - app/models/personal_touch_item.rb
+  - app/models/vendor_quote.rb
   - app/policies/event_plan_policy.rb
   - app/policies/plan_task_policy.rb
   - app/policies/personal_touch_checklist_policy.rb
@@ -40,6 +43,8 @@ watched_files:
   - app/views/important_dates/_upcoming.html.erb
   - app/views/components/event_plan_workspace_component.*
   - app/views/components/personal_touch_checklist_component.*
+  - app/views/components/vendor_quote_comparison_component.*
+  - app/views/vendor_quotes/**/*.erb
   - config/locales/event_plans.*.yml
   - config/initializers/ruby_llm.rb
   - config/deploy.yml
@@ -52,8 +57,10 @@ watched_files:
   - docs/features/06-02-anniversary-concierge.md
   - docs/features/06-04-personal-touch-checklist.md
   - docs/features/06-05-backup-plan-generator.md
+  - docs/features/07-04-quote-collection.md
   - spec/components/event_plan_workspace_component_spec.rb
   - spec/components/personal_touch_checklist_component_spec.rb
+  - spec/components/vendor_quote_comparison_component_spec.rb
   - spec/models/event_plan_spec.rb
   - spec/models/plan_task_spec.rb
   - spec/models/personal_touch_checklist_spec.rb
@@ -70,6 +77,7 @@ watched_files:
   - spec/services/backup_plans/**/*.rb
   - spec/agents/backup_plans/**/*.rb
   - spec/requests/backup_plans_spec.rb
+  - spec/requests/vendor_quotes_spec.rb
   - spec/system/event_plans_spec.rb
 tags:
   - event_plans

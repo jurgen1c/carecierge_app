@@ -12,10 +12,11 @@ class RemindersController < ApplicationController
     saved_preference = current_user.notification_preference
     preference = saved_preference || NotificationPreference.new(user: current_user)
     important_date = selected_important_date
+    vendor_quote = selected_vendor_quote
     needs_browser_time_zone = saved_preference.nil? || !saved_preference.time_zone_configured?
     captured_zone = captured_time_zone if needs_browser_time_zone
     @capture_browser_time_zone = needs_browser_time_zone && captured_zone.nil?
-    @reload_after_time_zone_capture = @capture_browser_time_zone && important_date.present?
+    @reload_after_time_zone_capture = @capture_browser_time_zone && (important_date.present? || vendor_quote.present?)
     preference.time_zone = captured_zone if captured_zone
     @reminder = current_user.reminders.new(
       relationship_profile: selected_plan_task&.event_plan&.relationship_profile || selected_event_plan&.relationship_profile || selected_commitment&.relationship_profile || important_date&.relationship_profile || selected_relationship_profile,
@@ -23,11 +24,13 @@ class RemindersController < ApplicationController
       commitment: selected_commitment,
       event_plan: selected_event_plan,
       plan_task: selected_plan_task,
-      title: selected_plan_task&.title,
+      vendor_quote:,
+      title: selected_plan_task&.title || (t("vendor_quotes.reminder.title", vendor: vendor_quote.vendor.name) if vendor_quote),
       recurrence: preference.reminder_frequency,
       time_zone: preference.time_zone,
-      scheduled_at: initial_schedule_for(important_date, preference)
+      scheduled_at: initial_schedule_for(important_date, preference, vendor_quote:)
     )
+    @reminder.reminder_type = "event_preparation" if vendor_quote
     @suggestion = selected_suggestion
     @reminder.assign_attributes(@suggestion.reminder_attributes) if @suggestion
     authorize @reminder
@@ -40,7 +43,7 @@ class RemindersController < ApplicationController
 
   def create
     @suggestion = selected_suggestion
-    @reminder = current_user.reminders.new(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :event_plan_id, :plan_task_id, :scheduled_at, :time_zone))
+    @reminder = current_user.reminders.new(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :event_plan_id, :plan_task_id, :vendor_quote_id, :scheduled_at, :time_zone))
     saved = with_reminder_persistence_locks(@reminder) do
       assign_relationship_context(@reminder)
       assign_event_planning_context(@reminder)
@@ -66,7 +69,7 @@ class RemindersController < ApplicationController
 
   def update
     saved = with_reminder_persistence_locks(@reminder) do
-      @reminder.assign_attributes(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :event_plan_id, :plan_task_id, :scheduled_at, :time_zone))
+      @reminder.assign_attributes(reminder_params.except(:relationship_profile_id, :important_date_id, :commitment_id, :event_plan_id, :plan_task_id, :vendor_quote_id, :scheduled_at, :time_zone))
       assign_relationship_context(@reminder)
       assign_event_planning_context(@reminder)
       assign_schedule(@reminder)
@@ -207,6 +210,16 @@ class RemindersController < ApplicationController
     @selected_plan_task = plan.plan_tasks.current.incomplete.find(id)
   end
 
+  def selected_vendor_quote
+    return @selected_vendor_quote if defined?(@selected_vendor_quote)
+
+    id = params[:vendor_quote_id].presence || params.dig(:reminder, :vendor_quote_id).presence
+    return @selected_vendor_quote = nil unless id
+
+    plan = selected_event_plan || raise(ActiveRecord::RecordNotFound)
+    @selected_vendor_quote = current_user.vendor_quotes.where(event_plan: plan).find(id)
+  end
+
   def captured_time_zone
     value = params[:time_zone].presence
     value if value && ActiveSupport::TimeZone[value].present?
@@ -225,7 +238,7 @@ class RemindersController < ApplicationController
     zone.local(reminder_date.year, reminder_date.month, reminder_date.day, 9) - elapsed_minutes.minutes
   end
 
-  def initial_schedule_for(important_date, preference)
+  def initial_schedule_for(important_date, preference, vendor_quote: nil)
     return if @reload_after_time_zone_capture
     return default_schedule_for(important_date, preference) if important_date
     return if @capture_browser_time_zone
@@ -233,7 +246,27 @@ class RemindersController < ApplicationController
     zone = ActiveSupport::TimeZone[preference.time_zone]
     return if zone.blank?
 
+    if vendor_quote
+      deadline = vendor_quote.next_deadline_on(as_of: Time.current.in_time_zone(zone).to_date)
+      return quote_reminder_schedule(deadline, zone) if deadline
+
+      return
+    end
+
     (Time.current.in_time_zone(zone) + 1.day).change(min: 0, sec: 0)
+  end
+
+  def quote_reminder_schedule(deadline, zone)
+    local_now = Time.current.in_time_zone(zone)
+    preferred_date = deadline - 1.day
+    preferred_time = zone.local(preferred_date.year, preferred_date.month, preferred_date.day, 9)
+    return preferred_time if preferred_time > local_now
+    return if deadline < local_now.to_date
+
+    deadline_end = zone.local(deadline.year, deadline.month, deadline.day, 23, 59)
+    next_hour = (local_now + 1.hour).change(min: 0, sec: 0)
+    candidate = [ next_hour, deadline_end ].min
+    candidate if candidate > local_now
   end
 
   def reminder_lead_offset(occurrence, lead_minutes)
@@ -305,6 +338,7 @@ class RemindersController < ApplicationController
     permitted_params = reminder_params
     plan_supplied = permitted_params.key?(:event_plan_id)
     task_supplied = permitted_params.key?(:plan_task_id)
+    quote_supplied = permitted_params.key?(:vendor_quote_id)
 
     if plan_supplied
       plan_id = permitted_params[:event_plan_id].presence
@@ -329,8 +363,21 @@ class RemindersController < ApplicationController
         reminder.event_plan.plan_tasks.current.incomplete.find(task_id)
       end
     end
+    if quote_supplied
+      quote_id = permitted_params[:vendor_quote_id].presence
+      reminder.vendor_quote = if quote_id.blank?
+        nil
+      elsif reminder.persisted? && quote_id == reminder.vendor_quote_id
+        reminder.vendor_quote
+      else
+        raise ActiveRecord::RecordNotFound unless reminder.event_plan
+
+        current_user.vendor_quotes.where(event_plan: reminder.event_plan).find(quote_id)
+      end
+    end
 
     reminder.event_plan ||= reminder.plan_task&.event_plan
+    reminder.event_plan ||= reminder.vendor_quote&.event_plan
     reminder.relationship_profile ||= reminder.event_plan&.relationship_profile
   end
 
@@ -345,11 +392,13 @@ class RemindersController < ApplicationController
     permitted_params = reminder_params
     plan_ids = [ reminder.event_plan_id, permitted_params[:event_plan_id] ].compact_blank
     task_ids = [ reminder.plan_task_id, permitted_params[:plan_task_id] ].compact_blank
+    quote_ids = [ reminder.vendor_quote_id, permitted_params[:vendor_quote_id] ].compact_blank
     plans = current_user.event_plans.where(id: plan_ids).order(:id).to_a
     tasks = PlanTask.joins(:event_plan)
       .where(event_plans: { user_id: current_user.id }, id: task_ids)
       .order(:id)
       .to_a
+    quotes = current_user.vendor_quotes.where(id: quote_ids).order(:id).to_a
     profile_ids = [
       reminder.relationship_profile_id,
       permitted_params[:relationship_profile_id],
@@ -357,7 +406,7 @@ class RemindersController < ApplicationController
     ].compact_blank
     profiles = current_user.relationship_profiles.where(id: profile_ids).order(:id).to_a
 
-    [ *profiles, *plans, *tasks, *([ reminder ] if reminder.persisted?) ]
+    [ *profiles, *plans, *tasks, *quotes, *([ reminder ] if reminder.persisted?) ]
   end
 
   def with_record_locks(records, index = 0, &)
@@ -392,6 +441,7 @@ class RemindersController < ApplicationController
       :commitment_id,
       :event_plan_id,
       :plan_task_id,
+      :vendor_quote_id,
       :title,
       :notes,
       :reminder_type,

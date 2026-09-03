@@ -24,6 +24,7 @@
 #  plan_task_id            :uuid
 #  relationship_profile_id :uuid
 #  user_id                 :uuid             not null
+#  vendor_quote_id         :uuid
 #
 # Indexes
 #
@@ -36,6 +37,7 @@
 #  index_reminders_on_relationship_profile_id              (relationship_profile_id)
 #  index_reminders_on_user_id                              (user_id)
 #  index_reminders_on_user_id_and_status_and_scheduled_at  (user_id,status,scheduled_at)
+#  index_reminders_on_vendor_quote_id                      (vendor_quote_id)
 #
 # Foreign Keys
 #
@@ -45,6 +47,7 @@
 #  fk_rails_...  (plan_task_id => plan_tasks.id) ON DELETE => nullify
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
+#  fk_rails_...  (vendor_quote_id => vendor_quotes.id) ON DELETE => nullify
 #
 require "rails_helper"
 
@@ -66,6 +69,19 @@ RSpec.describe Reminder, type: :model do
     plan_task = create(:plan_task, event_plan:)
 
     reminder = build(:reminder, user:, relationship_profile: profile, event_plan:, plan_task:)
+
+    expect(reminder).to be_valid
+  end
+
+  it "accepts a quote owned by the same user and event plan" do
+    quote = create(:vendor_quote)
+    reminder = build(
+      :reminder,
+      user: quote.user,
+      relationship_profile: quote.event_plan.relationship_profile,
+      event_plan: quote.event_plan,
+      vendor_quote: quote
+    )
 
     expect(reminder).to be_valid
   end
@@ -177,6 +193,23 @@ RSpec.describe Reminder, type: :model do
 
       expect(reminder).not_to be_valid
       expect(reminder.errors.of_kind?(:plan_task, :different_plan)).to be(true)
+    end
+
+    it "requires a quote reminder to reference its quote's owner and plan" do
+      owner = create(:user)
+      profile = create(:relationship_profile, user: owner)
+      plan = create(:event_plan, user: owner, relationship_profile: profile)
+      foreign_quote = create(:vendor_quote)
+      reminder = build(:reminder, user: owner, relationship_profile: profile, event_plan: plan, vendor_quote: foreign_quote)
+
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:vendor_quote, :different_owner)).to be(true)
+
+      other_plan = create(:event_plan, user: owner, relationship_profile: profile)
+      owned_quote = create(:vendor_quote, user: owner, event_plan: other_plan, vendor: create(:vendor, user: owner))
+      reminder.vendor_quote = owned_quote
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:vendor_quote, :different_plan)).to be(true)
     end
 
     it "rejects new reminder attachments to completed plans or tasks" do

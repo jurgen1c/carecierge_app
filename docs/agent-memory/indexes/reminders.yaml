@@ -13,6 +13,7 @@ default_queries:
   - commitment reminder integration overdue commitments
   - reminders workspace automation permission settings entry point
   - event plan plan task reminder association lifecycle retirement
+  - vendor quote expiration decision deadline reminder association
 watched_files:
   - app/models/reminder.rb
   - app/models/reminder_delivery.rb
@@ -23,7 +24,9 @@ watched_files:
   - app/models/relationship_profile.rb
   - app/models/important_date.rb
   - app/models/commitment.rb
+  - app/models/vendor_quote.rb
   - app/controllers/reminders_controller.rb
+  - app/controllers/vendor_quotes_controller.rb
   - app/controllers/notification_preferences_controller.rb
   - app/services/notification_preferences/save.rb
   - app/jobs/dispatch_due_reminders_job.rb
@@ -67,6 +70,7 @@ watched_files:
   - db/migrate/*relationship_notification_preferences*.rb
   - db/migrate/*digest_deliveries*.rb
   - db/migrate/*event_plans*.rb
+  - db/migrate/*vendor_quotes*.rb
 tags:
   - reminders
   - noticed

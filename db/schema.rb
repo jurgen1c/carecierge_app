@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_02_145635) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_03_044916) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -952,6 +952,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_145635) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.uuid "vendor_quote_id"
     t.index ["commitment_id"], name: "index_reminders_on_commitment_id"
     t.index ["event_plan_id"], name: "index_reminders_on_event_plan_id"
     t.index ["important_date_id"], name: "index_reminders_on_important_date_id"
@@ -961,6 +962,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_145635) do
     t.index ["relationship_profile_id"], name: "index_reminders_on_relationship_profile_id"
     t.index ["user_id", "status", "scheduled_at"], name: "index_reminders_on_user_id_and_status_and_scheduled_at"
     t.index ["user_id"], name: "index_reminders_on_user_id"
+    t.index ["vendor_quote_id"], name: "index_reminders_on_vendor_quote_id"
   end
 
   create_table "rollout_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1112,6 +1114,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_145635) do
     t.check_constraint "decision::text = ANY (ARRAY['considering'::character varying, 'rejected'::character varying, 'selected'::character varying]::text[])", name: "vendor_options_decision_check"
   end
 
+  create_table "vendor_quotes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "amount_cents", null: false
+    t.datetime "created_at", null: false
+    t.string "currency", default: "USD", null: false
+    t.date "decision_due_on"
+    t.uuid "event_plan_id", null: false
+    t.date "expires_on"
+    t.integer "lock_version", default: 0, null: false
+    t.text "next_action"
+    t.text "notes"
+    t.text "scope_details", null: false
+    t.string "status", default: "draft", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.uuid "vendor_id", null: false
+    t.index ["event_plan_id", "status", "expires_on"], name: "index_vendor_quotes_on_plan_status_and_expiration"
+    t.index ["event_plan_id"], name: "index_vendor_quotes_on_event_plan_id"
+    t.index ["user_id", "created_at"], name: "index_vendor_quotes_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_vendor_quotes_on_user_id"
+    t.index ["vendor_id"], name: "index_vendor_quotes_on_vendor_id"
+    t.check_constraint "amount_cents >= 0", name: "vendor_quotes_amount_nonnegative"
+    t.check_constraint "currency::text ~ '^[A-Z]{3}$'::text", name: "vendor_quotes_currency_format"
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'awaiting_response'::character varying, 'received'::character varying, 'under_review'::character varying, 'accepted'::character varying, 'declined'::character varying, 'expired'::character varying]::text[])", name: "vendor_quotes_supported_status"
+  end
+
   create_table "vendor_shortlists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.uuid "event_plan_id"
@@ -1232,6 +1259,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_145635) do
   add_foreign_key "reminders", "plan_tasks", on_delete: :nullify
   add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade
   add_foreign_key "reminders", "users", on_delete: :cascade
+  add_foreign_key "reminders", "vendor_quotes", on_delete: :nullify
   add_foreign_key "social_context_notes", "relationship_profiles", on_delete: :cascade
   add_foreign_key "suggestion_feedbacks", "relationship_profiles", on_delete: :cascade
   add_foreign_key "suggestion_feedbacks", "users", on_delete: :cascade
@@ -1242,6 +1270,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_145635) do
   add_foreign_key "vault_access_events", "users", on_delete: :cascade
   add_foreign_key "vendor_options", "vendor_shortlists", on_delete: :cascade
   add_foreign_key "vendor_options", "vendors"
+  add_foreign_key "vendor_quotes", "event_plans", on_delete: :cascade
+  add_foreign_key "vendor_quotes", "users", on_delete: :cascade
+  add_foreign_key "vendor_quotes", "vendors"
   add_foreign_key "vendor_shortlists", "event_plans", on_delete: :cascade
   add_foreign_key "vendor_shortlists", "relationship_profiles", on_delete: :cascade
   add_foreign_key "vendor_shortlists", "users", on_delete: :cascade

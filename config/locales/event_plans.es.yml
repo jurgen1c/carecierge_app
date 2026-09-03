@@ -50,6 +50,7 @@ es:
       edit_plan: "Editar plan"
       find_vendors: "Buscar proveedores"
       compare_vendors: "Comparar proveedores"
+      compare_quotes: "Comparar cotizaciones"
       complete_plan: "Completar plan"
       reopen_plan: "Reabrir plan"
       progress: "%{completed} de %{total} pasos completados"

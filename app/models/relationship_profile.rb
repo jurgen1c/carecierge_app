@@ -123,6 +123,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :gift_recommendations, dependent: :destroy
   has_many :event_plans, dependent: :destroy
   has_many :vendor_shortlists, dependent: :destroy
+  has_many :vendor_quotes, through: :event_plans
   has_many :personal_touch_checklists, dependent: :destroy
   has_many :memory_records, dependent: :destroy
   has_many :social_context_notes, dependent: :destroy

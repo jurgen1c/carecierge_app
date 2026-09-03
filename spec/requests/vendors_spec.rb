@@ -15,6 +15,7 @@ RSpec.describe "Vendors", type: :request do
     expect(response.body).not_to include("Foreign vendor")
     expect(response.body).to include("Carecierge does not contact or book vendors")
     expect(response.body).to include(new_vendor_path(event_plan_id: plan.id))
+    expect(response.body).to include(vendor_quotes_path)
   end
 
   it "makes the clear link explicitly remove event-plan search defaults" do
@@ -194,7 +195,7 @@ RSpec.describe "Vendors", type: :request do
     end.not_to change(Vendor, :count)
 
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.body).to include("Remove this vendor from every comparison before deleting it")
+    expect(response.body).to include("Remove this vendor from every quote or comparison before deleting it")
     expect(option.reload.notes).to eq("Keep this comparison context")
   end
 

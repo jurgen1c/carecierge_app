@@ -4,6 +4,7 @@ en:
       title: "Find a vendor"
       body: "Keep sourced options in one private shortlist, then narrow them by the details that matter for the moment."
       add: "Add a vendor"
+      quotes: "Quote history"
       compare: "Compare shortlists"
       plan_budget: "Budget %{amount}"
       results:
@@ -141,7 +142,7 @@ en:
         vendor:
           attributes:
             base:
-              used_in_comparisons: "Remove this vendor from every comparison before deleting it"
+              used_in_quotes_or_comparisons: "Remove this vendor from every quote or comparison before deleting it"
         event_plan_vendor:
           attributes:
             vendor:

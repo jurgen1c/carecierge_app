@@ -1,6 +1,6 @@
 id: data_controls
 name: Data Controls
-summary: Owner-scoped account portability, protected export boundaries, and privacy-minimized permanent deletion.
+summary: Owner-scoped account portability, including manual vendor quotes, protected export boundaries, and privacy-minimized permanent deletion.
 claim_globs:
   - claims/data_controls/**/*.md
 default_queries:
@@ -10,6 +10,7 @@ default_queries:
   - social context abandoned upload cleanup owner metadata foreign key
   - deletion request account digest audit evidence
   - event plans plan tasks AI suggestions export selective deletion reminder preservation
+  - vendor quote export decrypted scope notes vendor provenance account plan deletion
 watched_files:
   - app/controllers/data_controls_controller.rb
   - app/controllers/data_exports_controller.rb
@@ -23,6 +24,7 @@ watched_files:
   - app/models/feed_item_state.rb
   - app/models/social_context_note.rb
   - app/models/user.rb
+  - app/models/vendor_quote.rb
   - app/policies/data_control_policy.rb
   - app/serializers/data_exports/**/*.rb
   - app/services/data_deletions/**/*.rb
@@ -38,9 +40,11 @@ watched_files:
   - db/migrate/*feed_item_states*.rb
   - db/migrate/*social_context*.rb
   - db/migrate/*event_plans*.rb
+  - db/migrate/*vendor_quotes*.rb
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb
   - spec/system/data_controls_spec.rb
+  - spec/serializers/data_exports/snapshot_spec.rb
 tags:
   - data_controls
   - privacy

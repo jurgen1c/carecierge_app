@@ -1,0 +1,76 @@
+<% disable_turbo_cache %>
+<main aria-labelledby="vendor-quotes-title" class="mx-auto w-full max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
+  <% if @event_plan %>
+  <header class="border-b border-private-line pb-6">
+    <% if @event_plan.archived? || @event_plan.relationship_profile.discarded? %>
+      <%= link_to t("vendor_quotes.index.history_fallback"), vendor_quotes_path, class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
+    <% else %>
+      <%= link_to t("vendor_quotes.index.back"), event_plan_path(@event_plan), class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
+    <% end %>
+    <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <p class="text-sm font-semibold text-primary"><%= @event_plan.relationship_profile.display_name %></p>
+        <h1 id="vendor-quotes-title" class="mt-1 text-3xl font-semibold text-ink"><%= t("vendor_quotes.index.title") %></h1>
+        <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("vendor_quotes.index.body", plan: @event_plan.title) %></p>
+      </div>
+      <% if @editable %>
+        <%= link_to t("vendor_quotes.actions.add"), new_event_plan_vendor_quote_path(@event_plan), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <% end %>
+    </div>
+  </header>
+
+  <% unless @editable %>
+    <p role="status" class="my-5 rounded-xl border border-private-line bg-surface p-4 text-sm font-semibold text-quiet-note"><%= t("vendor_quotes.index.read_only") %></p>
+  <% end %>
+
+  <% if @quotes.any? %>
+    <div class="py-6"><%= component "vendor_quote_comparison", event_plan: @event_plan, quotes: @quotes, as_of: @as_of, editable: @editable %></div>
+  <% else %>
+    <section aria-labelledby="vendor-quotes-empty-title" class="py-8">
+      <h2 id="vendor-quotes-empty-title" class="text-xl font-semibold text-ink"><%= t("vendor_quotes.index.empty_title") %></h2>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("vendor_quotes.index.empty_body") %></p>
+      <% if @editable %><%= link_to t("vendor_quotes.actions.add"), new_event_plan_vendor_quote_path(@event_plan), class: "mt-4 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover" %><% end %>
+    </section>
+  <% end %>
+
+  <p class="border-t border-private-line pt-5 text-sm leading-6 text-quiet-note"><%= t("vendor_quotes.review_only") %></p>
+  <% else %>
+    <header class="border-b border-private-line pb-6">
+      <%= link_to t("vendor_quotes.index.history_back"), vendors_path, class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
+      <h1 id="vendor-quotes-title" class="mt-3 text-3xl font-semibold text-ink"><%= t("vendor_quotes.index.history_title") %></h1>
+      <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("vendor_quotes.index.history_body") %></p>
+    </header>
+
+    <% if @quote_groups.any? %>
+      <ol class="divide-y divide-private-line">
+        <% @quote_groups.each do |event_plan, quotes| %>
+          <li class="py-5">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm font-semibold text-primary"><%= event_plan.relationship_profile.display_name %></p>
+                <h2 class="mt-1 text-lg font-semibold text-ink"><%= event_plan.title %></h2>
+                <p class="mt-2 text-sm leading-6 text-quiet-note"><%= quotes.map { |quote| quote.vendor.name }.join(", ") %></p>
+              </div>
+              <%= link_to t("vendor_quotes.index.history_review"), event_plan_vendor_quotes_path(event_plan), class: "inline-flex min-h-11 w-fit items-center justify-center rounded-lg border border-private-line bg-canvas px-4 py-2 text-sm font-semibold text-ink hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <section aria-labelledby="vendor-quotes-empty-title" class="py-8">
+        <h2 id="vendor-quotes-empty-title" class="text-xl font-semibold text-ink"><%= t("vendor_quotes.index.history_empty_title") %></h2>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("vendor_quotes.index.history_empty_body") %></p>
+      </section>
+    <% end %>
+
+    <% if @pagy.last > 1 %>
+      <nav aria-label="<%= t("vendor_quotes.pagination.label") %>" class="flex items-center justify-between border-t border-private-line py-5">
+        <% if @pagy.previous %><%= link_to t("vendor_quotes.pagination.previous"), url_for(request.query_parameters.merge("page" => @pagy.previous)), class: "min-h-11 rounded-lg px-4 py-3 text-sm font-semibold text-primary hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %><% else %><span></span><% end %>
+        <span class="text-sm text-quiet-note"><%= t("vendor_quotes.pagination.page", page: @pagy.page, pages: @pagy.last) %></span>
+        <% if @pagy.next %><%= link_to t("vendor_quotes.pagination.next"), url_for(request.query_parameters.merge("page" => @pagy.next)), class: "min-h-11 rounded-lg px-4 py-3 text-sm font-semibold text-primary hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %><% end %>
+      </nav>
+    <% end %>
+
+    <p class="border-t border-private-line pt-5 text-sm leading-6 text-quiet-note"><%= t("vendor_quotes.review_only") %></p>
+  <% end %>
+</main>

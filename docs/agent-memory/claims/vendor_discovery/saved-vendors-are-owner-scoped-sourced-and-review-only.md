@@ -3,7 +3,7 @@ id: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
 type: fact
 system: vendor_discovery
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Saved vendors are owner-scoped, sourced, and review-only
@@ -26,8 +26,9 @@ claim: >
   detachment re-resolve their vendor or join inside those locks. Attaching,
   detaching, saving, editing, or deleting never contacts, books, purchases from,
   or otherwise acts through a vendor. A saved vendor cannot be deleted while it
-  belongs to a comparison, preserving private notes and decisions until the
-  owner explicitly removes the option. Account exports include
+  belongs to a quote or shortlist comparison; the shared localized rejection
+  identifies both reference types so the owner can remove the relevant private
+  evidence first. Account exports include
   decrypted vendor details, provenance, and event-plan attachments, while
   ownership foreign keys cascade through account deletion. The surface is
   available in English and Spanish. External provider discovery and vendor
@@ -108,7 +109,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: bd1bb48cb483d0891b9342e2f18c3f465f7d8784
+last_verified_commit: null
 ---
 
 # Saved vendors are owner-scoped, sourced, and review-only

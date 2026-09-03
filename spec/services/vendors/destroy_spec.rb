@@ -32,6 +32,7 @@ RSpec.describe Vendors::Destroy do
       described_class.call(vendor:)
     end.to raise_error(ActiveRecord::RecordInvalid)
 
+    expect(vendor.errors.details[:base]).to include(error: :used_in_quotes_or_comparisons)
     expect(vendor.errors[:base]).to include("Remove this vendor from every quote or comparison before deleting it")
     expect(quote.reload.notes).to eq("Keep this private quote note")
   end

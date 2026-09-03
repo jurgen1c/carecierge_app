@@ -142,7 +142,7 @@ en:
         vendor:
           attributes:
             base:
-              used_in_comparisons: "Remove this vendor from every quote or comparison before deleting it"
+              used_in_quotes_or_comparisons: "Remove this vendor from every quote or comparison before deleting it"
         event_plan_vendor:
           attributes:
             vendor:

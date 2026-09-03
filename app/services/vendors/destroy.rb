@@ -27,7 +27,7 @@ module Vendors
     def reject_reference_use!
       return unless vendor.vendor_options.exists? || vendor.vendor_quotes.exists?
 
-      vendor.errors.add(:base, :used_in_comparisons)
+      vendor.errors.add(:base, :used_in_quotes_or_comparisons)
       raise ActiveRecord::RecordInvalid, vendor
     end
   end

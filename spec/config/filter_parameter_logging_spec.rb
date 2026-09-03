@@ -93,6 +93,13 @@ RSpec.describe "Parameter filtering" do
         "next_action" => "Private next step",
         "vendor_id" => SecureRandom.uuid
       },
+      "vendor_quote" => {
+        "amount" => "1250.00",
+        "currency" => "USD",
+        "scope_details" => "Private event scope",
+        "next_action" => "Confirm the deposit",
+        "notes" => "Private quote notes"
+      },
       "plan_task" => {
         "title" => "Private planning step",
         "details" => "Private step details",
@@ -128,6 +135,11 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("mood_note", "category")).to eq("stressed")
     expect(filtered.dig("reminder", "notes")).to eq("[FILTERED]")
     expect(filtered.dig("reminder", "title")).to eq("[FILTERED]")
+    expect(filtered.dig("vendor_quote", "amount")).to eq("[FILTERED]")
+    expect(filtered.dig("vendor_quote", "scope_details")).to eq("[FILTERED]")
+    expect(filtered.dig("vendor_quote", "next_action")).to eq("[FILTERED]")
+    expect(filtered.dig("vendor_quote", "notes")).to eq("[FILTERED]")
+    expect(filtered.dig("vendor_quote", "currency")).to eq("USD")
     expect(filtered.dig("commitment", "notes")).to eq("[FILTERED]")
     expect(filtered.dig("commitment", "title")).to eq("Send David the report")
     expect(filtered.dig("interaction", "notes")).to eq("[FILTERED]")

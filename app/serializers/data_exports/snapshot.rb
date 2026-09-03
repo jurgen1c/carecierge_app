@@ -146,6 +146,7 @@ module DataExports
           attributes_for(task, except: %w[event_plan_id lock_version])
         end,
         "vendors" => plan.vendors.map { |vendor| vendor_attributes(vendor) },
+        "vendor_quotes" => plan.vendor_quotes.map { |quote| vendor_quote_attributes(quote) },
         "backup_plans" => plan.backup_plans.map { |backup_plan| backup_plan_attributes(backup_plan) }
       )
     end
@@ -173,11 +174,17 @@ module DataExports
       )
     end
 
+    def vendor_quote_attributes(quote)
+      attributes_for(quote, except: %w[user_id event_plan_id vendor_id lock_version]).merge(
+        "vendor" => vendor_attributes(quote.vendor)
+      )
+    end
+
     def event_plans_for(profile)
       @event_plans_by_profile_id ||= {}
       @event_plans_by_profile_id[profile.id] ||= profile.event_plans
         .ordered
-        .includes(:plan_tasks, { vendors: :event_plan_vendors }, backup_plans: :backup_options)
+        .includes(:plan_tasks, { vendors: :event_plan_vendors }, { vendor_quotes: { vendor: :event_plan_vendors } }, backup_plans: :backup_options)
         .to_a
     end
 

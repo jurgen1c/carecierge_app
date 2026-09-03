@@ -24,6 +24,7 @@
 #  plan_task_id            :uuid
 #  relationship_profile_id :uuid
 #  user_id                 :uuid             not null
+#  vendor_quote_id         :uuid
 #
 # Indexes
 #
@@ -36,6 +37,7 @@
 #  index_reminders_on_relationship_profile_id              (relationship_profile_id)
 #  index_reminders_on_user_id                              (user_id)
 #  index_reminders_on_user_id_and_status_and_scheduled_at  (user_id,status,scheduled_at)
+#  index_reminders_on_vendor_quote_id                      (vendor_quote_id)
 #
 # Foreign Keys
 #
@@ -45,6 +47,7 @@
 #  fk_rails_...  (plan_task_id => plan_tasks.id) ON DELETE => nullify
 #  fk_rails_...  (relationship_profile_id => relationship_profiles.id) ON DELETE => cascade
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
+#  fk_rails_...  (vendor_quote_id => vendor_quotes.id) ON DELETE => nullify
 #
 class Reminder < ApplicationRecord
   include FeedItemStateSource
@@ -60,6 +63,7 @@ class Reminder < ApplicationRecord
   belongs_to :commitment, optional: true
   belongs_to :event_plan, optional: true
   belongs_to :plan_task, optional: true
+  belongs_to :vendor_quote, optional: true
 
   has_many :reminder_deliveries, dependent: :destroy
   has_many :noticed_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
@@ -78,6 +82,7 @@ class Reminder < ApplicationRecord
   validate :important_date_matches_relationship
   validate :commitment_matches_relationship
   validate :event_planning_context_matches_owner_and_relationship
+  validate :vendor_quote_matches_owner_and_plan
 
   before_validation :initialize_next_delivery_at, on: :create
   before_validation :refresh_recurrence_anchor
@@ -223,10 +228,18 @@ class Reminder < ApplicationRecord
     errors.add(:plan_task, :superseded) if planning_attachment_added_or_changed? && plan_task.superseded?
   end
 
+  def vendor_quote_matches_owner_and_plan
+    return if vendor_quote.blank?
+
+    errors.add(:vendor_quote, :different_owner) if vendor_quote.user_id != user_id
+    errors.add(:vendor_quote, :different_plan) if event_plan.blank? || vendor_quote.event_plan_id != event_plan_id
+  end
+
   def planning_attachment_added_or_changed?
     new_record? ||
       will_save_change_to_event_plan_id? && event_plan_id.present? ||
-      will_save_change_to_plan_task_id? && plan_task_id.present?
+      will_save_change_to_plan_task_id? && plan_task_id.present? ||
+      will_save_change_to_vendor_quote_id? && vendor_quote_id.present?
   end
 
   def initialize_next_delivery_at

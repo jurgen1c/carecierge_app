@@ -57,6 +57,7 @@ class EventPlan < ApplicationRecord
   has_many :event_plan_vendors, dependent: :destroy
   has_many :vendors, -> { ordered }, through: :event_plan_vendors
   has_many :vendor_shortlists, dependent: :destroy
+  has_many :vendor_quotes, -> { ordered }, dependent: :destroy
   has_many :targeted_audit_events, as: :target, class_name: "AuditEvent", dependent: :nullify
 
   serialize :source_context, coder: JSON

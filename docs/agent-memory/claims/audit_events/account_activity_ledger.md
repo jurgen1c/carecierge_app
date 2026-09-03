@@ -15,7 +15,9 @@ claim: >
   targets, arbitrary keys, nested payloads, and persisted mutation. Target
   deletion nullifies the reference; insertion re-resolves and locks the target
   so concurrent deletion cannot leave a dangling ID. Profile and reminder
-  mutations record through AuditEvents::Track. Automation permissions add the
+  mutations record through AuditEvents::Track. Vendor-quote reminder handoffs
+  reuse those generic reminder events without copying quote content into audit
+  metadata. Automation permissions add the
   generic event beside specialized evidence in the same owner lock, while vault
   events preserve existing transactional and best-effort semantics. Approval
   queue decisions target owner-matched requests with request-kind and result
@@ -67,6 +69,8 @@ related_files:
   - spec/services/approval_decisions/apply_spec.rb
   - app/services/memory_extractions/review.rb
   - spec/services/memory_extractions/review_spec.rb
+  - app/controllers/reminders_controller.rb
+  - spec/requests/reminders_spec.rb
 
 symbols:
   - AuditEvent

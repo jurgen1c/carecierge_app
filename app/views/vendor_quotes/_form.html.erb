@@ -1,0 +1,38 @@
+<% form_url = @vendor_quote.persisted? ? vendor_quote_path(@vendor_quote) : event_plan_vendor_quotes_path(@event_plan) %>
+<%= form_with model: @vendor_quote, url: form_url, class: "grid gap-6 py-6" do |form| %>
+  <%= form.hidden_field :lock_version if @vendor_quote.persisted? %>
+  <% if @vendor_quote.errors.any? %>
+    <section role="alert" aria-labelledby="vendor-quote-errors-title" class="rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink">
+      <h2 id="vendor-quote-errors-title" class="font-semibold"><%= t("vendor_quotes.form.errors", count: @vendor_quote.errors.count) %></h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm"><% @vendor_quote.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </section>
+  <% end %>
+
+  <% if @vendor_quote.persisted? %>
+    <div><p class="text-sm font-semibold text-ink"><%= t("vendor_quotes.form.vendor") %></p><p class="mt-2 text-base text-quiet-note"><%= @vendor_quote.vendor.name %></p></div>
+  <% else %>
+    <div>
+      <%= form.label :vendor_id, t("vendor_quotes.form.vendor"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.collection_select :vendor_id, @vendors, :id, :name, { prompt: t("vendor_quotes.form.vendor_prompt") }, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+      <% if @vendors.empty? %><p class="mt-2 text-sm text-quiet-note"><%= t("vendor_quotes.form.no_vendors") %> <%= link_to t("vendor_quotes.form.add_vendor"), new_vendor_path(event_plan_id: @event_plan.id), class: "font-semibold text-primary underline underline-offset-4" %></p><% end %>
+    </div>
+  <% end %>
+
+  <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_10rem]">
+    <div><%= form.label :amount, t("vendor_quotes.form.amount"), class: "block text-sm font-semibold text-ink" %><%= form.text_field :amount, inputmode: "decimal", required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %></div>
+    <div><%= form.label :currency, t("vendor_quotes.form.currency"), class: "block text-sm font-semibold text-ink" %><%= form.text_field :currency, maxlength: 3, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base uppercase text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %></div>
+  </div>
+  <div><%= form.label :scope_details, t("vendor_quotes.form.scope"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :scope_details, rows: 4, maxlength: VendorQuote::MAX_SCOPE_LENGTH, required: true, class: "mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %><p class="mt-1 text-xs leading-5 text-quiet-note"><%= t("vendor_quotes.form.scope_hint") %></p></div>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div><%= form.label :expires_on, t("vendor_quotes.form.expires_on"), class: "block text-sm font-semibold text-ink" %><%= form.date_field :expires_on, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+    <div><%= form.label :decision_due_on, t("vendor_quotes.form.decision_due_on"), class: "block text-sm font-semibold text-ink" %><%= form.date_field :decision_due_on, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+  </div>
+  <div><%= form.label :status, t("vendor_quotes.form.status"), class: "block text-sm font-semibold text-ink" %><%= form.select :status, VendorQuote::STATUSES.map { |status| [ t("vendor_quotes.statuses.#{status}"), status ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+  <div><%= form.label :next_action, t("vendor_quotes.form.next_action"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :next_action, rows: 2, maxlength: VendorQuote::MAX_NEXT_ACTION_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %></div>
+  <div><%= form.label :notes, t("vendor_quotes.form.notes"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :notes, rows: 4, maxlength: VendorQuote::MAX_NOTES_LENGTH, class: "mt-2 min-h-28 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %><p class="mt-1 text-xs leading-5 text-quiet-note"><%= t("vendor_quotes.form.notes_hint") %></p></div>
+
+  <div class="flex flex-wrap gap-2 border-t border-private-line pt-5">
+    <%= form.submit @vendor_quote.persisted? ? t("vendor_quotes.form.update") : t("vendor_quotes.form.create"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    <%= link_to t("vendor_quotes.form.cancel"), event_plan_vendor_quotes_path(@event_plan), class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-surface" %>
+  </div>
+<% end %>

@@ -9,12 +9,12 @@ module Vendors
     def call
       vendor.user.with_lock("FOR NO KEY UPDATE") do
         vendor.lock!
-        reject_comparison_use!
+        reject_reference_use!
 
         begin
           vendor.transaction(requires_new: true) { vendor.destroy! }
         rescue ActiveRecord::InvalidForeignKey, ActiveRecord::RecordNotDestroyed
-          reject_comparison_use!
+          reject_reference_use!
           raise
         end
       end
@@ -24,8 +24,8 @@ module Vendors
 
     attr_reader :vendor
 
-    def reject_comparison_use!
-      return unless vendor.vendor_options.exists?
+    def reject_reference_use!
+      return unless vendor.vendor_options.exists? || vendor.vendor_quotes.exists?
 
       vendor.errors.add(:base, :used_in_comparisons)
       raise ActiveRecord::RecordInvalid, vendor

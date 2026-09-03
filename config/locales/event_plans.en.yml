@@ -50,6 +50,7 @@ en:
       edit_plan: "Edit plan"
       find_vendors: "Find vendors"
       compare_vendors: "Compare vendors"
+      compare_quotes: "Compare quotes"
       complete_plan: "Complete plan"
       reopen_plan: "Reopen plan"
       progress: "%{completed} of %{total} steps completed"

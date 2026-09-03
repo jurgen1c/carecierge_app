@@ -44,7 +44,10 @@ claim: >
   legacy OpenAI-only model credential and is passed directly to the selected
   provider even when it is newer than RubyLLM's bundled model registry;
   repository defaults retain registry validation.
-  Current, non-stale public relationship evidence is eligible by default;
+  Active plans can own multiple manual vendor quotes. Those quotes are compared
+  without external action, become read-only when the plan becomes completed or
+  archived, and remain explicitly removable. Current, non-stale public
+  relationship evidence is eligible by default;
   private notes require an identifiable per-request selection, while protected sources also
   require current suggestion approval, an identifiable unlocked choice, and a
   revalidated vault lease. Source dates use the owner's local calendar. Later
@@ -91,6 +94,9 @@ related_files:
   - app/services/memory_extractions/review.rb
   - app/models/reminder.rb
   - app/controllers/reminders_controller.rb
+  - app/models/vendor_quote.rb
+  - app/controllers/vendor_quotes_controller.rb
+  - app/views/components/vendor_quote_comparison_component.html.erb
   - app/serializers/data_exports/snapshot.rb
   - app/services/data_deletions/delete_ai_data.rb
   - app/views/components/event_plan_workspace_component.rb
@@ -115,6 +121,7 @@ related_files:
   - spec/requests/event_plans_spec.rb
   - spec/config/ai_memory_deploy_spec.rb
   - spec/serializers/data_exports/snapshot_spec.rb
+  - spec/requests/vendor_quotes_spec.rb
   - spec/system/event_plans_spec.rb
 symbols:
   - EventPlan

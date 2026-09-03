@@ -1,0 +1,129 @@
+es:
+  vendor_quotes:
+    index:
+      title: "Cotizaciones de proveedores"
+      body: "Compara ofertas, fechas y seguimientos de %{plan} en un solo lugar privado."
+      back: "Volver al plan del evento"
+      history_fallback: "Volver al historial de cotizaciones"
+      history_title: "Historial de cotizaciones"
+      history_body: "Vuelve a los detalles de cotizaciones de planes activos, completados o archivados."
+      history_back: "Volver a proveedores"
+      history_empty_title: "Todavía no hay historial de cotizaciones"
+      history_empty_body: "Las cotizaciones que guardes para un plan de evento aparecerán aquí."
+      history_review: "Revisar cotizaciones del plan"
+      read_only: "Los detalles de las cotizaciones son de solo lectura porque este plan ya no está activo. Aún puedes eliminar cotizaciones guardadas."
+      empty_title: "Todavía no hay cotizaciones"
+      empty_body: "Agrega la primera cotización para comparar ofertas de este plan."
+    new:
+      title: "Agregar cotización de proveedor"
+      body: "Registra una oferta para %{plan}. No se envía nada al proveedor."
+    edit:
+      title: "Revisar cotización"
+      body: "Mantén precisa la oferta de %{vendor} para %{plan} y decide tu siguiente paso."
+    comparison:
+      title: "Comparar cotizaciones"
+      body:
+        one: "Revisa 1 cotización de este plan."
+        other: "Revisa %{count} cotizaciones de este plan."
+      caption: "Comparación de cotizaciones de proveedores"
+      amount_display: "%{amount} %{currency}"
+      number:
+        delimiter: "."
+        separator: ","
+      no_deadline: "Sin fecha límite"
+      not_provided: "No indicado"
+      columns:
+        vendor: "Proveedor"
+        amount: "Monto"
+        status: "Estado"
+        deadline: "Fechas límite"
+        scope: "Alcance"
+        notes: "Notas privadas"
+        next_action: "Siguiente acción"
+        actions: "Acciones"
+      deadline_labels:
+        decision_due_on: "Fecha límite para decidir"
+        expires_on: "Vence"
+    actions:
+      add: "Agregar cotización"
+      review: "Revisar cotización"
+      reminder: "Configurar recordatorio"
+      delete: "Eliminar cotización"
+      delete_confirm: "¿Eliminar la cotización guardada de %{vendor}? Los recordatorios existentes se conservarán."
+    form:
+      vendor: "Proveedor"
+      vendor_prompt: "Elige un proveedor guardado"
+      no_vendors: "Todavía no hay proveedores guardados."
+      add_vendor: "Agrega un proveedor primero"
+      amount: "Monto de la cotización"
+      currency: "Moneda"
+      scope: "Alcance y términos"
+      scope_hint: "Registra qué incluye la oferta, exclusiones importantes y condiciones de pago."
+      expires_on: "Vencimiento de la cotización"
+      decision_due_on: "Fecha límite para decidir"
+      status: "Estado"
+      next_action: "Siguiente acción"
+      notes: "Notas privadas"
+      notes_hint: "Estas notas permanecen en tu cuenta y nunca se envían al proveedor."
+      create: "Guardar cotización"
+      update: "Guardar cambios"
+      cancel: "Cancelar"
+      errors:
+        one: "Revisa este detalle de la cotización"
+        other: "Revisa estos %{count} detalles de la cotización"
+    statuses:
+      draft: "Borrador"
+      awaiting_response: "En espera de respuesta"
+      received: "Recibida"
+      under_review: "En revisión"
+      accepted: "Aceptada"
+      declined: "Rechazada"
+      expired: "Vencida"
+    create:
+      notice: "Cotización guardada."
+    update:
+      notice: "Cotización actualizada."
+      changed: "La cotización cambió antes de guardar tu actualización. Revísala e inténtalo de nuevo."
+    destroy:
+      notice: "Cotización eliminada."
+    reminder:
+      title: "Dar seguimiento a %{vendor}"
+      context: "Cotización de %{vendor}"
+    pagination:
+      label: "Páginas del historial de cotizaciones"
+      previous: "Anterior"
+      next: "Siguiente"
+      page: "Página %{page} de %{pages}"
+    review_only: "Carecierge guarda esta comparación para tu revisión. No contacta proveedores, acepta ofertas, reserva servicios, compra ni paga."
+  activerecord:
+    attributes:
+      vendor_quote:
+        vendor: "Proveedor"
+        amount: "Monto de la cotización"
+        currency: "Moneda"
+        scope_details: "Alcance y términos"
+        expires_on: "Vencimiento de la cotización"
+        decision_due_on: "Fecha límite para decidir"
+        status: "Estado"
+        next_action: "Siguiente acción"
+        notes: "Notas privadas"
+    errors:
+      models:
+        vendor_quote:
+          attributes:
+            amount:
+              invalid_scale: "debe usar como máximo dos decimales"
+            event_plan:
+              different_owner: "debe pertenecerte"
+              inactive: "debe estar activo"
+            vendor:
+              different_owner: "debe pertenecerte"
+            relationship_profile:
+              inactive: "debe estar activa"
+            decision_due_on:
+              after_expiration: "debe ser igual o anterior al vencimiento de la cotización"
+        reminder:
+          attributes:
+            vendor_quote:
+              different_owner: "debe pertenecerte"
+              different_plan: "debe pertenecer al plan de evento seleccionado"

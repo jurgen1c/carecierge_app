@@ -20,8 +20,20 @@ RSpec.describe Vendors::Destroy do
       described_class.call(vendor:)
     end.to raise_error(ActiveRecord::RecordInvalid)
 
-    expect(vendor.errors[:base]).to include("Remove this vendor from every comparison before deleting it")
+    expect(vendor.errors[:base]).to include("Remove this vendor from every quote or comparison before deleting it")
     expect(option.reload.notes).to eq("Keep this private comparison note")
+  end
+
+  it "preserves vendors referenced by saved quotes" do
+    quote = create(:vendor_quote, notes: "Keep this private quote note")
+    vendor = quote.vendor
+
+    expect do
+      described_class.call(vendor:)
+    end.to raise_error(ActiveRecord::RecordInvalid)
+
+    expect(vendor.errors[:base]).to include("Remove this vendor from every quote or comparison before deleting it")
+    expect(quote.reload.notes).to eq("Keep this private quote note")
   end
 
   it "normalizes a comparison race discovered while destroying the vendor" do
@@ -36,6 +48,6 @@ RSpec.describe Vendors::Destroy do
       described_class.call(vendor:)
     end.to raise_error(ActiveRecord::RecordInvalid)
 
-    expect(vendor.errors[:base]).to include("Remove this vendor from every comparison before deleting it")
+    expect(vendor.errors[:base]).to include("Remove this vendor from every quote or comparison before deleting it")
   end
 end

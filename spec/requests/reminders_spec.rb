@@ -157,6 +157,120 @@ RSpec.describe "Reminders", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
+    it "prefills and persists an owner-scoped quote reminder before its earliest deadline" do
+      quote = create(
+        :vendor_quote,
+        decision_due_on: Date.new(2026, 9, 18),
+        expires_on: Date.new(2026, 9, 20),
+        next_action: "Confirm the deposit"
+      )
+      create(:notification_preference, user: quote.user, time_zone: "America/Costa_Rica", time_zone_configured: true)
+      sign_in quote.user
+
+      Timecop.freeze(Time.zone.local(2026, 9, 10, 8)) do
+        get new_reminder_path(event_plan_id: quote.event_plan_id, vendor_quote_id: quote.id)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body.at_css("input[name='reminder[title]']")&.[]("value")).to eq("Follow up with #{quote.vendor.name}")
+        expect(response.parsed_body.at_css("input[name='reminder[vendor_quote_id]']")&.[]("value")).to eq(quote.id)
+        expect(response.parsed_body.at_css("input[name='reminder[scheduled_at]']")&.[]("value")).to eq("2026-09-17T09:00")
+        expect(response.parsed_body.at_css("textarea[name='reminder[notes]']")&.text).to be_blank
+
+        expect do
+          post reminders_path, params: {
+            reminder: {
+              relationship_profile_id: quote.event_plan.relationship_profile_id,
+              event_plan_id: quote.event_plan_id,
+              vendor_quote_id: quote.id,
+              title: "Follow up with #{quote.vendor.name}",
+              notes: quote.next_action,
+              reminder_type: "event_preparation",
+              priority: "normal",
+              recurrence: "none",
+              time_zone: "America/Costa_Rica",
+              scheduled_at: "2026-09-17T09:00"
+            }
+          }
+        end.to change(Reminder, :count).by(1)
+      end
+
+      expect(Reminder.last.vendor_quote).to eq(quote)
+    end
+
+    it "reloads timezone capture before computing a quote deadline default" do
+      quote = create(:vendor_quote, decision_due_on: Date.new(2026, 9, 18))
+      sign_in quote.user
+
+      Timecop.freeze(Time.zone.local(2026, 9, 10, 8)) do
+        get new_reminder_path(event_plan_id: quote.event_plan_id, vendor_quote_id: quote.id)
+
+        expect(response.body).to include(%(data-timezone-capture-value="true"))
+        expect(response.body).to include(%(data-timezone-reload-value="true"))
+
+        get new_reminder_path(event_plan_id: quote.event_plan_id, vendor_quote_id: quote.id, time_zone: "America/Costa_Rica")
+
+        expect(response.parsed_body.at_css("input[name='reminder[scheduled_at]']")&.[]("value")).to eq("2026-09-17T09:00")
+      end
+    end
+
+    it "uses the captured browser calendar day for a same-day quote deadline" do
+      quote = create(:vendor_quote, decision_due_on: Date.new(2026, 9, 17), expires_on: nil)
+      sign_in quote.user
+
+      Timecop.freeze(Time.utc(2026, 9, 18, 4, 30)) do
+        get new_reminder_path(event_plan_id: quote.event_plan_id, vendor_quote_id: quote.id)
+        expect(response.body).to include(%(data-timezone-capture-value="true"))
+
+        get new_reminder_path(
+          event_plan_id: quote.event_plan_id,
+          vendor_quote_id: quote.id,
+          time_zone: "America/Costa_Rica"
+        )
+
+        expect(response.parsed_body.at_css("input[name='reminder[scheduled_at]']")&.[]("value")).to eq("2026-09-17T23:00")
+      end
+    end
+
+    it "keeps near quote deadline defaults in the future and never defaults after an elapsed deadline" do
+      quote = create(:vendor_quote)
+      create(:notification_preference, user: quote.user, time_zone: "America/Costa_Rica", time_zone_configured: true)
+      sign_in quote.user
+
+      Timecop.freeze(Time.find_zone!("America/Costa_Rica").local(2026, 9, 17, 15, 20)) do
+        quote.update!(decision_due_on: Date.new(2026, 9, 18), expires_on: nil)
+        get new_reminder_path(event_plan_id: quote.event_plan_id, vendor_quote_id: quote.id)
+        expect(response.parsed_body.at_css("input[name='reminder[scheduled_at]']")&.[]("value")).to eq("2026-09-17T16:00")
+
+        quote.update!(decision_due_on: Date.new(2026, 9, 17))
+        get new_reminder_path(event_plan_id: quote.event_plan_id, vendor_quote_id: quote.id)
+        expect(response.parsed_body.at_css("input[name='reminder[scheduled_at]']")&.[]("value")).to eq("2026-09-17T16:00")
+
+        quote.update!(decision_due_on: Date.new(2026, 9, 16), expires_on: nil)
+        get new_reminder_path(event_plan_id: quote.event_plan_id, vendor_quote_id: quote.id)
+        expect(response.parsed_body.at_css("input[name='reminder[scheduled_at]']")&.[]("value")).to be_blank
+      end
+    end
+
+    it "rejects a forged quote reminder association" do
+      owner_quote = create(:vendor_quote)
+      foreign_quote = create(:vendor_quote)
+      sign_in owner_quote.user
+
+      get new_reminder_path(event_plan_id: owner_quote.event_plan_id, vendor_quote_id: foreign_quote.id)
+      expect(response).to have_http_status(:not_found)
+
+      expect do
+        post reminders_path, params: {
+          reminder: attributes_for(:reminder).merge(
+            relationship_profile_id: owner_quote.event_plan.relationship_profile_id,
+            event_plan_id: owner_quote.event_plan_id,
+            vendor_quote_id: foreign_quote.id
+          )
+        }
+      end.not_to change(Reminder, :count)
+      expect(response).to have_http_status(:not_found)
+    end
+
     it "rejects a task attachment without its event plan context" do
       plan = create(:event_plan)
       task = create(:plan_task, event_plan: plan)
@@ -243,6 +357,7 @@ RSpec.describe "Reminders", type: :request do
 
       expect(response.body).to include(%(value="2026-07-16T14:00"))
       expect(response.body).to include(%(data-timezone-capture-value="false"))
+      expect(response.body).to include(%(option selected="selected" value="custom"))
     end
 
     it "waits for a migrated user's browser timezone before deriving an important-date schedule" do

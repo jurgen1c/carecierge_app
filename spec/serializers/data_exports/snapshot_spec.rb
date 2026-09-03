@@ -46,6 +46,26 @@ RSpec.describe DataExports::Snapshot do
     expect(exported.fetch("items").sole).to include("id" => item.id, "category" => "follow_up")
   end
 
+  it "exports decrypted vendor quotes with vendor provenance and without ownership or lock fields" do
+    quote = create(:vendor_quote, notes: "Private quote note")
+
+    snapshot = described_class.new(user: quote.user, relationship_profile: quote.event_plan.relationship_profile).to_h
+    exported = snapshot.dig("relationship_profiles", 0, "event_plans", 0, "vendor_quotes", 0)
+
+    expect(exported).to include(
+      "id" => quote.id,
+      "amount_cents" => quote.amount_cents,
+      "currency" => quote.currency,
+      "scope_details" => quote.scope_details,
+      "notes" => "Private quote note"
+    )
+    expect(exported.fetch("vendor")).to include("id" => quote.vendor.id, "name" => quote.vendor.name)
+    expect(exported).not_to have_key("user_id")
+    expect(exported).not_to have_key("event_plan_id")
+    expect(exported).not_to have_key("vendor_id")
+    expect(exported).not_to have_key("lock_version")
+  end
+
   it "keeps sensitive backup source plaintext behind the sensitive export gate" do
     profile = create(:relationship_profile)
     plan = create(:event_plan, user: profile.user, relationship_profile: profile)

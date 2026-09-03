@@ -3,14 +3,17 @@ id: reminders.reminder_delivery_system
 type: fact
 system: reminders
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Reminders provide owner-scoped scheduling and idempotent delivery
 
 claim: >
   Reminder is the single owner-scoped scheduler for relationship profiles,
-  important dates, commitments, event plans, and plan tasks. It supports
+  important dates, commitments, event plans, plan tasks, and vendor quote
+  deadlines. Quote context can prefill an owner-controlled reminder before the
+  earliest decision or expiration date, but it never schedules automatically.
+  It supports
   one-time and recurring schedules, snooze and completion, relationship filters,
   private calendar export, notification preferences, quiet hours, and IANA
   timezone behavior that preserves local recurrence intent. Dispatch creates a
@@ -45,6 +48,10 @@ source_files:
   - config/environments/production.rb
   - app/models/event_plan.rb
   - app/models/plan_task.rb
+  - app/models/vendor_quote.rb
+  - app/controllers/vendor_quotes_controller.rb
+  - db/migrate/20260903042850_create_vendor_quotes.rb
+  - db/migrate/20260903044916_add_vendor_quote_reference_to_reminders.rb
 
 related_files:
   - app/views/reminders/_workspace.html.erb
@@ -65,6 +72,7 @@ related_files:
   - db/migrate/20260822210000_add_reviewed_reminders_to_backup_options.rb
   - spec/services/backup_plans/generate_spec.rb
   - spec/services/backup_plans/promote_spec.rb
+  - spec/requests/vendor_quotes_spec.rb
   - Dockerfile
   - .kamal/secrets
   - docs/features/03-01-reminder-system.md
@@ -101,7 +109,7 @@ verification:
   - bundle exec rspec
   - bin/rubocop
   - bin/ci
-last_verified_commit: 9489bd595b3a138945e2ba8d830e22401eedcc49
+last_verified_commit: null
 ---
 
 # Reminders provide owner-scoped scheduling and idempotent delivery
@@ -138,6 +146,7 @@ settings contract.
 ## Evidence
 
 - `app/models/reminder.rb`
+- `app/models/vendor_quote.rb`
 - `app/models/reminder_delivery.rb`
 - `app/models/notification_preference.rb`
 - `app/controllers/reminders_controller.rb`
@@ -152,6 +161,7 @@ settings contract.
 - `spec/jobs/dispatch_due_reminders_job_spec.rb`
 - `spec/jobs/deliver_reminder_job_spec.rb`
 - `spec/requests/reminders_spec.rb`
+- `spec/requests/vendor_quotes_spec.rb`
 - `spec/policies/reminder_policy_spec.rb`
 - `spec/helpers/reminders_helper_spec.rb`
 

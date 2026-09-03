@@ -93,6 +93,28 @@ RSpec.describe "Vendor quotes", type: :request do
     expect(quote.reload).to have_attributes(amount_cents: 100_000, status: "under_review")
   end
 
+  it "labels out-of-range amount errors with the user-facing field in both locales" do
+    plan = create(:event_plan)
+    vendor = create(:vendor, user: plan.user)
+    sign_in plan.user
+    params = {
+      vendor_quote: attributes_for(:vendor_quote).merge(
+        vendor_id: vendor.id,
+        amount: "21474836.48"
+      )
+    }
+
+    I18n.with_locale(:en) { post event_plan_vendor_quotes_path(plan), params: }
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("Quote amount")
+    expect(response.body).not_to include("Amount cents")
+
+    I18n.with_locale(:es) { post event_plan_vendor_quotes_path(plan), params: }
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include("Monto de la cotización")
+    expect(response.body).not_to include("Amount cents")
+  end
+
   it "rejects foreign plan and vendor identifiers without leaking records" do
     owner = create(:user)
     owned_plan = create(:event_plan, user: owner, relationship_profile: create(:relationship_profile, user: owner))

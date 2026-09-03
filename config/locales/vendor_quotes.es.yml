@@ -100,6 +100,7 @@ es:
       vendor_quote:
         vendor: "Proveedor"
         amount: "Monto de la cotización"
+        amount_cents: "Monto de la cotización"
         currency: "Moneda"
         scope_details: "Alcance y términos"
         expires_on: "Vencimiento de la cotización"

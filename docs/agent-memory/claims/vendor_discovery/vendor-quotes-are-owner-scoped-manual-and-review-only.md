@@ -3,7 +3,7 @@ id: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
 type: fact
 system: vendor_discovery
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Vendor quotes are owner-scoped, manual, and review-only
@@ -17,7 +17,8 @@ claim: >
   carry a required optimistic revision and reject stale submissions. Multiple
   same-plan quotes are compared in a responsive English and Spanish surface;
   cents use exact decimal arithmetic for localized display, and elapsed open
-  quotes are presented as expired without a background mutation.
+  quotes are presented as expired without a background mutation. Storage-level
+  amount validation errors use the user-facing localized quote-amount label.
   Completed- or archived-plan quotes remain owner-readable through bounded quote
   history and explicitly removable but cannot be changed. A quote deadline can prefill the existing
   owner-controlled reminder form, but no reminder, vendor contact, request,
@@ -89,7 +90,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 2ca7493a66422b57fd1f0bee27be355148a6907e
+last_verified_commit: null
 ---
 
 # Vendor quotes are owner-scoped, manual, and review-only

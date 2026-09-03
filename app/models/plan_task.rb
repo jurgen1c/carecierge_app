@@ -44,6 +44,7 @@ class PlanTask < ApplicationRecord
 
   belongs_to :event_plan
   belongs_to :backup_option, optional: true
+  has_one :booking
   has_many :reminders, dependent: :nullify
 
   serialize :source_context, coder: JSON

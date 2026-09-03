@@ -229,6 +229,7 @@ class EventPlansController < ApplicationController
     @personal_touch_checklist = @event_plan.personal_touch_checklist
     @personal_touch_checklist&.visible_personal_touch_items&.load
     @vendors = @event_plan.vendors.ordered.to_a
+    @bookings = @event_plan.bookings.ordered.includes(:reminders).to_a
   end
 
   def prepare_form_options

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_03_044916) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_03_121000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -206,6 +206,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_044916) do
     t.check_constraint "locale::text = ANY (ARRAY['en'::character varying, 'es'::character varying]::text[])", name: "backup_plans_supported_locale"
     t.check_constraint "scenario::text = ANY (ARRAY['weather'::character varying, 'vendor'::character varying, 'gift_delay'::character varying, 'restaurant_unavailable'::character varying, 'transportation'::character varying, 'illness_cancellation'::character varying]::text[])", name: "backup_plans_supported_scenario"
     t.check_constraint "status::text = ANY (ARRAY['generated'::character varying, 'promoted'::character varying, 'superseded'::character varying]::text[])", name: "backup_plans_supported_status"
+  end
+
+  create_table "bookings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "booking_kind", default: "reservation", null: false
+    t.text "cancellation_policy"
+    t.text "confirmation_details"
+    t.datetime "created_at", null: false
+    t.uuid "event_plan_id", null: false
+    t.text "location"
+    t.integer "lock_version", default: 0, null: false
+    t.text "notes"
+    t.uuid "plan_task_id"
+    t.text "provider_name", null: false
+    t.datetime "starts_at", null: false
+    t.string "status", default: "planned", null: false
+    t.string "time_zone", default: "UTC", null: false
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["event_plan_id", "starts_at", "id"], name: "index_bookings_on_event_plan_id_and_starts_at_and_id"
+    t.index ["event_plan_id", "status", "starts_at"], name: "index_bookings_on_event_plan_id_and_status_and_starts_at"
+    t.index ["event_plan_id"], name: "index_bookings_on_event_plan_id"
+    t.index ["plan_task_id"], name: "index_bookings_on_unique_plan_task", unique: true, where: "(plan_task_id IS NOT NULL)"
+    t.index ["user_id", "created_at"], name: "index_bookings_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_bookings_on_user_id"
+    t.check_constraint "booking_kind::text = ANY (ARRAY['reservation'::character varying, 'booking'::character varying]::text[])", name: "bookings_supported_kind"
+    t.check_constraint "status::text = ANY (ARRAY['planned'::character varying, 'requested'::character varying, 'confirmed'::character varying, 'completed'::character varying, 'cancelled'::character varying]::text[])", name: "bookings_supported_status"
   end
 
   create_table "commitments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -932,6 +959,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_044916) do
   end
 
   create_table "reminders", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "booking_id"
+    t.string "booking_milestone"
     t.uuid "commitment_id"
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -953,6 +982,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_044916) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.uuid "vendor_quote_id"
+    t.index ["booking_id"], name: "index_reminders_on_booking_id"
     t.index ["commitment_id"], name: "index_reminders_on_commitment_id"
     t.index ["event_plan_id"], name: "index_reminders_on_event_plan_id"
     t.index ["important_date_id"], name: "index_reminders_on_important_date_id"
@@ -1195,6 +1225,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_044916) do
   add_foreign_key "backup_options", "backup_plans", on_delete: :cascade
   add_foreign_key "backup_plans", "event_plans", on_delete: :cascade
   add_foreign_key "backup_plans", "users", on_delete: :cascade
+  add_foreign_key "bookings", "event_plans", on_delete: :cascade
+  add_foreign_key "bookings", "plan_tasks", on_delete: :nullify
+  add_foreign_key "bookings", "users", on_delete: :cascade
   add_foreign_key "commitments", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_cadences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"
@@ -1253,6 +1286,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_044916) do
   add_foreign_key "relationship_tags", "users"
   add_foreign_key "reminder_deliveries", "noticed_events", on_delete: :nullify
   add_foreign_key "reminder_deliveries", "reminders", on_delete: :cascade
+  add_foreign_key "reminders", "bookings", on_delete: :nullify
   add_foreign_key "reminders", "commitments", on_delete: :cascade
   add_foreign_key "reminders", "event_plans", on_delete: :cascade
   add_foreign_key "reminders", "important_dates", on_delete: :nullify

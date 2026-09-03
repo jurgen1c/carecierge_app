@@ -1,6 +1,6 @@
 id: event_plans
 name: Event Plans
-summary: Owner-scoped relationship event plans with deterministic templates, user-controlled source-backed suggestions and recovery options, reminder reuse, and manual vendor quote comparison.
+summary: Owner-scoped relationship event plans with deterministic templates, user-controlled source-backed suggestions and recovery options, reminder reuse, manual booking logistics, and vendor quote comparison.
 claim_globs:
   - claims/event_plans/**/*.md
 default_queries:
@@ -12,6 +12,7 @@ default_queries:
   - personal touch checklist event plan important date birthday anniversary preference provenance reorder dismiss
   - backup plan recovery weather vendor gift delay restaurant transportation cancellation compare promote supersede
   - event plan vendor quote comparison deadline reminder completed archived read only
+  - event plan reservation booking provider confirmation cancellation status timeline task reminder manual
 watched_files:
   - app/controllers/event_plans_controller.rb
   - app/javascript/controllers/event_plan_form_controller.js
@@ -20,6 +21,7 @@ watched_files:
   - app/controllers/personal_touch_items_controller.rb
   - app/controllers/backup_plans_controller.rb
   - app/controllers/vendor_quotes_controller.rb
+  - app/controllers/bookings_controller.rb
   - app/models/backup_plan.rb
   - app/models/backup_option.rb
   - app/models/event_plan.rb
@@ -27,15 +29,18 @@ watched_files:
   - app/models/personal_touch_checklist.rb
   - app/models/personal_touch_item.rb
   - app/models/vendor_quote.rb
+  - app/models/booking.rb
   - app/policies/event_plan_policy.rb
   - app/policies/plan_task_policy.rb
   - app/policies/personal_touch_checklist_policy.rb
   - app/policies/personal_touch_item_policy.rb
+  - app/policies/booking_policy.rb
   - app/queries/event_plans/prior_anniversary_plans.rb
   - app/services/event_plans/**/*.rb
   - app/agents/event_plans/**/*.rb
   - app/services/personal_touch_checklists/**/*.rb
   - app/services/backup_plans/**/*.rb
+  - app/services/bookings/**/*.rb
   - app/agents/backup_plans/**/*.rb
   - app/views/event_plans/**/*.erb
   - app/views/important_dates/_important_date.html.erb
@@ -45,19 +50,24 @@ watched_files:
   - app/views/components/personal_touch_checklist_component.*
   - app/views/components/vendor_quote_comparison_component.*
   - app/views/vendor_quotes/**/*.erb
+  - app/views/bookings/**/*.erb
+  - app/views/components/booking_list_component.*
   - config/locales/event_plans.*.yml
   - config/initializers/ruby_llm.rb
   - config/deploy.yml
   - config/locales/personal_touch_checklists.*.yml
+  - config/locales/bookings.*.yml
   - db/migrate/*backup_plan*.rb
   - db/migrate/*event_plans*.rb
   - db/migrate/*personal_touch_checklists*.rb
+  - db/migrate/*booking*.rb
   - docs/features/06-03-general-event-planning-assistant.md
   - docs/features/06-01-birthday-concierge.md
   - docs/features/06-02-anniversary-concierge.md
   - docs/features/06-04-personal-touch-checklist.md
   - docs/features/06-05-backup-plan-generator.md
   - docs/features/07-04-quote-collection.md
+  - docs/features/07-03-reservation-and-booking-management.md
   - spec/components/event_plan_workspace_component_spec.rb
   - spec/components/personal_touch_checklist_component_spec.rb
   - spec/components/vendor_quote_comparison_component_spec.rb
@@ -78,7 +88,14 @@ watched_files:
   - spec/agents/backup_plans/**/*.rb
   - spec/requests/backup_plans_spec.rb
   - spec/requests/vendor_quotes_spec.rb
+  - spec/models/booking_spec.rb
+  - spec/policies/booking_policy_spec.rb
+  - spec/requests/bookings_spec.rb
+  - spec/requests/booking_reminders_spec.rb
+  - spec/services/bookings/**/*.rb
+  - spec/components/booking_list_component_spec.rb
   - spec/system/event_plans_spec.rb
+  - spec/system/bookings_spec.rb
 tags:
   - event_plans
   - relationship_profiles
@@ -90,3 +107,4 @@ tags:
   - recovery
   - birthdays
   - anniversaries
+  - bookings

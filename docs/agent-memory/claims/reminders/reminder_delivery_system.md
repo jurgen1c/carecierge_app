@@ -3,16 +3,16 @@ id: reminders.reminder_delivery_system
 type: fact
 system: reminders
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Reminders provide owner-scoped scheduling and idempotent delivery
 
 claim: >
   Reminder is the single owner-scoped scheduler for relationship profiles,
-  important dates, commitments, event plans, plan tasks, and vendor quote
-  deadlines. Quote context can prefill an owner-controlled reminder before the
-  earliest decision or expiration date, but it never schedules automatically.
+  important dates, commitments, event plans, plan tasks, vendor quote deadlines,
+  and booking milestones. Quote or booking context can prefill an owner-controlled
+  reminder before a useful deadline, but it never schedules automatically.
   It supports
   one-time and recurring schedules, snooze and completion, relationship filters,
   private calendar export, notification preferences, quiet hours, and IANA
@@ -50,8 +50,11 @@ source_files:
   - app/models/plan_task.rb
   - app/models/vendor_quote.rb
   - app/controllers/vendor_quotes_controller.rb
+  - app/models/booking.rb
+  - app/controllers/bookings_controller.rb
   - db/migrate/20260903042850_create_vendor_quotes.rb
   - db/migrate/20260903044916_add_vendor_quote_reference_to_reminders.rb
+  - db/migrate/20260903121000_add_booking_context_to_reminders.rb
 
 related_files:
   - app/views/reminders/_workspace.html.erb
@@ -73,6 +76,7 @@ related_files:
   - spec/services/backup_plans/generate_spec.rb
   - spec/services/backup_plans/promote_spec.rb
   - spec/requests/vendor_quotes_spec.rb
+  - spec/requests/booking_reminders_spec.rb
   - Dockerfile
   - .kamal/secrets
   - docs/features/03-01-reminder-system.md
@@ -109,7 +113,7 @@ verification:
   - bundle exec rspec
   - bin/rubocop
   - bin/ci
-last_verified_commit: 4390cc8d2f5d6896696c013af41b2f7b6e60cd5f
+last_verified_commit: null
 ---
 
 # Reminders provide owner-scoped scheduling and idempotent delivery
@@ -117,7 +121,8 @@ last_verified_commit: 4390cc8d2f5d6896696c013af41b2f7b6e60cd5f
 ## Claim
 
 Carecierge has one user-owned reminder scheduler for relationship profiles,
-important dates, commitments, event plans, and plan tasks. It owns recurrence,
+important dates, commitments, event plans, plan tasks, vendor deadlines, and
+explicit booking milestones. It owns recurrence,
 snooze and completion, relationship-focused browsing, IANA timezone behavior,
 notification preferences, private calendar export, and idempotent Noticed
 delivery. Durable per-occurrence channel claims, bounded lease recovery,

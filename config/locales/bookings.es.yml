@@ -1,0 +1,127 @@
+es:
+  activerecord:
+    models:
+      booking: Reserva
+    attributes:
+      booking:
+        booking_kind: Tipo de reserva
+        title: Título
+        provider_name: Proveedor
+        starts_at: Fecha y hora
+        time_zone: Zona horaria
+        location: Ubicación
+        status: Estado
+        confirmation_details: Detalles de confirmación
+        cancellation_policy: Política de cancelación
+        notes: Notas
+        event_plan: Plan del evento
+        plan_task: Tarea relacionada del plan
+    errors:
+      models:
+        booking:
+          attributes:
+            time_zone:
+              invalid: no es reconocida
+            event_plan:
+              different_owner: debe pertenecer a tu cuenta
+              inactive: debe estar activo
+            plan_task:
+              different_plan: debe pertenecer al mismo plan del evento
+        reminder:
+          attributes:
+            booking:
+              different_owner: debe pertenecer a tu cuenta
+              different_plan: debe pertenecer al mismo plan del evento
+            booking_milestone:
+              required: es necesario para un recordatorio de reserva
+              without_booking: requiere una reserva
+              obsolete: ya no es útil para este estado de reserva
+  bookings:
+    kinds:
+      reservation: Reservación
+      booking: Reserva
+    statuses:
+      planned: Planificada
+      requested: Solicitada
+      confirmed: Confirmada
+      completed: Completada
+      cancelled: Cancelada
+    plan_task_title: "Confirmar reserva: %{title}"
+    timeline_title: Estado de reserva
+    plan_task_managed: Administrada desde el estado de la reserva.
+    review_only: Solo seguimiento manual — Carecierge no contacta proveedores, reserva, compra, paga ni envía mensajes en tu nombre.
+    actions:
+      add: Agregar reserva
+      manage: Administrar reservas
+      manage_one: Administrar reserva
+      edit: Editar reserva
+      delete: Eliminar reserva
+      delete_confirm: "¿Eliminar %{title}? También se eliminarán su tarea y entrada en la cronología. Se conservará el historial de recordatorios."
+    index:
+      title: Reservas
+      body: "Da seguimiento a la logística de reservaciones y reservas para %{plan}."
+      back: Volver al plan del evento
+      read_only: Los detalles de la reserva son de solo lectura porque este plan ya no está activo. Aún puedes eliminar una reserva de forma explícita.
+      empty_title: Todavía no hay reservas
+      empty_body: Agrega la primera reservación o reserva cuando quieras dar seguimiento a sus detalles.
+      reminders:
+        zero: No hay recordatorios activos
+        one: 1 recordatorio activo
+        other: "%{count} recordatorios activos"
+    history:
+      title: Historial de reservas
+      body: Revisa y elimina explícitamente las reservas conservadas, incluso las de planes que ya no están visibles.
+      back: Volver a planes de eventos
+      empty_title: Todavía no hay historial de reservas
+      empty_body: Las reservas que agregues a los planes de eventos aparecerán aquí.
+    pagination:
+      label: Páginas del historial de reservas
+      previous: Anterior
+      next: Siguiente
+      page: "Página %{page} de %{pages}"
+    new:
+      title: Agregar reserva
+      body: "Registra una reservación o reserva para %{plan}."
+    edit:
+      body: Actualiza la logística que estás siguiendo. Los cambios permanecen en Carecierge hasta que tú actúes.
+    form:
+      back: Volver a reservas
+      errors:
+        one: Revisa 1 problema antes de guardar
+        other: "Revisa %{count} problemas antes de guardar"
+      essentials: Datos esenciales
+      details: Confirmación y notas
+      kind: Tipo de reserva
+      title: Título
+      provider: Proveedor
+      starts_at: Fecha y hora
+      time_zone: Zona horaria
+      location: Ubicación
+      status: Estado
+      confirmation_details: Detalles de confirmación
+      cancellation_policy: Política de cancelación
+      cancellation_hint: Conserva aquí las palabras del proveedor como referencia; Carecierge no aplica la política.
+      notes: Notas
+      create: Guardar reserva
+      update: Guardar cambios
+      cancel: Cancelar
+    reminders:
+      action: Configurar recordatorio de reserva
+      context: Recordatorio de reserva
+      actions:
+        confirmation: Configurar recordatorio de confirmación
+        deposit: Configurar recordatorio de depósito
+        arrival: Configurar recordatorio de llegada
+        change: Configurar recordatorio de cambios
+      titles:
+        confirmation: "Confirmar %{title}"
+        deposit: "Revisar depósito de %{title}"
+        arrival: "Preparar llegada para %{title}"
+        change: "Revisar cambios de %{title}"
+    create:
+      notice: Reserva guardada.
+    update:
+      notice: Reserva actualizada.
+      changed: La reserva cambió antes de guardar tu actualización. Revísala e inténtalo de nuevo.
+    destroy:
+      notice: Reserva eliminada. Se conservó el historial de recordatorios.

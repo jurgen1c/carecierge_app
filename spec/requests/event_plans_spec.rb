@@ -693,6 +693,23 @@ RSpec.describe "Event plans", type: :request do
     expect(reminder.reload).to have_attributes(event_plan: plan, plan_task: nil)
   end
 
+  it "keeps booking-owned tasks under the booking status workflow" do
+    plan = create(:event_plan, user:, relationship_profile: profile)
+    booking = create(:booking, event_plan: plan, user:)
+    Bookings::Save.call(booking, attributes: {}, locale: :en)
+    task = booking.plan_task
+
+    patch complete_event_plan_plan_task_path(plan, task)
+    expect(response).to have_http_status(:not_found)
+
+    patch event_plan_plan_task_path(plan, task), params: { plan_task: { title: "Bypass booking" } }
+    expect(response).to have_http_status(:not_found)
+
+    expect { delete event_plan_plan_task_path(plan, task) }.not_to change(PlanTask, :count)
+    expect(response).to have_http_status(:not_found)
+    expect(task.reload).to have_attributes(title: "Confirm booking: Dinner reservation", completed_at: nil)
+  end
+
   it "does not restore an explicitly deleted template step after an effort round-trip" do
     plan = EventPlans::Create.call(
       user:,

@@ -114,7 +114,8 @@ module BackupPlans
 
     def lock_replacement_tasks!
       ids = backup_option.replacement_task_ids.uniq
-      tasks = event_plan.plan_tasks.current.incomplete.where(id: ids).reorder(:id).lock.to_a
+      booking_task_ids = Booking.where.not(plan_task_id: nil).select(:plan_task_id)
+      tasks = event_plan.plan_tasks.current.incomplete.where.not(id: booking_task_ids).where(id: ids).reorder(:id).lock.to_a
       raise PromotionUnavailableError, "A replaced plan task is no longer available" unless tasks.map(&:id).sort == ids.sort
 
       tasks

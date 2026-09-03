@@ -147,6 +147,7 @@ module DataExports
         end,
         "vendors" => plan.vendors.map { |vendor| vendor_attributes(vendor) },
         "vendor_quotes" => plan.vendor_quotes.map { |quote| vendor_quote_attributes(quote) },
+        "bookings" => plan.bookings.map { |booking| booking_attributes(booking) },
         "backup_plans" => plan.backup_plans.map { |backup_plan| backup_plan_attributes(backup_plan) }
       )
     end
@@ -180,11 +181,15 @@ module DataExports
       )
     end
 
+    def booking_attributes(booking)
+      attributes_for(booking, except: %w[user_id event_plan_id plan_task_id lock_version])
+    end
+
     def event_plans_for(profile)
       @event_plans_by_profile_id ||= {}
       @event_plans_by_profile_id[profile.id] ||= profile.event_plans
         .ordered
-        .includes(:plan_tasks, { vendors: :event_plan_vendors }, { vendor_quotes: { vendor: :event_plan_vendors } }, backup_plans: :backup_options)
+        .includes(:plan_tasks, :bookings, { vendors: :event_plan_vendors }, { vendor_quotes: { vendor: :event_plan_vendors } }, backup_plans: :backup_options)
         .to_a
     end
 

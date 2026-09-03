@@ -122,6 +122,28 @@ RSpec.describe BackupPlans::Promote do
     expect(replaceable_task.reload.superseded_at).to eq(previous_superseded_at)
   end
 
+  it "rejects replacement of a booking-owned task" do
+    booking = create(:booking, user:, event_plan:)
+    Bookings::Save.call(booking, attributes: {}, locale: :en)
+    protected_plan = create(
+      :backup_plan,
+      user:,
+      event_plan:,
+      event_plan_generation_version: event_plan.reload.generation_version,
+      context_fingerprint: EventPlans::ContextBuilder.new(event_plan:).call.fingerprint
+    )
+    protected_option = create(
+      :backup_option,
+      backup_plan: protected_plan,
+      replacement_task_ids: [ booking.plan_task_id ]
+    )
+
+    expect do
+      described_class.call(actor: user, backup_option: protected_option)
+    end.to raise_error(BackupPlans::PromotionUnavailableError, "A replaced plan task is no longer available")
+    expect(booking.plan_task.reload).not_to be_superseded
+  end
+
   it "rejects promotion after authorized relationship context changes" do
     preference = create(:relationship_preference, relationship_profile: profile, value: "Quiet room")
     backup_plan.update!(

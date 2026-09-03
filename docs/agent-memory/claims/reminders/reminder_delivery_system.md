@@ -113,7 +113,7 @@ verification:
   - bundle exec rspec
   - bin/rubocop
   - bin/ci
-last_verified_commit: 58c56c5bd7575622fc60619dfaf0de8474c92c89
+last_verified_commit: 3289642ebddbe18e7976d0c7308959d2597b8eea
 ---
 
 # Reminders provide owner-scoped scheduling and idempotent delivery

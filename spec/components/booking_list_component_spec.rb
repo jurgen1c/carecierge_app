@@ -67,4 +67,15 @@ RSpec.describe BookingListComponent, type: :component do
     expect(page).to have_link("Add booking", count: 1)
     expect(page).to have_no_css("a button, button a")
   end
+
+  it "counts active reminders without loading an unloaded association" do
+    booking = create(:booking)
+    create(:reminder, user: booking.user, relationship_profile: booking.event_plan.relationship_profile, event_plan: booking.event_plan, booking:, booking_milestone: "deposit")
+    create(:reminder, user: booking.user, relationship_profile: booking.event_plan.relationship_profile, event_plan: booking.event_plan, booking:, booking_milestone: "arrival", status: "completed", completed_at: Time.current, next_delivery_at: nil)
+    component = described_class.new(event_plan: booking.event_plan, bookings: [ booking ])
+
+    expect(booking.association(:reminders)).not_to be_loaded
+    expect(component.reminder_count(booking)).to eq(1)
+    expect(booking.association(:reminders)).not_to be_loaded
+  end
 end

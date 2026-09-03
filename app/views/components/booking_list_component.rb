@@ -57,7 +57,8 @@ class BookingListComponent < ApplicationViewComponent
   end
 
   def reminder_count(booking)
-    booking.reminders.count(&:active?)
+    reminders = booking.reminders
+    reminders.loaded? ? reminders.count(&:active?) : reminders.active.count
   end
 
   def available_reminder_milestones(booking)

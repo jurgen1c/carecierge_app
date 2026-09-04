@@ -34,6 +34,21 @@ RSpec.describe CalendarConnections::UpdateSettings do
     expect(connection.reload.sync_types).to eq(%w[reminders commitments])
   end
 
+  it "deduplicates choices and discards unsupported values" do
+    connection = create(:calendar_connection, sync_types: [])
+
+    expect do
+      described_class.call(
+        connection:,
+        sync_types: %w[commitments unsupported reminders commitments],
+        actor: connection.user
+      )
+    end.to change { AuditEvent.where(action: "calendar.settings.updated").count }.by(1)
+      .and have_enqueued_job(CalendarSyncJob).with(connection, owner_requested: true)
+
+    expect(connection.reload.sync_types).to eq(%w[reminders commitments])
+  end
+
   it "defers reconciliation when another sync owns an active lease" do
     connection = create(
       :calendar_connection,

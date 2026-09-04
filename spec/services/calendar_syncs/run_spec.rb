@@ -290,6 +290,25 @@ RSpec.describe CalendarSyncs::Run do
     expect(connection.reload.pending_audit_count).to eq(0)
   end
 
+  it "eager-loads reminder relationship paths before resolving the locked source" do
+    reminder = create(:reminder, user:, relationship_profile: profile)
+    connection.update!(sync_types: [ "reminders" ])
+    loaded_relationship_paths = []
+    allow(CalendarSyncs::SourceRelationship).to receive(:resolve).and_wrap_original do |original, source|
+      if source.is_a?(Reminder)
+        loaded_relationship_paths << %i[
+          relationship_profile important_date commitment event_plan plan_task vendor_quote booking
+        ].all? { |association| source.association(association).loaded? }
+      end
+      original.call(source)
+    end
+
+    described_class.call(connection:)
+
+    expect(connection.calendar_event_syncs.find_by!(source: reminder)).to be_synced_at
+    expect(loaded_relationship_paths).to all(be(true))
+  end
+
   it "updates changed events, skips unchanged events, and removes no-longer-selected events" do
     reminder = create(:reminder, user:, relationship_profile: profile)
     commitment = create(:commitment, relationship_profile: profile)

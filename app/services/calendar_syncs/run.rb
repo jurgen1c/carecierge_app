@@ -102,8 +102,9 @@ module CalendarSyncs
     end
 
     def sync_source(source, mapping)
+      profile_ids = CalendarSyncs::SourceRelationship.resolve(source).profiles.map(&:id).sort
       with_owner_boundary do
-        source = revalidated_source(source)
+        source = revalidated_source(source, profile_ids:)
         unless source
           remove_mapping(mapping) if mapping
           return
@@ -123,12 +124,7 @@ module CalendarSyncs
       end
     end
 
-    def revalidated_source(source)
-      fresh_source = source.class.base_class.unscoped.find_by(id: source.id)
-      return unless fresh_source
-
-      initial_relationship = CalendarSyncs::SourceRelationship.resolve(fresh_source)
-      profile_ids = initial_relationship.profiles.map(&:id).sort
+    def revalidated_source(source, profile_ids:)
       locked_profile_ids = connection.user.relationship_profiles.with_discarded
         .where(id: profile_ids)
         .order(:id)
@@ -137,7 +133,9 @@ module CalendarSyncs
         .sort
       return unless locked_profile_ids == profile_ids
 
-      fresh_source.lock!
+      fresh_source = revalidation_scope(source).find_by(id: source.id)
+      return unless fresh_source
+
       relationship = CalendarSyncs::SourceRelationship.resolve(fresh_source)
       return unless relationship.profiles.map(&:id).sort == profile_ids
       return unless relationship.eligible && source_owned_and_eligible?(fresh_source)
@@ -145,6 +143,29 @@ module CalendarSyncs
       fresh_source
     rescue ActiveRecord::RecordNotFound
       nil
+    end
+
+    def revalidation_scope(source)
+      source_class = source.class.base_class
+      associations = case source
+      when Reminder
+        [
+          :relationship_profile,
+          { important_date: :relationship_profile },
+          { commitment: :relationship_profile },
+          { event_plan: :relationship_profile },
+          { plan_task: { event_plan: :relationship_profile } },
+          { vendor_quote: { event_plan: :relationship_profile } },
+          { booking: { event_plan: :relationship_profile } }
+        ]
+      when Booking
+        [ { event_plan: :relationship_profile } ]
+      else
+        [ :relationship_profile ]
+      end
+      source_class.unscoped
+        .eager_load(*associations)
+        .lock("FOR UPDATE OF #{source_class.quoted_table_name}")
     end
 
     def source_owned_and_eligible?(source)

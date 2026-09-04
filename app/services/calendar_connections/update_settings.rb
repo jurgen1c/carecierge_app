@@ -31,9 +31,8 @@ module CalendarConnections
     end
 
     def self.normalize_sync_types(sync_types)
-      Array(sync_types).map(&:to_s).sort_by do |sync_type|
-        [ CalendarConnection::SYNC_TYPES.index(sync_type) || CalendarConnection::SYNC_TYPES.length, sync_type ]
-      end
+      submitted_types = Array(sync_types).map(&:to_s).uniq
+      CalendarConnection::SYNC_TYPES.select { |sync_type| submitted_types.include?(sync_type) }
     end
     private_class_method :normalize_sync_types
   end

@@ -3,7 +3,7 @@ id: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revoc
 type: fact
 system: calendar_integrations
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Google Calendar sync is owner-scoped, private, and revocable
@@ -45,16 +45,18 @@ claim: >
   credentials, each provider result, and its mapping completion are serialized
   under a fresh per-source owner and connection boundary. The owner lock is
   released between sources so concurrent consent changes can commit before the
-  next disclosure. Each discovered source and its derived
-  relationships are reloaded and locked before permission evaluation, including
-  the unchanged-mapping path, so concurrent edits, deletion, archival, and
-  permission changes cannot publish stale or newly ineligible content.
+  next disclosure. Each discovered source's profile IDs are derived from its
+  preloaded relationship paths, then those profiles and an eager-loaded fresh
+  source are locked before permission evaluation, including the unchanged-mapping
+  path, so concurrent edits, deletion, archival, and permission changes cannot
+  publish stale or newly ineligible content.
   Successful mapping changes atomically increment durable pending evidence under
   the current lease token in their transaction, and completion uses a separate
   owner boundary to record and clear that evidence before connected status
-  commits. Sync selections are stored in canonical source order, and reordered
-  submissions of the same set neither enqueue reconciliation nor emit settings
-  activity.
+  commits. Sync selections are reduced to the supported unique set and stored in
+  canonical source order; duplicate or unsupported inputs cannot fail the save,
+  and reordered submissions of the same set neither enqueue reconciliation nor
+  emit settings activity.
   Calendar connection and sync owner boundaries use FOR NO KEY UPDATE before
   dependent-row locks so foreign-key checks do not contend with an unnecessarily
   strong owner lock.
@@ -124,6 +126,7 @@ source_files:
   - app/controllers/users/registrations_controller.rb
   - app/services/calendar_connections/oauth_state.rb
   - app/services/calendar_connections/save_credentials.rb
+  - app/services/calendar_connections/update_settings.rb
   - app/services/calendar_connections/google_oauth.rb
   - app/services/calendar_connections/disconnect.rb
   - app/services/calendar_providers/google.rb
@@ -171,6 +174,7 @@ related_files:
   - spec/presenters/audit_event_presenter_spec.rb
   - spec/services/calendar_connections/google_oauth_spec.rb
   - spec/services/calendar_connections/disconnect_spec.rb
+  - spec/services/calendar_connections/update_settings_spec.rb
   - spec/services/calendar_providers/google_spec.rb
   - spec/services/calendar_syncs/run_spec.rb
   - spec/models/calendar_credential_revocation_spec.rb
@@ -213,7 +217,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: b382144e26012d22811920ea8dd37727cc0093e5
+last_verified_commit:
 ---
 
 # Google Calendar sync is owner-scoped, private, and revocable

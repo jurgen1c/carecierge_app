@@ -3,7 +3,7 @@ id: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revoc
 type: fact
 system: calendar_integrations
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Google Calendar sync is owner-scoped, private, and revocable
@@ -198,7 +198,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 6296d3b127c828d0c3834aabc110523815c308bf
 ---
 
 # Google Calendar sync is owner-scoped, private, and revocable

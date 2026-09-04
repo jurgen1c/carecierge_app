@@ -303,7 +303,9 @@ module CalendarSyncs
     end
 
     def mark_audit_pending!
-      connection.increment!(:pending_audit_count)
+      updated_count = CalendarConnection.where(id: connection.id, sync_lease_token: lease_token)
+        .update_all("pending_audit_count = pending_audit_count + 1")
+      raise LeaseLost unless updated_count == 1
     end
 
     def renew_lease!

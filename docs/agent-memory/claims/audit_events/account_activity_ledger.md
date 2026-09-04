@@ -28,11 +28,13 @@ claim: >
   budgets, plan details, or source contents. Calendar
   exports emit privacy-minimized evidence after serialization. Calendar
   connection, settings, sync, failure, and revocation events likewise retain
-  only allowlisted result or count metadata. Calendar reconciliation increments
-  pending count evidence with successful mapping changes and records and clears
-  it transactionally before connected status can commit; lease renewal itself
-  emits no audit event, and disconnect flushes any count retained after a partial
-  failure before removing the connection. A sync
+  only allowlisted result or count metadata. Calendar reconciliation atomically
+  increments pending count evidence under the current lease token with
+  successful mapping changes and records and clears it transactionally before
+  connected status can commit; reordered submissions of an unchanged settings
+  set emit no event. Lease renewal itself emits no audit event, and disconnect
+  flushes any count retained after a partial failure before removing the
+  connection. A sync
   failure records connection status under the owner-then-connection lock order
   using an owner FOR NO KEY UPDATE lock before its audit insert reacquires the
   owner and then locks its target, avoiding an inverse lock with settings or

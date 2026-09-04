@@ -260,6 +260,36 @@ RSpec.describe CalendarSyncs::Run do
     expect(AuditEvent.order(:created_at).last.metadata).to eq("count" => 1, "result" => "success")
   end
 
+  it "increments pending audit evidence despite a concurrent optimistic-lock update" do
+    reminder = create(:reminder, user:, relationship_profile: profile)
+    connection.update!(sync_types: [ "reminders" ])
+    allow(provider).to receive(:create_event) do |_event, event_id:|
+      CalendarConnection.find(connection.id).update!(locale: "es")
+      event_id
+    end
+
+    expect { described_class.call(connection:) }.not_to raise_error
+
+    expect(connection.calendar_event_syncs.find_by!(source: reminder)).to be_synced_at
+    expect(connection.reload).to have_attributes(sync_status: "connected", pending_audit_count: 0, locale: "es")
+    expect(AuditEvent.order(:created_at).last.metadata).to eq("count" => 1, "result" => "success")
+  end
+
+  it "does not attribute pending audit evidence after losing its lease" do
+    lease_token = SecureRandom.uuid
+    replacement_token = SecureRandom.uuid
+    connection.update!(
+      sync_status: "syncing",
+      sync_lease_token: replacement_token,
+      sync_lease_expires_at: 1.minute.from_now
+    )
+    runner = described_class.new(connection:, owner_requested: false)
+    runner.instance_variable_set(:@lease_token, lease_token)
+
+    expect { runner.send(:mark_audit_pending!) }.to raise_error(described_class::LeaseLost)
+    expect(connection.reload.pending_audit_count).to eq(0)
+  end
+
   it "updates changed events, skips unchanged events, and removes no-longer-selected events" do
     reminder = create(:reminder, user:, relationship_profile: profile)
     commitment = create(:commitment, relationship_profile: profile)

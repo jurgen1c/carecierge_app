@@ -17,7 +17,21 @@ RSpec.describe CalendarConnections::UpdateSettings do
 
     expect do
       described_class.call(connection:, sync_types: [ "reminders" ], actor: connection.user)
-    end.not_to change { AuditEvent.where(action: "calendar.settings.updated").count }
+    end.not_to change {
+      [ AuditEvent.where(action: "calendar.settings.updated").count, ActiveJob::Base.queue_adapter.enqueued_jobs.size ]
+    }
+  end
+
+  it "treats reordered choices as the same selection set" do
+    connection = create(:calendar_connection, sync_types: %w[reminders commitments])
+
+    expect do
+      described_class.call(connection:, sync_types: %w[commitments reminders], actor: connection.user)
+    end.not_to change {
+      [ AuditEvent.where(action: "calendar.settings.updated").count, ActiveJob::Base.queue_adapter.enqueued_jobs.size ]
+    }
+
+    expect(connection.reload.sync_types).to eq(%w[reminders commitments])
   end
 
   it "defers reconciliation when another sync owns an active lease" do

@@ -123,6 +123,26 @@ RSpec.describe CalendarSyncs::Run do
     expect(provider_write_sequences).to eq([ 2, 3 ])
   end
 
+  it "keeps the in-memory lease expiry current after renewal" do
+    reminder = create(:reminder, user:, relationship_profile: profile)
+    connection.update!(sync_types: [ "reminders" ])
+    initial_expiry = 5.minutes.from_now
+    renewed_expiry = 20.minutes.from_now
+    allow(described_class::LEASE_DURATION).to receive(:from_now).and_return(
+      initial_expiry,
+      renewed_expiry,
+      renewed_expiry
+    )
+    allow(provider).to receive(:create_event) do |_attributes, event_id:|
+      expect(connection.sync_lease_expires_at).to be_within(0.000001).of(renewed_expiry)
+      event_id
+    end
+
+    described_class.call(connection:)
+
+    expect(connection.calendar_event_syncs.find_by(source: reminder)).to be_present
+  end
+
   it "queues a settings resync that was requested before a later permission failure" do
     create_list(:reminder, 2, user:, relationship_profile: profile)
     permission = user.automation_permissions.find_by!(capability: "access_calendar")

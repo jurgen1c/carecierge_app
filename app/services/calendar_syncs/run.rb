@@ -311,6 +311,8 @@ module CalendarSyncs
       updated_count = CalendarConnection.where(id: connection.id, sync_lease_token: lease_token)
         .update_all([ "sync_lease_expires_at = ?", expires_at ])
       raise LeaseLost unless updated_count == 1
+
+      connection.reload
     end
 
     def owns_lease? = connection.sync_lease_token == lease_token

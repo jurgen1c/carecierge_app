@@ -3,7 +3,7 @@ id: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revoc
 type: fact
 system: calendar_integrations
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Google Calendar sync is owner-scoped, private, and revocable
@@ -39,7 +39,8 @@ claim: >
   sync state uses an expiring lease committed before provider calls, so
   duplicate work is fenced without invalidating token-refresh writes, a worker
   that loses its lease stops before another provider mutation, interrupted work
-  recovers, and concurrent setting changes request a follow-up while refreshed
+  recovers, each successful lease renewal reloads the connection before provider
+  token checks, and concurrent setting changes request a follow-up while refreshed
   credentials, each provider result, and its mapping completion are serialized
   under a fresh per-source owner and connection boundary. The owner lock is
   released between sources so concurrent consent changes can commit before the
@@ -204,7 +205,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 5fe0db9603faff1f979cb49a87941ae088561e71
+last_verified_commit:
 ---
 
 # Google Calendar sync is owner-scoped, private, and revocable

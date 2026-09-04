@@ -144,6 +144,18 @@ RSpec.describe BackupPlans::Promote do
     expect(booking.plan_task.reload).not_to be_superseded
   end
 
+  it "scopes booking-task exclusion to the event plan task query" do
+    queries = capture_sql do
+      described_class.call(actor: user, backup_option:)
+    end
+    replacement_query = queries.find do |sql|
+      sql.include?('FROM "plan_tasks"') && sql.include?('FOR UPDATE') && sql.include?('"bookings"')
+    end
+
+    expect(replacement_query).to include('LEFT OUTER JOIN "bookings"')
+    expect(replacement_query).not_to include('NOT IN (SELECT "bookings"."plan_task_id" FROM "bookings"')
+  end
+
   it "rejects promotion after authorized relationship context changes" do
     preference = create(:relationship_preference, relationship_profile: profile, value: "Quiet room")
     backup_plan.update!(
@@ -157,6 +169,16 @@ RSpec.describe BackupPlans::Promote do
       described_class.call(actor: user, backup_option:)
     end.to raise_error(BackupPlans::PromotionUnavailableError)
     expect(replaceable_task.reload.superseded_at).to be_nil
+  end
+
+  def capture_sql
+    queries = []
+    subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+      queries << payload[:sql] unless payload[:name] == "SCHEMA"
+    end
+
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { yield }
+    queries
   end
 
   it "rejects promotion when an active reminder was attached after review" do

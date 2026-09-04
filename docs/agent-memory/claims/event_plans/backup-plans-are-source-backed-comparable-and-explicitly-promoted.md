@@ -37,7 +37,9 @@ claim: >
   promotion without plan mutation. It preserves completed work, supersedes only provider-named
   current incomplete tasks, retires and detaches their reminders without deleting
   reminder history, and appends source-backed AI-origin tasks. Generation and
-  promotion never send, schedule, contact, book, or purchase. Backup records and
+  promotion excludes booking-owned tasks with a plan-scoped anti-join and locks
+  only the matching plan-task rows. It never sends, schedules, contacts, books,
+  or purchases. Backup records and
   options participate in owner exports; selective AI deletion removes them and
   promoted AI tasks while restoring superseded manual/template work with
   rescheduled template deadlines kept current and

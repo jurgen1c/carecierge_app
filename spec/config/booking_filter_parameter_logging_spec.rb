@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Booking parameter filtering" do
-  it "filters private booking and milestone reminder inputs" do
+  it "filters private booking inputs" do
     filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
     values = {
       "title" => "Private dinner",

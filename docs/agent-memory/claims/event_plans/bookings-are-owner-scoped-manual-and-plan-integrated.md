@@ -2,8 +2,8 @@
 id: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
 type: fact
 system: event_plans
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Bookings are owner-scoped, manual, and plan-integrated
@@ -23,7 +23,9 @@ claim: >
   confirmation milestone and completed or cancelled statuses retire every active
   booking milestone reminder; reminders for milestones already made obsolete by
   the current status cannot be created. They are excluded from suggestion,
-  prior-plan reuse, and backup-replacement task context. Owners may explicitly start confirmation, deposit, arrival,
+  prior-plan reuse, and backup-replacement task context. Backup promotion enforces
+  that boundary with a plan-scoped anti-join while locking only matching plan-task
+  rows. Owners may explicitly start confirmation, deposit, arrival,
   or change reminder forms with useful defaults, but reminders are never created
   automatically. Deletion detaches historical reminders and removes the owned
   task and timeline entry. Owner exports include decrypted booking logistics,
@@ -60,6 +62,7 @@ related_files:
   - docs/features/07-03-reservation-and-booking-management.md
   - spec/models/booking_spec.rb
   - spec/services/bookings/save_spec.rb
+  - spec/services/backup_plans/promote_spec.rb
   - spec/requests/bookings_spec.rb
   - spec/requests/booking_reminders_spec.rb
   - spec/serializers/data_exports/booking_snapshot_spec.rb
@@ -91,7 +94,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 3289642ebddbe18e7976d0c7308959d2597b8eea
+last_verified_commit: null
 ---
 
 # Bookings are owner-scoped, manual, and plan-integrated

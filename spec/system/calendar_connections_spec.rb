@@ -13,6 +13,7 @@ RSpec.describe "Calendar connections", type: :system do
     expect(page).to have_unchecked_field("Reminders")
     expect(page).to have_button("Save sync choices")
     expect(page).to have_button("Disconnect Google Calendar")
+    expect(page).to have_text("include the title, scheduled date or time, recurrence when applicable, and a Carecierge label")
     expect(page).to have_text("never include private notes, guest lists, confirmation details, or saved locations")
 
     verify_responsive_width(1440, 1000)

@@ -12,6 +12,7 @@ RSpec.describe CalendarConnectionComponent, type: :component do
     expect(page).to have_css("input[role='switch'][aria-label='Recordatorios'][checked]")
     expect(page).to have_button("Reintentar sincronización")
     expect(page).to have_button("Desconectar Google Calendar")
+    expect(page).to have_text("incluyen el título, la fecha u hora programada, la recurrencia cuando corresponda y una etiqueta de Carecierge")
     expect(page).to have_text("Los eventos ya creados permanecerán en Google Calendar")
     settings_form = page.all("form[action='#{Rails.application.routes.url_helpers.calendar_connection_path}']")
       .find { |form| form["data-turbo-confirm"].present? }

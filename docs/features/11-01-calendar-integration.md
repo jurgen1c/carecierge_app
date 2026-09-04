@@ -19,8 +19,9 @@ Nothing is selected by default. An owner can independently enable important
 dates, active reminders, visible dated event plans, non-terminal bookings, and
 open dated commitments. Only records owned by that account and active
 relationships are eligible. Carecierge creates private, transparent events
-containing the title and time or date; it never sends planning notes, guest
-lists, booking confirmations, saved locations, or other source details.
+containing the title, scheduled date or time, a constant Carecierge label, and
+recurrence when applicable; it never sends planning notes, guest lists, booking
+confirmations, saved locations, or other source details.
 
 Every provider create or update also passes through the canonical
 `access_calendar` automation permission immediately before the call.

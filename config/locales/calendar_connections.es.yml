@@ -46,7 +46,7 @@ es:
       sync_confirm: "¿Guardar estas opciones? Desactivar un tipo elimina de Google Calendar sus eventos sincronizados anteriormente."
       save_settings: "Guardar opciones de sincronización"
       privacy_heading: "Privado y reversible"
-      privacy_body: "Tú eliges qué sale de Carecierge. Los eventos sincronizados son privados, contienen solo el título y la hora y nunca incluyen notas privadas, listas de invitados, confirmaciones ni ubicaciones guardadas."
+      privacy_body: "Tú eliges qué sale de Carecierge. Los eventos sincronizados son privados e incluyen el título, la fecha u hora programada, la recurrencia cuando corresponda y una etiqueta de Carecierge. Nunca incluyen notas privadas, listas de invitados, confirmaciones ni ubicaciones guardadas."
       disconnect_heading: "Desconectar calendario"
       disconnect_body: "Al desconectar, se revoca el acceso futuro de Carecierge. Los eventos ya creados permanecerán en Google Calendar para que puedas conservarlos o eliminarlos allí."
       disconnect_google: "Desconectar Google Calendar"

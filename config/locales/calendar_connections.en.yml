@@ -46,7 +46,7 @@ en:
       sync_confirm: "Save these choices? Turning off a type deletes its previously synced events from Google Calendar."
       save_settings: "Save sync choices"
       privacy_heading: "Private and reversible"
-      privacy_body: "You choose what leaves Carecierge. Synced events are private, contain only the event title and time, and never include private notes, guest lists, confirmation details, or saved locations."
+      privacy_body: "You choose what leaves Carecierge. Synced events are private and include the title, scheduled date or time, recurrence when applicable, and a Carecierge label. They never include private notes, guest lists, confirmation details, or saved locations."
       disconnect_heading: "Disconnect calendar"
       disconnect_body: "Disconnecting revokes future Carecierge access. Events already created will remain in Google Calendar so you can keep or delete them there."
       disconnect_google: "Disconnect Google Calendar"

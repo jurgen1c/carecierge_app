@@ -2,8 +2,8 @@
 id: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
 type: fact
 system: event_plans
-status: needs_verification
-confidence: high
+status: current
+confidence: verified
 severity: critical
 
 title: Bookings are owner-scoped, manual, and plan-integrated
@@ -94,7 +94,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: a4292c5a23c1a462aae803ae6173d84bae5301ae
 ---
 
 # Bookings are owner-scoped, manual, and plan-integrated

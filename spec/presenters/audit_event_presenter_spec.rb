@@ -64,4 +64,35 @@ RSpec.describe AuditEventPresenter do
       expect(I18n.exists?("audit_events.actions.#{action_key}.#{attribute}", locale)).to be(true)
     end
   end
+
+  it "has content-free English and Spanish labels for calendar actions" do
+    connection = create(:calendar_connection)
+    event = create(
+      :audit_event,
+      user: connection.user,
+      actor: connection.user,
+      action: "calendar.settings.updated",
+      target: connection,
+      metadata: { changed_fields: "sync_types" }
+    )
+    action_keys = %w[
+      calendar_connection_created
+      calendar_connection_revoked
+      calendar_connection_revocation_failed
+      calendar_settings_updated
+      calendar_sync_completed
+      calendar_sync_failed
+    ]
+
+    %i[en es].each do |locale|
+      I18n.with_locale(locale) do
+        presenter = described_class.new(event)
+        expect(presenter.target_label).to eq(I18n.t("audit_events.targets.calendar_connection"))
+        expect(presenter.description).not_to include(connection.access_token, connection.refresh_token)
+      end
+    end
+    %i[en es].product(action_keys, %w[title description]).each do |locale, action_key, attribute|
+      expect(I18n.exists?("audit_events.actions.#{action_key}.#{attribute}", locale)).to be(true)
+    end
+  end
 end

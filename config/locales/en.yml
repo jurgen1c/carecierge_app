@@ -58,6 +58,7 @@ en:
       notification_preference: "Notification settings"
       reminder: "Reminder"
       event_plan: "Event plan"
+      calendar_connection: "Calendar connection"
     attributes:
       feature_flag:
         description: "Description"
@@ -458,6 +459,24 @@ en:
       privacy_vault_suggestion_usage_changed:
         title: "Vault suggestion access changed"
         description: "You changed whether a protected item may support suggestions for %{target}."
+      calendar_connection_created:
+        title: "Calendar connected"
+        description: "You connected %{target}."
+      calendar_connection_revoked:
+        title: "Calendar disconnected"
+        description: "You revoked calendar access for %{target}."
+      calendar_connection_revocation_failed:
+        title: "Calendar disconnect needs attention"
+        description: "Calendar access could not be revoked for %{target}."
+      calendar_settings_updated:
+        title: "Calendar sync choices updated"
+        description: "You changed what Carecierge may publish through %{target}."
+      calendar_sync_completed:
+        title: "Calendar sync completed"
+        description: "Carecierge reconciled selected dates through %{target}."
+      calendar_sync_failed:
+        title: "Calendar sync needs attention"
+        description: "Carecierge could not finish a sync through %{target}."
   onboarding:
     show:
       title: "Onboarding"
@@ -2085,6 +2104,8 @@ en:
       invalid_request: "Choose a valid deletion request."
       confirmation: "Type your account email exactly to confirm deletion."
       password: "Your current password was not accepted."
+      calendar_revocation: "We could not revoke Google Calendar access, so your account was not deleted. Try again."
+      use_data_controls: "Delete your account from Data controls so connected access can be revoked safely."
     ai_generated:
       notice: "AI-generated data was permanently deleted."
     account:

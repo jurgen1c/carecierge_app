@@ -30,6 +30,7 @@ es:
       notification_preference: "Configuración de notificaciones"
       reminder: "Recordatorio"
       event_plan: "Plan de evento"
+      calendar_connection: "Conexión de calendario"
     attributes:
       feature_flag:
         description: "Descripción"
@@ -775,6 +776,24 @@ es:
       privacy_vault_suggestion_usage_changed:
         title: "Acceso de sugerencias modificado"
         description: "Cambiaste si un elemento protegido puede apoyar sugerencias para %{target}."
+      calendar_connection_created:
+        title: "Calendario conectado"
+        description: "Conectaste %{target}."
+      calendar_connection_revoked:
+        title: "Calendario desconectado"
+        description: "Revocaste el acceso al calendario para %{target}."
+      calendar_connection_revocation_failed:
+        title: "La desconexión del calendario necesita atención"
+        description: "No se pudo revocar el acceso al calendario para %{target}."
+      calendar_settings_updated:
+        title: "Opciones de sincronización actualizadas"
+        description: "Cambiaste lo que Carecierge puede publicar mediante %{target}."
+      calendar_sync_completed:
+        title: "Sincronización del calendario completada"
+        description: "Carecierge concilió las fechas seleccionadas mediante %{target}."
+      calendar_sync_failed:
+        title: "La sincronización del calendario necesita atención"
+        description: "Carecierge no pudo terminar una sincronización mediante %{target}."
   onboarding:
     show:
       title: "Onboarding"
@@ -2061,6 +2080,8 @@ es:
       invalid_request: "Elige una solicitud de eliminación válida."
       confirmation: "Escribe exactamente el correo de tu cuenta para confirmar la eliminación."
       password: "Tu contraseña actual no fue aceptada."
+      calendar_revocation: "No pudimos revocar el acceso a Google Calendar, por lo que tu cuenta no se eliminó. Inténtalo de nuevo."
+      use_data_controls: "Elimina tu cuenta desde Controles de datos para poder revocar de forma segura el acceso conectado."
     ai_generated:
       notice: "Los datos generados por IA fueron eliminados permanentemente."
     account:

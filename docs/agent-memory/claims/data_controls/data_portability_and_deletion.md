@@ -32,17 +32,23 @@ claim: >
   or retaining their authored content, with untouched template deadlines aligned after rescheduling,
   and preserves event plans and explicit plan reminders even for terminal plans; clears note analysis
   without rereading unchanged screenshots; and fences delayed results. Profile and account
-  deletion lock snapshots, revokes outstanding upload grants, and
-  idempotently cleans attached or abandoned owner blobs. Feed state is pruned
+  deletion lock snapshots, revoke upload grants and connected calendar access,
+  and idempotently clean owner blobs. Feed state is pruned
   when its source or relationship is deleted and cascades
   with the account. Ownership stays in the nullifying foreign key rather than
-  retained blob metadata. Account deletion retains only a one-way
-  digest; OAuth users receive password setup.
+  retained blob metadata. Account deletion retains only a one-way digest,
+  offers OAuth users password setup, prevents Devise deletion from bypassing the
+  guarded flow, and aborts with credentials intact if calendar revocation
+  fails. Failure to revoke a pending callback credential does not mark an
+  as-yet untouched live connection as failed. A local rollback after successful provider revocation instead retains
+  the account with a fenced reconnect-required calendar state before releasing
+  the uninterrupted owner lock.
 
 source_files:
   - app/controllers/data_controls_controller.rb
   - app/controllers/data_exports_controller.rb
   - app/controllers/data_deletions_controller.rb
+  - app/controllers/users/registrations_controller.rb
   - app/models/deletion_request.rb
   - app/models/concerns/feed_item_state_source.rb
   - app/models/feed_item_state.rb
@@ -65,6 +71,9 @@ source_files:
   - db/migrate/20260903044916_add_vendor_quote_reference_to_reminders.rb
   - app/models/booking.rb
   - db/migrate/20260903120000_create_bookings.rb
+  - app/models/calendar_connection.rb
+  - app/models/calendar_event_sync.rb
+  - app/services/calendar_connections/disconnect.rb
 
 related_files:
   - app/models/approval_request.rb
@@ -87,6 +96,7 @@ related_files:
   - spec/serializers/data_exports/snapshot_spec.rb
   - spec/requests/vendor_quotes_spec.rb
   - spec/serializers/data_exports/booking_snapshot_spec.rb
+  - spec/services/calendar_connections/disconnect_spec.rb
 
 symbols:
   - DirectUploadsController
@@ -104,6 +114,8 @@ symbols:
   - DeletionRequest
   - VendorQuote
   - Booking
+  - CalendarConnection
+  - CalendarEventSync
 
 routes:
   - social_context_direct_upload
@@ -132,22 +144,16 @@ last_verified_commit: null
 
 ## Claim
 
-Exports are owner-scoped; decrypted vault payloads require reauthentication.
-Exports include privacy-safe evidence,
-  approval requests and decisions, message revisions, relationship briefings,
-  gift recommendations, event plans, plan tasks, bookings, vendor quotes with
-  provenance, social notes, consent state, screenshot bytes,
-  and feed visibility state while excluding internal keys, errors, leases, and
-  fences. Serialization neutralizes formulas, preserves recurrences, and audits
-  only success. Selective AI deletion preserves authored content, accepted gifts,
-  event plans, manual/template work, non-AI planning provenance, and explicit
-  reminders while deleting briefings, gift recommendations, and AI-origin plan
-  suggestions and clearing and fencing other inferred state. Profile and account
-  deletion snapshot under owned locks; upload writes share the account lock, and
-  cleanup includes attached or abandoned owner-stamped blobs. Permanently deleted
-  feed sources and relationships prune obsolete feed visibility rows. Ownership
-  lives only in a nullifying foreign key, and an expiry job
-  cleans abandoned uploads without retaining owner UUIDs in metadata.
+Exports are owner-scoped, and decrypted vault payloads require reauthentication.
+They include user-facing records, source provenance, consent state, screenshots,
+and privacy-safe evidence while excluding internal keys, errors, leases, and
+fences. Serialization neutralizes formulas, preserves recurrences, and audits
+only success. Selective AI deletion removes generated work and fences delayed
+results while preserving authored work, accepted gifts, plans, non-AI provenance,
+and explicit reminders. Profile and account deletion snapshot under owned locks,
+revoke calendar access and upload grants, and clean owner-stamped blobs. Failed
+calendar revocation preserves the account and credentials for recovery. Deleted
+sources prune feed state; abandoned-upload cleanup retains no owner UUID metadata.
 
 ## Why It Matters
 

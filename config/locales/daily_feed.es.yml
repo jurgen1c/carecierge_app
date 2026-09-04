@@ -16,6 +16,7 @@ es:
       open_reminders: "Abrir recordatorios"
       activity: "Actividad"
       data_controls: "Controles de datos"
+      calendar_integrations: "Integraciones de calendario"
       admin_activity: "Actividad administrativa"
       add_relationship: "Agregar relación"
       settings: "Configuración"

@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   devise_for :users, controllers: {
     omniauth_callbacks: "users/omniauth_callbacks",
+    registrations: "users/registrations",
     sessions: "users/sessions"
   }
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
@@ -75,6 +76,10 @@ Rails.application.routes.draw do
   resource :notification_preference, only: %i[edit update]
   resource :automation_permissions, only: %i[edit update]
   resources :automation_permission_overrides, only: %i[create update destroy]
+  resource :calendar_connection, only: %i[show new update destroy] do
+    get :callback
+    post :sync
+  end
   resources :audit_events, only: :index
   resource :data_control, only: :show
   resources :data_exports, only: :create

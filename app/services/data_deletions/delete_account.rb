@@ -1,11 +1,14 @@
 module DataDeletions
   class DeleteAccount
+    CalendarRevocationError = Class.new(StandardError)
+
     def self.call(user:)
       new(user:).call
     end
 
     def initialize(user:)
       @user = user
+      @calendar_revoked = false
     end
 
     def call
@@ -14,8 +17,11 @@ module DataDeletions
       Perform.call(
         user:,
         request_kind: "account",
-        after_commit: -> { DeleteBlobs.call(blobs) }
+        after_commit: -> { DeleteBlobs.call(blobs) },
+        after_rollback: ->(error) { compensate_calendar_failure!(error) }
       ) do
+        revoke_pending_calendar_credentials!
+        disconnect_calendar!
         profiles = locked_profiles
         blobs = deletion_blobs(profiles)
         FeatureFlagAssignment.where(target_kind: "user", target_value: user.id).delete_all
@@ -26,6 +32,88 @@ module DataDeletions
     private
 
     attr_reader :user
+
+    def disconnect_calendar!
+      connection = user.calendar_connection
+      return unless connection
+      if CalendarConnections::Disconnect.call(connection:, actor: user, after_revoke: -> { @calendar_revoked = true })
+        return
+      end
+
+      @calendar_revocation_failed = true
+      raise CalendarRevocationError, "Calendar access could not be revoked"
+    end
+
+    def revoke_pending_calendar_credentials!
+      user.calendar_credential_revocations.order(:id).lock.each do |revocation|
+        CalendarConnections::GoogleOauth.revoke(credentials: revocation.credentials)
+        revocation.destroy!
+      rescue CalendarConnections::ConnectionError => error
+        @pending_revocation_failure = [ revocation.id, error.code ]
+        raise CalendarRevocationError, "Pending calendar access could not be revoked"
+      end
+    end
+
+    def record_pending_calendar_revocation_failure!
+      return unless @pending_revocation_failure
+
+      revocation_id, code = @pending_revocation_failure
+      CalendarCredentialRevocation.lock.find_by(id: revocation_id)&.record_failure!(code)
+    end
+
+    def calendar_revoked? = @calendar_revoked
+
+    def compensate_calendar_failure!(error)
+      if error.is_a?(CalendarRevocationError)
+        record_pending_calendar_revocation_failure!
+        record_calendar_revocation_failure! if @calendar_revocation_failed
+      elsif calendar_revoked?
+        record_completed_calendar_revocation!
+      end
+    end
+
+    def record_completed_calendar_revocation!
+      connection = CalendarConnection.lock.find_by(user_id: user.id)
+      return unless connection
+
+      user.increment!(:calendar_connection_generation)
+      connection.update!(
+        sync_status: "action_required",
+        sync_lease_token: nil,
+        sync_lease_expires_at: nil,
+        resync_requested: false,
+        last_error_at: Time.current,
+        last_error_code: "authorization_required"
+      )
+      AuditEvent.record!(
+        user:,
+        actor: user,
+        action: "calendar.connection.revoked",
+        target: user,
+        metadata: { result: "success" }
+      )
+    end
+
+    def record_calendar_revocation_failure!
+      connection = CalendarConnection.lock.find_by(user_id: user.id)
+      return unless connection
+
+      connection.update!(
+        sync_status: "failed",
+        sync_lease_token: nil,
+        sync_lease_expires_at: nil,
+        resync_requested: false,
+        last_error_at: Time.current,
+        last_error_code: "revocation_failed"
+      )
+      AuditEvent.record!(
+        user:,
+        actor: user,
+        action: "calendar.connection.revocation_failed",
+        target: connection,
+        metadata: { result: "revocation_failed" }
+      )
+    end
 
     def locked_profiles
       user.relationship_profiles.with_discarded.order(:id).lock.to_a

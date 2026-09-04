@@ -26,8 +26,13 @@ claim: >
   recommendation generation and lifecycle actions, plus event-plan suggestion
   generation, add result/count-only evidence without titles, rationales,
   budgets, plan details, or source contents. Calendar
-  exports emit privacy-minimized evidence after serialization; Turbo prefetches
-  do not. Account and profile data exports add scope/format-only evidence after
+  exports emit privacy-minimized evidence after serialization. Calendar
+  connection, settings, sync, failure, and revocation events likewise retain
+  only allowlisted result or count metadata. Calendar reconciliation increments
+  pending count evidence with successful mapping changes and records and clears
+  it transactionally before connected status can commit; disconnect flushes any
+  count retained after a partial failure before removing the connection. Turbo
+  prefetches do not. Account and profile data exports add scope/format-only evidence after
   successful serialization, and permanent deletion adds request-kind-only
   evidence before owned records are destroyed. The account route scopes from
   current_user.audit_events; a separate
@@ -71,6 +76,12 @@ related_files:
   - spec/services/memory_extractions/review_spec.rb
   - app/controllers/reminders_controller.rb
   - spec/requests/reminders_spec.rb
+  - app/services/calendar_connections/save_credentials.rb
+  - app/services/calendar_connections/update_settings.rb
+  - app/services/calendar_connections/disconnect.rb
+  - app/services/calendar_syncs/run.rb
+  - spec/services/calendar_connections/disconnect_spec.rb
+  - spec/services/calendar_syncs/run_spec.rb
 
 symbols:
   - AuditEvent
@@ -115,7 +126,7 @@ for forged, non-scalar, malformed, or out-of-range values.
 
 Existing profile, reminder, automation-permission, privacy-vault, gift
 recommendation, event-plan suggestion, approval decision, direct extracted-memory
-rejection, and calendar export flows emit privacy-minimized evidence
+rejection, calendar export, and Google Calendar connection flows emit privacy-minimized evidence
 without weakening their transaction semantics. Calendar links disable Turbo prefetch, and server-identified
 prefetches create no evidence. Normalized no-op saves create no update event.
 

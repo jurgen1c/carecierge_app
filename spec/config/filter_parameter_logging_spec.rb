@@ -113,6 +113,11 @@ RSpec.describe "Parameter filtering" do
       "privacy_vault_unlock" => {
         "password" => "vault-password"
       },
+      "calendar_connection" => {
+        "sync_types" => [ "important_dates", "commitments" ]
+      },
+      "code" => "private-oauth-code",
+      "state" => "private-signed-state",
       "memory_query" => "Private relationship search",
       "body" => "Unrelated body",
       "transcript" => "Unrelated transcript",
@@ -172,6 +177,9 @@ RSpec.describe "Parameter filtering" do
     expect(filtered.dig("personal_touch_item", "details")).to eq("[FILTERED]")
     expect(filtered.dig("personal_touch_item", "category")).to eq("message")
     expect(filtered.dig("privacy_vault_unlock", "password")).to eq("[FILTERED]")
+    expect(filtered.dig("calendar_connection", "sync_types")).to eq("[FILTERED]")
+    expect(filtered["code"]).to eq("[FILTERED]")
+    expect(filtered["state"]).to eq("[FILTERED]")
     expect(filtered["memory_query"]).to eq("[FILTERED]")
     expect(filtered["body"]).to eq("Unrelated body")
     expect(filtered["transcript"]).to eq("Unrelated transcript")

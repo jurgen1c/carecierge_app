@@ -1,6 +1,26 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revocable
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Calendar connection, settings, sync, failure, and revocation outcomes use allowlisted count or result metadata without copying event content or provider responses.
+    strength: 100
+  - source: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revocable
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Account exports retain safe calendar choices and source references while excluding OAuth credentials and opaque provider identifiers; account deletion revokes provider access before credentials can be removed.
+    strength: 100
+  - source: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revocable
+    target: authentication.localization_baseline
+    relation: constrains
+    reason: Connection, selection, sync recovery, reconnect, and revocation surfaces remain available in English and Spanish with English as default.
+    strength: 95
+  - source: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revocable
+    target: automation_permissions.permission_decisions
+    relation: requires
+    reason: Provider reconciliation fails closed through access_calendar; owner-requested runs may satisfy ask-every-time while periodic synchronization requires automatic permission.
+    strength: 100
   - source: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
     target: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
     relation: constrains

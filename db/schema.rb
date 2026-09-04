@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_03_121000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_03_208000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -233,6 +233,67 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_121000) do
     t.index ["user_id"], name: "index_bookings_on_user_id"
     t.check_constraint "booking_kind::text = ANY (ARRAY['reservation'::character varying, 'booking'::character varying]::text[])", name: "bookings_supported_kind"
     t.check_constraint "status::text = ANY (ARRAY['planned'::character varying, 'requested'::character varying, 'confirmed'::character varying, 'completed'::character varying, 'cancelled'::character varying]::text[])", name: "bookings_supported_status"
+  end
+
+  create_table "calendar_connections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "access_token", null: false
+    t.datetime "created_at", null: false
+    t.string "granted_scopes", default: [], null: false, array: true
+    t.datetime "last_error_at"
+    t.string "last_error_code"
+    t.datetime "last_sync_started_at"
+    t.datetime "last_synced_at"
+    t.string "locale", default: "en", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.integer "pending_audit_count", default: 0, null: false
+    t.string "provider", default: "google_calendar", null: false
+    t.text "refresh_token", null: false
+    t.boolean "resync_requested", default: false, null: false
+    t.datetime "sync_lease_expires_at"
+    t.uuid "sync_lease_token"
+    t.string "sync_status", default: "connected", null: false
+    t.string "sync_types", default: [], null: false, array: true
+    t.datetime "token_expires_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["sync_status", "sync_lease_expires_at"], name: "index_calendar_connections_on_sync_lease"
+    t.index ["user_id"], name: "index_calendar_connections_on_user_id", unique: true
+    t.check_constraint "'https://www.googleapis.com/auth/calendar.events.owned'::text = ANY (granted_scopes::text[])", name: "calendar_connections_required_google_scope"
+    t.check_constraint "last_error_code IS NULL OR (last_error_code::text = ANY (ARRAY['authorization_required'::character varying, 'calendar_authorization_incomplete'::character varying, 'calendar_permission_required'::character varying, 'invalid_grant'::character varying, 'invalid_provider_response'::character varying, 'provider_error'::character varying, 'provider_rejected'::character varying, 'provider_unavailable'::character varying, 'rate_limited'::character varying, 'revocation_failed'::character varying]::text[]))", name: "calendar_connections_supported_error_code"
+    t.check_constraint "locale::text = ANY (ARRAY['en'::character varying, 'es'::character varying]::text[])", name: "calendar_connections_supported_locale"
+    t.check_constraint "pending_audit_count >= 0", name: "calendar_connections_nonnegative_pending_audit_count"
+    t.check_constraint "provider::text = 'google_calendar'::text", name: "calendar_connections_supported_provider"
+    t.check_constraint "sync_status::text = 'syncing'::text AND sync_lease_token IS NOT NULL AND sync_lease_expires_at IS NOT NULL OR sync_status::text <> 'syncing'::text AND sync_lease_token IS NULL AND sync_lease_expires_at IS NULL", name: "calendar_connections_complete_sync_lease"
+    t.check_constraint "sync_status::text = ANY (ARRAY['connected'::character varying, 'syncing'::character varying, 'failed'::character varying, 'action_required'::character varying]::text[])", name: "calendar_connections_supported_status"
+    t.check_constraint "sync_types <@ ARRAY['important_dates'::character varying, 'reminders'::character varying, 'event_plans'::character varying, 'bookings'::character varying, 'commitments'::character varying]", name: "calendar_connections_supported_sync_types"
+  end
+
+  create_table "calendar_credential_revocations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "access_token"
+    t.integer "attempts", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.string "last_error_code"
+    t.integer "lock_version", default: 0, null: false
+    t.text "refresh_token"
+    t.datetime "retry_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["retry_at"], name: "index_calendar_credential_revocations_on_retry_at"
+    t.index ["user_id"], name: "index_calendar_credential_revocations_on_user_id"
+    t.check_constraint "access_token IS NOT NULL OR refresh_token IS NOT NULL", name: "calendar_credential_revocations_have_a_token"
+  end
+
+  create_table "calendar_event_syncs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "calendar_connection_id", null: false
+    t.datetime "created_at", null: false
+    t.text "external_event_id", null: false
+    t.string "source_fingerprint", null: false
+    t.uuid "source_id", null: false
+    t.string "source_type", null: false
+    t.datetime "synced_at"
+    t.datetime "updated_at", null: false
+    t.index ["calendar_connection_id", "source_type", "source_id"], name: "index_calendar_event_syncs_on_connection_and_source", unique: true
+    t.index ["calendar_connection_id"], name: "index_calendar_event_syncs_on_calendar_connection_id"
   end
 
   create_table "commitments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1077,6 +1138,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_121000) do
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "admin", default: false, null: false
+    t.integer "calendar_connection_generation", default: 0, null: false
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
     t.datetime "confirmed_at"
@@ -1106,6 +1168,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_121000) do
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
+    t.check_constraint "calendar_connection_generation >= 0", name: "users_calendar_connection_generation_nonnegative"
   end
 
   create_table "vault_access_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1228,6 +1291,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_121000) do
   add_foreign_key "bookings", "event_plans", on_delete: :cascade
   add_foreign_key "bookings", "plan_tasks", on_delete: :nullify
   add_foreign_key "bookings", "users", on_delete: :cascade
+  add_foreign_key "calendar_connections", "users", on_delete: :cascade
+  add_foreign_key "calendar_credential_revocations", "users", on_delete: :cascade
+  add_foreign_key "calendar_event_syncs", "calendar_connections", on_delete: :cascade
   add_foreign_key "commitments", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_cadences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"

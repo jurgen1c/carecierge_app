@@ -79,6 +79,12 @@ class AuditEvent < ApplicationRecord
     privacy_vault.protected
     privacy_vault.restored
     privacy_vault.suggestion_usage_changed
+    calendar.connection.created
+    calendar.connection.revoked
+    calendar.connection.revocation_failed
+    calendar.settings.updated
+    calendar.sync.completed
+    calendar.sync.failed
   ].freeze
   ACTOR_KINDS = %w[user ai automation system].freeze
   SOURCES = %w[web_app mobile_app ai automation system support].freeze
@@ -95,7 +101,7 @@ class AuditEvent < ApplicationRecord
     scenario
     superseded_count
   ].freeze
-  TARGET_TYPES = %w[ApprovalRequest AutomationPermission EventPlan PrivacyVaultItem RelationshipProfile Reminder User].freeze
+  TARGET_TYPES = %w[ApprovalRequest AutomationPermission CalendarConnection EventPlan PrivacyVaultItem RelationshipProfile Reminder User].freeze
   MAX_METADATA_VALUE_LENGTH = 120
 
   belongs_to :user
@@ -179,7 +185,7 @@ class AuditEvent < ApplicationRecord
     owner_id = case target
     when User then target.id
     when ApprovalRequest then target.user_id
-    when RelationshipProfile, Reminder, AutomationPermission, EventPlan then target.user_id
+    when RelationshipProfile, Reminder, AutomationPermission, CalendarConnection, EventPlan then target.user_id
     when PrivacyVaultItem then target.relationship_profile.user_id
     end
     errors.add(:target, :invalid) unless owner_id == user_id

@@ -1,0 +1,9 @@
+<% content_for :title, t("calendar_connections.show.page_title") %>
+
+<main class="flex flex-1 flex-col py-6">
+  <%= link_to t("calendar_connections.show.back"), dashboard_path, class: "mb-5 inline-flex min-h-11 w-fit items-center text-sm font-semibold text-quiet-note hover:text-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+  <%= component "calendar_connection",
+    connection: @connection,
+    provider_available: @provider_available,
+    credential_revocation_pending: @credential_revocation_pending %>
+</main>

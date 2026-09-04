@@ -4,6 +4,7 @@
 # Database name: primary
 #
 #  id                      :uuid             not null, primary key
+#  booking_milestone       :string
 #  completed_at            :datetime
 #  next_delivery_at        :datetime
 #  notes                   :text
@@ -18,6 +19,7 @@
 #  title                   :string           not null
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
+#  booking_id              :uuid
 #  commitment_id           :uuid
 #  event_plan_id           :uuid
 #  important_date_id       :uuid
@@ -29,6 +31,7 @@
 # Indexes
 #
 #  index_reminders_on_active_next_delivery_at              (next_delivery_at) WHERE (((status)::text = 'active'::text) AND (next_delivery_at IS NOT NULL))
+#  index_reminders_on_booking_id                           (booking_id)
 #  index_reminders_on_commitment_id                        (commitment_id)
 #  index_reminders_on_event_plan_id                        (event_plan_id)
 #  index_reminders_on_important_date_id                    (important_date_id)
@@ -41,6 +44,7 @@
 #
 # Foreign Keys
 #
+#  fk_rails_...  (booking_id => bookings.id) ON DELETE => nullify
 #  fk_rails_...  (commitment_id => commitments.id) ON DELETE => cascade
 #  fk_rails_...  (event_plan_id => event_plans.id) ON DELETE => cascade
 #  fk_rails_...  (important_date_id => important_dates.id) ON DELETE => nullify
@@ -52,6 +56,7 @@
 class Reminder < ApplicationRecord
   include FeedItemStateSource
 
+  BOOKING_MILESTONES = %w[confirmation deposit arrival change].freeze
   REMINDER_TYPES = %w[birthday gift_planning check_in promise_follow_up event_preparation post_event_follow_up relationship_goal custom].freeze
   PRIORITIES = %w[low normal high].freeze
   RECURRENCES = %w[none daily weekly monthly yearly].freeze
@@ -64,6 +69,7 @@ class Reminder < ApplicationRecord
   belongs_to :event_plan, optional: true
   belongs_to :plan_task, optional: true
   belongs_to :vendor_quote, optional: true
+  belongs_to :booking, optional: true
 
   has_many :reminder_deliveries, dependent: :destroy
   has_many :noticed_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
@@ -83,6 +89,7 @@ class Reminder < ApplicationRecord
   validate :commitment_matches_relationship
   validate :event_planning_context_matches_owner_and_relationship
   validate :vendor_quote_matches_owner_and_plan
+  validate :booking_matches_owner_plan_and_milestone
 
   before_validation :initialize_next_delivery_at, on: :create
   before_validation :refresh_recurrence_anchor
@@ -235,11 +242,30 @@ class Reminder < ApplicationRecord
     errors.add(:vendor_quote, :different_plan) if event_plan.blank? || vendor_quote.event_plan_id != event_plan_id
   end
 
+  def booking_matches_owner_plan_and_milestone
+    if booking.blank?
+      errors.add(:booking_milestone, :without_booking) if booking_milestone.present?
+      return
+    end
+
+    errors.add(:booking, :different_owner) if booking.user_id != user_id
+    errors.add(:booking, :different_plan) if event_plan.blank? || booking.event_plan_id != event_plan_id
+    if booking_milestone.blank?
+      errors.add(:booking_milestone, :required)
+    elsif !booking_milestone.in?(BOOKING_MILESTONES)
+      errors.add(:booking_milestone, :inclusion)
+    elsif planning_attachment_added_or_changed? && booking_milestone.in?(booking.obsolete_reminder_milestones)
+      errors.add(:booking_milestone, :obsolete)
+    end
+  end
+
   def planning_attachment_added_or_changed?
     new_record? ||
       will_save_change_to_event_plan_id? && event_plan_id.present? ||
       will_save_change_to_plan_task_id? && plan_task_id.present? ||
-      will_save_change_to_vendor_quote_id? && vendor_quote_id.present?
+      will_save_change_to_vendor_quote_id? && vendor_quote_id.present? ||
+      will_save_change_to_booking_id? && booking_id.present? ||
+      will_save_change_to_booking_milestone? && booking_milestone.present?
   end
 
   def initialize_next_delivery_at

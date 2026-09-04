@@ -223,6 +223,39 @@ RSpec.describe EventPlans::ContextBuilder do
     expect(described_class.new(event_plan: without_selection).call.sources.map(&:kind)).not_to include("prior_anniversary_plan")
   end
 
+  it "does not reuse booking-owned tasks as prior anniversary context" do
+    profile = create(:relationship_profile)
+    prior_plan = create(
+      :event_plan,
+      user: profile.user,
+      relationship_profile: profile,
+      title: "Prior anniversary",
+      occasion_type: "anniversary"
+    )
+    booking = create(:booking, user: profile.user, event_plan: prior_plan, title: "Private reservation")
+    Bookings::Save.call(booking, attributes: {}, locale: :en)
+    prior_plan.complete!
+    plan = create(
+      :event_plan,
+      user: profile.user,
+      relationship_profile: profile,
+      occasion_type: "anniversary",
+      source_context: [
+        {
+          "id" => "event_plan:#{prior_plan.id}",
+          "label" => "Prior anniversary plan — review before reusing",
+          "role" => "prior_anniversary_context",
+          "certainty" => "needs_confirmation"
+        }
+      ]
+    )
+
+    source = described_class.new(event_plan: plan).call.sources.find { |candidate| candidate.kind == "prior_anniversary_plan" }
+
+    expect(source.content).to include("Prior anniversary")
+    expect(source.content).not_to include(booking.plan_task.title)
+  end
+
   it "marks prior-plan summaries sensitive when included task copy depends on selected sensitive context" do
     profile = create(:relationship_profile)
     private_note = create(

@@ -9,6 +9,7 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
   option :backup_plan, default: -> { nil }
   option :personal_touch_checklist, default: -> { nil }
   option :vendors, default: -> { [] }
+  option :bookings, default: -> { [] }
 
   style :primary_button do
     base do
@@ -40,6 +41,17 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
       end
     end
     defaults { { origin: :manual } }
+  end
+
+  style :booking_task_state do
+    base { %w[booking-task-state inline-flex size-11 items-center justify-center rounded-full border] }
+    variants do
+      completed do
+        yes { %w[border-primary bg-primary text-canvas] }
+        no { %w[border-stone-300 bg-canvas text-quiet-note] }
+      end
+    end
+    defaults { { completed: false } }
   end
 
   def progress = event_plan.progress
@@ -115,6 +127,11 @@ class EventPlanWorkspaceComponent < ApplicationViewComponent
 
   def tasks_for(phase)
     event_plan.plan_tasks.select { |task| task.phase == phase && !task.superseded? }
+  end
+
+  def booking_for(task)
+    @bookings_by_task_id ||= bookings.index_by(&:plan_task_id)
+    @bookings_by_task_id[task.id]
   end
 
   def backup_plan_current?

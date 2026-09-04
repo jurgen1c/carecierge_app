@@ -5,7 +5,10 @@
       <h1 class="text-3xl font-semibold text-ink"><%= t("event_plans.index.title") %></h1>
       <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("event_plans.index.body") %></p>
     </div>
-    <%= link_to t("event_plans.index.create"), new_event_plan_path, class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to t("event_plans.index.booking_history"), bookings_path, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-private-line bg-canvas px-4 py-2 text-sm font-semibold text-ink hover:bg-surface" %>
+      <%= link_to t("event_plans.index.create"), new_event_plan_path, class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    </div>
   </div>
 
   <% if @event_plans.any? %>

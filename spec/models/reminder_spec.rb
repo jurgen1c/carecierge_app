@@ -212,6 +212,38 @@ RSpec.describe Reminder, type: :model do
       expect(reminder.errors.of_kind?(:vendor_quote, :different_plan)).to be(true)
     end
 
+    it "rejects a new reminder for an obsolete booking milestone" do
+      booking = create(:booking, status: "confirmed")
+      reminder = build(
+        :reminder,
+        user: booking.user,
+        relationship_profile: booking.event_plan.relationship_profile,
+        event_plan: booking.event_plan,
+        booking:,
+        booking_milestone: "confirmation"
+      )
+
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:booking_milestone, :obsolete)).to be(true)
+    end
+
+    it "rejects changing an existing reminder to an obsolete booking milestone" do
+      booking = create(:booking, status: "confirmed")
+      reminder = create(
+        :reminder,
+        user: booking.user,
+        relationship_profile: booking.event_plan.relationship_profile,
+        event_plan: booking.event_plan,
+        booking:,
+        booking_milestone: "deposit"
+      )
+
+      reminder.booking_milestone = "confirmation"
+
+      expect(reminder).not_to be_valid
+      expect(reminder.errors.of_kind?(:booking_milestone, :obsolete)).to be(true)
+    end
+
     it "rejects new reminder attachments to completed plans or tasks" do
       plan = create(:event_plan)
       completed_task = create(:plan_task, event_plan: plan, completed_at: Time.current)

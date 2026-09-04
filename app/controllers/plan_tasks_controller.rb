@@ -46,7 +46,7 @@ class PlanTasksController < ApplicationController
   end
 
   def set_plan_task
-    @plan_task = @event_plan.plan_tasks.current.find(params[:id])
+    @plan_task = @event_plan.plan_tasks.current.where.missing(:booking).find(params[:id])
     authorize @plan_task
   end
 

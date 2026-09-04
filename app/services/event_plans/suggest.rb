@@ -124,7 +124,7 @@ module EventPlans
 
     def build_plan_snapshot(sources:)
       authorized_source_ids = sources.map(&:id)
-      tasks = event_plan.plan_tasks.current.ordered.limit(50).filter_map do |task|
+      tasks = event_plan.plan_tasks.current.where.missing(:booking).ordered.limit(50).filter_map do |task|
         persisted_source_ids = task.source_context.filter_map { |source| source["id"] }
         next unless persisted_source_ids.empty? || (persisted_source_ids - authorized_source_ids).empty?
 

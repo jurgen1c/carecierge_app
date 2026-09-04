@@ -176,7 +176,7 @@ module EventPlans
         .order(starts_on: :desc, created_at: :desc, id: :desc)
         .limit(MAX_PER_KIND)
         .map do |prior_plan|
-          reusable_tasks = prior_plan.plan_tasks.current.ordered
+          reusable_tasks = prior_plan.plan_tasks.current.where.missing(:booking).ordered
             .limit(MAX_PRIOR_TASK_CANDIDATES)
             .select { |task| reusable_prior_task?(task, authorized_source_ids:) }
             .first(6)

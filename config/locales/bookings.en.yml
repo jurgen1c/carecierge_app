@@ -1,0 +1,127 @@
+en:
+  activerecord:
+    models:
+      booking: Booking
+    attributes:
+      booking:
+        booking_kind: Booking type
+        title: Title
+        provider_name: Provider
+        starts_at: Date and time
+        time_zone: Time zone
+        location: Location
+        status: Status
+        confirmation_details: Confirmation details
+        cancellation_policy: Cancellation policy
+        notes: Notes
+        event_plan: Event plan
+        plan_task: Related plan task
+    errors:
+      models:
+        booking:
+          attributes:
+            time_zone:
+              invalid: is not recognized
+            event_plan:
+              different_owner: must belong to your account
+              inactive: must be active
+            plan_task:
+              different_plan: must belong to the same event plan
+        reminder:
+          attributes:
+            booking:
+              different_owner: must belong to your account
+              different_plan: must belong to the same event plan
+            booking_milestone:
+              required: is required for a booking reminder
+              without_booking: requires a booking
+              obsolete: is no longer useful for this booking status
+  bookings:
+    kinds:
+      reservation: Reservation
+      booking: Booking
+    statuses:
+      planned: Planned
+      requested: Requested
+      confirmed: Confirmed
+      completed: Completed
+      cancelled: Cancelled
+    plan_task_title: "Confirm booking: %{title}"
+    timeline_title: Booking status
+    plan_task_managed: Managed from the booking status.
+    review_only: Manual tracking only — Carecierge does not contact providers, book, purchase, pay, or message on your behalf.
+    actions:
+      add: Add booking
+      manage: Manage bookings
+      manage_one: Manage booking
+      edit: Edit booking
+      delete: Remove booking
+      delete_confirm: "Remove %{title}? Its booking task and timeline entry will also be removed. Existing reminder history will be kept."
+    index:
+      title: Bookings
+      body: "Track reservation and booking logistics for %{plan}."
+      back: Back to event plan
+      read_only: Booking details are read-only because this plan is no longer active. You can still remove a booking explicitly.
+      empty_title: No bookings yet
+      empty_body: Add the first reservation or booking when you are ready to track its details.
+      reminders:
+        zero: No active reminders
+        one: 1 active reminder
+        other: "%{count} active reminders"
+    history:
+      title: Booking history
+      body: Review and explicitly remove retained bookings, including those from plans that are no longer visible.
+      back: Back to event plans
+      empty_title: No booking history yet
+      empty_body: Bookings you add to event plans will appear here.
+    pagination:
+      label: Booking history pages
+      previous: Previous
+      next: Next
+      page: "Page %{page} of %{pages}"
+    new:
+      title: Add booking
+      body: "Record a reservation or booking for %{plan}."
+    edit:
+      body: Update the logistics you are tracking. Changes stay inside Carecierge until you act on them.
+    form:
+      back: Back to bookings
+      errors:
+        one: Review 1 issue before saving
+        other: "Review %{count} issues before saving"
+      essentials: Essentials
+      details: Confirmation and notes
+      kind: Booking type
+      title: Title
+      provider: Provider
+      starts_at: Date and time
+      time_zone: Time zone
+      location: Location
+      status: Status
+      confirmation_details: Confirmation details
+      cancellation_policy: Cancellation policy
+      cancellation_hint: Keep the provider's wording here for reference; Carecierge does not enforce the policy.
+      notes: Notes
+      create: Save booking
+      update: Save changes
+      cancel: Cancel
+    reminders:
+      action: Set a booking reminder
+      context: Booking reminder
+      actions:
+        confirmation: Set confirmation reminder
+        deposit: Set deposit reminder
+        arrival: Set arrival reminder
+        change: Set change reminder
+      titles:
+        confirmation: "Confirm %{title}"
+        deposit: "Review deposit for %{title}"
+        arrival: "Prepare to arrive for %{title}"
+        change: "Review changes for %{title}"
+    create:
+      notice: Booking saved.
+    update:
+      notice: Booking updated.
+      changed: The booking changed before your update was saved. Review it and try again.
+    destroy:
+      notice: Booking removed. Existing reminder history was kept.

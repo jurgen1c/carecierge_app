@@ -109,6 +109,8 @@ RSpec.describe EventPlans::Suggest do
     plan = create(:event_plan)
     current_task = create(:plan_task, event_plan: plan, title: "Current task")
     superseded_task = create(:plan_task, event_plan: plan, title: "Old task", superseded_at: 1.hour.ago)
+    booking = create(:booking, user: plan.user, event_plan: plan, title: "Private booking task")
+    Bookings::Save.call(booking, attributes: {}, locale: :en)
     captured_snapshot = nil
     generator = double
     allow(generator).to receive(:generate) do |plan_snapshot:, **|
@@ -122,6 +124,7 @@ RSpec.describe EventPlans::Suggest do
 
     expect(captured_snapshot.existing_tasks.map(&:title)).to include(current_task.title)
     expect(captured_snapshot.existing_tasks.map(&:title)).not_to include(superseded_task.title)
+    expect(captured_snapshot.existing_tasks.map(&:title)).not_to include(booking.plan_task.title)
   end
 
   it "rejects output when the relationship is archived during provider generation" do

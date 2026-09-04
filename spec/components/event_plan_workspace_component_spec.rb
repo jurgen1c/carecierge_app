@@ -25,6 +25,28 @@ RSpec.describe EventPlanWorkspaceComponent, type: :component do
     expect(page).not_to have_button("Send")
   end
 
+  it "routes a booking-owned task back to its booking instead of generic task mutations" do
+    booking = create(:booking)
+    Bookings::Save.call(booking, attributes: {}, locale: :en)
+
+    render_inline(described_class.new(
+      event_plan: booking.event_plan,
+      event_plans: [ booking.event_plan ],
+      plan_task: PlanTask.new,
+      private_notes: [],
+      vault_items: [],
+      bookings: [ booking ]
+    ))
+
+    task_row = page.find("#plan-task-#{booking.plan_task_id}")
+    expect(task_row).to have_text("Managed from the booking status")
+    expect(task_row).to have_link("Manage booking", href: Rails.application.routes.url_helpers.edit_booking_path(booking))
+    expect(task_row).to have_no_button("Mark complete")
+    expect(task_row).to have_no_button("Remove task")
+    expect(task_row).to have_no_text("Edit details")
+    expect(task_row).to have_css(".booking-task-state.border-stone-300.bg-canvas.text-quiet-note")
+  end
+
   it "shows attached vendors and a direct, review-only discovery path" do
     plan = create(:event_plan)
     vendor = create(:vendor, user: plan.user, name: "Casa Verde", category: "restaurant")

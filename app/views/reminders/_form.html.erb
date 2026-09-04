@@ -5,6 +5,8 @@
   <%= form.hidden_field :event_plan_id if reminder.event_plan_id %>
   <%= form.hidden_field :plan_task_id if reminder.plan_task_id %>
   <%= form.hidden_field :vendor_quote_id if reminder.vendor_quote_id %>
+  <%= form.hidden_field :booking_id if reminder.booking_id %>
+  <%= form.hidden_field :booking_milestone if reminder.booking_milestone %>
   <div class="flex items-start justify-between gap-3">
     <div>
       <h2 class="text-base font-semibold text-stone-950"><%= reminder.persisted? ? t("reminders.form.edit_title") : t("reminders.form.new_title") %></h2>
@@ -24,6 +26,7 @@
       <p class="font-semibold"><%= t("event_plans.workspace.next_reminder_title") %></p>
       <p class="mt-1 text-quiet-note"><%= reminder.event_plan.title %><% if reminder.plan_task %> · <%= reminder.plan_task.title %><% end %></p>
       <% if reminder.vendor_quote %><p class="mt-1 text-quiet-note"><%= t("vendor_quotes.reminder.context", vendor: reminder.vendor_quote.vendor.name) %></p><% end %>
+      <% if reminder.booking %><p class="mt-1 text-quiet-note"><%= t("bookings.reminders.context") %> · <%= reminder.booking.title %></p><% end %>
     </div>
   <% end %>
 

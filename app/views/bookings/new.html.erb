@@ -1,0 +1,9 @@
+<% disable_turbo_cache %>
+<main aria-labelledby="booking-form-title" class="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+  <header class="border-b border-private-line pb-5">
+    <%= link_to t("bookings.form.back"), event_plan_bookings_path(@event_plan), class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
+    <h1 id="booking-form-title" class="mt-3 text-3xl font-semibold text-ink"><%= t("bookings.new.title") %></h1>
+    <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("bookings.new.body", plan: @event_plan.title) %></p>
+  </header>
+  <%= render "form" %>
+</main>

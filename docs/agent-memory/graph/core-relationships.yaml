@@ -1,6 +1,36 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
+    target: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    relation: constrains
+    reason: Booking-owned tasks stay out of prior-anniversary reuse and generated-plan replacement so private logistics remain governed by the booking workflow.
+    strength: 100
+  - source: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
+    target: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    relation: constrains
+    reason: Backup generation and promotion exclude booking-owned tasks so applying a reviewed option cannot supersede booking state or its synchronized plan task.
+    strength: 100
+  - source: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: Every booking belongs to one owner-scoped event plan, follows its active mutation lifecycle, and synchronizes a manual task and timeline entry.
+    strength: 100
+  - source: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Booking milestones hand off to the existing owner-controlled reminder form without automatically scheduling or delivering anything.
+    strength: 100
+  - source: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Owner exports include decrypted booking logistics while booking ownership cascades with event-plan and account deletion.
+    strength: 95
+  - source: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
+    target: authentication.localization_baseline
+    relation: constrains
+    reason: Booking forms, lifecycle, reminder handoffs, errors, and read-only states remain available in English and Spanish with English as default.
+    strength: 90
   - source: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
     target: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
     relation: requires

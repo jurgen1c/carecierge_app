@@ -4,6 +4,7 @@ es:
       title: "Planes de eventos"
       body: "Organiza cenas, visitas, celebraciones y otros momentos de relación en un espacio privado de planificación."
       create: "Crear plan de evento"
+      booking_history: "Historial de reservas"
       empty_title: "Planifica el próximo momento significativo"
       empty_body: "Empieza con una relación y una ocasión. Carecierge preparará una ruta editable que tú controlas."
       empty_action: "Crear tu primer plan de evento"

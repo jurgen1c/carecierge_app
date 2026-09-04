@@ -14,14 +14,13 @@ claim: >
   audit and reminder evidence, feed dismissal and snooze state, suggestion
   feedback/save/completion state, approval requests and append-only decisions,
   message-draft response settings and revisions. Relationship briefings and
-  gift recommendations, event plans, plan tasks, and decrypted manual vendor
-  quotes with embedded vendor provenance are included with source-backed output
-  and consent
-  metadata, while generation fences stay excluded. Ordinary
-  exports keep sensitive backup-source provenance but redact the plaintext
-  source content. Vault payloads and unredacted sensitive backup sources require
-  reauthentication; internal secrets, leases, fences, and ownership keys stay
-  excluded. Serialization
+  gift recommendations, event plans, plan tasks, decrypted manual bookings,
+  and decrypted manual vendor quotes with embedded vendor provenance are
+  included with source-backed output and consent metadata, while generation
+  fences stay excluded. Ordinary exports keep sensitive backup-source
+  provenance but redact the plaintext source content. Vault payloads and
+  unredacted sensitive backup sources require reauthentication; internal
+  secrets, leases, fences, and ownership keys stay excluded. Serialization
   neutralizes CSV formulas, preserves recurrences, uses the configured PDF
   origin, and audits only successful exports. Selective AI deletion preserves
   corrected memories, authored notes, and gifts accepted from recommendations;
@@ -64,6 +63,8 @@ source_files:
   - db/migrate/20260821040001_add_event_plan_references_to_reminders.rb
   - db/migrate/20260903042850_create_vendor_quotes.rb
   - db/migrate/20260903044916_add_vendor_quote_reference_to_reminders.rb
+  - app/models/booking.rb
+  - db/migrate/20260903120000_create_bookings.rb
 
 related_files:
   - app/models/approval_request.rb
@@ -85,6 +86,7 @@ related_files:
   - spec/system/data_controls_spec.rb
   - spec/serializers/data_exports/snapshot_spec.rb
   - spec/requests/vendor_quotes_spec.rb
+  - spec/serializers/data_exports/booking_snapshot_spec.rb
 
 symbols:
   - DirectUploadsController
@@ -101,6 +103,7 @@ symbols:
   - DataDeletions::DeleteAiData
   - DeletionRequest
   - VendorQuote
+  - Booking
 
 routes:
   - social_context_direct_upload
@@ -130,22 +133,21 @@ last_verified_commit: null
 ## Claim
 
 Exports are owner-scoped; decrypted vault payloads require reauthentication.
-JSON and CSV include privacy-safe evidence,
+Exports include privacy-safe evidence,
   approval requests and decisions, message revisions, relationship briefings,
-  gift recommendations, event plans, plan tasks, manual vendor quotes with
-  vendor provenance, social notes, consent state, screenshot bytes, and feed
-  visibility state while excluding internal keys, errors, leases, and fences.
-  Serialization neutralizes
-formulas, preserves recurrences, and audits only success. Selective AI deletion
-preserves authored content, accepted gifts, event plans, manual/template work,
-non-AI planning provenance, and explicit reminders while deleting
-briefings, gift recommendations, and AI-origin plan suggestions and clearing and
-fencing other inferred state. Profile and
-account deletion snapshot under owned locks; upload writes share the account lock,
-and cleanup includes attached or abandoned owner-stamped blobs. Permanently
-deleted feed sources and relationships also prune obsolete feed visibility rows.
-Ownership lives only in a nullifying foreign key, and a retrying expiry job
-cleans abandoned uploads without retaining owner UUIDs in metadata.
+  gift recommendations, event plans, plan tasks, bookings, vendor quotes with
+  provenance, social notes, consent state, screenshot bytes,
+  and feed visibility state while excluding internal keys, errors, leases, and
+  fences. Serialization neutralizes formulas, preserves recurrences, and audits
+  only success. Selective AI deletion preserves authored content, accepted gifts,
+  event plans, manual/template work, non-AI planning provenance, and explicit
+  reminders while deleting briefings, gift recommendations, and AI-origin plan
+  suggestions and clearing and fencing other inferred state. Profile and account
+  deletion snapshot under owned locks; upload writes share the account lock, and
+  cleanup includes attached or abandoned owner-stamped blobs. Permanently deleted
+  feed sources and relationships prune obsolete feed visibility rows. Ownership
+  lives only in a nullifying foreign key, and an expiry job
+  cleans abandoned uploads without retaining owner UUIDs in metadata.
 
 ## Why It Matters
 

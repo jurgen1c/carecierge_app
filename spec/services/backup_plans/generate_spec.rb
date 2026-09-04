@@ -94,6 +94,8 @@ RSpec.describe BackupPlans::Generate do
         }
       ]
     )
+    booking = create(:booking, user:, event_plan:, title: "Private booking task")
+    Bookings::Save.call(booking, attributes: {}, locale: :en)
     captured_snapshot = nil
     allow(generator).to receive(:generate) do |plan_snapshot:, **|
       captured_snapshot = plan_snapshot
@@ -104,6 +106,7 @@ RSpec.describe BackupPlans::Generate do
 
     expect(captured_snapshot.existing_tasks.map(&:id)).to include(replaceable_task.id)
     expect(captured_snapshot.existing_tasks.map(&:id)).not_to include(sensitive_task.id)
+    expect(captured_snapshot.existing_tasks.map(&:id)).not_to include(booking.plan_task_id)
   end
 
   it "rejects output that cites an unknown source" do

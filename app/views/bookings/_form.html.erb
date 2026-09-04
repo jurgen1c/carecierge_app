@@ -1,0 +1,55 @@
+<% form_url = @booking.persisted? ? booking_path(@booking) : event_plan_bookings_path(@event_plan) %>
+<%= form_with model: @booking, url: form_url, class: "grid gap-6 py-6" do |form| %>
+  <%= form.hidden_field :lock_version if @booking.persisted? %>
+  <% if @booking.errors.any? %>
+    <section role="alert" aria-labelledby="booking-errors-title" class="rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink">
+      <h2 id="booking-errors-title" class="font-semibold"><%= t("bookings.form.errors", count: @booking.errors.count) %></h2>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm"><% @booking.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+    </section>
+  <% end %>
+
+  <fieldset class="grid gap-4 sm:grid-cols-2">
+    <legend class="text-lg font-semibold text-ink"><%= t("bookings.form.essentials") %></legend>
+    <div>
+      <%= form.label :booking_kind, t("bookings.form.kind"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :booking_kind, Booking::BOOKING_KINDS.map { |value| [ t("bookings.kinds.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :status, t("bookings.form.status"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :status, Booking::STATUSES.map { |value| [ t("bookings.statuses.#{value}"), value ] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div class="sm:col-span-2">
+      <%= form.label :title, t("bookings.form.title"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :title, maxlength: Booking::MAX_TITLE_LENGTH, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+    </div>
+    <div>
+      <%= form.label :provider_name, t("bookings.form.provider"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :provider_name, maxlength: Booking::MAX_PROVIDER_NAME_LENGTH, required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+    </div>
+    <div>
+      <%= form.label :location, t("bookings.form.location"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.text_field :location, maxlength: Booking::MAX_LOCATION_LENGTH, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>
+    </div>
+    <div>
+      <%= form.label :starts_at, t("bookings.form.starts_at"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.datetime_local_field :starts_at, value: @booking.local_starts_at&.strftime("%Y-%m-%dT%H:%M"), required: true, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+    <div>
+      <%= form.label :time_zone, t("bookings.form.time_zone"), class: "block text-sm font-semibold text-ink" %>
+      <%= form.select :time_zone, reminder_time_zone_options, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %>
+    </div>
+  </fieldset>
+
+  <fieldset class="grid gap-4 border-t border-private-line pt-6">
+    <legend class="text-lg font-semibold text-ink"><%= t("bookings.form.details") %></legend>
+    <div><%= form.label :confirmation_details, t("bookings.form.confirmation_details"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :confirmation_details, rows: 3, maxlength: Booking::MAX_CONFIRMATION_DETAILS_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+    <div><%= form.label :cancellation_policy, t("bookings.form.cancellation_policy"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :cancellation_policy, rows: 4, maxlength: Booking::MAX_CANCELLATION_POLICY_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %><p class="mt-1 text-xs leading-5 text-quiet-note"><%= t("bookings.form.cancellation_hint") %></p></div>
+    <div><%= form.label :notes, t("bookings.form.notes"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :notes, rows: 4, maxlength: Booking::MAX_NOTES_LENGTH, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink" %></div>
+  </fieldset>
+
+  <p class="rounded-xl border border-private-line bg-surface p-4 text-sm leading-6 text-quiet-note"><%= t("bookings.review_only") %></p>
+  <div class="flex flex-wrap gap-2 border-t border-private-line pt-5">
+    <%= form.submit @booking.persisted? ? t("bookings.form.update") : t("bookings.form.create"), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    <%= link_to t("bookings.form.cancel"), event_plan_bookings_path(@event_plan), class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-surface" %>
+  </div>
+<% end %>

@@ -60,6 +60,7 @@ es:
       sync_requested: "La sincronización del calendario comenzó. Actualiza esta página en un momento para ver el estado más reciente."
       disconnected: "Google Calendar se desconectó y se revocó el acceso de Carecierge."
       disconnect_failed: "No pudimos revocar el acceso a Google Calendar. Intenta desconectarlo de nuevo."
+      credential_cleanup_pending: "La limpieza del acceso al calendario sigue en curso. Carecierge volverá a intentarlo antes de permitir otra conexión."
     errors:
       connection_failed: "No se pudo conectar Google Calendar. Inicia la conexión de nuevo."
       provider_unavailable: "No se pudo contactar Google Calendar. Inténtalo de nuevo."

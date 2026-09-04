@@ -3,7 +3,7 @@ id: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revoc
 type: fact
 system: calendar_integrations
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Google Calendar sync is owner-scoped, private, and revocable
@@ -79,7 +79,9 @@ claim: >
   before that lock is released, and cleanup is guaranteed even when reconnect
   compensation raises. Pending
   callback revocations retain whichever live token Google returned, block later
-  authorization, and replace the connect control with visible recovery state.
+  authorization, and replace the connect control with cleanup-specific recovery
+  guidance, while a live connection whose revocation failed retains the separate
+  disconnect-retry guidance.
   External authorization launches bypass Turbo so the
   provider redirect remains a top-level navigation. If immediate callback cleanup
   fails, its encrypted credentials remain in an owner-scoped durable revocation
@@ -202,7 +204,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: a85bf4676fffb640b1b3372d423ee6bf3a64af8a
+last_verified_commit:
 ---
 
 # Google Calendar sync is owner-scoped, private, and revocable

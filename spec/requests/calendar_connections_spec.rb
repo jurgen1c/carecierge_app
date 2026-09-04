@@ -47,11 +47,13 @@ RSpec.describe "Calendar connections", type: :request do
     get new_calendar_connection_path
 
     expect(response).to redirect_to(calendar_connection_path)
+    expect(flash[:alert]).to eq("We could not revoke Google Calendar access. Try disconnecting again.")
     expect(CalendarConnections::OauthState).not_to have_received(:issue)
 
     get callback_calendar_connection_path, params: { code: "oauth-code", state: "signed-state" }
 
     expect(response).to redirect_to(calendar_connection_path)
+    expect(flash[:alert]).to eq("We could not revoke Google Calendar access. Try disconnecting again.")
     expect(CalendarConnections::GoogleOauth).not_to have_received(:exchange)
   end
 
@@ -88,6 +90,7 @@ RSpec.describe "Calendar connections", type: :request do
     get new_calendar_connection_path
 
     expect(response).to redirect_to(calendar_connection_path)
+    expect(flash[:alert]).to eq("Calendar access cleanup is still in progress. Carecierge will retry before another connection can start.")
     expect(CalendarConnections::OauthState).not_to have_received(:issue)
   end
 

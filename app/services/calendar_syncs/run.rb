@@ -37,15 +37,15 @@ module CalendarSyncs
       rescue LeaseLost, CalendarProviders::LeaseLostError
         payload[:status] = "lease_lost"
       rescue CalendarProviders::AuthorizationError => error
-          record_failure(error, status: "action_required")
-          payload[:status] = "authorization_required"
+        record_failure(error, status: "action_required")
+        payload[:status] = "authorization_required"
       rescue CalendarProviders::TransientError => error
-          record_failure(error, status: "failed")
-          payload[:status] = error.code
-          @retryable_error = error
+        record_failure(error, status: "failed")
+        payload[:status] = error.code
+        @retryable_error = error
       rescue CalendarProviders::PermanentError => error
-          record_failure(error, status: "failed")
-          payload[:status] = error.code
+        record_failure(error, status: "failed")
+        payload[:status] = error.code
       end
       raise retryable_error if retryable_error
 

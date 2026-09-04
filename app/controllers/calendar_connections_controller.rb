@@ -123,11 +123,11 @@ class CalendarConnectionsController < ApplicationController
   end
 
   def prevent_oauth_while_revocation_unresolved
-    unresolved = current_user.calendar_connection&.last_error_code == "revocation_failed" ||
-      current_user.calendar_credential_revocations.exists?
-    return unless unresolved
-
-    redirect_to calendar_connection_path, alert: t("calendar_connections.notices.disconnect_failed")
+    if current_user.calendar_credential_revocations.exists?
+      redirect_to calendar_connection_path, alert: t("calendar_connections.notices.credential_cleanup_pending")
+    elsif current_user.calendar_connection&.last_error_code == "revocation_failed"
+      redirect_to calendar_connection_path, alert: t("calendar_connections.notices.disconnect_failed")
+    end
   end
   def revoke_uncommitted_credentials(credentials)
     CalendarConnections::GoogleOauth.revoke(credentials:)

@@ -17,7 +17,7 @@ module DataDeletions
       mutation_error = nil
 
       ApplicationRecord.transaction do
-        user.with_lock do
+        with_owner_lock do
           if after_rollback
             begin
               ApplicationRecord.transaction(requires_new: true) { perform_mutation(&mutation) }
@@ -44,6 +44,12 @@ module DataDeletions
     private
 
     attr_reader :user, :request_kind, :subject, :after_commit, :after_rollback
+
+    def with_owner_lock(&block)
+      return user.with_lock(&block) if request_kind == "account"
+
+      user.with_lock("FOR NO KEY UPDATE", &block)
+    end
 
     def perform_mutation
       AuditEvent.record!(

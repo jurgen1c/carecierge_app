@@ -40,7 +40,7 @@ RSpec.describe CalendarConnections::UpdateSettings do
     connection = create(:calendar_connection, sync_types: [])
     user = connection.user
 
-    expect(user).to receive(:with_lock).ordered.and_call_original
+    expect(user).to receive(:with_lock).with("FOR NO KEY UPDATE").ordered.and_call_original
     expect(connection).to receive(:with_lock).ordered.and_call_original
 
     described_class.call(connection:, sync_types: [ "reminders" ], actor: user)

@@ -15,7 +15,7 @@ module CalendarConnections
       succeeded = false
       disconnect_error = nil
       user = connection.user
-      user.with_lock do
+      user.with_lock("FOR NO KEY UPDATE") do
         begin
           succeeded = CalendarConnection.transaction(requires_new: true) do
             connection.lock!

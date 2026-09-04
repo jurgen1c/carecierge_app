@@ -34,8 +34,9 @@ claim: >
   emits no audit event, and disconnect flushes any count retained after a partial
   failure before removing the connection. A sync
   failure records connection status under the owner-then-connection lock order
-  before its audit insert reacquires the owner and then locks its target,
-  avoiding an inverse lock with settings or account deletion. Turbo
+  using an owner FOR NO KEY UPDATE lock before its audit insert reacquires the
+  owner and then locks its target, avoiding an inverse lock with settings or
+  account deletion. Turbo
   prefetches do not. Account and profile data exports add scope/format-only evidence after
   successful serialization, and permanent deletion adds request-kind-only
   evidence before owned records are destroyed. The account route scopes from

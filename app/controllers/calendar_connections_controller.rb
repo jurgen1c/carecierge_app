@@ -41,7 +41,7 @@ class CalendarConnectionsController < ApplicationController
     cleanup_credentials = nil
     cleanup_error_code = nil
     previous_credentials_revoked = false
-    connection = current_user.with_lock do
+    connection = current_user.with_lock("FOR NO KEY UPDATE") do
       begin
         credentials = CalendarConnections::GoogleOauth.exchange(
           code: params.require(:code),

@@ -2,7 +2,7 @@ module CalendarConnections
   class UpdateSettings
     def self.call(connection:, sync_types:, actor:)
       enqueue_sync = false
-      connection.user.with_lock do
+      connection.user.with_lock("FOR NO KEY UPDATE") do
         connection.with_lock do
           changed = connection.sync_types != sync_types
           connection.assign_attributes(sync_types:)

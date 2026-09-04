@@ -42,7 +42,10 @@ claim: >
   fails. Failure to revoke a pending callback credential does not mark an
   as-yet untouched live connection as failed. A local rollback after successful provider revocation instead retains
   the account with a fenced reconnect-required calendar state before releasing
-  the uninterrupted owner lock.
+  the uninterrupted owner lock. Selective deletion uses FOR NO KEY UPDATE on
+  the owner row so foreign-key checks remain compatible with the boundary;
+  whole-account deletion retains an exclusive owner lock so concurrent child
+  creation cannot race after irreversible provider revocation.
 
 source_files:
   - app/controllers/data_controls_controller.rb

@@ -565,7 +565,7 @@ RSpec.describe CalendarSyncs::Run do
     connection.update!(sync_types: [ "reminders" ])
     allow(connection).to receive(:user).and_return(user)
 
-    expect(user).to receive(:with_lock).exactly(3).times.and_call_original
+    expect(user).to receive(:with_lock).with("FOR NO KEY UPDATE").exactly(3).times.and_call_original
 
     described_class.call(connection:)
   end

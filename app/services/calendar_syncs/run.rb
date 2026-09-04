@@ -58,7 +58,7 @@ module CalendarSyncs
 
     def begin_sync
       started = false
-      connection.user.with_lock do
+      connection.user.with_lock("FOR NO KEY UPDATE") do
         connection.with_lock do
           next unless connection.syncable?(owner_requested:)
 
@@ -263,7 +263,7 @@ module CalendarSyncs
       return yield if @owner_boundary_held
 
       deferred_error = nil
-      result = connection.user.with_lock do
+      result = connection.user.with_lock("FOR NO KEY UPDATE") do
         @owner_boundary_held = true
         begin
           yield
@@ -346,7 +346,7 @@ module CalendarSyncs
     end
 
     def record_audit(action, metadata)
-      connection.user.with_lock do
+      connection.user.with_lock("FOR NO KEY UPDATE") do
         create_audit!(action, metadata)
       end
     rescue ActiveRecord::RecordNotFound

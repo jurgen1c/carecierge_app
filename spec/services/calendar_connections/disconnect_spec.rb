@@ -11,6 +11,7 @@ RSpec.describe CalendarConnections::Disconnect do
   it "revokes provider access, removes local credentials and mappings, and audits the outcome" do
     create(:calendar_event_sync, calendar_connection: connection)
     prior_audit = create(:audit_event, user: connection.user, actor: connection.user, target: connection, action: "calendar.settings.updated")
+    expect(connection.user).to receive(:with_lock).with("FOR NO KEY UPDATE").and_call_original
 
     expect { described_class.call(connection:, actor: connection.user) }
       .to change(CalendarConnection, :count).by(-1)

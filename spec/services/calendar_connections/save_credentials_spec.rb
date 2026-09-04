@@ -19,6 +19,7 @@ RSpec.describe CalendarConnections::SaveCredentials do
   it "creates an encrypted owner connection and audits the consent boundary" do
     user = create(:user)
     credentials = oauth_credentials
+    expect(user).to receive(:with_lock).with("FOR NO KEY UPDATE").and_call_original
 
     expect { described_class.call(user:, credentials:, actor: user, expected_generation: 0, locale: :es) }
       .to change(CalendarConnection, :count).by(1)

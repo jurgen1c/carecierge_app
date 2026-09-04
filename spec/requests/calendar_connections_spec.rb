@@ -229,7 +229,9 @@ RSpec.describe "Calendar connections", type: :request do
       credentials:
     )
     lock_depth = 0
+    owner_lock_clauses = []
     allow_any_instance_of(User).to receive(:with_lock).and_wrap_original do |original, *args, &block|
+      owner_lock_clauses << args.first
       original.call(*args) do
         lock_depth += 1
         block.call
@@ -247,6 +249,7 @@ RSpec.describe "Calendar connections", type: :request do
     get callback_calendar_connection_path, params: { code: "oauth-code", state: "signed-state" }
 
     expect(user.calendar_credential_revocations.reload).to be_one
+    expect(owner_lock_clauses).to all(eq("FOR NO KEY UPDATE"))
   end
 
   it "rolls back saved credentials before cleaning up a later persistence failure" do

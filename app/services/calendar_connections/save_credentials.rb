@@ -22,7 +22,7 @@ module CalendarConnections
 
     def call
       connection = nil
-      user.with_lock do
+      user.with_lock("FOR NO KEY UPDATE") do
         unless user.calendar_connection_generation == expected_generation
           raise ConnectionError.new(code: "stale_authorization")
         end

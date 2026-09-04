@@ -1,7 +1,7 @@
 module CalendarConnections
   class StoreCredentialRevocation
     def self.call(user:, credentials:, error_code:)
-      revocation = user.with_lock do
+      revocation = user.with_lock("FOR NO KEY UPDATE") do
         user.calendar_credential_revocations.create!(
           access_token: credentials.access_token,
           refresh_token: credentials.refresh_token,

@@ -2,8 +2,8 @@
 id: reminders.reminder_delivery_system
 type: fact
 system: reminders
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Reminders provide owner-scoped scheduling and idempotent delivery
@@ -113,7 +113,7 @@ verification:
   - bundle exec rspec
   - bin/rubocop
   - bin/ci
-last_verified_commit: a4292c5a23c1a462aae803ae6173d84bae5301ae
+last_verified_commit:
 ---
 
 # Reminders provide owner-scoped scheduling and idempotent delivery
@@ -146,6 +146,8 @@ reminder workspace and added its authenticated entry point to automation
 permission settings without changing reminder scheduling or delivery behavior.
 CAR-64 re-reviewed promotion-time reminder retirement while scoping the
 booking-task exclusion query; no reminder delivery behavior changed.
+CAR-64 also re-reviewed the booking-destruction return redirect; it does not
+change reminder scheduling, retirement, or delivery behavior.
 Delivery claims, recovery, Noticed handoff, recurrence, and lifecycle behavior
 remain current; `reminders.notification_preferences` owns the notification
 settings contract.

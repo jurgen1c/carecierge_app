@@ -179,6 +179,37 @@ RSpec.describe "Bookings", type: :request do
     expect(response).to redirect_to(event_plan_bookings_path(booking.event_plan))
   end
 
+  it "returns to account-wide booking history after removing a booking there" do
+    booking = create(:booking)
+    sign_in booking.user
+
+    expect do
+      delete booking_path(booking), headers: { "HTTP_REFERER" => bookings_url }
+    end.to change(Booking, :count).by(-1)
+
+    expect(response).to redirect_to(bookings_path)
+  end
+
+  it "uses the plan booking list when the removal referrer is cross-origin" do
+    booking = create(:booking)
+    event_plan = booking.event_plan
+    sign_in booking.user
+
+    delete booking_path(booking), headers: { "HTTP_REFERER" => "https://attacker.example/bookings" }
+
+    expect(response).to redirect_to(event_plan_bookings_path(event_plan))
+  end
+
+  it "uses the plan booking list after removing a booking from its edit page" do
+    booking = create(:booking)
+    event_plan = booking.event_plan
+    sign_in booking.user
+
+    delete booking_path(booking), headers: { "HTTP_REFERER" => edit_booking_url(booking) }
+
+    expect(response).to redirect_to(event_plan_bookings_path(event_plan))
+  end
+
   it "renders localized validation errors and Spanish workflow copy" do
     plan = create(:event_plan)
     sign_in plan.user

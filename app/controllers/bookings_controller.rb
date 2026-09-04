@@ -71,7 +71,7 @@ class BookingsController < ApplicationController
     event_plan = @booking.event_plan
     Bookings::Destroy.call(@booking)
 
-    redirect_to event_plan_bookings_path(event_plan), notice: t("bookings.destroy.notice")
+    redirect_to destroy_redirect_location(event_plan), notice: t("bookings.destroy.notice")
   end
 
   private
@@ -82,6 +82,15 @@ class BookingsController < ApplicationController
 
   def set_booking
     @booking = policy_scope(Booking).find(params[:id])
+  end
+
+  def destroy_redirect_location(event_plan)
+    history_url = url_from(request.referer)
+    return history_url if history_url && URI.parse(history_url).path == bookings_path
+
+    event_plan_bookings_path(event_plan)
+  rescue URI::InvalidURIError
+    event_plan_bookings_path(event_plan)
   end
 
   def booking_params

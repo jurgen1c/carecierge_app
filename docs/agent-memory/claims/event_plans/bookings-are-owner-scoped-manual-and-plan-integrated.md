@@ -2,8 +2,8 @@
 id: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
 type: fact
 system: event_plans
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Bookings are owner-scoped, manual, and plan-integrated
@@ -15,7 +15,10 @@ claim: >
   zone. Records
   are mutable only while the plan and relationship are active, remain readable
   through an owner history and explicitly removable afterward, and use optimistic
-  locking for edits. Every save synchronizes one manual plan task and one
+  locking for edits. Destruction returns to the account-wide owner history only
+  when that same-origin page initiated it, with the plan booking list as the safe
+  fallback for edit, unknown, or external origins. Every save synchronizes one
+  manual plan task and one
   privacy-minimized timeline entry; confirmed,
   completed, or cancelled statuses complete the task, while a later non-terminal
   status reopens it. Booking-owned tasks reject generic task mutations, and task
@@ -94,7 +97,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: a4292c5a23c1a462aae803ae6173d84bae5301ae
+last_verified_commit:
 ---
 
 # Bookings are owner-scoped, manual, and plan-integrated

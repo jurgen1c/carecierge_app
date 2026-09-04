@@ -3,7 +3,7 @@ id: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revoc
 type: fact
 system: calendar_integrations
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Google Calendar sync is owner-scoped, private, and revocable
@@ -13,7 +13,8 @@ claim: >
   through a short-lived, owner-bound, single-use OAuth state and the narrow
   calendar.events.owned scope. Nothing syncs until the owner enables one or
   more supported source types. Immediate and 15-minute reconciliation reads
-  only owner-scoped active sources and publishes private, transparent events
+  only owner-scoped active sources, enumerates eligible reminders in bounded
+  batches with attachment relationships preloaded, and publishes private, transparent events
   containing a title, scheduled date or time, a constant Carecierge label, and
   recurrence when applicable, never notes, locations, confirmations, guest
   lists, or provider response bodies. Mappings and OAuth credentials are
@@ -177,6 +178,7 @@ related_files:
   - spec/services/calendar_connections/update_settings_spec.rb
   - spec/services/calendar_providers/google_spec.rb
   - spec/services/calendar_syncs/run_spec.rb
+  - spec/services/calendar_syncs/sources_spec.rb
   - spec/models/calendar_credential_revocation_spec.rb
   - spec/serializers/data_exports/snapshot_spec.rb
   - spec/system/calendar_connections_spec.rb
@@ -217,7 +219,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: f1ad1752ebd0d8221707417cb61a929042346f38
+last_verified_commit:
 ---
 
 # Google Calendar sync is owner-scoped, private, and revocable

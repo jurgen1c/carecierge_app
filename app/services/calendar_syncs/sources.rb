@@ -1,5 +1,7 @@
 module CalendarSyncs
   class Sources
+    REMINDER_BATCH_SIZE = 1_000
+
     def self.for(connection)
       user = connection.user
       profiles = user.relationship_profiles.kept.select(:id)
@@ -17,8 +19,9 @@ module CalendarSyncs
             { vendor_quote: { event_plan: :relationship_profile } },
             { booking: { event_plan: :relationship_profile } }
           )
-          .order(:id)
-        sources.concat(reminders.select { |reminder| CalendarSyncs::SourceRelationship.resolve(reminder).eligible })
+        reminders.find_each(batch_size: REMINDER_BATCH_SIZE) do |reminder|
+          sources << reminder if CalendarSyncs::SourceRelationship.resolve(reminder).eligible
+        end
       end
       if connection.syncs?(:event_plans)
         sources.concat(user.event_plans.visible.for_active_relationships.where.not(starts_on: nil).order(:id))

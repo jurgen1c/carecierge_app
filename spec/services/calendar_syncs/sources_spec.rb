@@ -47,4 +47,23 @@ RSpec.describe CalendarSyncs::Sources do
 
     expect(described_class.for(connection)).to eq([ commitment ])
   end
+
+  it "enumerates reminders in bounded batches" do
+    connection = create(:calendar_connection, sync_types: [ "reminders" ])
+    create_list(:reminder, 3, user: connection.user, relationship_profile: nil)
+    stub_const("CalendarSyncs::Sources::REMINDER_BATCH_SIZE", 2)
+    reminder_batch_queries = []
+
+    subscriber = lambda do |_name, _started, _finished, _unique_id, payload|
+      sql = payload.fetch(:sql)
+      reminder_batch_queries << sql if sql.include?('FROM "reminders"') && sql.include?("LIMIT")
+    end
+
+    result = ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") do
+      described_class.for(connection)
+    end
+
+    expect(result).to contain_exactly(*connection.user.reminders.active)
+    expect(reminder_batch_queries.length).to eq(2)
+  end
 end

@@ -323,19 +323,21 @@ module CalendarSyncs
       safe_code = error.code.to_s.in?(CalendarConnection::ERROR_CODES) ? error.code : "provider_error"
       recorded = false
       resync_requested = false
-      connection.with_lock do
-        next unless owns_lease?
+      with_owner_boundary do
+        connection.with_lock do
+          next unless owns_lease?
 
-        resync_requested = connection.resync_requested?
-        connection.update!(
-          sync_status: status,
-          sync_lease_token: nil,
-          sync_lease_expires_at: nil,
-          resync_requested: false,
-          last_error_at: Time.current,
-          last_error_code: safe_code
-        )
-        recorded = true
+          resync_requested = connection.resync_requested?
+          connection.update!(
+            sync_status: status,
+            sync_lease_token: nil,
+            sync_lease_expires_at: nil,
+            resync_requested: false,
+            last_error_at: Time.current,
+            last_error_code: safe_code
+          )
+          recorded = true
+        end
       end
       record_audit("calendar.sync.failed", result: safe_code) if recorded
       CalendarSyncJob.perform_later(connection, owner_requested: true) if recorded && resync_requested

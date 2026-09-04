@@ -626,6 +626,31 @@ RSpec.describe CalendarSyncs::Run do
     )
   end
 
+  it "acquires the owner lock before the connection lock when recording a provider failure" do
+    create(:reminder, user:, relationship_profile: profile)
+    connection.update!(sync_types: [ "reminders" ])
+    error = CalendarProviders::TransientError.new("timeout", code: "provider_unavailable")
+    failure_phase = false
+    failure_lock_order = []
+    allow(connection).to receive(:user).and_return(user)
+    allow(provider).to receive(:create_event) do
+      failure_phase = true
+      raise error
+    end
+    allow(user).to receive(:with_lock).and_wrap_original do |original, *args, &block|
+      failure_lock_order << :owner if failure_phase
+      original.call(*args, &block)
+    end
+    allow(connection).to receive(:with_lock).and_wrap_original do |original, *args, &block|
+      failure_lock_order << :connection if failure_phase
+      original.call(*args, &block)
+    end
+
+    expect { described_class.call(connection:) }.to raise_error(error)
+
+    expect(failure_lock_order.first(3)).to eq([ :owner, :connection, :owner ])
+  end
+
   it "allows an owner-requested retry after a permanent provider failure" do
     connection.update!(sync_status: "failed", last_error_code: "provider_rejected", sync_types: [])
 

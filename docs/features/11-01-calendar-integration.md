@@ -58,6 +58,9 @@ mark an old-calendar write as complete for the new connection. Successful mappin
 changes increment a durable pending-audit count in the same transaction. Sync
 completion acquires its own owner boundary and records and clears that evidence
 before connected status commits, so disconnect cannot remove it first. If
+provider work fails, the status transition locks the owner before the connection;
+the later audit insert reacquires the owner before locking its target, avoiding
+an inverse lock order with concurrent settings or deletion work. If
 the owner disconnects after a partial sync failure, disconnect records and
 clears any remaining publication count before removing the connection.
 The sync creates, updates, and removes provider events to match enabled

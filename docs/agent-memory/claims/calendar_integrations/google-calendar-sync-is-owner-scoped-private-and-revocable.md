@@ -3,7 +3,7 @@ id: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revoc
 type: fact
 system: calendar_integrations
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Google Calendar sync is owner-scoped, private, and revocable
@@ -49,6 +49,10 @@ claim: >
   permission changes cannot publish stale or newly ineligible content. Successful mapping changes increment durable
   pending evidence in their transaction, and completion uses a separate owner
   boundary to record and clear that evidence before connected status commits.
+  Failure status changes likewise acquire the owner boundary before the
+  connection row, while the subsequent audit insert uses a fresh owner boundary
+  before locking its target, so failure recovery cannot invert the owner-first
+  lock order.
   Disconnect flushes any evidence retained by a partial failed run before
   destroying the connection.
   Token-endpoint throttling
@@ -198,7 +202,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 6296d3b127c828d0c3834aabc110523815c308bf
+last_verified_commit: null
 ---
 
 # Google Calendar sync is owner-scoped, private, and revocable

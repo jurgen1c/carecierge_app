@@ -31,7 +31,10 @@ claim: >
   only allowlisted result or count metadata. Calendar reconciliation increments
   pending count evidence with successful mapping changes and records and clears
   it transactionally before connected status can commit; disconnect flushes any
-  count retained after a partial failure before removing the connection. Turbo
+  count retained after a partial failure before removing the connection. A sync
+  failure records status under the owner-then-connection lock order before its
+  audit insert reacquires the owner and then locks its target, avoiding an
+  inverse lock with settings or account deletion. Turbo
   prefetches do not. Account and profile data exports add scope/format-only evidence after
   successful serialization, and permanent deletion adds request-kind-only
   evidence before owned records are destroyed. The account route scopes from

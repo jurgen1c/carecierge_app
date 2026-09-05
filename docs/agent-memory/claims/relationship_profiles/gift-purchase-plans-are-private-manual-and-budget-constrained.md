@@ -2,8 +2,8 @@
 id: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
 type: fact
 system: relationship_profiles
-status: needs_verification
-confidence: high
+status: current
+confidence: verified
 severity: critical
 
 title: Gift purchase plans are private manual and budget constrained
@@ -77,7 +77,7 @@ verification:
   - bundle exec rspec spec/services/gift_purchase_plans/owner_lock_spec.rb spec/models/gift_purchase_plan_spec.rb spec/requests/gift_purchase_plans_spec.rb spec/components/gift_purchase_workspace_component_spec.rb spec/serializers/data_exports/gift_purchase_snapshot_spec.rb spec/system/gift_purchase_plans_spec.rb
   - bundle exec rspec
   - bin/ci
-last_verified_commit: 34b711c000e718a9a6535ac7af504f50ab980715
+last_verified_commit: 491f5e1c376204c4726d9a1bb7a15ca0da32a4ea
 ---
 
 # Gift purchase plans are private manual and budget constrained

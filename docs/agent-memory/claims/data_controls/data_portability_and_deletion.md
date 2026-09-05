@@ -9,6 +9,7 @@ severity: critical
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
 
 claim: >
+  Account JSON/CSV exports include active participating couple spaces and only the requester's own shared-reminder preference; private partner records are excluded. Deleting either participant destroys the entire shared workspace and its notification history.
   Connection revocation failures preserve the account and report a provider-neutral recovery message through ConnectionRevocationError.
   Gmail exports include encrypted-at-rest source snippets and local replies without credentials. Selective AI deletion preserves manual-only communication drafts and clears generated replies plus their edited derivatives. Disconnect and source deletion remove both imported context and replies, and account deletion revokes Gmail access with compensated retry state.
   Contacts exports include staged review data and safe provider metadata while excluding OAuth credentials and opaque provider identifiers. Account deletion revokes contacts access and fences restored credentials after a local rollback; revocation failure preserves the account for retry.
@@ -139,6 +140,7 @@ tags:
   - account_deletion
 
 verification:
+  - bundle exec rspec
   - bundle exec rspec spec/requests/contacts_connections_spec.rb spec/services/contacts/provider_spec.rb spec/requests/messaging_connections_spec.rb
   - bundle exec rspec spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
   - bin/rubocop
@@ -147,7 +149,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: f5e5436a323c83d20a3f6d3d895ae1d7a84cca73
+last_verified_commit: 1948fa58e71eabbe484518a7e7c6649af4cfe31d
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized

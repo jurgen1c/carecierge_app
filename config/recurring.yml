@@ -10,6 +10,10 @@
 #     schedule: at 5am every day
 
 production:
+  dispatch_shared_reminders:
+    class: DispatchSharedRemindersJob
+    queue: background
+    schedule: every minute
   dispatch_due_reminders:
     class: DispatchDueRemindersJob
     queue: background

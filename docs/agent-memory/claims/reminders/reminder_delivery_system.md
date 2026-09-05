@@ -9,6 +9,7 @@ severity: critical
 title: Reminders provide owner-scoped scheduling and idempotent delivery
 
 claim: >
+  The authenticated reminder inbox also includes SharedReminderNotifier notifications for the current recipient, linking to their consent-bound shared couple space.
   Reminder is the single owner-scoped scheduler for relationship profiles,
   important dates, commitments, event plans, plan tasks, vendor quote deadlines,
   and booking milestones. Quote or booking context can prefill an owner-controlled
@@ -113,7 +114,7 @@ verification:
   - bundle exec rspec
   - bin/rubocop
   - bin/ci
-last_verified_commit: dbf3d409616e55f8add8047fc75677686fb783ec
+last_verified_commit: 1948fa58e71eabbe484518a7e7c6649af4cfe31d
 ---
 
 # Reminders provide owner-scoped scheduling and idempotent delivery

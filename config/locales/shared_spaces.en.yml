@@ -1,0 +1,110 @@
+---
+en:
+  shared_spaces:
+    title: Shared couple spaces
+    back: Back to today
+    introduction: Make room for plans you both choose. Start with an invitation; sharing
+      begins only when the other person accepts.
+    invitations: Invitations for you
+    invitation_from: Invitation from %{email}
+    acceptance_rules: Accepting shares your account email with this person. Both of
+      you can add shared content and end the space. Your private profiles and notes
+      stay separate.
+    accept: Accept invitation
+    decline: Decline
+    your_spaces: Your spaces
+    empty: No shared spaces yet. Invite someone when you are both ready.
+    active: Shared with two people
+    pending: Waiting for acceptance
+    invite: Create an invitation
+    invite_hint: Use the email your partner confirms in Carecierge. The invitation
+      appears in their shared spaces inbox for seven days. Carecierge sends no email
+      or message. You can cancel it here.
+    space_name: Space name
+    partner_email: Partner’s account email
+    privacy: Only the two of you can see this space. Your private notes stay private.
+    add_item: Add shared item
+    participants: 'Participants: %{owner} and %{partner}'
+    waiting: Waiting for %{email} to accept
+    expires: Invitation expires on %{date}. Cancel it to create a fresh invitation.
+    items: Plans and follow-through
+    empty_items: Start with a date idea, a plan, a task, a reminder, or a note you
+      want to share. Nothing from your private workspace appears here automatically.
+    manage: Manage sharing
+    end: End shared space
+    end_hint: Either person can end sharing. This permanently deletes the shared space
+      and all its shared items and reminders for both people. Account deletion does
+      the same. Private individual content is unaffected.
+    confirm_end: I understand this deletes the entire shared space for both people.
+    item_privacy: Everything entered here is visible to both participants. Add only
+      what you choose to share; private notes are never imported.
+    kind: Type
+    parent: Part of a shared plan
+    no_parent: Standalone item
+    item_title: Title
+    details: Shared details
+    schedule: When
+    schedule_hint: Dates and reminders need a time. Reminder alerts are in-app only
+      and each person chooses “Remind me in app”. Your notification and quiet-hour
+      preferences apply.
+    due: Date and time
+    time_zone: Time zone
+    editing: Who can edit and complete this?
+    editing_hint: Only the creator can change this rule or delete the item. Task responsibility
+      is claimed by each person for themselves.
+    save: Save shared item
+    cancel: Cancel
+    edit_item: Edit shared item
+    completed: Completed
+    in_plan: 'Plan: %{title}'
+    created_by: Created by %{email}
+    responsibility: 'Taking care of this: %{email}'
+    unclaimed: No one has claimed this task yet
+    edit: Edit
+    reopen: Reopen
+    complete: Mark complete
+    claim: I’ll take this
+    release: Release responsibility
+    subscribe: Remind me in app
+    unsubscribe: Turn off my reminder
+    delete_item: Delete shared item
+    saved: Shared space updated.
+    invited: Invitation created. Sharing starts after acceptance.
+    accepted: You have joined the shared space.
+    ended: The shared space has ended.
+    confirm_required: Confirm that you want to delete the shared space for both people.
+    invitation_limit: Cancel an existing invitation before creating another.
+    unavailable: This action is no longer available. Reload the shared space.
+    stale: This item changed while you were editing. Review the latest version before
+      saving again.
+    notification: A reminder in your shared space is due.
+    kinds:
+      plan: Plan
+      date: Date
+      task: Task
+      reminder: Reminder
+      note: Shared note
+    editing_rules:
+      creator: Creator only
+      participants: Both can edit
+    my_inbox: My reminder inbox
+  activerecord:
+    models:
+      shared_relationship_space: Shared couple spaces
+      shared_item: Add shared item
+    attributes:
+      shared_relationship_space:
+        title: Space name
+        invited_email: Partner’s account email
+        partner: Partner
+        invitation_expires_at: Invitation expiration
+      shared_item:
+        title: Title
+        details: Shared details
+        kind: Type
+        editing: Who can edit and complete this?
+        due_at: Date and time
+        time_zone: Time zone
+        parent: Part of a shared plan
+        assignee: Person responsible
+        creator: Creator

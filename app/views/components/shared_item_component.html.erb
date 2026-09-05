@@ -1,0 +1,28 @@
+<article class="<%= style %>" aria-labelledby="shared-item-<%= item.id %>">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div class="min-w-0">
+      <p class="text-sm text-quiet-note"><%= t("shared_spaces.kinds.#{item.kind}") %><% if item.completed? %> · <%= t("shared_spaces.completed") %><% end %></p>
+      <h3 id="shared-item-<%= item.id %>" class="mt-1 break-words text-lg font-semibold text-ink"><%= item.title %></h3>
+      <% if item.parent %><p class="mt-1 break-words text-sm text-quiet-note"><%= t("shared_spaces.in_plan", title: item.parent.title) %></p><% end %>
+      <% if item.due_at %><p class="mt-2 text-sm text-quiet-note"><time datetime="<%= item.due_at.iso8601 %>"><%= l(item.due_at.in_time_zone(item.time_zone), format: :short) %></time> · <%= item.time_zone %></p><% end %>
+    </div>
+    <p class="shrink-0 text-sm text-quiet-note"><%= t("shared_spaces.editing_rules.#{item.editing}") %></p>
+  </div>
+  <% if item.details.present? %><p class="mt-3 max-w-2xl whitespace-pre-wrap break-words leading-7 text-ink"><%= item.details %></p><% end %>
+  <p class="mt-3 break-words text-sm text-quiet-note"><%= t("shared_spaces.created_by", email: item.creator.email) %></p>
+  <% if item.kind == "task" %><p class="mt-2 break-words text-sm text-quiet-note"><%= item.assignee ? t("shared_spaces.responsibility", email: item.assignee.email) : t("shared_spaces.unclaimed") %></p><% end %>
+  <div class="mt-4 flex flex-wrap gap-2">
+    <% if policy.update? %>
+      <%= link_to t("shared_spaces.edit"), edit_shared_relationship_space_shared_item_path(space, item), class: style(:button) %>
+      <%= button_to t(item.completed? ? "shared_spaces.reopen" : "shared_spaces.complete"), complete_shared_relationship_space_shared_item_path(space, item), params: { lock_version: item.lock_version }, class: style(:button) %>
+    <% end %>
+    <% if item.kind == "task" && !item.completed? && (item.assignee_id.nil? || item.assignee_id == user.id) %>
+      <%= button_to t(item.assignee_id == user.id ? "shared_spaces.release" : "shared_spaces.claim"), claim_shared_relationship_space_shared_item_path(space, item), params: { lock_version: item.lock_version }, class: style(:button) %>
+    <% end %>
+    <% if item.kind == "reminder" && !item.completed? %>
+      <% if subscribed? %><%= button_to t("shared_spaces.unsubscribe"), unsubscribe_shared_relationship_space_shared_item_path(space, item), method: :delete, class: style(:button) %>
+      <% else %><%= button_to t("shared_spaces.subscribe"), subscribe_shared_relationship_space_shared_item_path(space, item), class: style(:button) %><% end %>
+    <% end %>
+    <% if policy.destroy? %><%= button_to t("shared_spaces.delete_item"), shared_relationship_space_shared_item_path(space, item), method: :delete, class: style(:button) %><% end %>
+  </div>
+</article>

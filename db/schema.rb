@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_135433) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_183517) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -1225,6 +1225,58 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_135433) do
     t.index ["retired_at"], name: "index_rollout_groups_on_retired_at"
   end
 
+  create_table "shared_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "assignee_id"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.uuid "creator_id", null: false
+    t.text "details"
+    t.datetime "due_at"
+    t.string "editing", default: "creator", null: false
+    t.string "kind", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.uuid "parent_id"
+    t.uuid "shared_relationship_space_id", null: false
+    t.string "time_zone", default: "UTC", null: false
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assignee_id"], name: "index_shared_items_on_assignee_id"
+    t.index ["creator_id"], name: "index_shared_items_on_creator_id"
+    t.index ["parent_id"], name: "index_shared_items_on_parent_id"
+    t.index ["shared_relationship_space_id", "due_at"], name: "index_shared_items_on_space_and_due"
+    t.index ["shared_relationship_space_id"], name: "index_shared_items_on_shared_relationship_space_id"
+    t.check_constraint "editing::text = ANY (ARRAY['creator'::character varying, 'participants'::character varying]::text[])", name: "shared_item_editing"
+    t.check_constraint "kind::text = ANY (ARRAY['plan'::character varying, 'date'::character varying, 'task'::character varying, 'reminder'::character varying, 'note'::character varying]::text[])", name: "shared_item_kind"
+  end
+
+  create_table "shared_relationship_spaces", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "invitation_expires_at", null: false
+    t.text "invited_email", null: false
+    t.uuid "owner_id", null: false
+    t.uuid "partner_id"
+    t.text "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invited_email"], name: "index_shared_relationship_spaces_on_invited_email"
+    t.index ["owner_id"], name: "index_shared_relationship_spaces_on_owner_id"
+    t.index ["partner_id"], name: "index_shared_relationship_spaces_on_partner_id"
+    t.check_constraint "(partner_id IS NULL) = (accepted_at IS NULL)", name: "shared_space_acceptance_required"
+    t.check_constraint "partner_id IS NULL OR partner_id <> owner_id", name: "shared_space_distinct_people"
+  end
+
+  create_table "shared_reminder_subscriptions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "delivered_for"
+    t.boolean "enabled", default: true, null: false
+    t.uuid "shared_item_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["shared_item_id", "user_id"], name: "index_shared_reminder_subscriptions_unique", unique: true
+    t.index ["shared_item_id"], name: "index_shared_reminder_subscriptions_on_shared_item_id"
+    t.index ["user_id"], name: "index_shared_reminder_subscriptions_on_user_id"
+  end
+
   create_table "social_context_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "allow_suggestions", default: false, null: false
     t.datetime "analyzed_at"
@@ -1538,6 +1590,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_135433) do
   add_foreign_key "reminders", "relationship_profiles", on_delete: :cascade
   add_foreign_key "reminders", "users", on_delete: :cascade
   add_foreign_key "reminders", "vendor_quotes", on_delete: :nullify
+  add_foreign_key "shared_items", "shared_items", column: "parent_id", on_delete: :nullify
+  add_foreign_key "shared_items", "shared_relationship_spaces", on_delete: :cascade
+  add_foreign_key "shared_items", "users", column: "assignee_id", on_delete: :nullify
+  add_foreign_key "shared_items", "users", column: "creator_id", on_delete: :cascade
+  add_foreign_key "shared_relationship_spaces", "users", column: "owner_id", on_delete: :cascade
+  add_foreign_key "shared_relationship_spaces", "users", column: "partner_id", on_delete: :cascade
+  add_foreign_key "shared_reminder_subscriptions", "shared_items", on_delete: :cascade
+  add_foreign_key "shared_reminder_subscriptions", "users", on_delete: :cascade
   add_foreign_key "social_context_notes", "relationship_profiles", on_delete: :cascade
   add_foreign_key "suggestion_feedbacks", "relationship_profiles", on_delete: :cascade
   add_foreign_key "suggestion_feedbacks", "users", on_delete: :cascade

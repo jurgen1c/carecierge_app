@@ -101,6 +101,15 @@ Rails.application.routes.draw do
     get :callback
     post :sync
   end
+  resources :shared_relationship_spaces, only: %i[index show create destroy] do
+    post :accept, on: :member
+    resources :shared_items, except: %i[index show] do
+      post :complete, on: :member
+      post :claim, on: :member
+      post :subscribe, on: :member
+      delete :unsubscribe, on: :member
+    end
+  end
   resources :audit_events, only: :index
   resource :data_control, only: :show
   resources :data_exports, only: :create

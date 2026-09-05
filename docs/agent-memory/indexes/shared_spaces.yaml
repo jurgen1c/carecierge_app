@@ -1,0 +1,34 @@
+id: shared_spaces
+name: Shared Couple Spaces
+summary: Explicit two-person consent, separate shared planning, creator ownership and personal in-app reminder subscriptions.
+claim_globs:
+  - claims/shared_spaces/**/*.md
+default_queries:
+  - shared couple space invitation acceptance confirmed email privacy
+  - shared plan date task note creator editor ownership revision
+  - shared reminder subscription quiet hours delivery end sharing deletion export
+watched_files:
+  - app/views/dashboard/index.html.erb
+  - db/schema.rb
+  - app/models/shared_*.rb
+  - app/controllers/shared_*.rb
+  - app/policies/shared_*.rb
+  - app/services/shared_spaces/**/*.rb
+  - app/jobs/dispatch_shared_reminders_job.rb
+  - app/notifiers/shared_reminder_notifier.rb
+  - app/views/shared_relationship_spaces/**/*.erb
+  - app/views/shared_items/**/*.erb
+  - app/views/components/shared_item_component.*
+  - config/locales/shared_spaces.*.yml
+  - db/migrate/*shared_relationship_spaces*.rb
+  - db/migrate/*shared_reminder_subscriptions*.rb
+  - docs/features/14-01-shared-couple-space.md
+  - spec/requests/shared_relationship_spaces_spec.rb
+  - spec/requests/shared_space_invitation_locking_spec.rb
+  - spec/models/shared_relationship_space_spec.rb
+  - spec/jobs/dispatch_shared_reminders_job_spec.rb
+  - spec/system/shared_relationship_spaces_spec.rb
+tags:
+  - shared_spaces
+  - consent
+  - privacy

@@ -59,7 +59,7 @@ module DataExports
     end
 
     def shared_space_attributes
-      SharedRelationshipSpace.participating(user).active.includes(shared_items: :shared_reminder_subscriptions).map do |space|
+      SharedRelationshipSpace.participating(user).active.order(:created_at, :id).includes(shared_items: :shared_reminder_subscriptions).map do |space|
         {
           "id" => space.id, "title" => space.title, "owner_id" => space.owner_id,
           "partner_id" => space.partner_id, "accepted_at" => space.accepted_at,

@@ -210,4 +210,10 @@ RSpec.describe "Shared couple spaces", type: :request do
     end
     expect(Nokogiri::HTML5(response.body).at_css("[role=alert]").text).to include("Título", "Fecha")
   end
+  it "exports participating spaces in stable creation order" do
+    space = accepted_space
+    earlier = create(:shared_relationship_space, owner:, partner:, invited_email: partner.email, created_at: space.created_at - 1.day)
+    result = DataExports::Snapshot.new(user: partner).to_h.fetch("shared_relationship_spaces")
+    expect(result.pluck("id")).to eq([ earlier.id, space.id ])
+  end
 end

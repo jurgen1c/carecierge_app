@@ -3,13 +3,13 @@ id: shared_spaces.couple_spaces_require_explicit_consent_and_isolate_private_rec
 type: rule
 system: shared_spaces
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Couple spaces require explicit consent and isolate private records
 
 claim: >
-  A couple space has a creator and one distinct confirmed-email invitee who explicitly accepts an in-app invitation within seven days. No shared content exists before acceptance; invitations send no external messages or reveal account existence. Active content is visible only to the two participants, separately from private profiles, notes, vaults, calendars and AI context. Free text and invitation email are encrypted; request inputs are filtered. Either person can confirm deleting the entire space; deleting either account does the same. Destruction locks the space and removes children before plans, subscriptions and reminder notifications. Account JSON/CSV exports include only active participating spaces and the requester’s own reminder preference.
+  A couple space has a creator and one distinct confirmed-email invitee who explicitly accepts an in-app invitation within seven days. No shared content exists before acceptance; invitations send no external messages or reveal account existence. Active content is visible only to the two participants, separately from private profiles, notes, vaults, calendars and AI context. Free text and invitation email are encrypted; request inputs are filtered. Either person can confirm deleting the entire space; deleting either account does the same. Destruction locks the space and removes children before plans, subscriptions and reminder notifications. Account JSON/CSV exports include only active participating spaces in stable creation/ID order and the requester’s own reminder preference.
 
 source_files:
   - app/models/shared_relationship_space.rb
@@ -36,14 +36,13 @@ tags:
 verification:
   - bundle exec rspec
   - bundle exec rspec spec/requests/shared_relationship_spaces_spec.rb spec/models/shared_relationship_space_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb spec/system/shared_relationship_spaces_spec.rb
-last_verified_commit: 74b9d2ec8efa2c8997a97fdf54292c42a6ddca99
 ---
 
 # Couple spaces require explicit consent and isolate private records
 
 ## Claim
 
-A couple space has a creator and one distinct confirmed-email invitee who explicitly accepts an in-app invitation within seven days. No shared content exists before acceptance; invitations send no external messages or reveal account existence. Active content is visible only to the two participants, separately from private profiles, notes, vaults, calendars and AI context. Free text and invitation email are encrypted; request inputs are filtered. Either person can confirm deleting the entire space; deleting either account does the same. Destruction locks the space and removes children before plans, subscriptions and reminder notifications. Account JSON/CSV exports include only active participating spaces and the requester’s own reminder preference.
+A couple space has a creator and one distinct confirmed-email invitee who explicitly accepts an in-app invitation within seven days. No shared content exists before acceptance; invitations send no external messages or reveal account existence. Active content is visible only to the two participants, separately from private profiles, notes, vaults, calendars and AI context. Free text and invitation email are encrypted; request inputs are filtered. Either person can confirm deleting the entire space; deleting either account does the same. Destruction locks the space and removes children before plans, subscriptions and reminder notifications. Account JSON/CSV exports include only active participating spaces in stable creation/ID order and the requester’s own reminder preference.
 
 ## Why It Matters
 

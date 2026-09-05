@@ -65,4 +65,20 @@ RSpec.describe DispatchSharedRemindersJob, type: :job do
     item.update!(due_at: 2.minutes.ago)
     expect(SharedReminderSubscription.pending_delivery).to include(subscription)
   end
+  it "batches association discovery while retaining each locked delivery recheck" do
+    3.times do
+      item = create(:shared_item, kind: "reminder", due_at: 1.minute.ago)
+      item.shared_reminder_subscriptions.create!(user: item.creator)
+      create(:notification_preference, user: item.creator, in_app_enabled: false)
+    end
+    queries = []
+    subscriber = lambda do |*, payload|
+      queries << payload[:sql] unless payload[:cached] || payload[:name] == "SCHEMA"
+    end
+    ActiveSupport::Notifications.subscribed(subscriber, "sql.active_record") { described_class.perform_now }
+    reads = queries.grep(/SELECT .* FROM "shared_relationship_spaces"/)
+    expect(reads.grep(/FOR UPDATE/).size).to eq(3)
+    expect(reads.reject { |sql| sql.include?("FOR UPDATE") }.size).to be <= 4
+    expect(Noticed::Notification.count).to eq(0)
+  end
 end

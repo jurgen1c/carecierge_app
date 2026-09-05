@@ -2,7 +2,7 @@ class DispatchSharedRemindersJob < ApplicationJob
   queue_as :background
 
   def perform
-    SharedReminderSubscription.pending_delivery.find_each do |subscription|
+    SharedReminderSubscription.pending_delivery.preload(shared_item: :shared_relationship_space).find_each do |subscription|
       deliver(subscription)
     end
   end

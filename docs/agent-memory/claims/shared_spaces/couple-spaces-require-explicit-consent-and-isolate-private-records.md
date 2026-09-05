@@ -3,7 +3,7 @@ id: shared_spaces.couple_spaces_require_explicit_consent_and_isolate_private_rec
 type: rule
 system: shared_spaces
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Couple spaces require explicit consent and isolate private records
@@ -36,6 +36,7 @@ tags:
 verification:
   - bundle exec rspec
   - bundle exec rspec spec/requests/shared_relationship_spaces_spec.rb spec/models/shared_relationship_space_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb spec/system/shared_relationship_spaces_spec.rb
+last_verified_commit: ffce9cb1c09bdadae207d79ee5ba42d9cc1858ec
 ---
 
 # Couple spaces require explicit consent and isolate private records

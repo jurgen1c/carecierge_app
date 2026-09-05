@@ -36,7 +36,7 @@ tags:
 verification:
   - bundle exec rspec
   - bundle exec rspec spec/requests/shared_relationship_spaces_spec.rb spec/models/shared_relationship_space_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb spec/system/shared_relationship_spaces_spec.rb
-last_verified_commit: 25dfa54c048f1a0f1ca4c546dab4c3e2bcc7b70d
+last_verified_commit: 146c481a6c6ee99ba303ad3f78d0eef64b5d2ee7
 ---
 
 # Couple spaces require explicit consent and isolate private records

@@ -3,7 +3,7 @@ id: shared_spaces.family_membership_is_consensual_and_departure_removes_personal
 type: fact
 system: shared_spaces
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Family membership is consensual and departure removes personal contributions
@@ -42,7 +42,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/family_spaces_spec.rb spec/models/family_membership_spec.rb spec/system/family_spaces_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb
 
-last_verified_commit: null
+last_verified_commit: bf5d596093628bdb49b22abf2249b7750320a1bf
 ---
 
 # Family membership is consensual and departure removes personal contributions

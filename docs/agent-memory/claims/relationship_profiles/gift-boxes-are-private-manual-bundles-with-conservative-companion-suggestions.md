@@ -3,7 +3,7 @@ id: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservativ
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: critical
 title: Gift boxes are private manual bundles with conservative companion suggestions
 claim: >
@@ -12,7 +12,8 @@ claim: >
   retain independent manual purchase and readiness states, named vendors, safe
   HTTP(S) purchase links and optional costs. Unknown costs are excluded from
   the labeled known total. Account-to-profile locks and a mandatory box revision
-  serialize writes, including item-only edits. Local companion ideas use only
+  serialize writes, including item-only edits; deletion takes the same account,
+  profile and box lock order while allowing foreign-key readers. Local companion ideas use only
   confirmed positive preferences; any negative preference, constraint, allergy,
   boundary or cultural constraint withholds ideas for manual review, as do box
   constraints and exhausted budgets. Ideas have no verified prices, exclude
@@ -43,6 +44,7 @@ source_files:
   - db/migrate/20260905114943_create_gift_boxes.rb
   - db/schema.rb
 related_files:
+  - spec/requests/gift_box_locking_spec.rb
   - spec/requests/gift_boxes_spec.rb
   - spec/models/gift_box_spec.rb
   - spec/services/gift_boxes/companions_spec.rb
@@ -58,7 +60,7 @@ routes:
   - relationship_profile_gift_box
 tags: [gifts, gift_boxes, privacy, review_only, budget]
 verification:
-  - bundle exec rspec spec/requests/gift_boxes_spec.rb spec/models/gift_box_spec.rb spec/services/gift_boxes spec/system/gift_boxes_spec.rb spec/serializers/data_exports/gift_box_snapshot_spec.rb
+  - bundle exec rspec spec/requests/gift_box_locking_spec.rb spec/requests/gift_boxes_spec.rb spec/models/gift_box_spec.rb spec/services/gift_boxes spec/system/gift_boxes_spec.rb spec/serializers/data_exports/gift_box_snapshot_spec.rb
   - bundle exec rspec
   - bin/ci
 last_verified_commit: e68e2b7f3e266095c20d7ed3f4ff9f3dad73cafa

@@ -41,7 +41,10 @@ class GiftBoxesController < ApplicationController
   def destroy
     @gift_box = @relationship_profile.gift_boxes.find(params[:id])
     authorize @gift_box
-    @relationship_profile.with_lock { @gift_box.destroy! }
+    with_owner_lock do
+      @gift_box.lock!
+      @gift_box.destroy!
+    end
     redirect_to relationship_profile_gift_boxes_path(@relationship_profile), notice: t("gift_boxes.deleted")
   end
 
@@ -53,6 +56,13 @@ class GiftBoxesController < ApplicationController
   end
 
   def persist
+    with_owner_lock { yield }
+    redirect_to relationship_profile_gift_box_path(@relationship_profile, @gift_box), notice: t("gift_boxes.saved")
+  rescue ActiveRecord::RecordInvalid
+    render :show, status: :unprocessable_content
+  end
+
+  def with_owner_lock
     current_user.with_lock("FOR NO KEY UPDATE") do
       @relationship_profile.with_lock do
         raise ActiveRecord::RecordNotFound unless @relationship_profile.kept?
@@ -60,9 +70,6 @@ class GiftBoxesController < ApplicationController
         yield
       end
     end
-    redirect_to relationship_profile_gift_box_path(@relationship_profile, @gift_box), notice: t("gift_boxes.saved")
-  rescue ActiveRecord::RecordInvalid
-    render :show, status: :unprocessable_content
   end
 
   def box_params

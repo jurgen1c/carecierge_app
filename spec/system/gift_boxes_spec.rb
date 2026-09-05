@@ -25,7 +25,7 @@ RSpec.describe "Gift box builder", type: :system do
     [ [ 1440, 1000 ], [ 768, 1024 ], [ 390, 844 ] ].each do |width, height|
       page.current_window.resize_to(width, height)
       expect(page.evaluate_script("document.documentElement.scrollWidth <= document.documentElement.clientWidth")).to be(true)
-      save_screenshot("/tmp/codex-jira-batches/carecierge-20260905-CAR-55-CAR-63-CAR-74-CAR-75/CAR-55/validation/gift-box-#{width}.png", full: true)
+      save_screenshot("gift-box-#{width}.png", full: true) if ENV["CAPTURE_GIFT_BOX_UI"] == "true"
     end
     click_link "Prepare delivery reminder"
     expect(page).to have_field("Reminder", with: "Check gift box delivery: Reading box")

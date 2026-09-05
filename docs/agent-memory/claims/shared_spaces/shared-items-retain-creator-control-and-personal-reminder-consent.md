@@ -3,13 +3,13 @@ id: shared_spaces.shared_items_retain_creator_control_and_personal_reminder_cons
 type: fact
 system: shared_spaces
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Shared items retain creator control and personal reminder consent
 
 claim: >
-  Participants coordinate plans, dates, tasks, reminders and shared notes. Creators own deletion and choose creator-only or shared editing/completion. Responsibility is self-claimed or released. Plan grouping stays within the space; kinds are fixed and revisions guard edits, claims and completion. Account-then-space locks serialize writes with deletion. Each person opts into their own in-app reminder. The dispatcher queries pending occurrences, skips deleted sources, and rechecks participation, due time, completion, subscription, channel and quiet hours under the space lock. It atomically records one delivery per occurrence and adds a content-free alert to the recipient’s reminder inbox. English/Spanish forms explain privacy, ownership and deletion, without external delivery or activity monitoring.
+  Participants coordinate plans, dates, tasks, reminders and shared notes. Creators own deletion and choose creator-only or shared editing/completion. Responsibility is self-claimed or released. Plan grouping stays within the space; kinds are fixed and revisions guard edits, claims and completion. No-key account-then-space locks serialize writes with deletion while permitting foreign-key readers. Each person opts into their own in-app reminder. The dispatcher queries pending occurrences, skips deleted sources, and rechecks participation, due time, completion, subscription, channel and quiet hours under the space lock. It atomically records one delivery per occurrence and adds a content-free alert to the recipient’s reminder inbox. English/Spanish forms explain privacy, ownership and deletion, without external delivery or activity monitoring.
 
 source_files:
   - app/models/shared_item.rb
@@ -25,6 +25,7 @@ source_files:
   - app/views/components/shared_item_component.html.erb
   - app/views/shared_items/_form.html.erb
   - spec/jobs/dispatch_shared_reminders_job_spec.rb
+  - spec/services/shared_spaces/locking_spec.rb
   - spec/system/shared_relationship_spaces_spec.rb
 
 related_files:
@@ -38,15 +39,15 @@ tags:
   - consent
 verification:
   - bundle exec rspec
+  - bundle exec rspec spec/services/shared_spaces/locking_spec.rb
   - bundle exec rspec spec/requests/shared_relationship_spaces_spec.rb spec/models/shared_relationship_space_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb spec/system/shared_relationship_spaces_spec.rb
-last_verified_commit: 46e8571044889efe4b1047d89378a6f8b25dd51c
 ---
 
 # Shared items retain creator control and personal reminder consent
 
 ## Claim
 
-Participants coordinate plans, dates, tasks, reminders and shared notes. Creators own deletion and choose creator-only or shared editing/completion. Responsibility is self-claimed or released. Plan grouping stays within the space; kinds are fixed and revisions guard edits, claims and completion. Account-then-space locks serialize writes with deletion. Each person opts into their own in-app reminder. The dispatcher queries pending occurrences, skips deleted sources, and rechecks participation, due time, completion, subscription, channel and quiet hours under the space lock. It atomically records one delivery per occurrence and adds a content-free alert to the recipient’s reminder inbox. English/Spanish forms explain privacy, ownership and deletion, without external delivery or activity monitoring.
+Participants coordinate plans, dates, tasks, reminders and shared notes. Creators own deletion and choose creator-only or shared editing/completion. Responsibility is self-claimed or released. Plan grouping stays within the space; kinds are fixed and revisions guard edits, claims and completion. No-key account-then-space locks serialize writes with deletion while permitting foreign-key readers. Each person opts into their own in-app reminder. The dispatcher queries pending occurrences, skips deleted sources, and rechecks participation, due time, completion, subscription, channel and quiet hours under the space lock. It atomically records one delivery per occurrence and adds a content-free alert to the recipient’s reminder inbox. English/Spanish forms explain privacy, ownership and deletion, without external delivery or activity monitoring.
 
 ## Why It Matters
 

@@ -1,107 +1,111 @@
-{
-  "es": {
-    "shared_spaces": {
-      "title": "Espacios compartidos en pareja",
-      "back": "Volver a hoy",
-      "introduction": "Hagan espacio para los planes que ambos eligen. Comienza con una invitación; el espacio se comparte solo cuando la otra persona acepta.",
-      "invitations": "Invitaciones para ti",
-      "invitation_from": "Invitación de %{email}",
-      "acceptance_rules": "Al aceptar, compartes el correo de tu cuenta con esta persona. Ambos pueden agregar contenido compartido y terminar el espacio. Tus perfiles y notas privados permanecen separados.",
-      "accept": "Aceptar invitación",
-      "decline": "Rechazar",
-      "your_spaces": "Tus espacios",
-      "empty": "Aún no hay espacios compartidos. Invita a alguien cuando ambos estén listos.",
-      "active": "Compartido entre dos personas",
-      "pending": "Esperando aceptación",
-      "invite": "Crear una invitación",
-      "invite_hint": "Usa el correo que tu pareja confirma en Carecierge. La invitación aparece en sus espacios compartidos durante siete días. Carecierge no envía correos ni mensajes. Puedes cancelarla aquí.",
-      "space_name": "Nombre del espacio",
-      "partner_email": "Correo de la cuenta de tu pareja",
-      "privacy": "Solo ustedes dos pueden ver este espacio. Tus notas privadas siguen siendo privadas.",
-      "add_item": "Agregar contenido compartido",
-      "participants": "Participantes: %{owner} y %{partner}",
-      "waiting": "Esperando que %{email} acepte",
-      "expires": "La invitación vence el %{date}. Cancélala para crear otra.",
-      "items": "Planes y próximos pasos",
-      "empty_items": "Comienza con una idea para una cita, un plan, una tarea, un recordatorio o una nota que quieras compartir. Nada de tu espacio privado aparece aquí automáticamente.",
-      "manage": "Administrar el espacio compartido",
-      "end": "Terminar el espacio compartido",
-      "end_hint": "Cualquiera puede terminar el espacio. Esto elimina permanentemente el espacio, todo su contenido y sus recordatorios para ambos. Eliminar una cuenta hace lo mismo. El contenido privado individual no cambia.",
-      "confirm_end": "Entiendo que esto elimina todo el espacio compartido para ambos.",
-      "item_privacy": "Todo lo que ingreses aquí será visible para ambos participantes. Agrega solo lo que decidas compartir; las notas privadas nunca se importan.",
-      "kind": "Tipo",
-      "parent": "Parte de un plan compartido",
-      "no_parent": "Contenido independiente",
-      "item_title": "Título",
-      "details": "Detalles compartidos",
-      "schedule": "Cuándo",
-      "schedule_hint": "Las fechas y los recordatorios necesitan una hora. Las alertas son solo dentro de la app y cada persona elige “Recordarme en la app”. Se aplican tus preferencias de notificaciones y horario de silencio.",
-      "due": "Fecha y hora",
-      "time_zone": "Zona horaria",
-      "editing": "¿Quién puede editar y completar esto?",
-      "editing_hint": "Solo quien creó el contenido puede cambiar esta regla o eliminarlo. Cada persona asume voluntariamente la responsabilidad de una tarea.",
-      "save": "Guardar contenido compartido",
-      "cancel": "Cancelar",
-      "edit_item": "Editar contenido compartido",
-      "completed": "Completado",
-      "in_plan": "Plan: %{title}",
-      "created_by": "Creado por %{email}",
-      "responsibility": "Responsable voluntario: %{email}",
-      "unclaimed": "Nadie ha asumido esta tarea todavía",
-      "edit": "Editar",
-      "reopen": "Reabrir",
-      "complete": "Marcar como completado",
-      "claim": "Yo me encargo",
-      "release": "Dejar la responsabilidad",
-      "subscribe": "Recordarme en la app",
-      "unsubscribe": "Desactivar mi recordatorio",
-      "delete_item": "Eliminar contenido compartido",
-      "saved": "Espacio compartido actualizado.",
-      "invited": "Invitación creada. El espacio se comparte después de aceptar.",
-      "accepted": "Te uniste al espacio compartido.",
-      "ended": "El espacio compartido terminó.",
-      "confirm_required": "Confirma que quieres eliminar el espacio compartido para ambos.",
-      "invitation_limit": "Cancela una invitación existente antes de crear otra.",
-      "unavailable": "Esta acción ya no está disponible. Recarga el espacio compartido.",
-      "stale": "Este contenido cambió mientras lo editabas. Revisa la versión más reciente antes de guardar otra vez.",
-      "notification": "Tienes un recordatorio pendiente en tu espacio compartido.",
-      "kinds": {
-        "plan": "Plan",
-        "date": "Fecha",
-        "task": "Tarea",
-        "reminder": "Recordatorio",
-        "note": "Nota compartida"
-      },
-      "editing_rules": {
-        "creator": "Solo quien lo creó",
-        "participants": "Ambos pueden editar"
-      },
-      "my_inbox": "Mis recordatorios"
-    },
-    "activerecord": {
-      "models": {
-        "shared_relationship_space": "Espacios compartidos en pareja",
-        "shared_item": "Agregar contenido compartido"
-      },
-      "attributes": {
-        "shared_relationship_space": {
-          "title": "Nombre del espacio",
-          "invited_email": "Correo de la cuenta de tu pareja",
-          "partner": "Pareja",
-          "invitation_expires_at": "Vencimiento de la invitación"
-        },
-        "shared_item": {
-          "title": "Título",
-          "details": "Detalles compartidos",
-          "kind": "Tipo",
-          "editing": "¿Quién puede editar y completar esto?",
-          "due_at": "Fecha y hora",
-          "time_zone": "Zona horaria",
-          "parent": "Parte de un plan compartido",
-          "assignee": "Persona responsable",
-          "creator": "Persona creadora"
-        }
-      }
-    }
-  }
-}
+---
+es:
+  shared_spaces:
+    title: Espacios compartidos en pareja
+    back: Volver a hoy
+    introduction: Hagan espacio para los planes que ambos eligen. Comienza con una
+      invitación; el espacio se comparte solo cuando la otra persona acepta.
+    invitations: Invitaciones para ti
+    invitation_from: Invitación de %{email}
+    acceptance_rules: Al aceptar, compartes el correo de tu cuenta con esta persona.
+      Ambos pueden agregar contenido compartido y terminar el espacio. Tus perfiles
+      y notas privados permanecen separados.
+    accept: Aceptar invitación
+    decline: Rechazar
+    your_spaces: Tus espacios
+    empty: Aún no hay espacios compartidos. Invita a alguien cuando ambos estén listos.
+    active: Compartido entre dos personas
+    pending: Esperando aceptación
+    invite: Crear una invitación
+    invite_hint: Usa el correo que tu pareja confirma en Carecierge. La invitación
+      aparece en sus espacios compartidos durante siete días. Carecierge no envía
+      correos ni mensajes. Puedes cancelarla aquí.
+    space_name: Nombre del espacio
+    partner_email: Correo de la cuenta de tu pareja
+    privacy: Solo ustedes dos pueden ver este espacio. Tus notas privadas siguen siendo
+      privadas.
+    add_item: Agregar contenido compartido
+    participants: 'Participantes: %{owner} y %{partner}'
+    waiting: Esperando que %{email} acepte
+    expires: La invitación vence el %{date}. Cancélala para crear otra.
+    items: Planes y próximos pasos
+    empty_items: Comienza con una idea para una cita, un plan, una tarea, un recordatorio
+      o una nota que quieras compartir. Nada de tu espacio privado aparece aquí automáticamente.
+    manage: Administrar el espacio compartido
+    end: Terminar el espacio compartido
+    end_hint: Cualquiera puede terminar el espacio. Esto elimina permanentemente el
+      espacio, todo su contenido y sus recordatorios para ambos. Eliminar una cuenta
+      hace lo mismo. El contenido privado individual no cambia.
+    confirm_end: Entiendo que esto elimina todo el espacio compartido para ambos.
+    item_privacy: Todo lo que ingreses aquí será visible para ambos participantes.
+      Agrega solo lo que decidas compartir; las notas privadas nunca se importan.
+    kind: Tipo
+    parent: Parte de un plan compartido
+    no_parent: Contenido independiente
+    item_title: Título
+    details: Detalles compartidos
+    schedule: Cuándo
+    schedule_hint: Las fechas y los recordatorios necesitan una hora. Las alertas
+      son solo dentro de la app y cada persona elige “Recordarme en la app”. Se aplican
+      tus preferencias de notificaciones y horario de silencio.
+    due: Fecha y hora
+    time_zone: Zona horaria
+    editing: "¿Quién puede editar y completar esto?"
+    editing_hint: Solo quien creó el contenido puede cambiar esta regla o eliminarlo.
+      Cada persona asume voluntariamente la responsabilidad de una tarea.
+    save: Guardar contenido compartido
+    cancel: Cancelar
+    edit_item: Editar contenido compartido
+    completed: Completado
+    in_plan: 'Plan: %{title}'
+    created_by: Creado por %{email}
+    responsibility: 'Responsable voluntario: %{email}'
+    unclaimed: Nadie ha asumido esta tarea todavía
+    edit: Editar
+    reopen: Reabrir
+    complete: Marcar como completado
+    claim: Yo me encargo
+    release: Dejar la responsabilidad
+    subscribe: Recordarme en la app
+    unsubscribe: Desactivar mi recordatorio
+    delete_item: Eliminar contenido compartido
+    saved: Espacio compartido actualizado.
+    invited: Invitación creada. El espacio se comparte después de aceptar.
+    accepted: Te uniste al espacio compartido.
+    ended: El espacio compartido terminó.
+    confirm_required: Confirma que quieres eliminar el espacio compartido para ambos.
+    invitation_limit: Cancela una invitación existente antes de crear otra.
+    unavailable: Esta acción ya no está disponible. Recarga el espacio compartido.
+    stale: Este contenido cambió mientras lo editabas. Revisa la versión más reciente
+      antes de guardar otra vez.
+    notification: Tienes un recordatorio pendiente en tu espacio compartido.
+    kinds:
+      plan: Plan
+      date: Fecha
+      task: Tarea
+      reminder: Recordatorio
+      note: Nota compartida
+    editing_rules:
+      creator: Solo quien lo creó
+      participants: Ambos pueden editar
+    my_inbox: Mis recordatorios
+  activerecord:
+    models:
+      shared_relationship_space: Espacios compartidos en pareja
+      shared_item: Agregar contenido compartido
+    attributes:
+      shared_relationship_space:
+        title: Nombre del espacio
+        invited_email: Correo de la cuenta de tu pareja
+        partner: Pareja
+        invitation_expires_at: Vencimiento de la invitación
+      shared_item:
+        title: Título
+        details: Detalles compartidos
+        kind: Tipo
+        editing: "¿Quién puede editar y completar esto?"
+        due_at: Fecha y hora
+        time_zone: Zona horaria
+        parent: Parte de un plan compartido
+        assignee: Persona responsable
+        creator: Persona creadora

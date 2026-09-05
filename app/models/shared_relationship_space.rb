@@ -28,7 +28,7 @@ class SharedRelationshipSpace < ApplicationRecord
   end
 
   def accept!(user)
-    user.with_lock do
+    user.with_lock("FOR NO KEY UPDATE") do
       with_lock do
         raise ActiveRecord::RecordNotFound unless can_accept?(user)
         update!(partner: user, accepted_at: Time.current)
@@ -41,7 +41,7 @@ class SharedRelationshipSpace < ApplicationRecord
   end
 
   def end_sharing!(user)
-    user.with_lock do
+    user.with_lock("FOR NO KEY UPDATE") do
       with_lock do
         raise ActiveRecord::RecordNotFound unless participant?(user) || can_accept?(user)
         destroy!

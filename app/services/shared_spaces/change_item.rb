@@ -1,7 +1,7 @@
 module SharedSpaces
   class ChangeItem
     def self.call(space:, actor:, item: nil, attributes: {}, action: :save, revision: nil)
-      actor.with_lock do
+      actor.with_lock("FOR NO KEY UPDATE") do
         change_under_account_lock(space:, actor:, item:, attributes:, action:, revision:)
       end
     end

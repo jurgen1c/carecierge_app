@@ -83,6 +83,8 @@ class SharedItemsController < ApplicationController
   end
 
   def stale_item
+    return render plain: t("shared_spaces.stale"), status: :conflict unless action_name == "update"
+
     @item.reload
     @item.errors.add(:base, t("shared_spaces.stale"))
     load_plans

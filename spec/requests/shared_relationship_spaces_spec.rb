@@ -83,6 +83,7 @@ RSpec.describe "Shared couple spaces", type: :request do
     patch shared_relationship_space_shared_item_path(space, item), params: { shared_item: { title: "Stale revision", lock_version: 0 } }
     expect(response).to have_http_status(:conflict)
     expect(item.reload.title).to eq("New revision")
+    expect(response.body).to include(I18n.t("shared_spaces.edit_item"), 'name="shared_item[lock_version]"')
   end
 
   it "allows either participant to end sharing only after explicit confirmation" do
@@ -200,6 +201,8 @@ RSpec.describe "Shared couple spaces", type: :request do
     2.times { post claim_shared_relationship_space_shared_item_path(space, task), params: { lock_version: 0 } }
     expect(response).to have_http_status(:conflict)
     expect(task.reload.assignee).to eq(partner)
+    expect(response.media_type).to eq("text/plain")
+    expect(response.body).to eq(I18n.t("shared_spaces.stale"))
   end
   it "localizes validation labels in the Spanish invitation and item forms" do
     sign_in owner
@@ -219,5 +222,16 @@ RSpec.describe "Shared couple spaces", type: :request do
     earlier = create(:shared_relationship_space, owner:, partner:, invited_email: partner.email, created_at: space.created_at - 1.day)
     result = DataExports::Snapshot.new(user: partner).to_h.fetch("shared_relationship_spaces")
     expect(result.pluck("id")).to eq([ earlier.id, space.id ])
+  end
+  it "returns a localized conflict for stale completion without an edit form" do
+    space = accepted_space
+    task = create(:shared_item, shared_relationship_space: space, kind: "task", editing: "participants")
+    I18n.with_locale(:es) do
+      2.times { post complete_shared_relationship_space_shared_item_path(space, task), params: { lock_version: 0 } }
+    end
+    expect(response).to have_http_status(:conflict)
+    expect(response.media_type).to eq("text/plain")
+    expect(response.body).to eq(I18n.t("shared_spaces.stale", locale: :es))
+    expect(task.reload).to be_completed
   end
 end

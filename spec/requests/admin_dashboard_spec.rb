@@ -45,7 +45,9 @@ RSpec.describe "Admin dashboard", type: :request do
     sign_in create(:user, :admin)
     allow(AuditEvent).to receive(:record!).and_raise(ActiveRecord::RecordInvalid)
     expect(AdminDashboard::Query).not_to receive(:new)
-    expect { get "/admin" }.to raise_error(ActiveRecord::RecordInvalid)
+    get "/admin"
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).not_to include("Approval backlog")
   end
 
   it "renders observed queue counts without job controls" do

@@ -109,6 +109,7 @@ module Messaging
       end
 
       def token_error_code(response, payload)
+        return "authorization_required" if payload["error"] == "invalid_grant"
         payload["error"].to_s.presence || "token_exchange_failed"
       end
 

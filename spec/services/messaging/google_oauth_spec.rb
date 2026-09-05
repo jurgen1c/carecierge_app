@@ -118,7 +118,7 @@ RSpec.describe Messaging::GoogleOauth do
     allow(http).to receive(:request).and_return(response(Net::HTTPBadRequest, body: { error: "invalid_grant" }.to_json))
 
     expect { described_class.refresh(refresh_token: "existing-refresh") }
-      .to raise_error(Messaging::Error) { |error| expect(error.code).to eq("invalid_grant") }
+      .to raise_error(Messaging::Error) { |error| expect(error.code).to eq("authorization_required") }
 
     allow(http).to receive(:request).and_return(response(Net::HTTPOK, body: "not-json"))
     expect { described_class.refresh(refresh_token: "existing-refresh") }

@@ -75,4 +75,21 @@ RSpec.describe 'Messaging connections', type: :request do
     expect(connection.imported_message_contexts.count).to eq(1)
     expect(connection.imported_message_contexts.first.snippet).to eq('Selected snippet')
   end
+
+  it 'shows reconnection instructions when a refresh grant has expired' do
+    connection.update!(token_expires_at: 1.hour.ago)
+    create(:automation_permission, user:, capability: 'access_messages', mode: 'ask_every_time')
+    allow(Messaging::GoogleOauth).to receive(:available?).and_return(true)
+    http = instance_double(Net::HTTP)
+    allow(Net::HTTP).to receive(:start).and_yield(http)
+    rejected = Net::HTTPBadRequest.new('1.1', '400', 'Bad Request')
+    rejected.instance_variable_set(:@body, { error: 'invalid_grant' }.to_json)
+    rejected.instance_variable_set(:@read, true)
+    allow(http).to receive(:request).and_return(rejected)
+    post search_messaging_connection_path, params: { messaging_query: 'from:friend@example.test' }
+    expect(response).to redirect_to(messaging_connection_path)
+    follow_redirect!
+    expect(response.body).to include(I18n.t('messaging.errors.authorization_required'))
+    expect(ImportedMessageContext.count).to eq(0)
+  end
 end

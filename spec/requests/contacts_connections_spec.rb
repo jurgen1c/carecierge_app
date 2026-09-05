@@ -91,5 +91,4 @@ RSpec.describe 'Contacts connections', type: :request do
       expect(contact.reload.relationship_profile_id).to be_nil
     end
   end
-
 end

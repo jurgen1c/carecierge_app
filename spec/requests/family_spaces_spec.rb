@@ -9,7 +9,7 @@ RSpec.describe "Family coordination", type: :request do
     @family ||= begin
       sign_in owner
       post shared_relationship_spaces_path, params: { shared_relationship_space: { title: "Our family", mode: "family" } }
-      SharedRelationshipSpace.last
+      SharedRelationshipSpace.find_by!(owner: owner, mode: "family")
     end
   end
 

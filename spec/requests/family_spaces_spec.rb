@@ -26,6 +26,7 @@ RSpec.describe "Family coordination", type: :request do
   it "creates a family and admits multiple explicitly consenting relatives" do
     expect(family).to be_family
     expect(family).to be_active
+    expect(family.invitation_expires_at).to be_nil
     membership = join(sibling)
     expect(membership.user).to eq(sibling)
     join(parent, type: "parent")
@@ -61,6 +62,7 @@ RSpec.describe "Family coordination", type: :request do
     create(:relationship_note, relationship_profile: profile, body: "Private family boundary", private: true)
     post shared_relationship_space_shared_items_path(family), params: { shared_item: { title: "Holiday lunch", kind: "plan", category: "rsvp", editing: "participants" } }
     plan = family.shared_items.sole
+    # A forged actor parameter must never submit another family member's RSVP.
     post respond_shared_relationship_space_shared_item_path(family, plan), params: { attendance: "yes", user_id: owner.id }
     expect(plan.family_responses.sole.user).to eq(sibling)
     post shared_relationship_space_shared_items_path(family), params: { shared_item: { title: "Bring groceries", kind: "task", category: "care", parent_id: plan.id } }
@@ -191,5 +193,15 @@ RSpec.describe "Family coordination", type: :request do
     get shared_relationship_space_path(family)
     responses = Nokogiri::HTML5(response.body).css('section[aria-label="Family responses"] > p').map(&:text)
     expect(responses.map { |text| text.split(" · ").first }).to eq([ sibling.email, owner.email ])
+  end
+  it "renders tied family roster entries in stable identifier order" do
+    space = family
+    timestamp = Time.current
+    [ [ sibling, "00000000-0000-4000-8000-000000000002" ], [ parent, "00000000-0000-4000-8000-000000000001" ] ].each do |person, id|
+      space.family_memberships.create!(id:, user: person, invited_email: person.email, relationship_type: "other", accepted_at: timestamp, invitation_expires_at: 7.days.from_now, created_at: timestamp)
+    end
+    get shared_relationship_space_path(space)
+    roster = Nokogiri::HTML(response.body).css('section[aria-labelledby="family-roster-title"] li > p').map(&:text)
+    expect(roster.map { |text| text.split(" · ").first }).to eq([ parent.email, sibling.email ])
   end
 end

@@ -11,7 +11,7 @@ class SharedRelationshipSpacesController < ApplicationController
 
   def show
     authorize @space
-    @family_memberships = @space.family_memberships.includes(:user).order(:created_at) if @space.family?
+    @family_memberships = @space.family_memberships.includes(:user).order(:created_at, :id) if @space.family?
     if @space.active?
       @pagy, @items = pagy(:offset, filtered_items.includes(:creator, :assignee, :parent, :shared_reminder_subscriptions, family_responses: :user), limit: 20)
     end
@@ -19,7 +19,8 @@ class SharedRelationshipSpacesController < ApplicationController
 
   def create
     authorize SharedRelationshipSpace
-    @new_space = SharedRelationshipSpace.new(space_params.merge(owner: current_user, invitation_expires_at: 7.days.from_now))
+    @new_space = SharedRelationshipSpace.new(space_params.merge(owner: current_user))
+    @new_space.invitation_expires_at = 7.days.from_now unless @new_space.family?
     current_user.with_lock("FOR NO KEY UPDATE") do
       if !@new_space.family? && SharedRelationshipSpace.where(owner: current_user, mode: "couple", partner_id: nil).where("invitation_expires_at > ?", Time.current).count >= 5
         @new_space.errors.add(:base, t("shared_spaces.invitation_limit"))

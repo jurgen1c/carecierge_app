@@ -54,6 +54,7 @@
 #  fk_rails_...  (vendor_quote_id => vendor_quotes.id) ON DELETE => nullify
 #
 class Reminder < ApplicationRecord
+  has_many :external_provider_actions, dependent: :destroy
   include FeedItemStateSource
 
   BOOKING_MILESTONES = %w[confirmation deposit arrival change].freeze

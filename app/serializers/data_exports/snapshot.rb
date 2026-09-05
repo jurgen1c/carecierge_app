@@ -124,6 +124,7 @@ module DataExports
         "relationship_preferences" => records(profile.relationship_preferences),
         "relationship_field_values" => records(profile.relationship_field_values),
         "important_dates" => records(profile.important_dates),
+        "external_provider_actions" => records(profile.external_provider_actions.recent_first, except: %w[user_id relationship_profile_id lock_version]),
         "gift_boxes" => profile.gift_boxes.includes(:items).map { |box| attributes_for(box).merge("items" => records(box.items)) },
         "gifts" => profile.gifts.includes(:purchase_plan).map do |gift|
           attributes_for(gift).merge("purchase_plan" => gift.purchase_plan && attributes_for(gift.purchase_plan, except: %w[gift_id plan_task_id lock_version]))

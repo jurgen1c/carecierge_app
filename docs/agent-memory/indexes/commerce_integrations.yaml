@@ -1,0 +1,19 @@
+id: commerce_integrations
+name: Commerce and Booking Provider Records
+summary: Private manual external-provider observations linked to owner planning records; no live provider commands.
+claim_globs:
+  - claims/commerce_integrations/**/*.md
+default_queries:
+  - commerce booking vendor reservation external provider manual source status failure privacy audit
+watched_files:
+  - app/models/external_provider_action.rb
+  - app/controllers/external_provider_actions_controller.rb
+  - app/policies/external_provider_action_policy.rb
+  - app/services/external_provider_actions/**/*.rb
+  - app/helpers/external_provider_actions_helper.rb
+  - app/views/external_provider_actions/**/*.erb
+  - app/views/components/external_provider_action_component.*
+  - config/locales/external_provider_actions.*.yml
+  - spec/models/external_provider_action_spec.rb
+  - spec/requests/external_provider_actions_spec.rb
+tags: [commerce_integrations, provider, privacy, manual]

@@ -1,0 +1,22 @@
+<% form_url = @record.persisted? ? external_provider_action_path(@record) : relationship_profile_external_provider_actions_path(@relationship_profile) %>
+<%= form_with model: @record, url: form_url, class: "grid gap-6 py-6" do |form| %>
+  <%= form.hidden_field :lock_version if @record.persisted? %>
+  <% if @record.errors.any? %><section role="alert" class="rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink"><h2 class="font-semibold"><%= t("external_provider_actions.errors") %></h2><ul class="mt-2 list-disc pl-5"><% @record.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></section><% end %>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <% { provider_name: 200, source_label: 200, source_url: 2000, external_reference: 2000 }.each do |field, maximum| %>
+      <div class="min-w-0"><%= form.label field, t("external_provider_actions.fields.#{field}"), class: "block text-sm font-semibold text-ink" %><%= form.text_field field, required: field.in?(%i[provider_name source_label]), maxlength: maximum, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-ink focus:outline-primary" %></div>
+    <% end %>
+    <% { provider_kind: ExternalProviderAction::PROVIDER_KINDS, action_kind: ExternalProviderAction::ACTION_KINDS, status: ExternalProviderAction::STATUSES }.each do |field, values| %>
+      <div class="min-w-0"><%= form.label field, t("external_provider_actions.fields.#{field}"), class: "block text-sm font-semibold text-ink" %><%= form.select field, values.map { |value| [t("external_provider_actions.#{field.to_s.pluralize}.#{value}"), value] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-ink focus:outline-primary" %></div>
+    <% end %>
+  </div>
+  <div class="min-w-0"><%= form.label :failure_details, t("external_provider_actions.fields.failure_details"), class: "block text-sm font-semibold text-ink" %><%= form.text_area :failure_details, rows: 3, maxlength: 4000, aria: { describedby: "provider-failure-hint" }, class: "mt-2 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-ink focus:outline-primary" %><p id="provider-failure-hint" class="mt-2 text-sm text-quiet-note"><%= t("external_provider_actions.failure_hint") %></p></div>
+  <fieldset class="grid gap-4 border-t border-private-line pt-5 sm:grid-cols-2">
+    <legend class="text-lg font-semibold text-ink"><%= t("external_provider_actions.links") %></legend>
+    <p class="text-sm leading-6 text-quiet-note sm:col-span-2"><%= t("external_provider_actions.links_hint") %></p>
+    <% ExternalProviderAction::CONTEXTS.each do |context| %>
+      <% field = "#{context}_id" %><div class="min-w-0"><%= form.label field, t("external_provider_actions.contexts.#{context}"), class: "block text-sm font-semibold text-ink" %><%= form.select field, provider_context_options(@relationship_profile, context), { include_blank: t("external_provider_actions.no_link") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-ink focus:outline-primary" %></div>
+    <% end %>
+  </fieldset>
+  <div class="flex flex-wrap gap-3 border-t border-private-line pt-5"><%= form.submit t("external_provider_actions.save"), class: "min-h-11 rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover" %><%= link_to t("external_provider_actions.back"), relationship_profile_external_provider_actions_path(@relationship_profile), class: "inline-flex min-h-11 items-center px-4 text-primary underline" %></div>
+<% end %>

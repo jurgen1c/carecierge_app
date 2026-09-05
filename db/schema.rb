@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_125815) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_135433) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -483,6 +483,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_125815) do
     t.check_constraint "effort_level::text = ANY (ARRAY['low'::character varying, 'medium'::character varying, 'high'::character varying]::text[])", name: "event_plans_supported_effort_level"
     t.check_constraint "status::text = ANY (ARRAY['active'::character varying, 'completed'::character varying, 'archived'::character varying]::text[])", name: "event_plans_supported_status"
     t.check_constraint "tone::text = ANY (ARRAY['understated'::character varying, 'warm'::character varying, 'celebratory'::character varying, 'romantic'::character varying]::text[])", name: "event_plans_supported_tone"
+  end
+
+  create_table "external_provider_actions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "action_kind", null: false
+    t.uuid "booking_id"
+    t.datetime "created_at", null: false
+    t.uuid "event_plan_id"
+    t.text "external_reference"
+    t.text "failure_details"
+    t.uuid "gift_purchase_plan_id"
+    t.integer "lock_version", default: 0, null: false
+    t.string "provider_kind", null: false
+    t.text "provider_name", null: false
+    t.datetime "recorded_at", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.uuid "reminder_id"
+    t.text "source_label", null: false
+    t.text "source_url"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.uuid "vendor_quote_id"
+    t.index ["booking_id"], name: "index_external_provider_actions_on_booking_id"
+    t.index ["event_plan_id"], name: "index_external_provider_actions_on_event_plan_id"
+    t.index ["gift_purchase_plan_id"], name: "index_external_provider_actions_on_gift_purchase_plan_id"
+    t.index ["relationship_profile_id", "created_at", "id"], name: "index_provider_actions_on_profile_history"
+    t.index ["relationship_profile_id"], name: "index_external_provider_actions_on_relationship_profile_id"
+    t.index ["reminder_id"], name: "index_external_provider_actions_on_reminder_id"
+    t.index ["user_id"], name: "index_external_provider_actions_on_user_id"
+    t.index ["vendor_quote_id"], name: "index_external_provider_actions_on_vendor_quote_id"
   end
 
   create_table "extracted_memories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1440,6 +1470,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_125815) do
   add_foreign_key "event_plan_vendors", "vendors", on_delete: :cascade
   add_foreign_key "event_plans", "relationship_profiles", on_delete: :cascade
   add_foreign_key "event_plans", "users", on_delete: :cascade
+  add_foreign_key "external_provider_actions", "bookings", on_delete: :cascade
+  add_foreign_key "external_provider_actions", "event_plans", on_delete: :cascade
+  add_foreign_key "external_provider_actions", "gift_purchase_plans", on_delete: :cascade
+  add_foreign_key "external_provider_actions", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "external_provider_actions", "reminders", on_delete: :cascade
+  add_foreign_key "external_provider_actions", "users", on_delete: :cascade
+  add_foreign_key "external_provider_actions", "vendor_quotes", on_delete: :cascade
   add_foreign_key "extracted_memories", "conversation_recaps", on_delete: :cascade
   add_foreign_key "extracted_memories", "memory_records", column: "canonical_memory_record_id", on_delete: :nullify
   add_foreign_key "extracted_memories", "relationship_profiles", on_delete: :cascade

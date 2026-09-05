@@ -1,0 +1,35 @@
+<div class="mx-auto max-w-4xl px-4 py-8 text-ink sm:px-6">
+  <%= link_to t("gift_boxes.back"), relationship_profile_gift_boxes_path(gift_box.relationship_profile), class: style(:button) %>
+  <header class="my-6"><h1 class="text-3xl font-semibold"><%= t("gift_boxes.builder") %></h1><p class="mt-2 max-w-prose text-sm leading-6 text-quiet-note"><%= t("gift_boxes.intro") %></p></header>
+  <%= form_with model: gift_box, url: workspace_path, class: "grid gap-8" do |form| %>
+    <%= form.hidden_field :lock_version if gift_box.persisted? %>
+    <% if gift_box.errors.any? %><section role="alert" class="rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink"><h2 class="font-semibold"><%= t("gift_boxes.errors") %></h2><ul class="list-disc pl-5"><% gift_box.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></section><% end %>
+    <fieldset class="grid gap-4 sm:grid-cols-2"><legend class="mb-4 text-xl font-semibold"><%= t("gift_boxes.essentials") %></legend>
+      <% %i[name occasion].each do |field| %><div><%= form.label field, t("gift_boxes.fields.#{field}"), class: "block text-sm font-semibold" %><%= form.text_field field, required: true, maxlength: 200, class: style(:control) %></div><% end %>
+      <div><%= form.label :budget, t("gift_boxes.fields.budget"), class: "block text-sm font-semibold" %><%= form.text_field :budget, value: money(gift_box.budget_before_type_cast), inputmode: "decimal", class: style(:control) %></div>
+      <div><%= form.label :currency, t("gift_boxes.fields.currency"), class: "block text-sm font-semibold" %><%= form.text_field :currency, required: true, maxlength: 3, class: style(:control) %></div>
+      <div><%= form.label :delivery_on, t("gift_boxes.fields.delivery_on"), class: "block text-sm font-semibold" %><%= form.date_field :delivery_on, class: style(:control) %></div>
+      <% %i[notes constraints].each do |field| %><div class="sm:col-span-2"><%= form.label field, t("gift_boxes.fields.#{field}"), class: "block text-sm font-semibold" %><%= form.text_area field, rows: 2, maxlength: 2000, class: style(:control) %></div><% end %>
+    </fieldset>
+    <section aria-labelledby="box-suggestions" class="border-t border-private-line pt-6"><h2 id="box-suggestions" class="text-xl font-semibold"><%= t("gift_boxes.suggestions_title") %></h2><p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("gift_boxes.suggestion_hint") %></p>
+      <% if suggestions.empty? %><p class="mt-3 text-sm"><%= t("gift_boxes.no_suggestions") %></p><% else %><ul class="mt-3 space-y-3"><% suggestions.each do |idea| %><li><strong><%= t("gift_boxes.suggestions.#{idea[:key]}.name") %></strong> — <%= t("gift_boxes.suggestions.#{idea[:key]}.reason") %> <%= t("gift_boxes.based_on", key: idea[:source].key, value: idea[:source].value) %></li><% end %></ul><% end %>
+    </section>
+    <fieldset class="border-t border-private-line pt-6"><legend class="text-xl font-semibold"><%= t("gift_boxes.items") %></legend><p class="mb-4 text-sm leading-6 text-quiet-note"><%= t("gift_boxes.items_hint") %></p>
+      <p class="mb-4 font-semibold"><%= t("gift_boxes.known_total", amount: money(gift_box.known_total), currency: gift_box.currency) %><% if gift_box.remaining_budget %> · <%= t("gift_boxes.remaining", amount: money(gift_box.remaining_budget), currency: gift_box.currency) %><% end %></p>
+      <div class="divide-y divide-private-line"><% form_items.each_with_index do |item, index| %>
+        <% if item.new_record? %><details <%= "open" if gift_box.new_record? || item.name.present? %>><summary class="min-h-11 cursor-pointer py-3 font-semibold text-primary"><%= t("gift_boxes.add_item") %></summary><% end %>
+        <%= form.fields_for :items, item, child_index: index do |fields| %><fieldset class="grid gap-4 py-5 sm:grid-cols-2"><legend class="font-semibold"><%= t("gift_boxes.item_number", number: index + 1) %></legend>
+          <% %i[name vendor].each do |field| %><div><%= fields.label field, t("gift_boxes.fields.#{field}"), class: "block text-sm font-semibold" %><%= fields.text_field field, maxlength: 200, class: style(:control) %></div><% end %>
+          <div><%= fields.label :cost, t("gift_boxes.fields.cost"), class: "block text-sm font-semibold" %><%= fields.text_field :cost, value: money(item.cost_before_type_cast), inputmode: "decimal", class: style(:control) %></div>
+          <div><%= fields.label :purchase_url, t("gift_boxes.fields.purchase_url"), class: "block text-sm font-semibold" %><%= fields.url_field :purchase_url, maxlength: 2000, class: style(:control) %><% if item.purchase_url.present? && gift_box.errors.empty? %><%= link_to t("gift_boxes.open_vendor"), item.purchase_url, target: "_blank", rel: "noopener noreferrer", class: style(:button) %><% end %></div>
+          <div class="sm:col-span-2"><%= fields.label :notes, t("gift_boxes.fields.notes"), class: "block text-sm font-semibold" %><%= fields.text_area :notes, rows: 2, maxlength: 2000, class: style(:control) %></div>
+          <% %i[purchased completed].each do |field| %><%= fields.label field, class: "flex min-h-11 items-center gap-3 text-sm" do %><%= fields.check_box field, class: "h-5 w-5 accent-primary" %><%= t("gift_boxes.fields.#{field}") %><% end %><% end %>
+          <% if item.persisted? %><%= fields.label :_destroy, class: "flex min-h-11 items-center gap-3 text-sm text-danger-ink" do %><%= fields.check_box :_destroy, class: "h-5 w-5" %><%= t("gift_boxes.remove_item") %><% end %><% end %>
+        </fieldset><% end %>
+        <% if item.new_record? %></details><% end %>
+      <% end %></div>
+    </fieldset>
+    <div><%= form.submit t("gift_boxes.save"), class: style(:button, emphasis: :primary) %></div>
+  <% end %>
+  <% if gift_box.persisted? %><section class="mt-8 border-t border-private-line pt-6"><h2 class="text-xl font-semibold"><%= t("gift_boxes.next_steps") %></h2><p class="my-3 text-sm text-quiet-note"><%= t("gift_boxes.reminder_hint") %></p><%= link_to t("gift_boxes.reminder"), new_reminder_path(gift_box_id: gift_box.id), class: style(:button) %><%= button_to t("gift_boxes.delete"), workspace_path, method: :delete, class: style(:button), form: { class: "mt-4" } %></section><% end %>
+</div>

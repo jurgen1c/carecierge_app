@@ -120,6 +120,7 @@ class RelationshipProfile < ApplicationRecord
   has_many :reminders, dependent: :destroy
   has_many :suggestion_feedbacks, dependent: :destroy
   has_many :commitments, -> { ordered }, dependent: :destroy
+  has_many :gift_boxes, dependent: :destroy
   has_many :gifts, dependent: :destroy
   has_many :gift_recommendations, dependent: :destroy
   has_many :event_plans, dependent: :destroy

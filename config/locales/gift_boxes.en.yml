@@ -1,0 +1,102 @@
+en:
+  gift_boxes:
+    title: Gift boxes
+    builder: Build a gift box
+    back: All gift boxes
+    intro: Assemble useful items for this person and occasion. Purchase and completion are your own records; buying stays with you.
+    essentials: The occasion and budget
+    empty: Start with the occasion and a budget, then add a few items that fit.
+    errors: Check these details
+    saved: Gift box saved.
+    changed: This box changed since you opened it. Review the latest version before saving.
+    deleted: Gift box deleted.
+    save: Save gift box
+    delete: Delete gift box
+    add_item: Add an item
+    items: Items in the box
+    items_hint: Add up to 30 items. Save to reveal more blank rows. Costs use the box currency; blank costs are unknown and are excluded from the total.
+    item_number: "Item %{number}"
+    known_total: "Known total: %{amount} %{currency}"
+    remaining: "Budget remaining: %{amount} %{currency}"
+    remove_item: Remove this item when saving
+    open_vendor: Open purchase link
+    next_steps: Prepare delivery
+    reminder: Prepare delivery reminder
+    reminder_hint: Opens a private reminder form using the saved delivery date. Review and save it to schedule a reminder. Later box edits do not change saved reminders.
+    reminder_title: "Check gift box delivery: %{name}"
+    suggestions_title: Useful companions
+    suggestion_hint: Ideas from confirmed preferences, for you to add to an item row. Check materials, compatibility, local availability and total cost before buying; these are not verified offers.
+    no_suggestions: No clear companion suggestion yet. Add confirmed preferences to this relationship. When constraints or dislikes need interpretation, choose items manually.
+    based_on: "Based on %{key}: %{value}."
+    suggestions:
+      bookmark:
+        name: Bookmark
+        reason: Helps keep a place alongside a book; look for a local maker if practical.
+      coffee_filter:
+        name: Reusable coffee filter
+        reason: Complements a coffee routine; check the recipient's brewer size and material preferences.
+      plant_label:
+        name: Plant labels
+        reason: Complements gardening supplies and helps identify plants without adding consumables.
+    fields:
+      name: Name
+      occasion: Occasion
+      budget: Budget
+      currency: Currency (three-letter code)
+      delivery_on: Delivery date
+      notes: Notes
+      constraints: Constraints to check
+      vendor: Vendor or local maker
+      cost: Item cost
+      purchase_url: Purchase link
+      purchased: Purchased
+      completed: Ready for the box
+    pagination:
+      label: "Gift box pages"
+      previous: "Previous"
+      next: "Next"
+      page: "Page %{page} of %{pages}"
+  activerecord:
+    attributes:
+      gift_box:
+        name: Name
+        occasion: Occasion
+        notes: Notes
+        constraints: Constraints
+        budget: Budget
+        currency: Currency
+        delivery_on: Delivery date
+        items: Items
+        vendor: Vendor
+        cost: Item cost
+        purchase_url: Purchase link
+        purchased: Purchased
+        completed: Ready for the box
+      gift_box_item:
+        name: Name
+        occasion: Occasion
+        notes: Notes
+        constraints: Constraints
+        budget: Budget
+        currency: Currency
+        delivery_on: Delivery date
+        items: Items
+        vendor: Vendor
+        cost: Item cost
+        purchase_url: Purchase link
+        purchased: Purchased
+        completed: Ready for the box
+      gift_box/items:
+        name: Name
+        occasion: Occasion
+        notes: Notes
+        constraints: Constraints
+        budget: Budget
+        currency: Currency
+        delivery_on: Delivery date
+        items: Items
+        vendor: Vendor
+        cost: Item cost
+        purchase_url: Purchase link
+        purchased: Purchased
+        completed: Ready for the box

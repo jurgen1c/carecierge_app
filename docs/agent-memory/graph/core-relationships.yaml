@@ -1,6 +1,36 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    target: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    relation: same_area
+    reason: Shares owner exports and private log filtering while gift boxes remain excluded from briefing context.
+    strength: 80
+  - source: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: same_area
+    reason: Shares owner exports and private log filtering while gift boxes remain excluded from message context.
+    strength: 80
+  - source: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    target: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    relation: same_area
+    reason: Extends private manual gift planning with multi-item bundles and the same explicit reminder prefill boundary.
+    strength: 80
+  - source: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    target: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    relation: same_area
+    reason: Shares the explicit reminder form and export serializer without expanding automated actions.
+    strength: 80
+  - source: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Delivery links prefill the existing private reminder form for explicit owner review and scheduling.
+    strength: 100
+  - source: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Encrypted boxes and items export with the owner profile and cascade on deletion.
+    strength: 100
   - source: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
     target: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
     relation: same_area

@@ -1,0 +1,8 @@
+<% content_for :head do %><meta name="turbo-cache-control" content="no-cache"><% end %>
+<section class="mx-auto max-w-4xl px-4 pt-8 sm:px-6"><%= link_to @relationship_profile.display_name, relationship_profile_path(@relationship_profile), class: "inline-flex min-h-11 items-center text-primary underline" %><h1 class="my-4 text-3xl font-semibold"><%= t("gift_boxes.title") %></h1>
+<% if @boxes.empty? %><p class="text-quiet-note"><%= t("gift_boxes.empty") %></p><% else %><ul class="divide-y divide-private-line"><% @boxes.each do |box| %><li><%= link_to relationship_profile_gift_box_path(@relationship_profile, box), class: "flex min-h-11 flex-wrap items-center justify-between gap-2 py-3 text-primary underline" do %><span class="break-words"><%= box.name %></span><span><%= box.occasion %></span><% end %></li><% end %></ul><% end %><% if @pagy.last > 1 %><nav aria-label="<%= t("gift_boxes.pagination.label") %>" class="flex flex-wrap items-center justify-between gap-2 border-t border-private-line py-4">
+<% if @pagy.previous %><%= link_to t("gift_boxes.pagination.previous"), relationship_profile_gift_boxes_path(@relationship_profile, page: @pagy.previous), rel: "prev", class: "inline-flex min-h-11 items-center px-3 text-primary underline" %><% end %>
+<span><%= t("gift_boxes.pagination.page", page: @pagy.page, pages: @pagy.last) %></span>
+<% if @pagy.next %><%= link_to t("gift_boxes.pagination.next"), relationship_profile_gift_boxes_path(@relationship_profile, page: @pagy.next), rel: "next", class: "inline-flex min-h-11 items-center px-3 text-primary underline" %><% end %>
+</nav><% end %></section>
+<%= component "gift_box_workspace", gift_box: @gift_box %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_092245) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_114943) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -624,6 +624,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_092245) do
     t.check_constraint "budget_cents IS NULL OR budget_cents >= 0", name: "gift_recommendations_budget_nonnegative"
     t.check_constraint "estimated_price_cents IS NULL OR estimated_price_cents >= 0", name: "gift_recommendations_estimated_price_nonnegative"
     t.check_constraint "status::text = ANY (ARRAY['generated'::character varying, 'saved'::character varying, 'dismissed'::character varying, 'purchased'::character varying]::text[])", name: "gift_recommendations_supported_status"
+  end
+
+  create_table "gift_box_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "completed", default: false, null: false
+    t.decimal "cost", precision: 12, scale: 2
+    t.datetime "created_at", null: false
+    t.uuid "gift_box_id", null: false
+    t.text "name", null: false
+    t.text "notes"
+    t.text "purchase_url"
+    t.boolean "purchased", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.text "vendor"
+    t.index ["gift_box_id"], name: "index_gift_box_items_on_gift_box_id"
+  end
+
+  create_table "gift_boxes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.decimal "budget", precision: 12, scale: 2
+    t.text "constraints"
+    t.datetime "created_at", null: false
+    t.string "currency", default: "USD", null: false
+    t.date "delivery_on"
+    t.integer "lock_version", default: 0, null: false
+    t.text "name", null: false
+    t.text "notes"
+    t.text "occasion", null: false
+    t.uuid "relationship_profile_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["relationship_profile_id"], name: "index_gift_boxes_on_relationship_profile_id"
   end
 
   create_table "gifts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1404,6 +1433,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_092245) do
   add_foreign_key "gift_recommendations", "gifts", on_delete: :nullify
   add_foreign_key "gift_recommendations", "relationship_profiles", on_delete: :cascade
   add_foreign_key "gift_recommendations", "users", on_delete: :cascade
+  add_foreign_key "gift_box_items", "gift_boxes", on_delete: :cascade
+  add_foreign_key "gift_boxes", "relationship_profiles", on_delete: :cascade
   add_foreign_key "gifts", "relationship_profiles"
   add_foreign_key "important_dates", "relationship_profiles"
   add_foreign_key "imported_contacts", "contacts_connections"

@@ -47,7 +47,7 @@ RSpec.describe "Admin dashboard", type: :request do
     expect(AdminDashboard::Query).not_to receive(:new)
     get "/admin"
     expect(response).to have_http_status(:unprocessable_content)
-    expect(response.body).not_to include("Approval backlog")
+    expect(Nokogiri::HTML5.fragment(response.body).css("[data-metric]")).to be_empty
   end
 
   it "renders observed queue counts without job controls" do

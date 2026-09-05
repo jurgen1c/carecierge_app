@@ -34,6 +34,7 @@ class RemindersController < ApplicationController
       scheduled_at: initial_schedule_for(important_date, preference, vendor_quote:, booking:)
     )
     @reminder.reminder_type = "event_preparation" if vendor_quote || booking
+    apply_gift_purchase_prefill
     @suggestion = selected_suggestion
     @reminder.assign_attributes(@suggestion.reminder_attributes) if @suggestion
     authorize @reminder
@@ -180,6 +181,25 @@ class RemindersController < ApplicationController
     Suggestions::ForProfile.call(relationship_profile: profile, gesture_variation: params[:gesture])
       .find { |suggestion| suggestion.fingerprint == fingerprint }
       .tap { |suggestion| raise ActiveRecord::RecordNotFound unless suggestion }
+  end
+
+  def apply_gift_purchase_prefill
+    return if params[:gift_purchase_plan_id].blank?
+
+    plan = GiftPurchasePlan.joins(gift: :relationship_profile)
+      .merge(current_user.relationship_profiles.active).find(params[:gift_purchase_plan_id])
+    milestone = params[:gift_milestone].presence_in(GiftPurchasePlan::MILESTONES) || "purchase"
+    @reminder.assign_attributes(
+      relationship_profile: plan.gift.relationship_profile,
+      title: t("gift_purchase_plans.reminder_titles.#{milestone}", name: plan.gift.name),
+      reminder_type: "gift_planning", recurrence: "none",
+      event_plan: nil, plan_task: nil, booking: nil, booking_milestone: nil, vendor_quote: nil,
+      important_date: nil, commitment: nil
+    )
+    date = plan.milestone_date(milestone)
+    zone = ActiveSupport::TimeZone[@reminder.time_zone]
+    @reload_after_time_zone_capture = @capture_browser_time_zone
+    @reminder.scheduled_at = date && zone && !@capture_browser_time_zone ? zone.local(date.year, date.month, date.day, 9) : nil
   end
 
   def selected_commitment

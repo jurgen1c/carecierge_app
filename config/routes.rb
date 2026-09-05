@@ -144,6 +144,9 @@ Rails.application.routes.draw do
       resource :personal_touch_checklist, only: :create
     end
     resources :gifts, except: %i[index show] do
+      resource :purchase_plan, only: %i[show update], controller: "gift_purchase_plans" do
+        post :task
+      end
       patch :mark_given, on: :member
     end
     resources :memory_records, except: %i[index show] do

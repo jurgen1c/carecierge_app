@@ -1,6 +1,36 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    target: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    relation: same_area
+    reason: Shares the owner export serializer and filtered logistics boundary; briefing source eligibility remains unchanged.
+    strength: 80
+  - source: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: same_area
+    reason: Shares private export and log filtering primitives; purchase logistics do not enter message generation.
+    strength: 80
+  - source: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    target: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    relation: same_area
+    reason: Uses the existing explicit reminder form handoff and shared export serializer without expanding suggestion automation.
+    strength: 80
+  - source: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    target: relationship_profiles.gift_history
+    relation: requires
+    reason: Purchase logistics attach to saved gifts while given outcomes remain canonical gift history.
+    strength: 100
+  - source: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    target: reminders.reminder_delivery_system
+    relation: requires
+    reason: Explicit owner-scoped prefills require review and save through the existing reminder form.
+    strength: 100
+  - source: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Encrypted logistics export under their gift and cascade with owner gift deletion.
+    strength: 100
   - source: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_source_bound_and_revocable
     target: automation_permissions.permission_decisions
     relation: requires

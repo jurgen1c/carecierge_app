@@ -1,0 +1,85 @@
+<div class="mx-auto max-w-4xl px-4 py-8 text-ink sm:px-6">
+  <%= link_to t("gift_purchase_plans.back"), relationship_profile_path(gift.relationship_profile, anchor: dom_id(gift, :row)), class: style(:button) %>
+  <header class="my-6">
+    <h1 class="text-3xl font-semibold"><%= t("gift_purchase_plans.title") %></h1>
+    <p class="mt-2 break-words text-xl"><%= gift.name %></p>
+    <p class="mt-2 max-w-prose text-sm leading-6 text-quiet-note"><%= t("gift_purchase_plans.intro") %></p>
+  </header>
+
+  <%= form_with model: purchase_plan, url: workspace_path, method: :put, class: "grid gap-8" do |form| %>
+    <%= form.hidden_field :lock_version, value: purchase_plan.persisted? ? purchase_plan.lock_version : "new" %>
+    <% if purchase_plan.errors.any? %>
+      <section role="alert" aria-labelledby="purchase-errors" class="rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink">
+        <h2 id="purchase-errors" class="font-semibold"><%= t("gift_purchase_plans.errors") %></h2>
+        <ul class="mt-2 list-disc pl-5"><% purchase_plan.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul>
+      </section>
+    <% end %>
+
+    <fieldset class="grid gap-4 sm:grid-cols-2">
+      <legend class="mb-4 text-xl font-semibold"><%= t("gift_purchase_plans.essentials") %></legend>
+      <div><%= form.label :budget, t("gift_purchase_plans.fields.budget"), class: "block text-sm font-semibold" %><%= form.text_field :budget, value: money(purchase_plan.budget_before_type_cast), inputmode: "decimal", class: style(:control) %></div>
+      <div><%= form.label :currency, t("gift_purchase_plans.fields.currency"), class: "block text-sm font-semibold" %><%= form.text_field :currency, maxlength: 3, required: true, class: style(:control), aria: { describedby: "currency-hint" } %><p id="currency-hint" class="mt-1 text-sm text-quiet-note"><%= t("gift_purchase_plans.currency_hint") %></p></div>
+      <div><%= form.label :purchase_by, t("gift_purchase_plans.fields.purchase_by"), class: "block text-sm font-semibold" %><%= form.date_field :purchase_by, class: style(:control) %></div>
+      <div><%= form.label :expected_delivery_on, t("gift_purchase_plans.fields.expected_delivery_on"), class: "block text-sm font-semibold" %><%= form.date_field :expected_delivery_on, class: style(:control) %></div>
+      <div class="sm:col-span-2"><%= form.label :constraints, t("gift_purchase_plans.fields.constraints"), class: "block text-sm font-semibold" %><%= form.text_area :constraints, rows: 2, maxlength: 2000, class: style(:control) %></div>
+    </fieldset>
+
+    <fieldset class="border-t border-private-line pt-6">
+      <legend class="text-xl font-semibold"><%= t("gift_purchase_plans.options_title") %></legend>
+      <p class="mb-4 max-w-prose text-sm leading-6 text-quiet-note"><%= t("gift_purchase_plans.options_hint") %></p>
+      <% if purchase_plan.persisted? && (suggested = purchase_plan.suggested_option) %>
+        <p class="mb-4 rounded-lg bg-surface p-4 text-sm leading-6"><strong><%= t("gift_purchase_plans.suggested") %>:</strong> <%= suggested["vendor"] %> · <%= suggested["cost"] %> <%= purchase_plan.currency %>. <%= t("gift_purchase_plans.suggestion_reason") %></p>
+      <% else %>
+        <p class="mb-4 text-sm leading-6 text-quiet-note"><%= t("gift_purchase_plans.no_suggestion") %></p>
+      <% end %>
+      <div class="divide-y divide-private-line">
+        <% displayed_options.each_with_index do |option, index| %>
+          <fieldset class="grid gap-4 py-5 sm:grid-cols-2">
+            <legend class="font-semibold"><%= t("gift_purchase_plans.option_number", number: index + 1) %></legend>
+            <%= fields_for "gift_purchase_plan[options][#{index}]", nil do |fields| %>
+              <div><%= fields.label :vendor, t("gift_purchase_plans.fields.vendor"), class: "block text-sm font-semibold" %><%= fields.text_field :vendor, value: option["vendor"], maxlength: 200, class: style(:control) %></div>
+              <div><%= fields.label :cost, t("gift_purchase_plans.fields.cost"), class: "block text-sm font-semibold" %><%= fields.text_field :cost, value: option["cost"], inputmode: "decimal", class: style(:control) %></div>
+              <div class="sm:col-span-2"><%= fields.label :url, t("gift_purchase_plans.fields.url"), class: "block text-sm font-semibold" %><%= fields.url_field :url, value: option["url"], maxlength: 2000, class: style(:control) %>
+                <% if option["url"].present? && purchase_plan.errors.empty? %><%= link_to t("gift_purchase_plans.open_option"), option["url"], target: "_blank", rel: "noopener noreferrer", class: style(:button) %><% end %>
+              </div>
+              <div class="sm:col-span-2"><%= fields.label :constraints_checked, class: "flex min-h-11 items-center gap-3 text-sm" do %><%= fields.check_box :constraints_checked, { checked: option["constraints_checked"] == "1", class: "h-5 w-5 accent-primary" }, "1", "0" %><%= t("gift_purchase_plans.constraints_checked") %><% end %></div>
+            <% end %>
+          </fieldset>
+        <% end %>
+      </div>
+    </fieldset>
+
+    <fieldset class="grid gap-4 border-t border-private-line pt-6 sm:grid-cols-2">
+      <legend class="text-xl font-semibold"><%= t("gift_purchase_plans.tracking") %></legend>
+      <% { purchase_status: GiftPurchasePlan::PURCHASE_STATUSES, delivery_status: GiftPurchasePlan::DELIVERY_STATUSES }.each do |field, values| %>
+        <div><%= form.label field, t("gift_purchase_plans.fields.#{field}"), class: "block text-sm font-semibold" %><%= form.select field, values.map { |value| [ t("gift_purchase_plans.#{field}.#{value}"), value ] }, {}, class: style(:control) %></div>
+      <% end %>
+      <div class="sm:col-span-2"><%= form.label :shipping_notes, t("gift_purchase_plans.fields.shipping_notes"), class: "block text-sm font-semibold" %><%= form.text_area :shipping_notes, rows: 3, maxlength: 2000, class: style(:control) %></div>
+      <div><%= form.label :follow_up_on, t("gift_purchase_plans.fields.follow_up_on"), class: "block text-sm font-semibold" %><%= form.date_field :follow_up_on, class: style(:control) %></div>
+      <div class="sm:col-span-2"><%= form.label :follow_up_notes, t("gift_purchase_plans.fields.follow_up_notes"), class: "block text-sm font-semibold" %><%= form.text_area :follow_up_notes, rows: 2, maxlength: 2000, class: style(:control) %></div>
+    </fieldset>
+    <p class="rounded-lg bg-surface p-4 text-sm leading-6 text-quiet-note"><strong><%= t("gift_purchase_plans.manual") %></strong> <%= t("gift_purchase_plans.review_only") %></p>
+    <div><%= form.submit t("gift_purchase_plans.save"), class: style(:button, emphasis: :primary) %></div>
+  <% end %>
+
+  <section class="mt-8 border-t border-private-line pt-6" aria-labelledby="purchase-next-steps">
+    <h2 id="purchase-next-steps" class="text-xl font-semibold"><%= t("gift_purchase_plans.next_steps") %></h2>
+    <% if purchase_plan.persisted? %>
+      <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("gift_purchase_plans.saved_values") %></p>
+      <div class="mt-4 flex flex-wrap gap-2"><% GiftPurchasePlan::MILESTONES.each do |milestone| %><%= link_to t("gift_purchase_plans.reminders.#{milestone}"), new_reminder_path(gift_purchase_plan_id: purchase_plan.id, gift_milestone: milestone), class: style(:button) %><% end %></div>
+      <% if purchase_plan.plan_task %>
+        <p class="mt-4 text-sm"><%= t("gift_purchase_plans.task_attached") %> <%= link_to purchase_plan.plan_task.event_plan.title, event_plan_path(purchase_plan.plan_task.event_plan), class: style(:button) %></p>
+      <% elsif event_plans.any? %>
+        <%= form_with url: task_relationship_profile_gift_purchase_plan_path(gift.relationship_profile, gift), class: "mt-5 flex flex-col items-start gap-3 sm:flex-row sm:items-end" do |form| %>
+          <div class="w-full min-w-0 sm:max-w-md"><%= form.label :event_plan_id, t("gift_purchase_plans.fields.event_plan"), class: "block text-sm font-semibold" %><%= form.select :event_plan_id, event_plans.map { |plan| [ plan.title, plan.id ] }, {}, class: style(:control) %></div>
+          <%= form.submit t("gift_purchase_plans.add_task"), class: style(:button) %>
+        <% end %>
+      <% else %>
+        <p class="mt-4 text-sm text-quiet-note"><%= t("gift_purchase_plans.no_event_plans") %></p>
+      <% end %>
+    <% else %>
+      <p class="mt-2 text-sm text-quiet-note"><%= t("gift_purchase_plans.save_first") %></p>
+    <% end %>
+    <p class="mt-5 text-sm leading-6 text-quiet-note"><%= t("gift_purchase_plans.history_hint") %></p>
+  </section>
+</div>

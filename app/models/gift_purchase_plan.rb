@@ -57,7 +57,7 @@ class GiftPurchasePlan < ApplicationRecord
   validate :matching_plan_task
 
   def current_plan_task
-    plan_task unless plan_task&.superseded?
+    plan_task if plan_task && !plan_task.superseded? && !plan_task.event_plan.archived?
   end
 
   def suggested_option

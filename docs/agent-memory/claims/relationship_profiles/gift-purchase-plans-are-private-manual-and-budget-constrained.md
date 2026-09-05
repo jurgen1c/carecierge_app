@@ -2,8 +2,8 @@
 id: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
 type: fact
 system: relationship_profiles
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Gift purchase plans are private manual and budget constrained
@@ -21,7 +21,8 @@ claim: >
   profile-locked reminder writes. These locks and a mandatory revision prevent
   stale purchase-plan writes. An explicit action adds one same-profile
   active event-plan task under locks; duplicate submissions reuse its current
-  attachment, including completed tasks. Deleted or superseded tasks permit an
+  attachment, including completed tasks and visible completed event plans.
+  Deleted or superseded tasks and archived parent event plans permit an
   explicitly requested replacement; viewing the workspace never creates tasks.
   That task is an independent checklist copy and later logistics edits do not
   reschedule it. Purchase, delivery and follow-up links prefill existing private

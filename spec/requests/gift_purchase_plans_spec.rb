@@ -110,6 +110,31 @@ RSpec.describe "Gift purchase planning", type: :request do
     expect { post task_path, params: { event_plan_id: event.id } }.not_to change(PlanTask, :count)
   end
 
+  %w[archived deleted].each do |state|
+    it "replaces an attachment whose event plan was #{state}, while retaining completed plans", :aggregate_failures do
+      put path, params: { gift_purchase_plan: attributes.merge(lock_version: "new") }
+      event = create(:event_plan, user: profile.user, relationship_profile: profile)
+      target = create(:event_plan, user: profile.user, relationship_profile: profile)
+      task_path = task_relationship_profile_gift_purchase_plan_path(profile, gift)
+      post task_path, params: { event_plan_id: event.id }
+      event.complete!(at: Time.zone.local(2026, 9, 5))
+      get event_plan_path(event)
+      expect(response).to have_http_status(:ok)
+      get path
+      expect(response.parsed_body.at_css("form[action='#{task_path}']")).to be_nil
+      expect { post task_path, params: { event_plan_id: target.id } }.not_to change(PlanTask, :count)
+
+      state == "archived" ? event.archive!(at: Time.zone.local(2026, 9, 5)) : event.destroy!
+      get event_plan_path(event)
+      expect(response).to have_http_status(:not_found)
+      expect { get path }.not_to change(PlanTask, :count)
+      expect(response.parsed_body.at_css("form[action='#{task_path}']")).to be_present
+      expect { post task_path, params: { event_plan_id: target.id } }.to change(PlanTask, :count).by(1)
+      expect(gift.reload.purchase_plan.plan_task.event_plan).to eq(target)
+      expect { post task_path, params: { event_plan_id: target.id } }.not_to change(PlanTask, :count)
+    end
+  end
+
   it "captures the browser zone without reloading an undated milestone" do
     put path, params: { gift_purchase_plan: attributes.merge(follow_up_on: "", lock_version: "new") }
     plan = gift.reload.purchase_plan

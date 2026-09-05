@@ -3,7 +3,7 @@ id: contacts_integrations.contacts_imports_are_owner_reviewed_private_and_revers
 type: fact
 system: contacts_integrations
 status: current
-confidence: high
+confidence: verified
 severity: critical
 title: Contacts imports are owner reviewed private and reversible
 claim: >
@@ -68,7 +68,7 @@ tags:
 verification:
   - bundle exec rspec spec/services/contacts spec/requests/contacts_connections_spec.rb spec/system/contacts_connections_spec.rb
   - bin/ci
-last_verified_commit: null
+last_verified_commit: 4c9049c4a9a0b57541dfeafc18ebf12dba6a7f05
 ---
 
 # Contacts imports are owner reviewed private and reversible

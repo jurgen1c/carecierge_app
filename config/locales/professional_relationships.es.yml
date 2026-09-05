@@ -1,5 +1,6 @@
 es:
   professional_relationships:
+    stale_draft: "El modo de relación cambió en otra pestaña. Recarga el perfil y revisa el borrador antes de intentarlo de nuevo."
     title: Relación profesional
     hint: Mantén separado el contexto laboral. Solo los registros laborales que selecciones
       se usan en borradores, resúmenes y sugerencias profesionales. Se excluyen las

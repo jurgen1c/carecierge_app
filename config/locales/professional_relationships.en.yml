@@ -1,5 +1,6 @@
 en:
   professional_relationships:
+    stale_draft: "The relationship mode changed in another tab. Reload this profile and review the draft before trying again."
     title: Professional relationship
     hint: Keep work context separate. Only the work records you select below inform
       professional drafts, briefings, and suggestions. Personal notes and vault contents

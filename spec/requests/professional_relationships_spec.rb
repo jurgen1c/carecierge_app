@@ -48,3 +48,27 @@ RSpec.describe "Professional relationships", type: :request do
     expect(filtered["professional_context"]).to eq("[FILTERED]")
   end
 end
+
+RSpec.describe "Draft forms across relationship mode changes", type: :request do
+  [ %w[personal professional], %w[professional personal] ].each do |before_mode, after_mode|
+    it "rejects stale #{before_mode} editor and generation submissions after switching to #{after_mode}" do
+      user = create(:user)
+      profile = create(:relationship_profile, user:, relationship_mode: before_mode)
+      draft = create(:message_draft, user:, relationship_profile: profile, relationship_mode: before_mode, situation: "Original #{before_mode} context")
+      create(:draft_revision, message_draft: draft, position: 1, content: "Original", context_categories: before_mode == "professional" ? [ "professional" ] : [])
+      profile.update!(relationship_mode: after_mode)
+      sign_in user
+      patch relationship_profile_message_draft_path(profile), params: { message_draft: {
+        content: "Stale editor text", situation: "Stale situation", draft_type: "check_in", tone: "warm", relationship_mode: before_mode
+      } }
+      expect(draft.reload.situation).to eq("Original #{before_mode} context")
+      expect(draft.draft_revisions.count).to eq(1)
+      expect_any_instance_of(MessageDrafts::OpenAiGenerator).not_to receive(:generate)
+      post generate_relationship_profile_message_draft_path(profile), params: { message_draft: {
+        situation: "Stale situation", draft_type: "check_in", tone: "warm", relationship_mode: before_mode
+      } }
+      expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+      expect(draft.reload.draft_revisions.count).to eq(1)
+    end
+  end
+end

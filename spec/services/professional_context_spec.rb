@@ -49,7 +49,7 @@ RSpec.describe "Professional generation lifecycle" do
   it "enforces professional tone even for a forged romantic selection" do
     generator = double
     expect(generator).to receive(:generate).with(hash_including(tone: "professional")).and_return("Following up on our meeting.")
-    revision = MessageDrafts::Generate.call(actor: profile.user, relationship_profile: profile,
+    revision = MessageDrafts::Generate.call(expected_relationship_mode: "professional", actor: profile.user, relationship_profile: profile,
       draft_type: "professional_follow_up", tone: "romantic", generator:)
     expect(revision.context_categories).to include("professional")
   end
@@ -69,7 +69,7 @@ RSpec.describe "Professional generation lifecycle" do
         "Stale work suggestion"
       end
       expect do
-        MessageDrafts::Generate.call(actor: profile.user, relationship_profile: profile,
+        MessageDrafts::Generate.call(expected_relationship_mode: "professional", actor: profile.user, relationship_profile: profile,
           draft_type: "professional_follow_up", tone: "professional", generator:)
       end.to raise_error(MessageDrafts::GenerationSupersededError)
       expect(DraftRevision.count).to eq(0)

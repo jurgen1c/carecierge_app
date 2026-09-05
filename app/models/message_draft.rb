@@ -25,6 +25,8 @@
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 class MessageDraft < ApplicationRecord
+  class ModeChangedError < StandardError; end
+
   include FeedItemStateSource
 
   DRAFT_TYPES = %w[
@@ -93,8 +95,10 @@ class MessageDraft < ApplicationRecord
     end
   end
 
-  def save_edit!(content:, draft_type:, tone:, **response_settings)
+  def save_edit!(content:, draft_type:, tone:, expected_relationship_mode: "personal", **response_settings)
     with_active_profile_lock do
+      raise ModeChangedError unless expected_relationship_mode == relationship_profile.relationship_mode
+
       with_lock do
         update!(draft_type:, tone:, relationship_mode: relationship_profile.relationship_mode, **response_settings)
         revision = draft_revisions.create!(

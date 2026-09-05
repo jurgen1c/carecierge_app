@@ -21,6 +21,8 @@ claim: Active owners explicitly choose professional mode independently of the pr
   persist their mode. Owner exports include decrypted work context, account/profile
   deletion removes it, and requests filter context with no-store profile pages.
 source_files:
+- app/controllers/message_drafts_controller.rb
+- app/agents/event_plans/llm_suggester.rb
 - db/migrate/20260905223854_add_relationship_mode_to_relationship_briefings.rb
 - app/services/relationship_briefings/generate.rb
 - app/models/relationship_briefing.rb
@@ -101,3 +103,5 @@ Changing a relationship classification must never silently repurpose personal hi
 Draft settings retain their own mode even when provider generation fails, so a failed personal situation cannot prefill a work draft. Gift suitability additionally requires nonblank recorded work boundaries.
 
 Recurring selected milestones use their next occurrence in the owner time zone. Generating guidance retires only results in the active mode, and the briefing uniqueness index permits one generated result per profile and mode.
+
+Draft forms submit their expected relationship mode. Edits and generation reject cross-mode stale submissions under the profile lock, in either direction; legacy forms without the mode field are treated as personal. Event provider instructions prioritize business-appropriate language and work boundaries for professional sources.

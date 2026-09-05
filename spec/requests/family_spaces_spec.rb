@@ -182,4 +182,14 @@ RSpec.describe "Family coordination", type: :request do
       expect(response.body).to include("Last birthday")
     end
   end
+  it "displays RSVP responses in creation and ID order" do
+    join(sibling)
+    plan = create(:shared_item, shared_relationship_space: family, creator: owner, category: "rsvp")
+    timestamp = Time.utc(2027, 1, 1)
+    plan.family_responses.create!(id: "00000000-0000-4000-8000-000000000002", user: owner, attendance: "yes", created_at: timestamp)
+    plan.family_responses.create!(id: "00000000-0000-4000-8000-000000000001", user: sibling, attendance: "maybe", created_at: timestamp)
+    get shared_relationship_space_path(family)
+    responses = Nokogiri::HTML5(response.body).css('section[aria-label="Family responses"] > p').map(&:text)
+    expect(responses.map { |text| text.split(" · ").first }).to eq([ sibling.email, owner.email ])
+  end
 end

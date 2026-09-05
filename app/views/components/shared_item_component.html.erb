@@ -13,7 +13,7 @@
   <% if item.kind == "task" %><p class="mt-2 break-words text-sm text-quiet-note"><%= item.assignee ? t("shared_spaces.responsibility", email: item.assignee.email) : t("shared_spaces.unclaimed") %></p><% end %>
   <% if space.family? && item.category == "rsvp" && item.kind == "plan" %>
     <section class="mt-4" aria-label="<%= t("family_spaces.rsvp") %>">
-      <% item.family_responses.each do |answer| %><p class="break-words text-sm text-quiet-note"><%= answer.user.email %> · <%= t("family_spaces.attendances.#{answer.attendance}") %></p><% end %>
+      <% ordered_responses.each do |answer| %><p class="break-words text-sm text-quiet-note"><%= answer.user.email %> · <%= t("family_spaces.attendances.#{answer.attendance}") %></p><% end %>
       <% unless item.completed? %>
         <%= form_with url: respond_shared_relationship_space_shared_item_path(space, item), class: "mt-3 flex flex-wrap items-end gap-3" do |form| %>
           <div><%= form.label :attendance, t("family_spaces.my_rsvp"), for: "attendance-#{item.id}", class: "block text-sm font-semibold text-ink" %><%= form.select :attendance, FamilyResponse::ATTENDANCES.map { |answer| [t("family_spaces.attendances.#{answer}"), answer] }, { include_blank: t("family_spaces.choose_response"), selected: item.family_responses.find { |answer| answer.user_id == user.id }&.attendance }, id: "attendance-#{item.id}", required: true, class: "mt-2 min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-ink" %></div>

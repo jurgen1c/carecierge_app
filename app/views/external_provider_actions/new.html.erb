@@ -1,0 +1,7 @@
+<% disable_turbo_cache %>
+<main aria-labelledby="provider-form-title" class="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+  <%= link_to t("external_provider_actions.back"), relationship_profile_external_provider_actions_path(@relationship_profile), class: "inline-flex min-h-11 items-center text-primary underline" %>
+  <h1 id="provider-form-title" class="mt-3 text-3xl font-semibold text-ink"><%= t("external_provider_actions.add") %></h1>
+  <p class="mt-3 max-w-2xl leading-7 text-quiet-note"><%= t("external_provider_actions.manual") %></p>
+  <%= render "form" %>
+</main>

@@ -1,0 +1,23 @@
+<article class="border-b border-private-line py-6" aria-labelledby="provider-record-<%= record.id %>">
+  <div class="flex flex-wrap items-start justify-between gap-3">
+    <div class="min-w-0"><h2 id="provider-record-<%= record.id %>" class="break-words text-xl font-semibold text-ink"><%= record.provider_name %></h2>
+      <p class="mt-1 text-sm text-quiet-note"><%= t("external_provider_actions.provider_kinds.#{record.provider_kind}") %> · <%= t("external_provider_actions.action_kinds.#{record.action_kind}") %></p></div>
+    <span class="<%= style(:status_label, failed: record.status == "failed" ? :yes : :no) %>"><%= t("external_provider_actions.statuses.#{record.status}") %></span>
+  </div>
+  <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+    <div><dt class="font-semibold text-ink"><%= t("external_provider_actions.fields.source_label") %></dt><dd class="mt-1 break-words text-quiet-note"><%= record.source_label %></dd></div>
+    <div><dt class="font-semibold text-ink"><%= t("external_provider_actions.recorded_at") %></dt><dd class="mt-1 text-quiet-note"><%= l(record.recorded_at.in_time_zone(time_zone), format: :long) %></dd></div>
+    <% if record.external_reference.present? %><div class="sm:col-span-2"><dt class="font-semibold text-ink"><%= t("external_provider_actions.fields.external_reference") %></dt><dd class="mt-1 break-words text-quiet-note"><%= record.external_reference %></dd></div><% end %>
+  </dl>
+  <% if record.source_url.present? %><%= link_to t("external_provider_actions.open_source"), record.source_url, rel: "noopener noreferrer", target: "_blank", class: "mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline" %><% end %>
+  <% if record.failure_details.present? %><p class="mt-3 whitespace-pre-wrap break-words rounded-lg border border-danger-border bg-danger-surface p-3 text-sm text-danger-ink"><%= record.failure_details %></p><% end %>
+  <ul class="mt-3 flex flex-wrap gap-x-4">
+    <% ExternalProviderAction::CONTEXTS.each do |context| %>
+      <% if (linked = record.public_send(context)) %><li><%= link_to "#{t("external_provider_actions.contexts.#{context}")}: #{helpers.provider_context_label(linked)}", helpers.provider_context_path(linked), class: "inline-flex min-h-11 items-center break-words text-sm text-primary underline" %></li><% end %>
+    <% end %>
+  </ul>
+  <div class="mt-3 flex flex-wrap gap-3">
+    <% if record.mutable? %><%= link_to t("external_provider_actions.edit"), edit_external_provider_action_path(record), class: "inline-flex min-h-11 items-center rounded-lg border border-private-line px-4 py-2 text-sm font-semibold text-ink hover:bg-surface" %><% end %>
+    <%= button_to t("external_provider_actions.remove"), external_provider_action_path(record), method: :delete, class: "min-h-11 rounded-lg border border-danger-border px-4 py-2 text-sm font-semibold text-danger-ink hover:bg-danger-surface" %>
+  </div>
+</article>

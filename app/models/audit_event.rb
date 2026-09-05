@@ -99,6 +99,9 @@ class AuditEvent < ApplicationRecord
     calendar.settings.updated
     calendar.sync.completed
     calendar.sync.failed
+    provider_record.created
+    provider_record.updated
+    provider_record.deleted
   ].freeze
   ACTOR_KINDS = %w[user ai automation system].freeze
   SOURCES = %w[web_app mobile_app ai automation system support].freeze

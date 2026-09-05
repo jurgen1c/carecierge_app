@@ -61,6 +61,7 @@ class User < ApplicationRecord
   has_many :vendors, dependent: :destroy
   has_many :vendor_shortlists, dependent: :destroy
   has_many :vendor_quotes, dependent: :destroy
+  has_many :external_provider_actions, dependent: :destroy
   has_many :bookings, dependent: :destroy
   has_one :messaging_connection, dependent: :destroy
   has_one :contacts_connection, dependent: :destroy

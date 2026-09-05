@@ -37,6 +37,7 @@
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 class Booking < ApplicationRecord
+  has_many :external_provider_actions, dependent: :destroy
   BOOKING_KINDS = %w[reservation booking].freeze
   STATUSES = %w[planned requested confirmed completed cancelled].freeze
   ACTIVE_STATUSES = %w[planned requested].freeze

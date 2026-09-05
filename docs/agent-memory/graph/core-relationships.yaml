@@ -1,6 +1,16 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: commerce_integrations.provider_records_are_manual_owner_scoped_and_private
+    target: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
+    relation: constrains
+    reason: Recorded provider status never confirms or mutates the linked manual booking.
+    strength: 100
+  - source: commerce_integrations.provider_records_are_manual_owner_scoped_and_private
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Private provider observations export with their relationship and cascade with deleted contexts.
+    strength: 100
   - source: vendor_discovery.marketplace_listings_are_curated_shared_content_with_private_explicit_handoffs
     target: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
     relation: requires

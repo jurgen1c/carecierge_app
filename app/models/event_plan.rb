@@ -35,6 +35,7 @@
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 class EventPlan < ApplicationRecord
+  has_many :external_provider_actions, dependent: :destroy
   OCCASION_TYPES = %w[
     birthday anniversary graduation baby_shower retirement promotion family_reunion
     date_night childrens_party holiday_event apology custom

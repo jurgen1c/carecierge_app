@@ -106,6 +106,7 @@ class RelationshipProfile < ApplicationRecord
   friendly_id :display_name, use: :slugged
   store_accessor :profile_attributes, :custom_type_label
 
+  has_many :external_provider_actions, dependent: :destroy
   belongs_to :user
   has_many :imported_contacts, dependent: :nullify
   has_many :contact_methods, dependent: :destroy

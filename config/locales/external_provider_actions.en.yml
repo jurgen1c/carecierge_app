@@ -1,0 +1,85 @@
+---
+en:
+  external_provider_actions:
+    title: Provider records
+    manual: 'Manual records: you manage purchases and bookings directly with the provider.
+      Carecierge does not contact providers, sync their status, buy, book, or pay.
+      Saving a record only updates your private notes.'
+    add: Add provider record
+    edit: Edit record
+    save: Save record
+    remove: Remove local record
+    back: Back to provider records
+    saved: Provider record saved.
+    deleted: Local record removed. Nothing was cancelled with the provider.
+    changed: This record changed. Open it again before saving.
+    empty: Keep a confirmation, quote update, or delivery issue here so you can follow
+      up with the provider yourself.
+    errors: Check the highlighted information
+    open_source: Open provider source (new tab)
+    recorded_at: Last recorded by you
+    failure_hint: Required for a failed status. Explain what happened and your next
+      step; avoid passwords or payment details. Cleared when the status is no longer
+      failed.
+    links: Related plans and reminders
+    links_hint: Optional links within this relationship. Linked records keep their
+      own status; nothing is confirmed or completed by this form.
+    no_link: No link
+    pagination: Provider records pages
+    previous: Previous
+    next: Next
+    fields:
+      provider_name: Provider
+      source_label: Source of this update
+      source_url: Source URL (optional)
+      external_reference: Provider reference (optional)
+      provider_kind: Provider category
+      action_kind: Action being tracked
+      status: Reported status
+      failure_details: Failure details
+    provider_kinds:
+      commerce: Commerce
+      booking: Booking
+      vendor: Vendor
+      reservation: Reservation
+    action_kinds:
+      purchase: Purchase
+      booking: Booking
+      quote: Quote
+      logistics: Logistics
+    statuses:
+      pending: Pending
+      confirmed: Confirmed
+      completed: Completed
+      cancelled: Cancelled
+      failed: Failed
+    contexts:
+      gift_purchase_plan: Gift purchase plan
+      event_plan: Event plan
+      booking: Booking
+      vendor_quote: Quote
+      reminder: Reminder
+  audit_events:
+    actions:
+      provider_record_created:
+        title: Provider record added
+        description: A manual provider record was added for %{target}.
+      provider_record_updated:
+        title: Provider record updated
+        description: A manual provider record was updated for %{target}.
+      provider_record_deleted:
+        title: Provider record removed
+        description: A local provider record was removed for %{target}.
+  activerecord:
+    models:
+      external_provider_action: Provider record
+    attributes:
+      external_provider_action:
+        provider_name: Provider
+        source_label: Source of this update
+        source_url: Source URL (optional)
+        external_reference: Provider reference (optional)
+        provider_kind: Provider category
+        action_kind: Action being tracked
+        status: Reported status
+        failure_details: Failure details

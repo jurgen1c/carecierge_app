@@ -34,6 +34,7 @@
 #  fk_rails_...  (vendor_id => vendors.id)
 #
 class VendorQuote < ApplicationRecord
+  has_many :external_provider_actions, dependent: :destroy
   STATUSES = %w[draft awaiting_response received under_review accepted declined expired].freeze
   OPEN_STATUSES = %w[draft awaiting_response received under_review].freeze
   MAX_AMOUNT_CENTS = 2_147_483_647

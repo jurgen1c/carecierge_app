@@ -55,6 +55,7 @@ Rails.application.routes.draw do
   end
   resources :vendor_quotes, only: %i[index edit update destroy]
   resources :bookings, only: %i[index edit update destroy]
+  resources :external_provider_actions, only: %i[edit update destroy]
   resources :marketplace_listings, only: %i[index show] do
     get :compare, on: :collection
     post :save, on: :member
@@ -148,6 +149,7 @@ Rails.application.routes.draw do
     resources :important_dates, except: %i[index show] do
       resource :personal_touch_checklist, only: :create
     end
+    resources :external_provider_actions, only: %i[index new create]
     resources :gift_boxes, only: %i[index show create update destroy]
     resources :gifts, except: %i[index show] do
       resource :purchase_plan, only: %i[show update], controller: "gift_purchase_plans" do

@@ -32,6 +32,7 @@
 #  fk_rails_...  (plan_task_id => plan_tasks.id) ON DELETE => nullify
 #
 class GiftPurchasePlan < ApplicationRecord
+  has_many :external_provider_actions, dependent: :destroy
   PURCHASE_STATUSES = %w[planning purchased cancelled].freeze
   DELIVERY_STATUSES = %w[not_started awaiting shipped delivered].freeze
   MILESTONES = %w[purchase delivery follow_up].freeze

@@ -1,96 +1,85 @@
-{
-  "es": {
-    "external_provider_actions": {
-      "title": "Registros de proveedores",
-      "manual": "Registros manuales: tú gestionas las compras y reservas directamente con el proveedor. Carecierge no contacta proveedores, sincroniza estados, compra, reserva ni paga. Guardar un registro solo actualiza tus notas privadas.",
-      "add": "Añadir registro de proveedor",
-      "edit": "Editar registro",
-      "save": "Guardar registro",
-      "remove": "Eliminar registro local",
-      "back": "Volver a los registros",
-      "saved": "Registro del proveedor guardado.",
-      "deleted": "Registro local eliminado. No se canceló nada con el proveedor.",
-      "changed": "Este registro cambió. Ábrelo de nuevo antes de guardar.",
-      "empty": "Guarda aquí una confirmación, actualización de cotización o problema de entrega para dar seguimiento con el proveedor.",
-      "errors": "Revisa la información indicada",
-      "open_source": "Abrir fuente del proveedor (nueva pestaña)",
-      "recorded_at": "Último registro realizado por ti",
-      "failure_hint": "Obligatorio si el estado es fallido. Explica qué ocurrió y tu siguiente paso; evita contraseñas o datos de pago. Se borra cuando el estado deja de ser fallido.",
-      "links": "Planes y recordatorios relacionados",
-      "links_hint": "Enlaces opcionales dentro de esta relación. Los registros vinculados conservan su propio estado; este formulario no confirma ni completa nada.",
-      "no_link": "Sin enlace",
-      "pagination": "Páginas de registros",
-      "previous": "Anterior",
-      "next": "Siguiente",
-      "fields": {
-        "provider_name": "Proveedor",
-        "source_label": "Fuente de esta actualización",
-        "source_url": "URL de la fuente (opcional)",
-        "external_reference": "Referencia del proveedor (opcional)",
-        "provider_kind": "Categoría del proveedor",
-        "action_kind": "Acción registrada",
-        "status": "Estado informado",
-        "failure_details": "Detalles del error"
-      },
-      "provider_kinds": {
-        "commerce": "Comercio",
-        "booking": "Contratación",
-        "vendor": "Proveedor",
-        "reservation": "Reserva"
-      },
-      "action_kinds": {
-        "purchase": "Compra",
-        "booking": "Reserva",
-        "quote": "Cotización",
-        "logistics": "Logística"
-      },
-      "statuses": {
-        "pending": "Pendiente",
-        "confirmed": "Confirmado",
-        "completed": "Completado",
-        "cancelled": "Cancelado",
-        "failed": "Fallido"
-      },
-      "contexts": {
-        "gift_purchase_plan": "Plan de compra de regalo",
-        "event_plan": "Plan de evento",
-        "booking": "Reserva",
-        "vendor_quote": "Cotización",
-        "reminder": "Recordatorio"
-      }
-    },
-    "audit_events": {
-      "actions": {
-        "provider_record_created": {
-          "title": "Registro de proveedor añadido",
-          "description": "Se añadió un registro manual de proveedor para %{target}."
-        },
-        "provider_record_updated": {
-          "title": "Registro de proveedor actualizado",
-          "description": "Se actualizó un registro manual de proveedor para %{target}."
-        },
-        "provider_record_deleted": {
-          "title": "Registro de proveedor eliminado",
-          "description": "Se eliminó un registro local de proveedor para %{target}."
-        }
-      }
-    },
-    "activerecord": {
-      "models": {
-        "external_provider_action": "Registro de proveedor"
-      },
-      "attributes": {
-        "external_provider_action": {
-          "provider_name": "Proveedor",
-          "source_label": "Fuente de esta actualización",
-          "source_url": "URL de la fuente (opcional)",
-          "external_reference": "Referencia del proveedor (opcional)",
-          "provider_kind": "Categoría del proveedor",
-          "action_kind": "Acción registrada",
-          "status": "Estado informado",
-          "failure_details": "Detalles del error"
-        }
-      }
-    }
-  }
-}
+---
+es:
+  external_provider_actions:
+    title: Registros de proveedores
+    manual: 'Registros manuales: tú gestionas las compras y reservas directamente
+      con el proveedor. Carecierge no contacta proveedores, sincroniza estados, compra,
+      reserva ni paga. Guardar un registro solo actualiza tus notas privadas.'
+    add: Añadir registro de proveedor
+    edit: Editar registro
+    save: Guardar registro
+    remove: Eliminar registro local
+    back: Volver a los registros
+    saved: Registro del proveedor guardado.
+    deleted: Registro local eliminado. No se canceló nada con el proveedor.
+    changed: Este registro cambió. Ábrelo de nuevo antes de guardar.
+    empty: Guarda aquí una confirmación, actualización de cotización o problema de
+      entrega para dar seguimiento con el proveedor.
+    errors: Revisa la información indicada
+    open_source: Abrir fuente del proveedor (nueva pestaña)
+    recorded_at: Último registro realizado por ti
+    failure_hint: Obligatorio si el estado es fallido. Explica qué ocurrió y tu siguiente
+      paso; evita contraseñas o datos de pago. Se borra cuando el estado deja de ser
+      fallido.
+    links: Planes y recordatorios relacionados
+    links_hint: Enlaces opcionales dentro de esta relación. Los registros vinculados
+      conservan su propio estado; este formulario no confirma ni completa nada.
+    no_link: Sin enlace
+    pagination: Páginas de registros
+    previous: Anterior
+    next: Siguiente
+    fields:
+      provider_name: Proveedor
+      source_label: Fuente de esta actualización
+      source_url: URL de la fuente (opcional)
+      external_reference: Referencia del proveedor (opcional)
+      provider_kind: Categoría del proveedor
+      action_kind: Acción registrada
+      status: Estado informado
+      failure_details: Detalles del error
+    provider_kinds:
+      commerce: Comercio
+      booking: Contratación
+      vendor: Proveedor
+      reservation: Reserva
+    action_kinds:
+      purchase: Compra
+      booking: Reserva
+      quote: Cotización
+      logistics: Logística
+    statuses:
+      pending: Pendiente
+      confirmed: Confirmado
+      completed: Completado
+      cancelled: Cancelado
+      failed: Fallido
+    contexts:
+      gift_purchase_plan: Plan de compra de regalo
+      event_plan: Plan de evento
+      booking: Reserva
+      vendor_quote: Cotización
+      reminder: Recordatorio
+  audit_events:
+    actions:
+      provider_record_created:
+        title: Registro de proveedor añadido
+        description: Se añadió un registro manual de proveedor para %{target}.
+      provider_record_updated:
+        title: Registro de proveedor actualizado
+        description: Se actualizó un registro manual de proveedor para %{target}.
+      provider_record_deleted:
+        title: Registro de proveedor eliminado
+        description: Se eliminó un registro local de proveedor para %{target}.
+  activerecord:
+    models:
+      external_provider_action: Registro de proveedor
+    attributes:
+      external_provider_action:
+        provider_name: Proveedor
+        source_label: Fuente de esta actualización
+        source_url: URL de la fuente (opcional)
+        external_reference: Referencia del proveedor (opcional)
+        provider_kind: Categoría del proveedor
+        action_kind: Acción registrada
+        status: Estado informado
+        failure_details: Detalles del error

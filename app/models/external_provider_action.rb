@@ -114,7 +114,7 @@ class ExternalProviderAction < ApplicationRecord
 
       errors.add(context, :invalid) unless self.class.context_scope(relationship_profile, context).exists?(id:)
     end
-    linked_plans = [ event_plan_id, booking&.event_plan_id, vendor_quote&.event_plan_id, reminder&.event_plan_id ].compact.uniq
+    linked_plans = [ event_plan_id, gift_purchase_plan&.plan_task&.event_plan_id, booking&.event_plan_id, vendor_quote&.event_plan_id, reminder&.event_plan_id ].compact.uniq
     errors.add(:event_plan, :invalid) if linked_plans.length > 1
   end
 end

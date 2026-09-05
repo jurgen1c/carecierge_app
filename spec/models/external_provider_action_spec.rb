@@ -42,6 +42,17 @@ RSpec.describe ExternalProviderAction, type: :model do
     expect(record).not_to be_valid
   end
 
+  it "includes the gift purchase plan's event in consistency checks" do
+    first_plan = create(:event_plan, user: profile.user, relationship_profile: profile)
+    gift = create(:gift, relationship_profile: profile)
+    record.gift_purchase_plan = GiftPurchasePlan.create!(gift:, options: [], plan_task: create(:plan_task, event_plan: first_plan))
+    record.event_plan = create(:event_plan, user: profile.user, relationship_profile: profile)
+    expect(record).not_to be_valid
+    expect(record.errors[:event_plan]).to be_present
+    record.event_plan = first_plan
+    expect(record).to be_valid
+  end
+
   it "requires failure detail and clears stale failure information after recovery" do
     record.status = "failed"
     expect(record).not_to be_valid

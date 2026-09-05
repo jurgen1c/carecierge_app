@@ -1,0 +1,48 @@
+id: contacts_integrations
+name: Contacts Integrations
+summary: Explicit private Google Contacts review with reversible profile import and grant cleanup.
+claim_globs:
+  - claims/contacts_integrations/**/*.md
+default_queries:
+  - Google Contacts read only OAuth permission import duplicate undo disconnect
+  - contacts encrypted source review profile update export deletion
+watched_files:
+  - app/models/contacts_connection.rb
+  - app/models/imported_contact.rb
+  - app/models/user.rb
+  - app/models/relationship_profile.rb
+  - app/models/audit_event.rb
+  - app/controllers/contacts_connections_controller.rb
+  - app/policies/contacts_connection_policy.rb
+  - app/serializers/data_exports/snapshot.rb
+  - app/services/data_deletions/delete_account.rb
+  - app/views/dashboard/index.html.erb
+  - app/views/relationship_profiles/show.html.erb
+  - app/views/components/contacts_connection_component.rb
+  - app/views/components/contacts_connection_component.html.erb
+  - app/views/contacts_connections/show.html.erb
+  - config/routes.rb
+  - config/initializers/filter_parameter_logging.rb
+  - config/locales/contacts.en.yml
+  - config/locales/contacts.es.yml
+  - config/deploy.yml
+  - .kamal/secrets
+  - db/schema.rb
+  - db/migrate/20260905055742_create_contacts_integration.rb
+  - docs/features/11-02-contacts-integration.md
+  - app/services/contacts/disconnect.rb
+  - app/services/contacts/google.rb
+  - app/services/contacts/error.rb
+  - app/services/contacts/google_oauth.rb
+  - app/services/contacts/matches.rb
+  - app/services/contacts/connect.rb
+  - app/services/contacts/oauth_state.rb
+  - app/services/contacts/decide.rb
+  - app/services/contacts/permission.rb
+  - app/services/contacts/refresh.rb
+  - spec/services/contacts/**/*.rb
+  - spec/requests/contacts_connections_spec.rb
+  - spec/system/contacts_connections_spec.rb
+tags:
+  - contacts_integrations
+  - privacy

@@ -1,3 +1,6 @@
+<% if Array(@relationship_profile.profile_attributes["contacts_sources"]).any? %>
+  <p class="py-2 text-sm text-quiet-note"><%= t("contacts.profile_source") %> <%= link_to t("contacts.heading"), contacts_connection_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %></p>
+<% end %>
 <% content_for :title, @relationship_profile.display_name %>
 <% disable_turbo_cache %>
 

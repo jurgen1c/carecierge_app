@@ -32,3 +32,5 @@ Rails.application.config.filter_parameters += [
   "reminder.notes", "commitment.notes", "interaction.notes",
   "data_deletion.confirmation"
 ]
+
+Rails.application.config.filter_parameters += [ :contacts, :contacts_oauth_nonce, :next_page_token, :external_id ]

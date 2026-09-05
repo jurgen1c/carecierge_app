@@ -107,6 +107,7 @@ class RelationshipProfile < ApplicationRecord
   store_accessor :profile_attributes, :custom_type_label
 
   belongs_to :user
+  has_many :imported_contacts, dependent: :nullify
   has_many :contact_methods, dependent: :destroy
   has_many :relationship_notes, dependent: :destroy
   has_many :relationship_preferences, dependent: :destroy
@@ -151,6 +152,7 @@ class RelationshipProfile < ApplicationRecord
   before_validation :default_type
   before_validation :normalize_profile_attributes
   before_destroy :remove_automation_permissions_with_audit, prepend: true
+  before_destroy :erase_imported_contact_snapshots, prepend: true
   after_save :destroy_marked_relationship_assignments
 
   validates :first_name, presence: true
@@ -414,6 +416,10 @@ class RelationshipProfile < ApplicationRecord
   end
 
   private
+
+  def erase_imported_contact_snapshots
+    imported_contacts.update_all(relationship_profile_id: nil, applied_data: nil, previous_data: nil, decision: "pending")
+  end
 
   def remove_automation_permissions_with_audit
     automation_permissions.find_each do |permission|

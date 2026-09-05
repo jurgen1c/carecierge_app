@@ -50,9 +50,21 @@ module DataExports
         "automation_permissions" => records(user.automation_permissions),
         "automation_permission_changes" => records(user.automation_permission_changes),
         "calendar_connection" => calendar_connection_attributes,
+        "contacts_connection" => contacts_connection_attributes,
         "audit_events" => records(user.audit_events, except: %w[user_id actor_id]),
         "deletion_requests" => records(user.deletion_requests, except: %w[user_id account_digest])
       }
+    end
+
+    def contacts_connection_attributes
+      connection = user.contacts_connection
+      return unless connection
+      connection.attributes.slice("provider", "status", "last_refreshed_at").merge(
+        "contacts" => connection.imported_contacts.order(:id).map do |contact|
+          { "id" => contact.id, "data" => contact.data, "decision" => contact.decision,
+            "relationship_profile_id" => contact.relationship_profile_id }
+        end
+      )
     end
 
     def calendar_connection_attributes

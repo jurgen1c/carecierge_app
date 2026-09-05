@@ -9,6 +9,7 @@
 #  confirmation_sent_at           :datetime
 #  confirmation_token             :string
 #  confirmed_at                   :datetime
+#  contacts_connection_generation :integer          default(0), not null
 #  current_sign_in_at             :datetime
 #  current_sign_in_ip             :string
 #  email                          :string           default(""), not null
@@ -61,6 +62,7 @@ class User < ApplicationRecord
   has_many :vendor_shortlists, dependent: :destroy
   has_many :vendor_quotes, dependent: :destroy
   has_many :bookings, dependent: :destroy
+  has_one :contacts_connection, dependent: :destroy
   has_one :calendar_connection, dependent: :destroy
   has_many :calendar_credential_revocations, dependent: :destroy
   has_many :backup_plans, dependent: :destroy

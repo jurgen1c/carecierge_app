@@ -1,0 +1,6 @@
+<% content_for :title, t("contacts.heading") %>
+<% content_for :head, tag.meta(name: "turbo-cache-control", content: "no-cache") %>
+<main class="flex flex-1 flex-col py-6">
+  <%= link_to t("contacts.back"), dashboard_path, class: "mb-5 inline-flex min-h-11 w-fit items-center text-sm font-semibold text-quiet-note hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" %>
+  <%= component "contacts_connection", connection: @connection, contacts: @contacts, provider_available: @provider_available, page: @page, more: @more %>
+</main>

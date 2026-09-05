@@ -1,6 +1,26 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: contacts_integrations.contacts_imports_are_owner_reviewed_private_and_reversible
+    target: automation_permissions.permission_decisions
+    relation: requires
+    reason: Contacts fetch and import fail closed through access_contacts and relationship overrides.
+    strength: 100
+  - source: contacts_integrations.contacts_imports_are_owner_reviewed_private_and_reversible
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Safe contacts exports exclude tokens and account deletion must revoke contacts access before removal.
+    strength: 100
+  - source: contacts_integrations.contacts_imports_are_owner_reviewed_private_and_reversible
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Contacts choices and provider lifecycle emit count-only or result-only evidence.
+    strength: 100
+  - source: contacts_integrations.contacts_imports_are_owner_reviewed_private_and_reversible
+    target: authentication.localization_baseline
+    relation: requires
+    reason: Contact connection and review controls retain English default and Spanish parity.
+    strength: 100
   - source: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revocable
     target: audit_events.account_activity_ledger
     relation: requires

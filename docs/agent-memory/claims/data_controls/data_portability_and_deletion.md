@@ -9,6 +9,7 @@ severity: critical
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
 
 claim: >
+  Contacts exports include staged review data and safe provider metadata while excluding OAuth credentials and opaque provider identifiers. Account deletion revokes contacts access and fences restored credentials after a local rollback; revocation failure preserves the account for retry.
   Owner-scoped JSON, CSV, PDF, and private-calendar exports include recordings,
   social context and screenshots, relationships, localized labels,
   audit and reminder evidence, feed dismissal and snooze state, suggestion

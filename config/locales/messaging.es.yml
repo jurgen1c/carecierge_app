@@ -1,0 +1,83 @@
+es:
+  messaging:
+    heading: Correo y mensajes
+    body: Guarda un fragmento seleccionado de Gmail en un espacio privado y prepara una respuesta para revisar. Carecierge nunca envía mensajes.
+    back: Volver a tu día
+    permissions: Revisar permisos de mensajes y redacción
+    connect: Conectar Gmail en modo de lectura
+    connect_consent: Permito acceso de lectura a Gmail para buscar mensajes que yo elija. Los resultados son temporales; solo se guardan los fragmentos que importe. Esta conexión no puede enviar correo.
+    unavailable: Gmail aún no está disponible. Puedes seguir redactando mensajes en el perfil de cada relación.
+    search_label: Buscar un mensaje en Gmail
+    search_help: La búsqueda lee hasta 10 asuntos y fragmentos breves. Los resultados no se guardan hasta que importes uno. No se importan archivos adjuntos ni mensajes completos.
+    search: Buscar en Gmail
+    searching: Buscando en Gmail…
+    results: Elige un fragmento para guardar
+    no_results: No se encontraron mensajes. Prueba otra búsqueda.
+    no_subject: Sin asunto
+    import: Importar este fragmento
+    saved: Tus fragmentos guardados
+    excluded: Excluidos de la extracción de recuerdos con IA.
+    draft_help: Los fragmentos importados no se usan en recuerdos, sugerencias ni en la bóveda privada. La redacción usa solo el fragmento que selecciones explícitamente; no lee tu bóveda ni otro contexto de tus relaciones.
+    empty: Conecta Gmail, busca un mensaje y elige el fragmento que quieras guardar.
+    source: Abrir original en Gmail
+    draft_consent: Usar este fragmento con IA para preparar una respuesta que yo revisaré. Reemplazar la respuesta guardada aquí.
+    draft: Redactar una respuesta
+    drafting: Preparando tu borrador…
+    reply: Tu borrador de respuesta — revísalo y cópialo cuando esté listo
+    save: Guardar borrador
+    delete: Eliminar fragmento y borrador
+    pages: Páginas de fragmentos guardados
+    previous: Anterior
+    next: Siguiente
+    disconnect: Desconectar Gmail
+    disconnect_help: Elimina todos los fragmentos importados y sus borradores, y luego revoca el acceso a Gmail. Los mensajes en Gmail no cambian. Si la revocación falla, solo se conservan las credenciales cifradas para reintentar.
+    statuses:
+      connected: Gmail conectado. Busca e importa solo cuando tú decidas.
+      cleanup_required: Debes reintentar la revocación de Gmail. Los fragmentos importados se eliminaron. Desconecta de nuevo para terminar.
+      authorization_required: Debes renovar el acceso a Gmail. Desconecta y vuelve a conectar.
+    notices:
+      connected: Gmail conectado. No se importaron mensajes.
+      imported: El fragmento seleccionado se guardó de forma privada.
+      drafted: Tu respuesta está lista para revisar. No se envió nada.
+      saved: Tu borrador se guardó. No se envió nada.
+      deleted: El fragmento importado y su borrador se eliminaron.
+      disconnected: Gmail desconectado. Los fragmentos importados y sus borradores se eliminaron.
+    errors:
+      failed: No se pudo completar esta acción. Revisa tus opciones e inténtalo de nuevo.
+      permission_required: Aprueba esta acción y permite el acceso a mensajes o la redacción antes de continuar.
+      stale: Tu conexión o borrador cambió. Revisa la versión actual e inténtalo de nuevo.
+      cleanup_required: Los fragmentos se eliminaron, pero no se pudo revocar el acceso a Gmail. Reintenta la desconexión.
+      provider_unavailable: Gmail no está disponible. Inténtalo más tarde.
+      already_connected: Desconecta la conexión existente antes de volver a conectar.
+      cancelled: Conexión cancelada. No se importaron mensajes.
+      authorization_required: Debes renovar el acceso a Gmail. Desconecta y vuelve a conectar.
+      invalid_query: Escribe una búsqueda de hasta 300 caracteres.
+      invalid_source: Elige un mensaje de los resultados de Gmail.
+      invalid_provider_response: Gmail devolvió una respuesta inesperada. Inténtalo más tarde.
+  automation_permissions:
+    required_permissions:
+      messages: Fragmentos de mensajes
+    capabilities:
+      access_messages:
+        name: Acceder a mensajes
+        description: Leer fragmentos de Gmail solo con aprobación explícita. Nunca enviar correo.
+  audit_events:
+    actions:
+      messaging_connection_created:
+        title: Gmail conectado
+        description: Cambiaste el acceso a mensajes de %{target}.
+      messaging_connection_revoked:
+        title: Gmail desconectado
+        description: Cambiaste el acceso a mensajes de %{target}.
+      messaging_context_imported:
+        title: Fragmento de mensaje importado
+        description: Guardaste contexto privado de comunicación de %{target}.
+      messaging_context_deleted:
+        title: Fragmento de mensaje eliminado
+        description: Eliminaste contexto privado de comunicación de %{target}.
+      messaging_draft_generated:
+        title: Borrador de respuesta preparado
+        description: Se preparó una respuesta para revisar de %{target}. No se envió nada.
+      messaging_draft_edited:
+        title: Borrador de respuesta guardado
+        description: Guardaste un borrador de %{target}. No se envió nada.

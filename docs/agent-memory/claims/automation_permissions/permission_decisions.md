@@ -16,7 +16,7 @@ claim: >
   account defaults; foreign and archived overrides cannot be edited or shown
   through settings.
   Ask-every-time requires literal boolean approval, and high-impact purchase and
-  deposit capabilities cannot run automatically. Writes and removals create
+  deposit capabilities and read-only messaging access cannot run automatically. Writes and removals create
   append-only audits atomically with owner-first locking; bulk defaults lock the
   owner once, and new overrides audit their inherited mode. Relationship
   deletion audits removals while retaining relationship UUID scope. Capability
@@ -24,6 +24,9 @@ claim: >
   browser Back navigation.
 
 source_files:
+  - config/locales/messaging.en.yml
+  - config/locales/messaging.es.yml
+  - db/migrate/20260905080040_allow_messaging_permission.rb
   - app/models/automation_capability.rb
   - app/models/automation_permission.rb
   - app/models/automation_permission_decision.rb

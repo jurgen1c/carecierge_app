@@ -20,6 +20,7 @@ module DataDeletions
         after_commit: -> { DeleteBlobs.call(blobs) },
         after_rollback: ->(error) { compensate_calendar_failure!(error) }
       ) do
+        disconnect_messaging!
         disconnect_contacts!
         revoke_pending_calendar_credentials!
         disconnect_calendar!
@@ -33,6 +34,26 @@ module DataDeletions
     private
 
     attr_reader :user
+
+    def disconnect_messaging!
+      return unless user.messaging_connection
+      if Messaging::Disconnect.call(user:, after_revoke: -> { @messaging_revoked = true })
+        @messaging_revoked = true
+      else
+        @messaging_revocation_failed = !@messaging_revoked
+        raise CalendarRevocationError, "Messaging access could not be revoked"
+      end
+    end
+
+    def compensate_messaging_failure!
+      connection = MessagingConnection.lock.find_by(user_id: user.id)
+      return unless connection
+      if @messaging_revocation_failed || @messaging_revoked
+        user.increment!(:messaging_connection_generation)
+        connection.imported_message_contexts.destroy_all
+        connection.update!(status: @messaging_revocation_failed ? "cleanup_required" : "authorization_required")
+      end
+    end
 
     def disconnect_contacts!
       return unless user.contacts_connection
@@ -84,6 +105,7 @@ module DataDeletions
     def calendar_revoked? = @calendar_revoked
 
     def compensate_calendar_failure!(error)
+      compensate_messaging_failure!
       compensate_contacts_failure!
       if error.is_a?(CalendarRevocationError)
         record_pending_calendar_revocation_failure!

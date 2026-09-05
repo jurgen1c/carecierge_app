@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_055742) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_081335) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -132,7 +132,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_055742) do
     t.check_constraint "action::text = 'removed'::text AND new_mode IS NULL OR (action::text = ANY (ARRAY['created'::character varying, 'updated'::character varying]::text[])) AND new_mode IS NOT NULL", name: "automation_permission_changes_action_mode_check"
     t.check_constraint "action::text = ANY (ARRAY['created'::character varying, 'updated'::character varying, 'removed'::character varying]::text[])", name: "automation_permission_changes_action_check"
     t.check_constraint "actor_id = user_id", name: "automation_permission_changes_actor_owner_check"
-    t.check_constraint "capability::text = ANY (ARRAY['draft_messages'::character varying, 'send_reminders'::character varying, 'access_contacts'::character varying, 'access_calendar'::character varying, 'suggest_gifts'::character varying, 'contact_vendors'::character varying, 'send_invitations'::character varying, 'make_reservations'::character varying, 'make_purchases'::character varying, 'pay_deposits'::character varying, 'analyze_uploaded_social_content'::character varying]::text[])", name: "automation_permission_changes_capability_check"
+    t.check_constraint "capability::text = ANY (ARRAY['draft_messages'::character varying, 'send_reminders'::character varying, 'access_contacts'::character varying, 'access_calendar'::character varying, 'suggest_gifts'::character varying, 'contact_vendors'::character varying, 'send_invitations'::character varying, 'make_reservations'::character varying, 'make_purchases'::character varying, 'pay_deposits'::character varying, 'analyze_uploaded_social_content'::character varying, 'access_messages'::character varying]::text[])", name: "automation_permission_changes_capability_check"
     t.check_constraint "new_mode IS NULL OR (new_mode::text = ANY (ARRAY['disabled'::character varying, 'ask_every_time'::character varying, 'allow_automatically'::character varying]::text[]))", name: "automation_permission_changes_new_mode_check"
     t.check_constraint "previous_mode IS NULL OR (previous_mode::text = ANY (ARRAY['disabled'::character varying, 'ask_every_time'::character varying, 'allow_automatically'::character varying]::text[]))", name: "automation_permission_changes_previous_mode_check"
   end
@@ -148,8 +148,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_055742) do
     t.index ["user_id", "capability"], name: "idx_automation_permissions_account_defaults", unique: true, where: "(relationship_profile_id IS NULL)"
     t.index ["user_id", "relationship_profile_id", "capability"], name: "idx_automation_permissions_relationship_overrides", unique: true, where: "(relationship_profile_id IS NOT NULL)"
     t.index ["user_id"], name: "index_automation_permissions_on_user_id"
-    t.check_constraint "(capability::text <> ALL (ARRAY['make_purchases'::character varying, 'pay_deposits'::character varying]::text[])) OR mode::text <> 'allow_automatically'::text", name: "automation_permissions_high_impact_mode_check"
-    t.check_constraint "capability::text = ANY (ARRAY['draft_messages'::character varying, 'send_reminders'::character varying, 'access_contacts'::character varying, 'access_calendar'::character varying, 'suggest_gifts'::character varying, 'contact_vendors'::character varying, 'send_invitations'::character varying, 'make_reservations'::character varying, 'make_purchases'::character varying, 'pay_deposits'::character varying, 'analyze_uploaded_social_content'::character varying]::text[])", name: "automation_permissions_capability_check"
+    t.check_constraint "(capability::text <> ALL (ARRAY['make_purchases'::character varying, 'pay_deposits'::character varying, 'access_messages'::character varying]::text[])) OR mode::text <> 'allow_automatically'::text", name: "automation_permissions_high_impact_mode_check"
+    t.check_constraint "capability::text = ANY (ARRAY['draft_messages'::character varying, 'send_reminders'::character varying, 'access_contacts'::character varying, 'access_calendar'::character varying, 'suggest_gifts'::character varying, 'contact_vendors'::character varying, 'send_invitations'::character varying, 'make_reservations'::character varying, 'make_purchases'::character varying, 'pay_deposits'::character varying, 'analyze_uploaded_social_content'::character varying, 'access_messages'::character varying]::text[])", name: "automation_permissions_capability_check"
     t.check_constraint "mode::text = ANY (ARRAY['disabled'::character varying, 'ask_every_time'::character varying, 'allow_automatically'::character varying]::text[])", name: "automation_permissions_mode_check"
   end
 
@@ -659,6 +659,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_055742) do
     t.index ["relationship_profile_id"], name: "index_imported_contacts_on_relationship_profile_id"
   end
 
+  create_table "imported_message_contexts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "external_id", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.uuid "messaging_connection_id", null: false
+    t.boolean "reply_ai_generated", default: false, null: false
+    t.text "reply_draft"
+    t.text "snippet", null: false
+    t.string "source_key", null: false
+    t.text "subject", null: false
+    t.text "thread_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["messaging_connection_id", "source_key"], name: "idx_on_messaging_connection_id_source_key_d6f9fe6c82", unique: true
+    t.index ["messaging_connection_id"], name: "index_imported_message_contexts_on_messaging_connection_id"
+  end
+
   create_table "interactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "interaction_type", null: false
@@ -726,6 +742,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_055742) do
     t.check_constraint "char_length(situation) <= 4000", name: "message_drafts_situation_length"
     t.check_constraint "formality::text = ANY (ARRAY['casual'::character varying, 'balanced'::character varying, 'formal'::character varying]::text[])", name: "message_drafts_formality"
     t.check_constraint "response_length::text = ANY (ARRAY['short'::character varying, 'medium'::character varying, 'long'::character varying]::text[])", name: "message_drafts_response_length"
+  end
+
+  create_table "messaging_connections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "access_token"
+    t.datetime "created_at", null: false
+    t.string "provider", default: "gmail", null: false
+    t.text "refresh_token"
+    t.string "status", default: "connected", null: false
+    t.datetime "token_expires_at"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id"], name: "index_messaging_connections_on_user_id", unique: true
   end
 
   create_table "mood_notes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1183,6 +1211,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_055742) do
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip"
     t.datetime "locked_at"
+    t.integer "messaging_connection_generation", default: 0, null: false
     t.datetime "onboarding_completed_at"
     t.datetime "onboarding_skipped_at"
     t.integer "privacy_vault_lease_version", default: 0, null: false
@@ -1355,12 +1384,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_055742) do
   add_foreign_key "important_dates", "relationship_profiles"
   add_foreign_key "imported_contacts", "contacts_connections"
   add_foreign_key "imported_contacts", "relationship_profiles", on_delete: :nullify
+  add_foreign_key "imported_message_contexts", "messaging_connections"
   add_foreign_key "interactions", "relationship_profiles", on_delete: :cascade
   add_foreign_key "memory_records", "relationship_profiles"
   add_foreign_key "memory_revisions", "memory_records"
   add_foreign_key "memory_revisions", "users"
   add_foreign_key "message_drafts", "relationship_profiles", on_delete: :cascade
   add_foreign_key "message_drafts", "users", on_delete: :cascade
+  add_foreign_key "messaging_connections", "users"
   add_foreign_key "mood_notes", "relationship_profiles"
   add_foreign_key "notification_preferences", "users", on_delete: :cascade
   add_foreign_key "personal_touch_checklists", "event_plans", on_delete: :cascade

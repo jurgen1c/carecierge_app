@@ -1,0 +1,83 @@
+en:
+  messaging:
+    heading: Email and messages
+    body: Bring a selected Gmail excerpt into a private workspace and prepare a reply you can review. Carecierge never sends messages.
+    back: Back to your day
+    permissions: Review messaging and drafting permissions
+    connect: Connect Gmail read-only
+    connect_consent: I allow read-only Gmail access to search for messages I choose. Search results stay temporary; only excerpts I import are saved. This connection cannot send mail.
+    unavailable: Gmail is not available yet. Your existing message drafting workspace remains available in each relationship profile.
+    search_label: Find a message in Gmail
+    search_help: Search reads up to 10 matching subjects and short excerpts. Results are not saved until you import one. No attachments or full message bodies are imported.
+    search: Search Gmail
+    searching: Searching Gmail…
+    results: Choose an excerpt to keep
+    no_results: No messages matched. Try a different search.
+    no_subject: No subject
+    import: Import this excerpt
+    saved: Your saved excerpts
+    excluded: Excluded from AI memory extraction.
+    draft_help: Imported excerpts stay out of relationship memories, suggestions and the privacy vault. Drafting uses only the excerpt you explicitly select; it does not read your vault or other relationship context.
+    empty: Connect Gmail, search for a message, then choose the excerpt you want to keep.
+    source: Open source in Gmail
+    draft_consent: Use this excerpt with AI to prepare a reply for my review. Replace any reply currently saved here.
+    draft: Draft a reply
+    drafting: Preparing your draft…
+    reply: Your reply draft — review and copy when ready
+    save: Save draft
+    delete: Delete excerpt and draft
+    pages: Saved excerpt pages
+    previous: Previous
+    next: Next
+    disconnect: Disconnect Gmail
+    disconnect_help: Removes all imported excerpts and their reply drafts, then revokes Gmail access. Messages in Gmail remain unchanged. If revocation fails, only encrypted credentials remain so you can retry.
+    statuses:
+      connected: Gmail connected. Search and import only when you choose.
+      cleanup_required: Gmail revocation needs another attempt. Imported excerpts have been deleted. Disconnect again to finish cleanup.
+      authorization_required: Gmail access needs renewal. Disconnect, then connect again.
+    notices:
+      connected: Gmail connected. No messages were imported.
+      imported: The selected excerpt was saved privately.
+      drafted: Your reply is ready to review. Nothing was sent.
+      saved: Your reply draft was saved. Nothing was sent.
+      deleted: The imported excerpt and its reply draft were deleted.
+      disconnected: Gmail disconnected. Imported excerpts and their drafts were deleted.
+    errors:
+      failed: This action could not be completed. Review your choices and try again.
+      permission_required: Approve this action and allow the relevant messaging or drafting permission before continuing.
+      stale: Your connection or draft changed. Review the latest version and try again.
+      cleanup_required: Imported excerpts were deleted, but Gmail access could not be revoked. Retry disconnecting to finish cleanup.
+      provider_unavailable: Gmail is unavailable. Please try again later.
+      already_connected: Disconnect the existing connection before connecting again.
+      cancelled: Connection cancelled. No messages were imported.
+      authorization_required: Gmail access needs renewal. Disconnect, then connect again.
+      invalid_query: Enter a search of up to 300 characters.
+      invalid_source: Choose a message from the Gmail search results.
+      invalid_provider_response: Gmail returned an unexpected response. Please try again later.
+  automation_permissions:
+    required_permissions:
+      messages: Message excerpts
+    capabilities:
+      access_messages:
+        name: Access messages
+        description: Read selected Gmail excerpts only after explicit approval. Never send mail.
+  audit_events:
+    actions:
+      messaging_connection_created:
+        title: Gmail connected
+        description: You changed messaging access for %{target}.
+      messaging_connection_revoked:
+        title: Gmail disconnected
+        description: You changed messaging access for %{target}.
+      messaging_context_imported:
+        title: Message excerpt imported
+        description: You saved private communication context for %{target}.
+      messaging_context_deleted:
+        title: Message excerpt deleted
+        description: You removed private communication context for %{target}.
+      messaging_draft_generated:
+        title: Reply draft prepared
+        description: A reply was prepared for review for %{target}. Nothing was sent.
+      messaging_draft_edited:
+        title: Reply draft saved
+        description: You saved a reply draft for %{target}. Nothing was sent.

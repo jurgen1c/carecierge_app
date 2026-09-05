@@ -1,25 +1,27 @@
 # 11.3 Email and Messaging Integrations
 
-**Area:** 11. Integrations
+CAR-73 provides an owner-only Gmail read-only integration for explicitly selected message excerpts and local reply drafts. Outlook, WhatsApp, SMS, native sharing, full-body/attachment import, sending and reminder synchronization remain future work.
 
-Future integrations to draft, send, or log communication.
+## Setup
 
-## Capabilities
+Enable Gmail API and create a web OAuth client in a **separate Google Cloud project** from Google login, Calendar and Contacts. Google revocation invalidates combined project grants; a separate client in the same project is insufficient. Set `GOOGLE_MESSAGING_CLIENT_ID`, `GOOGLE_MESSAGING_CLIENT_SECRET`, and `GOOGLE_MESSAGING_ISOLATED_PROJECT=true` only after checking isolation. Kamal forwards these values. Register `/messaging_connection/callback` on the application's HTTPS origin. Missing credentials or isolation leaves the provider unavailable.
 
-- Draft emails.
-- Send approved emails.
-- Create follow-up reminders from emails.
-- Parse conversation context with permission.
-- Log sent messages.
+The only accepted grant is `https://www.googleapis.com/auth/gmail.readonly`. Authorization requests offline consent with incremental scope combination disabled; returned extra scopes are rejected and credentials revoked or retained encrypted in unusable cleanup state for retry. Complete Google's Gmail restricted-scope consent verification and security requirements appropriate to the deployment before enabling this integration. See [Gmail scope documentation](https://developers.google.com/workspace/gmail/api/auth/scopes) and [Google OAuth revocation](https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke).
 
-## Possible Integrations
+## Owner flow and privacy
 
-- Gmail
-- Outlook
-- WhatsApp via supported APIs if feasible
-- SMS providers
-- Native share sheet
+1. Enable the explicit-only `access_messages` account permission. Check the consent box and submit Connect Gmail. The OAuth callback requires expiring, owner/session-bound single-use state; a connection generation rejects delayed callbacks after disconnect.
+2. Submit a search. Carecierge reads at most ten matching subjects and short Gmail snippets, without attachments or message bodies. Search results remain temporary. Each import button explicitly saves only that selected message's current snippet.
+3. Imported subjects, snippets, provider IDs and reply drafts use Active Record Encryption. The fixed-host Gmail source link stays attached to the imported context. Imports are deduplicated within a connection. Nothing appears in relationship search, summaries, suggestions, the privacy vault or automatic memory extraction; extraction is permanently disabled for these sources in this foundation.
+4. Explicitly approve the selected excerpt for AI drafting and enable `draft_messages`. The existing non-stored drafting provider receives only that snippet and empty relationship context; it cannot read profile, private-note or vault content. The encrypted reply stays alongside its source, can be edited manually, and must be reviewed and copied by the owner. Generation replaces the previous local reply only with fresh consent and a matching version. There is no send endpoint, recipient, external draft, scheduling, approval envelope granting delivery, or automatic canonical-memory creation. Existing approval-queue and privacy-vault rules remain unchanged.
+5. Delete an excerpt and its reply at any time, including when permissions are disabled or Gmail is unavailable. Disconnect deletes all local imported context first and then revokes Google credentials. A failed revocation retains encrypted credentials in unusable cleanup state and permits retry. Gmail originals remain unchanged.
 
-## Implementation Notes
+All mutations and provider operations serialize under the account lock, in owner-then-connection/source order. Drafts and edits use optimistic versions; deletion and permission changes cannot race a provider request into recreating deleted context. Selective account AI deletion clears AI-generated communication replies and edited derivatives while preserving manual-only replies while preserving imported snippets. Account exports include readable source context and replies but exclude credentials and token state. Account deletion revokes Gmail grants first and compensates database rollback with an unusable revocation state when required. Audit events contain only result metadata and target the account, without search terms, message content, source identifiers or credentials. Responses disable caching and submitted query/source/draft parameters are filtered from logs.
 
-Start with draft generation inside the app. Add integrations later.
+The existing relationship `MessageDraft` workspace remains separate: its current model stores draft text without the encrypted communication fields introduced here. Communication snippets are never copied into that workspace by this integration.
+
+## Migration and validation
+
+New tables and references use UUIDs. A unique connection per account and hashed source key per connection enforce deduplication. Capability allowlist constraints cover both permission records and immutable permission history; database checks prevent automatic messaging access. Changes acquire brief table locks and validate the permission tables; schedule migration according to table size. Rollback refuses to erase existing messaging permission evidence.
+
+Run `bundle exec rspec spec/services/messaging spec/requests/messaging_connections_spec.rb spec/system/messaging_connections_spec.rb`, `bun run build`, `bun run build:css`, `bin/memory validate`, `bin/memory coverage --git-diff`, `bin/memory audit --git-diff` and `bin/ci`. Set `CAPTURE_MESSAGING_UI=true` with system specs for desktop/tablet/mobile screenshots. Provider tests stub HTTP and never connect a real inbox; deployment credentials and live Google consent remain operator setup.

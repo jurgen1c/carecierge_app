@@ -14,6 +14,7 @@ class AutomationCapability
   CATALOG = [
     Definition.new(key: "draft_messages", group: "everyday_help", risk_level: "low", required_permissions: %w[relationship_context]),
     Definition.new(key: "send_reminders", group: "everyday_help", risk_level: "low", required_permissions: %w[notifications]),
+    Definition.new(key: "access_messages", group: "sensitive_actions", risk_level: "high", required_permissions: %w[messages]),
     Definition.new(key: "access_contacts", group: "everyday_help", risk_level: "medium", required_permissions: %w[contacts]),
     Definition.new(key: "access_calendar", group: "everyday_help", risk_level: "medium", required_permissions: %w[calendar]),
     Definition.new(key: "suggest_gifts", group: "everyday_help", risk_level: "low", required_permissions: %w[relationship_context]),

@@ -9,6 +9,7 @@ severity: critical
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
 
 claim: >
+  Gmail exports include encrypted-at-rest source snippets and local replies without credentials. Selective AI deletion preserves manual-only communication drafts and clears generated replies plus their edited derivatives. Disconnect and source deletion remove both imported context and replies, and account deletion revokes Gmail access with compensated retry state.
   Contacts exports include staged review data and safe provider metadata while excluding OAuth credentials and opaque provider identifiers. Account deletion revokes contacts access and fences restored credentials after a local rollback; revocation failure preserves the account for retry.
   Owner-scoped JSON, CSV, PDF, and private-calendar exports include recordings,
   social context and screenshots, relationships, localized labels,

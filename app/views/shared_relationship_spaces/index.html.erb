@@ -4,6 +4,7 @@
   <h1 id="shared-spaces-title" class="mt-4 text-3xl font-semibold text-ink"><%= t("shared_spaces.title") %></h1>
   <p class="mt-3 max-w-2xl leading-7 text-quiet-note"><%= t("shared_spaces.introduction") %></p>
 
+  <%= render "family_invitations" %>
   <% if @invitations.any? %>
     <section class="mt-8 border-y border-private-line py-6" aria-labelledby="invitations-title">
       <h2 id="invitations-title" class="text-xl font-semibold text-ink"><%= t("shared_spaces.invitations") %></h2>
@@ -28,13 +29,14 @@
       <% @spaces.each do |space| %>
         <li class="py-4">
           <%= link_to space.title, shared_relationship_space_path(space), class: "inline-flex min-h-11 max-w-full items-center break-words font-semibold text-primary underline underline-offset-4" %>
-          <p class="text-sm text-quiet-note"><%= t(space.active? ? "shared_spaces.active" : "shared_spaces.pending") %></p>
+          <p class="text-sm text-quiet-note"><%= t(space.family? ? "family_spaces.mode" : space.active? ? "shared_spaces.active" : "shared_spaces.pending") %></p>
         </li>
       <% end %>
     </ul>
     <%== @pagy.series_nav if @pagy.pages > 1 %>
   </section>
 
+  <%= render "new_family" %>
   <section class="mt-8 border-t border-private-line pt-6" aria-labelledby="invite-title">
     <h2 id="invite-title" class="text-xl font-semibold text-ink"><%= t("shared_spaces.invite") %></h2>
     <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("shared_spaces.invite_hint") %></p>

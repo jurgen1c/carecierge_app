@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_183517) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_200615) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -537,6 +537,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_183517) do
     t.index ["relationship_profile_id", "status"], name: "index_extracted_memories_on_relationship_profile_id_and_status"
     t.index ["relationship_profile_id"], name: "index_extracted_memories_on_relationship_profile_id"
     t.index ["reviewed_by_id"], name: "index_extracted_memories_on_reviewed_by_id"
+  end
+
+  create_table "family_memberships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "invitation_expires_at", null: false
+    t.text "invited_email", null: false
+    t.string "relationship_type", null: false
+    t.uuid "shared_relationship_space_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id"
+    t.index ["invited_email"], name: "index_family_memberships_on_invited_email"
+    t.index ["shared_relationship_space_id", "invited_email"], name: "index_family_memberships_on_space_email", unique: true
+    t.index ["shared_relationship_space_id", "user_id"], name: "index_family_memberships_on_space_user", unique: true
+    t.index ["shared_relationship_space_id"], name: "index_family_memberships_on_shared_relationship_space_id"
+    t.index ["user_id"], name: "index_family_memberships_on_user_id"
+    t.check_constraint "(user_id IS NULL) = (accepted_at IS NULL)", name: "family_membership_acceptance_required"
+  end
+
+  create_table "family_responses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "attendance", null: false
+    t.datetime "created_at", null: false
+    t.uuid "shared_item_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["shared_item_id", "user_id"], name: "index_family_responses_on_shared_item_id_and_user_id", unique: true
+    t.index ["shared_item_id"], name: "index_family_responses_on_shared_item_id"
+    t.index ["user_id"], name: "index_family_responses_on_user_id"
+    t.check_constraint "attendance::text = ANY (ARRAY['yes'::character varying, 'maybe'::character varying, 'no'::character varying]::text[])", name: "family_response_attendance"
   end
 
   create_table "feature_flag_assignments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1227,6 +1256,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_183517) do
 
   create_table "shared_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assignee_id"
+    t.string "category", default: "general", null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.uuid "creator_id", null: false
@@ -1252,8 +1282,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_183517) do
   create_table "shared_relationship_spaces", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
-    t.datetime "invitation_expires_at", null: false
-    t.text "invited_email", null: false
+    t.datetime "invitation_expires_at"
+    t.text "invited_email"
+    t.string "mode", default: "couple", null: false
     t.uuid "owner_id", null: false
     t.uuid "partner_id"
     t.text "title", null: false
@@ -1262,6 +1293,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_183517) do
     t.index ["owner_id"], name: "index_shared_relationship_spaces_on_owner_id"
     t.index ["partner_id"], name: "index_shared_relationship_spaces_on_partner_id"
     t.check_constraint "(partner_id IS NULL) = (accepted_at IS NULL)", name: "shared_space_acceptance_required"
+    t.check_constraint "mode::text = ANY (ARRAY['couple'::character varying, 'family'::character varying]::text[])", name: "shared_space_mode"
     t.check_constraint "partner_id IS NULL OR partner_id <> owner_id", name: "shared_space_distinct_people"
   end
 
@@ -1533,6 +1565,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_183517) do
   add_foreign_key "extracted_memories", "memory_records", column: "canonical_memory_record_id", on_delete: :nullify
   add_foreign_key "extracted_memories", "relationship_profiles", on_delete: :cascade
   add_foreign_key "extracted_memories", "users", column: "reviewed_by_id", on_delete: :nullify
+  add_foreign_key "family_memberships", "shared_relationship_spaces", on_delete: :cascade
+  add_foreign_key "family_memberships", "users", on_delete: :cascade
+  add_foreign_key "family_responses", "shared_items", on_delete: :cascade
+  add_foreign_key "family_responses", "users", on_delete: :cascade
   add_foreign_key "feature_flag_assignments", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"

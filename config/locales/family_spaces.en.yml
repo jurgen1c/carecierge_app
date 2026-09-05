@@ -1,0 +1,74 @@
+{
+  "en": {
+    "family_spaces": {
+      "mode": "Family space",
+      "create": "Create a family space",
+      "create_hint": "Start a shared place for family dates and responsibilities. Invite people after creating it; each person decides whether to join.",
+      "name": "Family space name",
+      "privacy": "Only accepted family members can see this space. Your private notes stay private.",
+      "boundaries": "Add only what your family agrees to share. Nobody is assigned tasks or reminders automatically.",
+      "end_hint": "Only the organizer can end the family space. This permanently deletes everyone’s shared items, responses and reminders. Deleting the organizer’s account does the same.",
+      "confirm_end": "I understand this deletes the entire family space for everyone.",
+      "item_privacy": "Everything entered here is visible to all accepted family members. Personal notes stay in your private relationship workspace.",
+      "everyone_edits": "All family members can edit",
+      "category": "Family activity",
+      "rsvp_hint": "Use an RSVP plan to let each family member share their own response. The activity stays fixed after the first response.",
+      "rsvp": "Family responses",
+      "my_rsvp": "My response",
+      "choose_response": "Choose a response",
+      "save_rsvp": "Save my response",
+      "invitations": "Family invitations for you",
+      "acceptance": "Accepting makes your account email and family relationship label visible to all accepted members. You can see existing shared content and add your own. The organizer manages invitations; you can leave and remove your contributions. Private notes stay separate.",
+      "calendar": "Family calendar",
+      "calendar_hint": "See upcoming dates and the responsibilities you have chosen. Dates are listed with their time zone; add each birthday or holiday occurrence when you plan it.",
+      "show": "Show",
+      "all_categories": "All activities",
+      "apply": "Show items",
+      "starters": "Start with a family moment",
+      "starters_hint": "These are starting points for your own planning. Check who wants to take part and what they are comfortable sharing. No private context is used and nothing is created until you save.",
+      "private_workspace": "My private relationships and notes",
+      "roster": "Who shares this space",
+      "organizer": "Organizer",
+      "leave": "Leave this family space",
+      "remove": "Remove invitation or member",
+      "leave_hint": "This removes the person’s shared contributions, responses and reminders, and releases their responsibilities. Other family content stays. Rejoining requires a fresh invitation.",
+      "confirm_leave": "I understand this removes access and this person’s contributions.",
+      "invite": "Invite a family member",
+      "invite_hint": "Use their confirmed Carecierge account email. The in-app invitation lasts seven days; no email or message is sent. Labels describe relationships to you and do not grant guardianship or authority. Up to 20 invitations or members per family.",
+      "email": "Family member’s account email",
+      "relationship": "Relationship to the organizer",
+      "invalid_invitation": "Check the email and relationship. An invitation may already exist; cancel it before sending a fresh one.",
+      "member_limit": "Remove an existing invitation or member before inviting someone else.",
+      "invited": "Family invitation created. They choose whether to join.",
+      "confirm_required": "Confirm the removal of access and contributions.",
+      "removed": "Family membership removed.",
+      "views": {
+        "all": "All coordination",
+        "calendar": "Upcoming dates",
+        "mine": "My responsibilities"
+      },
+      "categories": {
+        "general": "General",
+        "birthday": "Birthdays",
+        "gift": "Gift coordination",
+        "rsvp": "RSVP planning",
+        "care": "Care tasks",
+        "holiday": "Holiday planning"
+      },
+      "types": {
+        "parent": "Parent",
+        "child": "Child",
+        "sibling": "Sibling",
+        "grandparent": "Grandparent",
+        "extended_family": "Extended family",
+        "chosen_family": "Chosen family",
+        "other": "Other family relationship"
+      },
+      "attendances": {
+        "yes": "Attending",
+        "maybe": "Maybe",
+        "no": "Not attending"
+      }
+    }
+  }
+}

@@ -9,8 +9,8 @@
     <nav class="mt-4 flex flex-wrap gap-3" aria-label="<%= t(".navigation") %>">
       <%= link_to t(".refresh"), admin_root_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
       <%= link_to t(".audit"), admin_audit_events_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-      <%= link_to t(".features"), admin_feature_flags_path, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-      <%= link_to t(".back"), dashboard_path, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <%= link_to t(".features"), admin_feature_flags_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <%= link_to t(".back"), dashboard_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
     </nav>
   </header>
 

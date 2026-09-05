@@ -33,6 +33,7 @@ RSpec.describe "Admin dashboard", type: :request do
     expect(document.at_css('a[href="/admin/audit_events"]')).to be_present
     expect(document.at_css('a[href="/admin/feature_flags"]')).to be_present
     expect(document.css('form')).to be_empty
+    expect(document.css("main a").map { |link| link["data-turbo-prefetch"] }).to all(eq("false"))
   end
 
   it "does not read or audit prefetched pages" do

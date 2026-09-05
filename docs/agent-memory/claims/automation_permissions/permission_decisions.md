@@ -3,7 +3,7 @@ id: automation_permissions.permission_decisions
 type: fact
 system: automation_permissions
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Automation permissions fail closed with owner-scoped overrides and audited changes
@@ -79,7 +79,7 @@ verification:
   - bin/rubocop
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: d6ba3bccc58524242d24afa31835adb2d9126823
 ---
 
 # Automation permissions fail closed with owner-scoped overrides and audited changes

@@ -3,7 +3,7 @@ id: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_sourc
 type: constraint
 system: messaging_integrations
 status: current
-confidence: high
+confidence: verified
 severity: critical
 title: Gmail excerpts and replies are explicit private source bound and revocable
 claim: >
@@ -63,7 +63,7 @@ verification:
   - bundle exec rspec spec/services/messaging spec/requests/messaging_connections_spec.rb spec/system/messaging_connections_spec.rb
   - bin/ci
   - bin/memory validate
-last_verified_commit: null
+last_verified_commit: d6ba3bccc58524242d24afa31835adb2d9126823
 ---
 
 # Gmail excerpts and replies

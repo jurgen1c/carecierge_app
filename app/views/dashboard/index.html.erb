@@ -21,7 +21,8 @@
         <%= link_to t("contacts.heading"), contacts_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <%= link_to t("messaging.heading"), messaging_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <% if current_user.admin? %>
-          <%= link_to t("daily_feed.navigation.admin_activity"), admin_audit_events_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+          <%= link_to t("admin.dashboard.show.title"), admin_root_path, data: { turbo_prefetch: false }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+          <%= link_to t("daily_feed.navigation.admin_activity"), admin_audit_events_path, data: { turbo_prefetch: false }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <% end %>
       </nav>
 
@@ -55,7 +56,8 @@
               <%= link_to t("daily_feed.navigation.calendar_integrations"), calendar_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
               <%= link_to t("contacts.heading"), contacts_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
               <% if current_user.admin? %>
-                <%= link_to t("daily_feed.navigation.admin_activity"), admin_audit_events_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
+                <%= link_to t("admin.dashboard.show.title"), admin_root_path, data: { turbo_prefetch: false }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
+                <%= link_to t("daily_feed.navigation.admin_activity"), admin_audit_events_path, data: { turbo_prefetch: false }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
               <% end %>
               <%= link_to t("daily_feed.navigation.add_relationship"), new_relationship_profile_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-semibold text-primary hover:bg-surface" %>
               <%= link_to t("daily_feed.navigation.settings"), edit_notification_preference_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>

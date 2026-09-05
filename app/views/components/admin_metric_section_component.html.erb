@@ -1,0 +1,12 @@
+<section class="<%= style %>" aria-labelledby="<%= section %>-heading">
+  <h2 id="<%= section %>-heading" class="text-xl font-semibold text-ink"><%= t("admin.dashboard.show.sections.#{section}") %></h2>
+  <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("admin.dashboard.show.guidance.#{section}") %></p>
+  <dl class="mt-4 divide-y divide-private-line">
+    <% metrics.each do |key, value| %>
+      <div class="flex items-baseline justify-between gap-6 py-3">
+        <dt class="text-sm text-quiet-note"><%= t("admin.dashboard.show.metrics.#{key}") %></dt>
+        <dd class="shrink-0 text-right text-sm font-semibold tabular-nums text-ink" data-metric="<%= key %>"><%= display_value(value) %></dd>
+      </div>
+    <% end %>
+  </dl>
+</section>

@@ -7,6 +7,10 @@ class GiftsController < ApplicationController
   def new
     @gift = @relationship_profile.gifts.new
     authorize @gift
+    if params[:vendor_id].present?
+      vendor = policy_scope(Vendor).find(params[:vendor_id])
+      @gift.assign_attributes(name: vendor.name, vendor: vendor.name, notes: [ vendor.source_label, vendor.source_url ].compact.join("\n"))
+    end
   end
 
   def edit

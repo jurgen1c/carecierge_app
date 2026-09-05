@@ -3,33 +3,37 @@
 # Table name: vendors
 # Database name: primary
 #
-#  id                  :uuid             not null, primary key
-#  availability        :text
-#  category            :string           not null
-#  fit_notes           :text
-#  location            :string
-#  maximum_price_cents :integer
-#  minimum_price_cents :integer
-#  name                :string           not null
-#  occasion_types      :jsonb            not null
-#  preference_tags     :jsonb            not null
-#  source_kind         :string           default("manual"), not null
-#  source_name         :string
-#  source_url          :string
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  user_id             :uuid             not null
+#  id                     :uuid             not null, primary key
+#  availability           :text
+#  category               :string           not null
+#  fit_notes              :text
+#  location               :string
+#  maximum_price_cents    :integer
+#  minimum_price_cents    :integer
+#  name                   :string           not null
+#  occasion_types         :jsonb            not null
+#  preference_tags        :jsonb            not null
+#  source_kind            :string           default("manual"), not null
+#  source_name            :string
+#  source_url             :string
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  marketplace_listing_id :uuid
+#  user_id                :uuid             not null
 #
 # Indexes
 #
-#  index_vendors_on_occasion_types        (occasion_types) USING gin
-#  index_vendors_on_preference_tags       (preference_tags) USING gin
-#  index_vendors_on_user_and_lower_name   (user_id, lower((name)::text))
-#  index_vendors_on_user_id               (user_id)
-#  index_vendors_on_user_id_and_category  (user_id,category)
+#  index_vendors_on_marketplace_listing_id         (marketplace_listing_id)
+#  index_vendors_on_occasion_types                 (occasion_types) USING gin
+#  index_vendors_on_owner_and_marketplace_listing  (user_id,marketplace_listing_id) UNIQUE WHERE (marketplace_listing_id IS NOT NULL)
+#  index_vendors_on_preference_tags                (preference_tags) USING gin
+#  index_vendors_on_user_and_lower_name            (user_id, lower((name)::text))
+#  index_vendors_on_user_id                        (user_id)
+#  index_vendors_on_user_id_and_category           (user_id,category)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (marketplace_listing_id => marketplace_listings.id) ON DELETE => nullify
 #  fk_rails_...  (user_id => users.id) ON DELETE => cascade
 #
 class Vendor < ApplicationRecord
@@ -48,6 +52,7 @@ class Vendor < ApplicationRecord
   MAX_TAG_LENGTH = 60
 
   belongs_to :user
+  belongs_to :marketplace_listing, optional: true
   has_many :event_plan_vendors, dependent: :destroy
   has_many :event_plans, through: :event_plan_vendors
   has_many :vendor_options, dependent: :restrict_with_error

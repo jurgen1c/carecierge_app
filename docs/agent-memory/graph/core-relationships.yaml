@@ -1,6 +1,26 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: vendor_discovery.marketplace_listings_are_curated_shared_content_with_private_explicit_handoffs
+    target: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
+    relation: requires
+    reason: Published shared choices become private sourced vendor copies under the owner lock.
+    strength: 100
+  - source: vendor_discovery.marketplace_listings_are_curated_shared_content_with_private_explicit_handoffs
+    target: vendor_discovery.vendor_comparisons_are_owner_scoped_bounded_and_explicitly_decided
+    relation: requires
+    reason: Saved listing handoffs preselect vendors in an explicit private shortlist draft.
+    strength: 100
+  - source: vendor_discovery.marketplace_listings_are_curated_shared_content_with_private_explicit_handoffs
+    target: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
+    relation: requires
+    reason: Saved vendor handoffs prefill authorized manual booking drafts without persistence.
+    strength: 100
+  - source: vendor_discovery.marketplace_listings_are_curated_shared_content_with_private_explicit_handoffs
+    target: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    relation: requires
+    reason: Saved choices prefill private gift ideas that can enter the existing purchase workspace.
+    strength: 100
   - source: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
     target: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
     relation: same_area

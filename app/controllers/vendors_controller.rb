@@ -5,7 +5,14 @@ class VendorsController < ApplicationController
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
   def index
-    @search = Vendors::SearchQuery.new(policy_scope(Vendor), params: vendor_search_params, event_plan: @event_plan)
+    vendors = policy_scope(Vendor)
+    search_params = vendor_search_params
+    if params[:vendor_id].present?
+      @selected_vendor = vendors.find(params[:vendor_id])
+      vendors = vendors.where(id: @selected_vendor.id)
+      search_params = search_params.reverse_merge("occasion_type" => "", "maximum_budget" => "")
+    end
+    @search = Vendors::SearchQuery.new(vendors, params: search_params, event_plan: @event_plan)
     @pagy, @vendors = pagy(:offset, @search.resolve.includes(:event_plan_vendors), limit: 20)
   end
 

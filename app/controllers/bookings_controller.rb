@@ -27,6 +27,10 @@ class BookingsController < ApplicationController
       time_zone: booking_time_zone
     )
     authorize @booking
+    if params[:vendor_id].present?
+      vendor = policy_scope(Vendor).find(params[:vendor_id])
+      @booking.assign_attributes(title: vendor.name, provider_name: vendor.name, location: vendor.location, notes: [ vendor.source_label, vendor.source_url ].compact.join("\n"))
+    end
   end
 
   def create

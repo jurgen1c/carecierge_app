@@ -1,0 +1,9 @@
+<main aria-labelledby="marketplace-title" class="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+  <%= link_to t("marketplace.title"), marketplace_listings_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %>
+  <h1 id="marketplace-title" class="mt-4 text-3xl font-semibold text-ink"><%= t("marketplace.compare") %></h1>
+  <p class="mt-3 max-w-prose text-sm leading-6 text-quiet-note"><%= t("marketplace.compare_body") %></p>
+  <div class="mt-6 grid gap-6 divide-y divide-private-line md:grid-cols-2 md:divide-y-0">
+    <% @listings.each do |listing| %><%= component "marketplace_listing", listing: %><% end %>
+  </div>
+  <p class="mt-6 border-t border-private-line pt-5 text-sm leading-6 text-quiet-note"><%= t("marketplace.safety") %></p>
+</main>

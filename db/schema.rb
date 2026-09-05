@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_114943) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_125815) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -744,6 +744,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_114943) do
     t.check_constraint "origin::text = ANY (ARRAY['manual'::character varying, 'derived'::character varying]::text[])", name: "interactions_supported_origin"
   end
 
+  create_table "marketplace_listings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.text "curated_summary", null: false
+    t.string "name", null: false
+    t.string "occasion_types", default: [], null: false, array: true
+    t.text "provider_details", null: false
+    t.string "provider_name", null: false
+    t.boolean "published", default: false, null: false
+    t.text "relationship_use_cases", null: false
+    t.date "reviewed_on", null: false
+    t.string "service_area", null: false
+    t.string "source_url", null: false
+    t.datetime "updated_at", null: false
+    t.index ["published", "category"], name: "index_marketplace_listings_on_published_and_category"
+  end
+
   create_table "memory_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "body", null: false
     t.string "confidence", default: "confirmed", null: false
@@ -1365,6 +1382,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_114943) do
     t.datetime "created_at", null: false
     t.text "fit_notes"
     t.string "location"
+    t.uuid "marketplace_listing_id"
     t.integer "maximum_price_cents"
     t.integer "minimum_price_cents"
     t.string "name", null: false
@@ -1376,9 +1394,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_114943) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index "user_id, lower((name)::text)", name: "index_vendors_on_user_and_lower_name"
+    t.index ["marketplace_listing_id"], name: "index_vendors_on_marketplace_listing_id"
     t.index ["occasion_types"], name: "index_vendors_on_occasion_types", using: :gin
     t.index ["preference_tags"], name: "index_vendors_on_preference_tags", using: :gin
     t.index ["user_id", "category"], name: "index_vendors_on_user_id_and_category"
+    t.index ["user_id", "marketplace_listing_id"], name: "index_vendors_on_owner_and_marketplace_listing", unique: true, where: "(marketplace_listing_id IS NOT NULL)"
     t.index ["user_id"], name: "index_vendors_on_user_id"
     t.check_constraint "maximum_price_cents IS NULL OR maximum_price_cents >= 0", name: "vendors_maximum_price_nonnegative"
     t.check_constraint "minimum_price_cents IS NULL OR maximum_price_cents IS NULL OR minimum_price_cents <= maximum_price_cents", name: "vendors_price_range_ordered"
@@ -1497,5 +1517,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_114943) do
   add_foreign_key "vendor_shortlists", "event_plans", on_delete: :cascade
   add_foreign_key "vendor_shortlists", "relationship_profiles", on_delete: :cascade
   add_foreign_key "vendor_shortlists", "users", on_delete: :cascade
+  add_foreign_key "vendors", "marketplace_listings", on_delete: :nullify
   add_foreign_key "vendors", "users", on_delete: :cascade
 end

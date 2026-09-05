@@ -23,6 +23,12 @@ class VendorShortlistsController < ApplicationController
       @vendor_shortlist.relationship_profile = active_relationship_profiles.find(params[:relationship_profile_id])
     end
     authorize @vendor_shortlist
+    if params[:vendor_ids].present?
+      @selected_vendor_ids = Array(params[:vendor_ids]).map(&:to_s).compact_blank.uniq
+      raise ActionController::BadRequest if @selected_vendor_ids.length > VendorShortlist::MAX_OPTIONS
+
+      requested_vendors
+    end
     prepare_form
   end
 

@@ -1,0 +1,44 @@
+<% disable_turbo_cache %>
+<main aria-labelledby="marketplace-title" class="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+  <%= link_to t("marketplace.title"), marketplace_listings_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
+  <h1 id="marketplace-title" class="mt-4 break-words text-3xl font-semibold text-ink"><%= @listing.name %></h1>
+  <%= component "marketplace_listing", listing: @listing, heading: false %>
+  <p class="border-y border-private-line py-4 text-sm leading-6 text-quiet-note"><%= t("marketplace.safety") %></p>
+  <% if @vendor %>
+    <section aria-labelledby="marketplace-actions" class="space-y-4 py-6">
+      <h2 id="marketplace-actions" class="text-xl font-semibold text-ink"><%= t("marketplace.use_saved") %></h2>
+      <p class="max-w-prose text-sm leading-6 text-quiet-note"><%= t("marketplace.snapshot") %></p>
+      <%= link_to t("marketplace.edit_saved"), edit_vendor_path(@vendor), class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
+      <% if @event_plans.any? %>
+        <% %w[plan booking].each do |destination| %>
+          <%= form_with url: use_marketplace_listing_path(@listing), method: :get, class: "flex flex-col gap-3 sm:flex-row sm:items-end" do |form| %>
+            <%= hidden_field_tag :destination, destination %>
+            <div class="min-w-0 w-full sm:flex-1">
+              <%= label_tag "#{destination}_event_plan", t("marketplace.#{destination}"), class: "block text-sm font-semibold text-ink" %>
+              <%= select_tag :event_plan_id, options_from_collection_for_select(@event_plans, :id, :title), id: "#{destination}_event_plan", required: true, include_blank: t("marketplace.choose_plan"), class: "mt-2 min-h-11 w-full rounded-lg border border-private-line bg-canvas px-3 py-2 text-ink" %>
+            </div>
+            <%= form.submit t("marketplace.#{destination}"), class: "min-h-11 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover" %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-quiet-note"><%= t("marketplace.no_plans") %></p>
+        <%= link_to t("marketplace.create_plan"), new_event_plan_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %>
+      <% end %>
+      <% if @relationships.any? %>
+        <%= form_with url: use_marketplace_listing_path(@listing), method: :get, class: "flex flex-col gap-3 sm:flex-row sm:items-end" do |form| %>
+          <%= hidden_field_tag :destination, "gift" %>
+          <div class="min-w-0 w-full sm:flex-1">
+            <%= label_tag :gift_relationship, t("marketplace.gift"), class: "block text-sm font-semibold text-ink" %>
+            <%= select_tag :relationship_profile_id, options_from_collection_for_select(@relationships, :id, :display_name), id: "gift_relationship", required: true, include_blank: t("marketplace.choose_relationship"), class: "mt-2 min-h-11 w-full rounded-lg border border-private-line bg-canvas px-3 py-2 text-ink" %>
+          </div>
+          <%= form.submit t("marketplace.gift"), class: "min-h-11 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover" %>
+        <% end %>
+      <% else %>
+        <p class="text-sm text-quiet-note"><%= t("marketplace.no_relationships") %></p>
+      <% end %>
+      <%= link_to t("marketplace.shortlist"), use_marketplace_listing_path(@listing, destination: "shortlist"), class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
+    </section>
+  <% else %>
+    <%= button_to t("marketplace.save"), save_marketplace_listing_path(@listing), class: "mt-5 min-h-11 rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover" %>
+  <% end %>
+</main>

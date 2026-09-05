@@ -3,7 +3,7 @@ id: relationship_profiles.gift_recommendations_are_private_source_backed_and_use
 type: decision
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Gift recommendations are private, source-backed, and user-controlled
@@ -113,7 +113,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 1c56de969e005f58609d9ab42441d022d3f65e2a
 ---
 
 # Gift recommendations are private, source-backed, and user-controlled

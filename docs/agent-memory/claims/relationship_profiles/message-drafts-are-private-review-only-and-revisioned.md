@@ -3,7 +3,7 @@ id: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
 type: constraint
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Message drafts are private, review-only, and revisioned
@@ -119,7 +119,7 @@ verification:
   - bin/memory coverage --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 1c56de969e005f58609d9ab42441d022d3f65e2a
 ---
 
 # Message drafts are private, review-only, and revisioned

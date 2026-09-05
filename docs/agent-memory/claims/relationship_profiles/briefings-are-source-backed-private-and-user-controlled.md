@@ -3,7 +3,7 @@ id: relationship_profiles.briefings_are_source_backed_private_and_user_controlle
 type: constraint
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Relationship briefings are source-backed, private, and user-controlled
@@ -106,7 +106,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 6ec0bccd394b1552e469b2f7d3802dc78b8ac2f1
+last_verified_commit: 1c56de969e005f58609d9ab42441d022d3f65e2a
 ---
 
 # Relationship briefings are source-backed, private, and user-controlled

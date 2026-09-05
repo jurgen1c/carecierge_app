@@ -3,7 +3,7 @@ id: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_c
 type: constraint
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 title: Professional mode uses only explicitly selected work context
 claim: Active owners explicitly choose professional mode independently of the profile
@@ -84,7 +84,7 @@ verification:
 - bundle exec rspec
 - bin/memory validate
 - bin/memory audit --git-diff
-last_verified_commit: null
+last_verified_commit: 1c56de969e005f58609d9ab42441d022d3f65e2a
 ---
 
 # Professional work context

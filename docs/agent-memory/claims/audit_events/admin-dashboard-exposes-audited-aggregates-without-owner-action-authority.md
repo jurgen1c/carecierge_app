@@ -3,7 +3,7 @@ id: audit_events.admin_dashboard_exposes_audited_aggregates_without_owner_action
 type: fact
 system: audit_events
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Admin dashboard exposes audited aggregates without owner action authority
@@ -59,7 +59,7 @@ tags:
   - operations
 verification:
   - bundle exec rspec spec/requests/admin_dashboard_spec.rb spec/queries/admin_dashboard_query_spec.rb spec/models/admin_dashboard/queue_status_spec.rb spec/components/admin_metric_section_component_spec.rb spec/system/admin_dashboard_spec.rb
-last_verified_commit: null
+last_verified_commit: 98db0839f6484c86b8b119c42dbfc9c9d72addd8
 ---
 
 # Admin dashboard exposes audited aggregates without owner action authority

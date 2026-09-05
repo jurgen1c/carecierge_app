@@ -42,7 +42,7 @@ verification:
   - bundle exec rspec
   - bundle exec rspec spec/services/shared_spaces/locking_spec.rb
   - bundle exec rspec spec/requests/shared_relationship_spaces_spec.rb spec/models/shared_relationship_space_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb spec/system/shared_relationship_spaces_spec.rb
-last_verified_commit: dedb15b14f9e624af675a3093bd08d23db932e01
+last_verified_commit: b80c812eb6002f665b943fb6d8c9c11ad40f7d1b
 ---
 
 # Shared items retain creator control and personal reminder consent

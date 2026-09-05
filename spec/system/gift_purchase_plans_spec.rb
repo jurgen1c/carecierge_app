@@ -22,7 +22,7 @@ RSpec.describe "Gift purchase assistance", type: :system do
       page.current_window.resize_to(width, height)
       expect(page.evaluate_script("document.documentElement.scrollWidth <= document.documentElement.clientWidth")).to be(true)
       if ENV["CAPTURE_GIFT_PURCHASE_UI"] == "true"
-        page.save_screenshot("/tmp/codex-jira-batches/carecierge-20260904-CAR-72-CAR-73-CAR-54/CAR-54/purchase-#{width}.png", full: true)
+        save_screenshot("gift-purchase-#{width}.png", full: true)
       end
     end
     click_link "Prepare follow-up reminder"

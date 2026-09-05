@@ -1,107 +1,105 @@
-{
-  "es": {
-    "gift_purchase_plans": {
-      "title": "Preparar la compra",
-      "back": "Volver al regalo",
-      "intro": "Reúne los detalles prácticos, compara opciones y decide el siguiente paso.",
-      "essentials": "Presupuesto y fechas",
-      "currency_hint": "Usa un código de moneda de tres letras, como USD o CRC. Todos los costos usan esta moneda.",
-      "options_title": "Opciones de compra",
-      "options_hint": "Guarda hasta tres opciones. Incluye envío e impuestos en cada costo total estimado. Borra el proveedor y sus detalles para eliminar una opción. Los precios y la disponibilidad no están verificados.",
-      "suggested": "Opción sugerida",
-      "suggestion_reason": "El menor costo guardado dentro de tu presupuesto entre las opciones que revisaste. Confirma personalmente el precio final y la disponibilidad.",
-      "no_suggestion": "Guarda un presupuesto y una opción con costo conocido; confirma que cumple tus restricciones para ver una sugerencia.",
-      "option_number": "Opción %{number}",
-      "open_option": "Abrir enlace de compra (pestaña nueva)",
-      "constraints_checked": "Revisé esta opción según las preferencias de la persona y mis restricciones.",
-      "tracking": "Entrega y seguimiento",
-      "manual": "Solo seguimiento manual.",
-      "review_only": "Registra compras que hiciste personalmente. Guardar un plan o cambiar un estado nunca compra, paga, contacta a proveedores ni comparte detalles de envío.",
-      "save": "Guardar plan de compra",
-      "saved": "Plan de compra guardado.",
-      "changed": "El plan de compra cambió. Revisa los detalles actuales e inténtalo de nuevo.",
-      "errors": "Revisa estos detalles de compra",
-      "next_steps": "Organiza los siguientes pasos",
-      "saved_values": "Estas acciones usan los detalles guardados. Revisa el recordatorio antes de guardarlo. La tarea del evento es independiente; los cambios posteriores al plan de compra no la modifican.",
-      "task_attached": "Tarea de compra agregada a",
-      "add_task": "Agregar tarea de compra",
-      "task_added": "Tarea de compra del regalo agregada.",
-      "no_event_plans": "Crea un plan de evento activo para esta persona para agregar una tarea de compra.",
-      "save_first": "Guarda el plan de compra para preparar recordatorios o agregar una tarea al evento.",
-      "history_hint": "Cuando entregues el regalo, vuelve al regalo para registrar la fecha y la reacción en el historial.",
-      "task_title": "Comprar regalo: %{name}",
-      "fields": {
-        "budget": "Presupuesto",
-        "currency": "Moneda",
-        "purchase_by": "Comprar antes del",
-        "expected_delivery_on": "Fecha de entrega prevista",
-        "constraints": "Preferencias y restricciones por revisar",
-        "vendor": "Proveedor u opción de compra",
-        "cost": "Costo total estimado",
-        "url": "Enlace de compra",
-        "purchase_status": "Estado de compra",
-        "delivery_status": "Estado de entrega",
-        "shipping_notes": "Notas privadas de envío",
-        "follow_up_on": "Fecha de seguimiento",
-        "follow_up_notes": "Envoltura, tarjeta, entrega o seguimiento pendiente",
-        "event_plan": "Plan de evento"
-      },
-      "purchase_status": {
-        "planning": "En preparación",
-        "purchased": "Comprado personalmente",
-        "cancelled": "Cancelado"
-      },
-      "delivery_status": {
-        "not_started": "Sin iniciar",
-        "awaiting": "Esperando entrega",
-        "shipped": "Enviado",
-        "delivered": "Entregado"
-      },
-      "reminders": {
-        "purchase": "Preparar recordatorio de compra",
-        "delivery": "Preparar recordatorio de entrega",
-        "follow_up": "Preparar recordatorio de seguimiento"
-      },
-      "reminder_titles": {
-        "purchase": "Comprar regalo: %{name}",
-        "delivery": "Revisar entrega del regalo: %{name}",
-        "follow_up": "Dar seguimiento al regalo: %{name}"
-      }
-    },
-    "activerecord": {
-      "attributes": {
-        "gift_purchase_plan": {
-          "budget": "Presupuesto",
-          "currency": "Moneda",
-          "purchase_by": "Comprar antes del",
-          "expected_delivery_on": "Fecha de entrega prevista",
-          "constraints": "Preferencias y restricciones por revisar",
-          "vendor": "Proveedor u opción de compra",
-          "cost": "Costo total estimado",
-          "url": "Enlace de compra",
-          "purchase_status": "Estado de compra",
-          "delivery_status": "Estado de entrega",
-          "shipping_notes": "Notas privadas de envío",
-          "follow_up_on": "Fecha de seguimiento",
-          "follow_up_notes": "Envoltura, tarjeta, entrega o seguimiento pendiente",
-          "event_plan": "Plan de evento",
-          "options": "Opciones de compra"
-        }
-      },
-      "errors": {
-        "models": {
-          "gift_purchase_plan": {
-            "attributes": {
-              "options": {
-                "invalid": "deben incluir como máximo tres opciones con nombre, enlaces HTTP(S) seguros y costos de hasta dos decimales"
-              },
-              "budget": {
-                "invalid": "debe ser un monto no negativo con hasta dos decimales"
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+---
+es:
+  gift_purchase_plans:
+    title: Preparar la compra
+    back: Volver al regalo
+    intro: Reúne los detalles prácticos, compara opciones y decide el siguiente paso.
+    essentials: Presupuesto y fechas
+    currency_hint: Usa un código de moneda de tres letras, como USD o CRC. Todos los
+      costos usan esta moneda.
+    options_title: Opciones de compra
+    options_hint: Guarda hasta tres opciones. Incluye envío e impuestos en cada costo
+      total estimado. Borra el proveedor y sus detalles para eliminar una opción.
+      Los precios y la disponibilidad no están verificados.
+    suggested: Opción sugerida
+    suggestion_reason: El menor costo guardado dentro de tu presupuesto entre las
+      opciones que revisaste. Confirma personalmente el precio final y la disponibilidad.
+    no_suggestion: Guarda un presupuesto y una opción con costo conocido; confirma
+      que cumple tus restricciones para ver una sugerencia.
+    option_number: Opción %{number}
+    open_option: Abrir enlace de compra (pestaña nueva)
+    constraints_checked: Revisé esta opción según las preferencias de la persona y
+      mis restricciones.
+    tracking: Entrega y seguimiento
+    manual: Solo seguimiento manual.
+    review_only: Registra compras que hiciste personalmente. Guardar un plan o cambiar
+      un estado nunca compra, paga, contacta a proveedores ni comparte detalles de
+      envío.
+    save: Guardar plan de compra
+    saved: Plan de compra guardado.
+    changed: El plan de compra cambió. Revisa los detalles actuales e inténtalo de
+      nuevo.
+    errors: Revisa estos detalles de compra
+    next_steps: Organiza los siguientes pasos
+    saved_values: Estas acciones usan los detalles guardados. Revisa el recordatorio
+      antes de guardarlo. La tarea del evento es independiente; los cambios posteriores
+      al plan de compra no la modifican.
+    task_attached: Tarea de compra agregada a
+    add_task: Agregar tarea de compra
+    task_added: Tarea de compra del regalo agregada.
+    no_event_plans: Crea un plan de evento activo para esta persona para agregar una
+      tarea de compra.
+    save_first: Guarda el plan de compra para preparar recordatorios o agregar una
+      tarea al evento.
+    history_hint: Cuando entregues el regalo, vuelve al regalo para registrar la fecha
+      y la reacción en el historial.
+    task_title: 'Comprar regalo: %{name}'
+    fields:
+      budget: Presupuesto
+      currency: Moneda
+      purchase_by: Comprar antes del
+      expected_delivery_on: Fecha de entrega prevista
+      constraints: Preferencias y restricciones por revisar
+      vendor: Proveedor u opción de compra
+      cost: Costo total estimado
+      url: Enlace de compra
+      purchase_status: Estado de compra
+      delivery_status: Estado de entrega
+      shipping_notes: Notas privadas de envío
+      follow_up_on: Fecha de seguimiento
+      follow_up_notes: Envoltura, tarjeta, entrega o seguimiento pendiente
+      event_plan: Plan de evento
+    purchase_status:
+      planning: En preparación
+      purchased: Comprado personalmente
+      cancelled: Cancelado
+    delivery_status:
+      not_started: Sin iniciar
+      awaiting: Esperando entrega
+      shipped: Enviado
+      delivered: Entregado
+    reminders:
+      purchase: Preparar recordatorio de compra
+      delivery: Preparar recordatorio de entrega
+      follow_up: Preparar recordatorio de seguimiento
+    reminder_titles:
+      purchase: 'Comprar regalo: %{name}'
+      delivery: 'Revisar entrega del regalo: %{name}'
+      follow_up: 'Dar seguimiento al regalo: %{name}'
+  activerecord:
+    attributes:
+      gift_purchase_plan:
+        budget: Presupuesto
+        currency: Moneda
+        purchase_by: Comprar antes del
+        expected_delivery_on: Fecha de entrega prevista
+        constraints: Preferencias y restricciones por revisar
+        vendor: Proveedor u opción de compra
+        cost: Costo total estimado
+        url: Enlace de compra
+        purchase_status: Estado de compra
+        delivery_status: Estado de entrega
+        shipping_notes: Notas privadas de envío
+        follow_up_on: Fecha de seguimiento
+        follow_up_notes: Envoltura, tarjeta, entrega o seguimiento pendiente
+        event_plan: Plan de evento
+        options: Opciones de compra
+    errors:
+      models:
+        gift_purchase_plan:
+          attributes:
+            options:
+              invalid: deben incluir como máximo tres opciones con nombre, enlaces
+                HTTP(S) seguros y costos de hasta dos decimales
+            budget:
+              invalid: debe ser un monto no negativo con hasta dos decimales

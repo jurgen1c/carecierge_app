@@ -1,6 +1,21 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: shared_spaces.shared_items_retain_creator_control_and_personal_reminder_consent
+    target: shared_spaces.couple_spaces_require_explicit_consent_and_isolate_private_records
+    relation: requires
+    reason: Shared item writes and reminder delivery require current explicit two-person participation.
+    strength: 100
+  - source: shared_spaces.couple_spaces_require_explicit_consent_and_isolate_private_records
+    target: data_controls.data_portability_and_deletion
+    relation: constrains
+    reason: Shared exports include only participating content and deleting either account ends the whole shared space.
+    strength: 100
+  - source: shared_spaces.shared_items_retain_creator_control_and_personal_reminder_consent
+    target: reminders.notification_preferences
+    relation: requires
+    reason: Explicit personal shared-reminder subscriptions still respect in-app preferences and quiet hours.
+    strength: 100
   - source: audit_events.admin_dashboard_exposes_audited_aggregates_without_owner_action_authority
     target: audit_events.account_activity_ledger
     relation: requires

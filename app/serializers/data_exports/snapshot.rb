@@ -38,6 +38,7 @@ module DataExports
       return {} if relationship_profile
 
       {
+        "shared_relationship_spaces" => shared_space_attributes,
         "notification_preference" => attributes_for(user.notification_preference),
         "relationship_tags" => records(user.relationship_tags),
         "relationship_groups" => records(user.relationship_groups),
@@ -55,6 +56,20 @@ module DataExports
         "audit_events" => records(user.audit_events, except: %w[user_id actor_id]),
         "deletion_requests" => records(user.deletion_requests, except: %w[user_id account_digest])
       }
+    end
+
+    def shared_space_attributes
+      SharedRelationshipSpace.participating(user).active.includes(shared_items: :shared_reminder_subscriptions).map do |space|
+        {
+          "id" => space.id, "title" => space.title, "owner_id" => space.owner_id,
+          "partner_id" => space.partner_id, "accepted_at" => space.accepted_at,
+          "items" => space.shared_items.map do |item|
+            attributes_for(item, except: %w[lock_version]).merge(
+              "my_reminder_enabled" => item.shared_reminder_subscriptions.any? { |subscription| subscription.user_id == user.id }
+            )
+          end
+        }
+      end
     end
 
     def messaging_connection_attributes

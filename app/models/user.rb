@@ -48,6 +48,10 @@ class User < ApplicationRecord
          :confirmable, :lockable, :trackable,
          :omniauthable, omniauth_providers: [ :google_oauth2 ]
 
+  has_many :owned_shared_relationship_spaces, class_name: "SharedRelationshipSpace", foreign_key: :owner_id, dependent: :destroy, inverse_of: :owner
+  has_many :joined_shared_relationship_spaces, class_name: "SharedRelationshipSpace", foreign_key: :partner_id, dependent: :destroy, inverse_of: :partner
+  has_many :shared_reminder_subscriptions, dependent: :destroy
+
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
   has_many :reminders, dependent: :destroy
   has_many :feed_item_states, dependent: :destroy

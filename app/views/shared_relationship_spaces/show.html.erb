@@ -1,0 +1,35 @@
+<% disable_turbo_cache %>
+<main class="mx-auto max-w-5xl px-4 py-8 sm:px-6" aria-labelledby="space-title">
+  <%= link_to t("shared_spaces.title"), shared_relationship_spaces_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
+  <%= link_to t("shared_spaces.my_inbox"), reminders_path, class: "ml-4 inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
+  <header class="mt-4 border-b border-private-line pb-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div class="min-w-0"><h1 id="space-title" class="break-words text-3xl font-semibold text-ink"><%= @space.title %></h1>
+        <p class="mt-3 max-w-2xl leading-7 text-quiet-note"><%= t("shared_spaces.privacy") %></p>
+      </div>
+      <% if @space.active? %><%= link_to t("shared_spaces.add_item"), new_shared_relationship_space_shared_item_path(@space), class: "inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover" %><% end %>
+    </div>
+    <% if @space.active? %>
+      <p class="mt-4 break-words text-sm text-quiet-note"><%= t("shared_spaces.participants", owner: @space.owner.email, partner: @space.partner.email) %></p>
+    <% else %>
+      <p class="mt-4 break-words font-semibold text-ink"><%= t("shared_spaces.waiting", email: @space.invited_email) %></p>
+      <p class="mt-2 text-sm text-quiet-note"><%= t("shared_spaces.expires", date: l(@space.invitation_expires_at.to_date)) %></p>
+    <% end %>
+  </header>
+  <% if @space.active? %>
+    <section class="py-6" aria-labelledby="shared-items-title">
+      <h2 id="shared-items-title" class="text-xl font-semibold text-ink"><%= t("shared_spaces.items") %></h2>
+      <% if @items.empty? %><p class="mt-3 max-w-2xl leading-7 text-quiet-note"><%= t("shared_spaces.empty_items") %></p><% end %>
+      <% @items.each do |item| %><%= component "shared_item", item:, user: current_user %><% end %>
+      <%== @pagy.series_nav if @pagy.pages > 1 %>
+    </section>
+  <% end %>
+  <details class="mt-8 border-t border-private-line pt-6">
+    <summary class="min-h-11 cursor-pointer font-semibold text-ink"><%= t("shared_spaces.manage") %></summary>
+    <p class="mt-3 max-w-2xl leading-7 text-quiet-note"><%= t("shared_spaces.end_hint") %></p>
+    <%= form_with url: shared_relationship_space_path(@space), method: :delete, class: "mt-4 space-y-4" do |form| %>
+      <label class="flex min-h-11 items-start gap-3 text-ink"><%= check_box_tag :confirm_end, "1", false, required: true, class: "mt-1 size-5 rounded border-stone-300 text-primary" %><span><%= t("shared_spaces.confirm_end") %></span></label>
+      <%= form.submit t("shared_spaces.end"), class: "min-h-11 rounded-lg border border-danger-border px-4 py-2 font-semibold text-danger-ink hover:bg-danger-surface" %>
+    <% end %>
+  </details>
+</main>

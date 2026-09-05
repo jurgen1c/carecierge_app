@@ -3,12 +3,13 @@ id: reminders.reminder_delivery_system
 type: fact
 system: reminders
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Reminders provide owner-scoped scheduling and idempotent delivery
 
 claim: >
+  The authenticated reminder inbox also includes SharedReminderNotifier notifications for the current recipient, linking to their consent-bound shared couple space.
   Reminder is the single owner-scoped scheduler for relationship profiles,
   important dates, commitments, event plans, plan tasks, vendor quote deadlines,
   and booking milestones. Quote or booking context can prefill an owner-controlled

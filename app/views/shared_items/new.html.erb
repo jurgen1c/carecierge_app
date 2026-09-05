@@ -1,0 +1,6 @@
+<% disable_turbo_cache %>
+<main class="mx-auto max-w-3xl px-4 py-8 sm:px-6" aria-labelledby="shared-item-title">
+  <%= link_to @space.title, shared_relationship_space_path(@space), class: "inline-flex min-h-11 items-center break-words font-semibold text-primary underline underline-offset-4" %>
+  <h1 id="shared-item-title" class="mt-4 text-3xl font-semibold text-ink"><%= t(@item.persisted? ? "shared_spaces.edit_item" : "shared_spaces.add_item") %></h1>
+  <%= render "form" %>
+</main>

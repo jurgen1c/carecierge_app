@@ -8,6 +8,7 @@ class SharedItemsController < ApplicationController
 
   def new
     @item = @space.shared_items.build(creator: current_user, kind: SharedItem::KINDS.include?(params[:kind]) ? params[:kind] : "plan")
+    @item.category = params[:category] if @space.family? && SharedItem::CATEGORIES.include?(params[:category])
     authorize @item
     load_plans
   end
@@ -39,6 +40,10 @@ class SharedItemsController < ApplicationController
     change(:claim, revision: params[:lock_version])
   end
 
+  def respond
+    change(:respond, attributes: { attendance: params[:attendance] })
+  end
+
   def subscribe
     change(:subscribe)
   end
@@ -67,7 +72,7 @@ class SharedItemsController < ApplicationController
   end
 
   def item_params
-    params.require(:shared_item).permit(:kind, :title, :details, :editing, :parent_id, :time_zone, :scheduled_local, :lock_version).to_h.symbolize_keys
+    params.require(:shared_item).permit(:kind, :title, :details, :editing, :parent_id, :time_zone, :scheduled_local, :lock_version, :category).to_h.symbolize_keys
   end
 
   def load_plans

@@ -1,10 +1,10 @@
 ---
 en:
   shared_spaces:
-    title: Shared couple spaces
+    title: Shared spaces
     back: Back to today
-    introduction: Make room for plans you both choose. Start with an invitation; sharing
-      begins only when the other person accepts.
+    introduction: Coordinate as a couple or family. Each person chooses whether to join;
+      private relationships and notes stay separate.
     invitations: Invitations for you
     invitation_from: Invitation from %{email}
     acceptance_rules: Accepting shares your account email with this person. Both of

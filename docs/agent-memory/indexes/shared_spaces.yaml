@@ -1,13 +1,22 @@
 id: shared_spaces
-name: Shared Couple Spaces
-summary: Explicit two-person consent, separate shared planning, creator ownership and personal in-app reminder subscriptions.
+name: Shared Couple and Family Spaces
+summary: Explicit couple and family membership consent, separate shared planning, creator ownership and personal in-app reminder subscriptions.
 claim_globs:
   - claims/shared_spaces/**/*.md
 default_queries:
+  - family invitation membership withdrawal RSVP calendar birthday gift care holiday
   - shared couple space invitation acceptance confirmed email privacy
   - shared plan date task note creator editor ownership revision
   - shared reminder subscription quiet hours delivery end sharing deletion export
 watched_files:
+  - app/models/family_*.rb
+  - app/controllers/family_memberships_controller.rb
+  - config/locales/family_spaces.*.yml
+  - db/migrate/*family_coordination*.rb
+  - docs/features/14-02-family-mode.md
+  - spec/requests/family_spaces_spec.rb
+  - spec/models/family_membership_spec.rb
+  - spec/system/family_spaces_spec.rb
   - app/views/dashboard/index.html.erb
   - db/schema.rb
   - app/models/shared_*.rb

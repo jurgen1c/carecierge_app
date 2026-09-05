@@ -18,6 +18,8 @@ module SharedSpaces
           values = attributes.except(:lock_version).dup
           values.delete(:editing) unless item.creator_id == actor.id
           values.delete(:kind) if item.persisted?
+          values.delete(:category) unless space.family?
+          values.delete(:category) if item.family_responses.exists?
           if values[:parent_id].present?
             values[:parent_id] = space.shared_items.where(kind: "plan").find(values[:parent_id]).id
           end
@@ -37,6 +39,9 @@ module SharedSpaces
           raise Pundit::NotAuthorizedError if item.assignee_id.present? && item.assignee_id != actor.id
           require_revision!(item, revision)
           item.update!(assignee: item.assignee_id == actor.id ? nil : actor)
+        when :respond
+          raise Pundit::NotAuthorizedError unless policy.show? && space.family? && item.category == "rsvp" && item.kind == "plan" && !item.completed?
+          item.family_responses.find_or_initialize_by(user: actor).update!(attendance: attributes[:attendance])
         when :subscribe
           item.shared_reminder_subscriptions.find_or_initialize_by(user: actor).update!(enabled: true)
         when :unsubscribe

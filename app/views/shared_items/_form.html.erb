@@ -1,7 +1,10 @@
 <%= form_with model: [@space, @item], class: "mt-6 space-y-5" do |form| %>
   <% if @item.errors.any? %><div role="alert" class="rounded-lg border border-danger-border bg-danger-surface p-4 text-danger-ink"><%= @item.errors.full_messages.to_sentence %></div><% end %>
   <%= form.hidden_field :lock_version if @item.persisted? %>
-  <p class="max-w-2xl text-sm leading-6 text-quiet-note"><%= t("shared_spaces.item_privacy") %></p>
+  <p class="max-w-2xl text-sm leading-6 text-quiet-note"><%= t(@space.family? ? "family_spaces.item_privacy" : "shared_spaces.item_privacy") %></p>
+  <% if @space.family? %>
+    <div><%= form.label :category, t("family_spaces.category"), class: "block font-semibold text-ink" %><%= form.select :category, SharedItem::CATEGORIES.map { |category| [t("family_spaces.categories.#{category}"), category] }, {}, disabled: @item.family_responses.exists?, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 px-3 py-2 text-ink" %><p class="mt-2 text-sm text-quiet-note"><%= t("family_spaces.rsvp_hint") %></p></div>
+  <% end %>
   <div class="grid gap-5 sm:grid-cols-2">
     <div><%= form.label :kind, t("shared_spaces.kind"), class: "block font-semibold text-ink" %><%= form.select :kind, SharedItem::KINDS.map { |kind| [t("shared_spaces.kinds.#{kind}"), kind] }, {}, disabled: @item.persisted?, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 px-3 py-2 text-ink" %></div>
     <div><%= form.label :parent_id, t("shared_spaces.parent"), class: "block font-semibold text-ink" %><%= form.collection_select :parent_id, @plans, :id, :title, { include_blank: t("shared_spaces.no_parent") }, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 px-3 py-2 text-ink" %></div>
@@ -15,7 +18,7 @@
     <div><%= form.label :time_zone, t("shared_spaces.time_zone"), class: "block font-semibold text-ink" %><%= form.time_zone_select :time_zone, nil, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 px-3 py-2 text-ink" %></div>
   </fieldset>
   <% if @item.creator_id == current_user.id %>
-    <div><%= form.label :editing, t("shared_spaces.editing"), class: "block font-semibold text-ink" %><%= form.select :editing, SharedItem::EDITING_RULES.map { |rule| [t("shared_spaces.editing_rules.#{rule}"), rule] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 px-3 py-2 text-ink" %><p class="mt-2 text-sm text-quiet-note"><%= t("shared_spaces.editing_hint") %></p></div>
+    <div><%= form.label :editing, t("shared_spaces.editing"), class: "block font-semibold text-ink" %><%= form.select :editing, SharedItem::EDITING_RULES.map { |rule| [t(@space.family? && rule == "participants" ? "family_spaces.everyone_edits" : "shared_spaces.editing_rules.#{rule}"), rule] }, {}, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 px-3 py-2 text-ink" %><p class="mt-2 text-sm text-quiet-note"><%= t("shared_spaces.editing_hint") %></p></div>
   <% end %>
   <div class="flex flex-wrap gap-3 border-t border-private-line pt-5">
     <%= form.submit t("shared_spaces.save"), class: "min-h-11 rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover" %>

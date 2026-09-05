@@ -1,0 +1,16 @@
+<% if @family_invitations.any? %>
+  <section class="mt-8 border-y border-private-line py-6" aria-labelledby="family-invitations-title">
+    <h2 id="family-invitations-title" class="text-xl font-semibold text-ink"><%= t("family_spaces.invitations") %></h2>
+    <% @family_invitations.each do |invitation| %>
+      <article class="py-4">
+        <h3 class="break-words font-semibold text-ink"><%= invitation.shared_relationship_space.title %></h3>
+        <p class="mt-2 break-words text-quiet-note"><%= t("shared_spaces.invitation_from", email: invitation.shared_relationship_space.owner.email) %> · <%= t("family_spaces.types.#{invitation.relationship_type}") %></p>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("family_spaces.acceptance") %></p>
+        <div class="mt-3 flex flex-wrap gap-3">
+          <%= button_to t("shared_spaces.accept"), accept_family_membership_path(invitation), class: "min-h-11 rounded-lg bg-primary px-4 py-2 font-semibold text-canvas hover:bg-primary-hover" %>
+          <%= button_to t("shared_spaces.decline"), family_membership_path(invitation), method: :delete, params: { confirm_leave: "1" }, class: "min-h-11 rounded-lg border border-private-line px-4 py-2 font-semibold text-ink" %>
+        </div>
+      </article>
+    <% end %>
+  </section>
+<% end %>

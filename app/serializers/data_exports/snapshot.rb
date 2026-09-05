@@ -59,12 +59,14 @@ module DataExports
     end
 
     def shared_space_attributes
-      SharedRelationshipSpace.participating(user).active.order(:created_at, :id).includes(shared_items: :shared_reminder_subscriptions).map do |space|
+      SharedRelationshipSpace.participating(user).active.order(:created_at, :id).includes(:family_memberships, shared_items: [ :shared_reminder_subscriptions, :family_responses ]).map do |space|
         {
           "id" => space.id, "title" => space.title, "owner_id" => space.owner_id,
-          "partner_id" => space.partner_id, "accepted_at" => space.accepted_at,
+          "partner_id" => space.partner_id, "accepted_at" => space.accepted_at, "mode" => space.mode,
+          "family_members" => space.family_memberships.select(&:user_id).sort_by { |member| [ member.created_at, member.id ] }.map { |member| member.attributes.slice("user_id", "relationship_type", "accepted_at") },
           "items" => space.shared_items.map do |item|
             attributes_for(item, except: %w[lock_version]).merge(
+              "rsvp_responses" => item.family_responses.sort_by { |answer| [ answer.created_at, answer.id ] }.map { |answer| answer.attributes.slice("user_id", "attendance") },
               "my_reminder_enabled" => item.shared_reminder_subscriptions.any? { |subscription| subscription.user_id == user.id && subscription.enabled? }
             )
           end

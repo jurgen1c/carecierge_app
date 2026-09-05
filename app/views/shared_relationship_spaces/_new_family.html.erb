@@ -1,0 +1,10 @@
+<section class="mt-8 border-t border-private-line pt-6" aria-labelledby="new-family-title">
+  <h2 id="new-family-title" class="text-xl font-semibold text-ink"><%= t("family_spaces.create") %></h2>
+  <p class="mt-2 max-w-2xl leading-7 text-quiet-note"><%= t("family_spaces.create_hint") %></p>
+  <%= form_with scope: :shared_relationship_space, url: shared_relationship_spaces_path, class: "mt-4 space-y-4" do |form| %>
+    <%= form.hidden_field :mode, value: "family" %>
+    <% if @new_space.family? && @new_space.errors.any? %><div role="alert" class="rounded-lg border border-danger-border p-4 text-danger-ink"><%= @new_space.errors.full_messages.to_sentence %></div><% end %>
+    <div><%= form.label :title, t("family_spaces.name"), for: "family-title", class: "block font-semibold text-ink" %><%= form.text_field :title, id: "family-title", value: @new_space.family? ? @new_space.title : nil, required: true, maxlength: 120, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 px-3 py-2 text-ink" %></div>
+    <%= form.submit t("family_spaces.create"), class: "min-h-11 rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover" %>
+  <% end %>
+</section>

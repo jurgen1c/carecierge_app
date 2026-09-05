@@ -9,6 +9,7 @@ class SharedItemComponent < ApplicationViewComponent
     base { %w[inline-flex min-h-11 items-center justify-center rounded-lg border border-private-line px-3 py-2 text-sm font-semibold text-ink hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary] }
   end
 
+  def ordered_responses = item.family_responses.sort_by { |response| [ response.created_at, response.id ] }
   def space = item.shared_relationship_space
   def policy = SharedItemPolicy.new(user, item)
   def subscribed? = item.shared_reminder_subscriptions.any? { |subscription| subscription.user_id == user.id && subscription.enabled? }

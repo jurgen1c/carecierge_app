@@ -38,3 +38,5 @@ Rails.application.config.filter_parameters += [
 ]
 
 Rails.application.config.filter_parameters += [ :contacts, :contacts_oauth_nonce, :next_page_token, :external_id ]
+
+Rails.application.config.filter_parameters += [ :family_membership, :attendance ]

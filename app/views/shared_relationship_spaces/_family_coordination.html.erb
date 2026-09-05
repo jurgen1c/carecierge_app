@@ -1,0 +1,19 @@
+<section class="border-b border-private-line py-6" aria-labelledby="family-calendar-title">
+  <h2 id="family-calendar-title" class="text-xl font-semibold text-ink"><%= t("family_spaces.calendar") %></h2>
+  <p class="mt-2 max-w-2xl leading-7 text-quiet-note"><%= t("family_spaces.calendar_hint") %></p>
+  <%= form_with url: shared_relationship_space_path(@space), method: :get, class: "mt-4 flex flex-wrap items-end gap-4" do |form| %>
+    <div><%= form.label :view, t("family_spaces.show"), class: "block font-semibold text-ink" %><%= form.select :view, %w[all calendar mine].map { |view| [t("family_spaces.views.#{view}"), view] }, { selected: params[:view] }, class: "mt-2 min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-ink" %></div>
+    <div><%= form.label :category, t("family_spaces.category"), class: "block font-semibold text-ink" %><%= form.select :category, SharedItem::CATEGORIES.map { |category| [t("family_spaces.categories.#{category}"), category] }, { include_blank: t("family_spaces.all_categories"), selected: params[:category] }, class: "mt-2 min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-ink" %></div>
+    <%= form.submit t("family_spaces.apply"), class: "min-h-11 rounded-lg border border-private-line px-4 py-2 font-semibold text-ink" %>
+  <% end %>
+  <details class="mt-5">
+    <summary class="min-h-11 cursor-pointer font-semibold text-ink"><%= t("family_spaces.starters") %></summary>
+    <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("family_spaces.starters_hint") %></p>
+    <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+      <% { birthday: "date", gift: "plan", rsvp: "plan", care: "task", holiday: "plan" }.each do |category, kind| %>
+        <%= link_to t("family_spaces.categories.#{category}"), new_shared_relationship_space_shared_item_path(@space, category:, kind:), class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
+      <% end %>
+    </div>
+  </details>
+  <%= link_to t("family_spaces.private_workspace"), relationship_profiles_path, class: "mt-3 inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
+</section>

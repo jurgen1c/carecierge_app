@@ -8,7 +8,7 @@ RSpec.describe "Shared planning", type: :system do
     page.current_window.resize_to(390, 844)
     visit dashboard_path
     find("summary", text: I18n.t("daily_feed.navigation.menu")).click
-    click_link "Shared couple spaces"
+    click_link "Shared spaces"
     click_link space.title
     expect(page).to have_content("Your private notes stay private")
     [ [ 1440, 1000 ], [ 768, 1024 ], [ 390, 844 ] ].each do |width, height|

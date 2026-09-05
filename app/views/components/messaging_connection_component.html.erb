@@ -5,6 +5,7 @@
     <%= link_to t('messaging.permissions'), automation_permissions_path, class: style(:button), data: { turbo: false } %>
   </header>
   <% if connection %>
+    <% if connection.mailbox_email.present? %><p class="break-words text-sm text-quiet-note"><%= t('messaging.mailbox', email: connection.mailbox_email) %></p><% end %>
     <p class="rounded-xl border border-private-line bg-surface p-4 text-ink"><%= t("messaging.statuses.#{connection.status}") %></p>
   <% elsif provider_available %>
     <%= form_with url: connect_messaging_connection_path, data: { turbo: false }, class: "space-y-3 max-w-3xl" do |form| %>
@@ -15,7 +16,7 @@
     <p class="text-quiet-note"><%= t('messaging.unavailable') %></p>
   <% end %>
   <% if ready? %>
-    <%= form_with url: search_messaging_connection_path, class: "max-w-3xl space-y-3" do |form| %>
+    <%= form_with url: search_messaging_connection_path, data: { turbo: false }, class: "max-w-3xl space-y-3" do |form| %>
       <%= form.label :messaging_query, t('messaging.search_label'), class: 'block font-semibold text-ink' %>
       <%= form.text_field :messaging_query, required: true, maxlength: 300, class: style(:input), aria: { describedby: 'messaging-search-help' } %>
       <p id="messaging-search-help" class="text-sm leading-6 text-quiet-note"><%= t('messaging.search_help') %></p>

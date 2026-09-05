@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Messaging::Google do
-  let(:connection) { MessagingConnection.create!(user: create(:user), access_token: 'private-token', refresh_token: 'refresh', token_expires_at: 1.hour.from_now) }
+  let(:connection) { MessagingConnection.create!(mailbox_email: 'secondary@example.com', user: create(:user), access_token: 'private-token', refresh_token: 'refresh', token_expires_at: 1.hour.from_now) }
   let(:http) { instance_double(Net::HTTP) }
   before { allow(Net::HTTP).to receive(:start).and_yield(http) }
 
@@ -46,6 +46,13 @@ RSpec.describe Messaging::Google do
     described_class.new(connection:).message(external_id: 'abc123')
     expect(connection.reload.refresh_token).to eq('rotated')
     expect(connection.read_attribute_before_type_cast(:refresh_token)).not_to include('rotated')
+  end
+
+  it 'reads and validates the authorized mailbox identity without write scopes' do
+    allow(http).to receive(:request).and_return(response(emailAddress: 'secondary@example.com'))
+    expect(described_class.new(connection:).mailbox_email).to eq('secondary@example.com')
+    allow(http).to receive(:request).and_return(response(emailAddress: 'not an email'))
+    expect { described_class.new(connection:).mailbox_email }.to raise_error(Messaging::Error)
   end
 
   def response(data)

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Messaging connections', type: :request do
   let(:user) { create(:user) }
-  let(:connection) { MessagingConnection.create!(user:, access_token: 'secret-access', refresh_token: 'secret-refresh') }
+  let(:connection) { MessagingConnection.create!(mailbox_email: 'secondary@example.com', user:, access_token: 'secret-access', refresh_token: 'secret-refresh') }
   let(:context) { connection.imported_message_contexts.create!(source_key: 'key', external_id: 'abc123', thread_id: 'def456', subject: 'A private subject', snippet: 'Private excerpt', reply_draft: 'Generated reply', reply_ai_generated: true) }
   before { sign_in user }
 

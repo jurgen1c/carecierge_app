@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Messaging foundations' do
   let(:user) { create(:user) }
   let(:profile) { create(:relationship_profile, user:) }
-  let(:connection) { MessagingConnection.create!(user:, access_token: 'secret-access', refresh_token: 'secret-refresh', token_expires_at: 1.hour.from_now) }
+  let(:connection) { MessagingConnection.create!(mailbox_email: 'secondary@example.com', user:, access_token: 'secret-access', refresh_token: 'secret-refresh', token_expires_at: 1.hour.from_now) }
   let(:row) { { external_id: 'abc123', thread_id: 'def456', subject: 'Private subject', snippet: 'A private message excerpt' } }
 
   before do
@@ -25,7 +25,7 @@ RSpec.describe 'Messaging foundations' do
     provider = instance_double(Messaging::Google, message: row)
     context = Messaging::Import.call(user:, external_id: 'abc123', approved: true, provider:)
     expect { Messaging::Import.call(user:, external_id: 'abc123', approved: true, provider:) }.not_to change(ImportedMessageContext, :count)
-    expect(context.source_url).to eq('https://mail.google.com/mail/u/0/#all/def456')
+    expect(context.source_url).to include('authuser=secondary%40example.com', '#all/def456')
     expect(context.ai_memory_extraction_allowed?).to be(false)
     expect(context.read_attribute_before_type_cast(:snippet)).not_to include(row[:snippet])
     expect(AuditEvent.last.metadata).to eq('result' => 'imported')

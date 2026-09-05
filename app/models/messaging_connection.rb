@@ -25,10 +25,12 @@ class MessagingConnection < ApplicationRecord
   GOOGLE_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
   belongs_to :user
   has_many :imported_message_contexts, dependent: :destroy
-  encrypts :access_token, :refresh_token
+  encrypts :access_token, :refresh_token, :mailbox_email
   validates :provider, inclusion: { in: %w[gmail] }
   validates :status, inclusion: { in: %w[connected cleanup_required authorization_required] }
   validates :user_id, uniqueness: true
+  validates :mailbox_email, presence: true, if: -> { status == "connected" }
+  validates :mailbox_email, length: { maximum: 320 }, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
 
   def credentials
     Messaging::GoogleOauth::Credentials.new(access_token:, refresh_token:, expires_at: token_expires_at, scopes: [ GOOGLE_SCOPE ])

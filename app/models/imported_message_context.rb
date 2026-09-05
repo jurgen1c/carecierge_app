@@ -34,6 +34,6 @@ class ImportedMessageContext < ApplicationRecord
   validates :reply_draft, length: { maximum: DraftRevision::MAX_CONTENT_LENGTH }
   attr_readonly :external_id, :thread_id, :source_key, :subject, :snippet, :messaging_connection_id
 
-  def source_url = "https://mail.google.com/mail/u/0/#all/#{thread_id}"
+  def source_url = "https://mail.google.com/mail/?#{URI.encode_www_form(authuser: messaging_connection.mailbox_email)}#all/#{thread_id}"
   def ai_memory_extraction_allowed? = false
 end

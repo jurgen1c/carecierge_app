@@ -43,6 +43,7 @@ watched_files:
   - db/migrate/20260905080040_allow_messaging_permission.rb
   - db/migrate/20260905081335_add_draft_provenance_to_imported_message_contexts.rb
   - spec/models/automation_capability_spec.rb
+  - db/migrate/20260905082549_add_mailbox_identity_to_messaging_connections.rb
   - db/schema.rb
   - docs/features/11-03-email-and-messaging-integrations.md
   - spec/requests/messaging_connections_spec.rb

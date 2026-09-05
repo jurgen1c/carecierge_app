@@ -11,8 +11,10 @@ module Messaging
         begin
           credentials = GoogleOauth.exchange(code:, redirect_uri:)
           MessagingConnection.transaction(requires_new: true) do
-            connection = user.create_messaging_connection!(access_token: credentials.access_token,
+            connection = user.build_messaging_connection(access_token: credentials.access_token,
               refresh_token: credentials.refresh_token, token_expires_at: credentials.expires_at)
+            connection.mailbox_email = Google.new(connection:).mailbox_email
+            connection.save!
             user.increment!(:messaging_connection_generation)
             AuditEvent.record!(user:, actor: user, action: "messaging.connection.created", target: user, metadata: { result: "success" })
           end

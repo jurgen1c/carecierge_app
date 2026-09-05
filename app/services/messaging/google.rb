@@ -8,6 +8,15 @@ module Messaging
       @connection = connection
     end
 
+    def mailbox_email
+      row = get(URI("https://gmail.googleapis.com/gmail/v1/users/me/profile"), fields: "emailAddress")
+      value = row["emailAddress"]
+      unless value.is_a?(String) && value.length <= 320 && value.match?(URI::MailTo::EMAIL_REGEXP)
+        raise Error.new(code: "invalid_provider_response")
+      end
+      value
+    end
+
     def search(query:)
       raise Error.new(code: "invalid_query") unless query.is_a?(String) && query.strip.present? && query.length <= 300
       payload = get(URI(ENDPOINT), q: query, maxResults: MAX_RESULTS, fields: "messages(id)")

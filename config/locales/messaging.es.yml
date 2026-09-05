@@ -1,5 +1,6 @@
 es:
   messaging:
+    mailbox: "Buzón conectado: %{email}"
     heading: Correo y mensajes
     body: Guarda un fragmento seleccionado de Gmail en un espacio privado y prepara una respuesta para revisar. Carecierge nunca envía mensajes.
     back: Volver a tu día

@@ -61,6 +61,7 @@ module DataExports
       connection = user.messaging_connection
       return unless connection
       connection.attributes.slice("provider", "status").merge(
+        "mailbox_email" => connection.mailbox_email,
         "messages" => connection.imported_message_contexts.order(:id).map do |context|
           { "id" => context.id, "subject" => context.subject, "snippet" => context.snippet,
             "source_url" => context.source_url, "reply_draft" => context.reply_draft,

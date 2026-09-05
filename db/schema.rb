@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_081335) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_082549) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -747,6 +747,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_081335) do
   create_table "messaging_connections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "access_token"
     t.datetime "created_at", null: false
+    t.text "mailbox_email"
     t.string "provider", default: "gmail", null: false
     t.text "refresh_token"
     t.string "status", default: "connected", null: false

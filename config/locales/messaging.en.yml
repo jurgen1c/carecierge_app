@@ -1,5 +1,6 @@
 en:
   messaging:
+    mailbox: "Connected mailbox: %{email}"
     heading: Email and messages
     body: Bring a selected Gmail excerpt into a private workspace and prepare a reply you can review. Carecierge never sends messages.
     back: Back to your day

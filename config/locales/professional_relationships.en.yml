@@ -1,0 +1,66 @@
+en:
+  professional_relationships:
+    stale_context: "The relationship mode changed. Review the current context before trying again."
+    stale_draft: "The relationship mode changed in another tab. Reload this profile and review the draft before trying again."
+    title: Professional relationship
+    hint: Keep work context separate. Only the work records you select below inform
+      professional drafts, briefings, and suggestions. Personal notes and vault contents
+      stay excluded.
+    mode: Relationship mode
+    modes:
+      personal: Personal
+      professional: Professional
+    edit_context: Edit work context and sources
+    fields:
+      organization: Organization
+      role: Role and stakeholder context
+      goals: Work goals
+      communication_preferences: Communication preferences
+      boundaries: Work boundaries and gift policy
+      review_preparation: Performance review preparation
+    gifts_allowed: Gifts or gestures are appropriate for this work relationship under
+      the policy and boundaries I recorded.
+    gifts_enabled: Business-appropriate gift ideas are enabled. Review each idea against
+      your recorded boundaries.
+    gifts_disabled: Gift ideas are off until you confirm they are appropriate in work
+      context.
+    sources_title: Choose work records
+    sources_hint: Select up to six records per category. Create or edit notes, commitments,
+      preferences, milestones, and gifts in the existing profile sections, save them,
+      then select them here. Selected records stay current; private or vault-protected
+      notes cannot be selected. The newest 100 records and existing selections are
+      shown.
+    empty_sources: No eligible records yet. Save this profile, add a record in its
+      profile section, then return to select it.
+    collections:
+      relationship_notes: Meeting notes
+      relationship_preferences: Stakeholder preferences
+      commitments: Commitments and follow-ups
+      important_dates: Client milestones
+      gifts: Professional gift history
+    actions: Professional preparation
+    meeting_notes: Write meeting notes
+    follow_ups: Track commitments and follow-ups
+    milestones: Add client milestones
+    review: Prepare a meeting or performance review
+    source_label: Selected work context
+  message_drafts:
+    context:
+      categories:
+        professional: Selected work context
+  relationship_briefings:
+    context:
+      categories:
+        professional: Selected work context
+  activerecord:
+    attributes:
+      relationship_profile:
+        relationship_mode: Relationship mode
+        professional_context: Professional relationship
+    errors:
+      models:
+        relationship_profile:
+          attributes:
+            professional_context:
+              invalid: must contain valid work context and up to six eligible records
+                per category

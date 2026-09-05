@@ -13,6 +13,7 @@ class BackupPlansController < ApplicationController
     return require_vault_unlock if selected_vault_item_ids.any? && !touch_privacy_vault_lease!
 
     BackupPlans::Generate.call(
+      expected_relationship_mode: backup_plan_params.fetch(:relationship_mode, "personal"),
       actor: current_user,
       event_plan: @event_plan,
       scenario: backup_plan_params[:scenario],
@@ -22,6 +23,8 @@ class BackupPlansController < ApplicationController
       locale: I18n.locale
     )
     redirect_to workspace_path, notice: t("event_plans.backup_plans.generate.notice")
+  rescue ProfessionalRelationship::ModeChangedError
+    redirect_to workspace_path, alert: t("professional_relationships.stale_context")
   rescue EventPlans::VaultAccessError
     require_vault_unlock
   rescue EventPlans::GenerationSupersededError
@@ -54,6 +57,7 @@ class BackupPlansController < ApplicationController
 
   def backup_plan_params
     params.fetch(:backup_plan, ActionController::Parameters.new).permit(
+      :relationship_mode,
       :scenario,
       private_note_ids: [],
       vault_item_ids: []

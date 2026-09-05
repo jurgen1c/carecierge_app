@@ -2,6 +2,7 @@ class RelationshipProfilesController < ApplicationController
   include PrivacyVaultSession
   include RelationshipProfileShowWorkspace
 
+  before_action -> { response.headers["Cache-Control"] = "no-store" }, only: %i[show new edit create update]
   before_action :set_relationship_profile, only: %i[show edit update archive destroy]
   around_action :serialize_profile_update_with_privacy_vault, only: :update
 
@@ -154,6 +155,8 @@ class RelationshipProfilesController < ApplicationController
       :birthday,
       :type,
       :custom_type_label,
+      :relationship_mode,
+      professional_context: [ *ProfessionalContext::FIELDS, :gifts_allowed, ProfessionalContext::COLLECTIONS.index_with { [] } ],
       contact_methods_attributes: %i[id kind value label preferred _destroy],
       relationship_notes_attributes: %i[id category private body _destroy],
       relationship_preferences_attributes: %i[id preference_type category key value confidence learned_on source_notes _destroy],

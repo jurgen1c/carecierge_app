@@ -186,6 +186,7 @@
 
         <% if event_plan.active? %>
           <%= form_with url: generate_event_plan_backup_plans_path(event_plan), method: :post, class: "mt-5 space-y-4" do %>
+            <%= hidden_field_tag "backup_plan[relationship_mode]", event_plan.relationship_profile.relationship_mode %>
             <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
               <div>
                 <%= label_tag "backup_plan_scenario", t("event_plans.backup_plans.scenario_label"), class: "block text-sm font-semibold text-ink" %>
@@ -199,11 +200,11 @@
               <%= submit_tag t("event_plans.backup_plans.generate.action"), class: style(:primary_button), data: { turbo_submits_with: t("event_plans.backup_plans.generate.loading") } %>
             </div>
 
-            <% if private_notes.any? || vault_items.any? %>
+            <% if !event_plan.relationship_profile.professional? && (private_notes.any? || vault_items.any?) %>
               <details class="border-t border-private-line pt-3">
                 <summary class="inline-flex min-h-11 cursor-pointer items-center text-sm font-semibold text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"><%= t("event_plans.backup_plans.optional_context") %></summary>
                 <p class="mt-1 text-xs leading-5 text-quiet-note"><%= t("event_plans.backup_plans.per_request") %></p>
-                <% if private_notes.any? %>
+                <% if !event_plan.relationship_profile.professional? && private_notes.any? %>
                   <fieldset class="mt-3 space-y-2">
                     <legend class="text-sm font-semibold text-ink"><%= t("event_plans.backup_plans.private_notes") %></legend>
                     <% private_notes.each do |note| %>
@@ -214,7 +215,7 @@
                     <% end %>
                   </fieldset>
                 <% end %>
-                <% if vault_items.any? %>
+                <% if !event_plan.relationship_profile.professional? && vault_items.any? %>
                   <fieldset class="mt-3 space-y-2 border-t border-private-line pt-3">
                     <legend class="text-sm font-semibold text-ink"><%= t("event_plans.backup_plans.vault_items") %></legend>
                     <% if vault_unlocked %>
@@ -346,7 +347,8 @@
         <h2 id="event-plan-suggestions-title" class="text-lg font-semibold text-ink"><%= t("event_plans.suggestions.title") %></h2>
         <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.suggestions.body") %></p>
         <%= form_with url: suggest_event_plan_path(event_plan), method: :post, class: "mt-5 space-y-4" do %>
-          <% if private_notes.any? %>
+          <%= hidden_field_tag "event_plan_suggestion[relationship_mode]", event_plan.relationship_profile.relationship_mode %>
+          <% if !event_plan.relationship_profile.professional? && private_notes.any? %>
             <fieldset class="space-y-2">
               <legend class="text-sm font-semibold text-ink"><%= t("event_plans.suggestions.private_notes") %></legend>
               <p class="text-xs leading-5 text-quiet-note"><%= t("event_plans.suggestions.per_request") %></p>
@@ -358,7 +360,7 @@
               <% end %>
             </fieldset>
           <% end %>
-          <% if vault_items.any? %>
+          <% if !event_plan.relationship_profile.professional? && vault_items.any? %>
             <fieldset class="space-y-2 border-t border-private-line pt-4">
               <legend class="text-sm font-semibold text-ink"><%= t("event_plans.suggestions.vault_items") %></legend>
               <p class="text-xs leading-5 text-quiet-note"><%= t("event_plans.suggestions.vault_lease") %></p>

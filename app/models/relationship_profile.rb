@@ -36,6 +36,7 @@
 #
 class RelationshipProfile < ApplicationRecord
   include FeedItemStateSource
+  include ProfessionalRelationship
 
   extend FriendlyId
   include Discard::Model

@@ -16,6 +16,7 @@ class GiftRecommendationsController < ApplicationController
     return require_vault_unlock if include_vault_context? && !touch_privacy_vault_lease!
 
     GiftRecommendations::Generate.call(
+      expected_relationship_mode: recommendation_params.fetch(:relationship_mode, "personal"),
       actor: current_user,
       relationship_profile: @relationship_profile,
       budget_cents: budget_cents,
@@ -30,6 +31,8 @@ class GiftRecommendationsController < ApplicationController
     )
 
     redirect_to workspace_path, notice: t("gift_recommendations.generate.notice")
+  rescue ProfessionalRelationship::ModeChangedError
+    redirect_to workspace_path, alert: t("professional_relationships.stale_context")
   rescue GiftRecommendations::VaultAccessError
     require_vault_unlock
   rescue GiftRecommendations::PermissionDeniedError
@@ -47,6 +50,7 @@ class GiftRecommendationsController < ApplicationController
     return require_vault_unlock if vault_item_ids.any? && !touch_privacy_vault_lease!
 
     GiftRecommendations::Generate.call(
+      expected_relationship_mode: recommendation_params.fetch(:relationship_mode, "personal"),
       actor: current_user,
       relationship_profile: @relationship_profile,
       budget_cents: @recommendation.budget_cents,
@@ -62,6 +66,8 @@ class GiftRecommendationsController < ApplicationController
     )
 
     redirect_to workspace_path, notice: t("gift_recommendations.alternative.notice")
+  rescue ProfessionalRelationship::ModeChangedError
+    redirect_to workspace_path, alert: t("professional_relationships.stale_context")
   rescue GiftRecommendations::VaultAccessError
     require_vault_unlock
   rescue GiftRecommendations::PermissionDeniedError
@@ -94,6 +100,7 @@ class GiftRecommendationsController < ApplicationController
 
   def recommendation_params
     params.fetch(:gift_recommendation, ActionController::Parameters.new).permit(
+      :relationship_mode,
       :budget,
       :needed_by,
       :occasion,

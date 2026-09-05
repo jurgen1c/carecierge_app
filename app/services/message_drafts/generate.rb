@@ -8,6 +8,7 @@ module MessageDrafts
       situation: "",
       response_length: "medium",
       formality: "balanced",
+      expected_relationship_mode: "personal",
       include_private_notes: false,
       include_vault_context: false,
       vault_lease: nil,
@@ -22,6 +23,7 @@ module MessageDrafts
         situation:,
         response_length:,
         formality:,
+        expected_relationship_mode:,
         include_private_notes:,
         include_vault_context:,
         vault_lease:,
@@ -38,12 +40,14 @@ module MessageDrafts
       situation:,
       response_length:,
       formality:,
+      expected_relationship_mode:,
       include_private_notes:,
       include_vault_context:,
       vault_lease:,
       locale:,
       generator:
     )
+      @expected_relationship_mode = expected_relationship_mode
       @actor = actor
       @relationship_profile = relationship_profile
       @draft_type = draft_type
@@ -73,6 +77,9 @@ module MessageDrafts
       relationship_profile.with_lock do
         raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
         reject_stale_generation!(generation_version:, draft_id:)
+        if relationship_profile.professional? && ContextBuilder.new(relationship_profile:).call != context
+          raise GenerationSupersededError, "Professional source context changed"
+        end
 
         draft = MessageDraft.find_by!(id: draft_id, relationship_profile:)
         revision = draft.append_revision!(
@@ -117,6 +124,9 @@ module MessageDrafts
         relationship_profile.with_lock do
           raise ActiveRecord::RecordNotFound unless relationship_profile.user_id == actor.id && !relationship_profile.discarded?
 
+          raise MessageDraft::ModeChangedError unless @expected_relationship_mode == relationship_profile.relationship_mode
+
+          @tone = "professional" if relationship_profile.professional?
           validate_draft_settings!
           validate_vault_access!
           context = ContextBuilder.new(
@@ -177,6 +187,7 @@ module MessageDrafts
       draft = MessageDraft.find_or_initialize_by(relationship_profile:)
       draft.assign_attributes(
         user: actor,
+        relationship_mode: relationship_profile.relationship_mode,
         draft_type:,
         tone:,
         situation:,

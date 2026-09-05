@@ -804,6 +804,7 @@ RSpec.describe "Event plans", type: :request do
     }
 
     expect(EventPlans::Suggest).to have_received(:call).with(
+      expected_relationship_mode: "personal",
       actor: user,
       event_plan: plan,
       private_note_ids: [ private_note.id.to_s ],

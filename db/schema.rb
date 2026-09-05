@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_200615) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_223854) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -676,6 +676,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_200615) do
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.text "vendor"
+    t.string "relationship_mode", default: "personal", null: false
     t.index ["gift_id"], name: "index_gift_recommendations_on_gift_id"
     t.index ["relationship_profile_id", "status", "generated_at"], name: "index_gift_recommendations_on_profile_status_generated"
     t.index ["relationship_profile_id"], name: "index_gift_recommendations_on_relationship_profile_id"
@@ -863,6 +864,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_200615) do
     t.string "tone", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.string "relationship_mode", default: "personal", null: false
     t.index ["relationship_profile_id"], name: "index_message_drafts_on_relationship_profile_id", unique: true
     t.index ["user_id"], name: "index_message_drafts_on_user_id"
     t.check_constraint "char_length(situation) <= 4000", name: "message_drafts_situation_length"
@@ -1043,8 +1045,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_200615) do
     t.string "status", default: "generated", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.string "relationship_mode", default: "personal", null: false
     t.index ["relationship_profile_id", "generated_at"], name: "index_relationship_briefings_on_profile_and_generated_at", order: { generated_at: :desc }
-    t.index ["relationship_profile_id"], name: "index_relationship_briefings_on_one_generated_per_profile", unique: true, where: "((status)::text = 'generated'::text)"
+    t.index ["relationship_profile_id", "relationship_mode"], name: "index_relationship_briefings_on_generated_mode", unique: true, where: "((status)::text = 'generated'::text)"
     t.index ["relationship_profile_id"], name: "index_relationship_briefings_on_relationship_profile_id"
     t.index ["user_id"], name: "index_relationship_briefings_on_user_id"
     t.check_constraint "jsonb_typeof(context_categories) = 'array'::text", name: "relationship_briefings_context_categories_array"
@@ -1144,6 +1147,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_200615) do
     t.string "type", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.text "professional_context"
+    t.string "relationship_mode", default: "personal", null: false
     t.index ["first_name"], name: "index_relationship_profiles_on_first_name"
     t.index ["last_name"], name: "index_relationship_profiles_on_last_name"
     t.index ["preferred_name"], name: "index_relationship_profiles_on_preferred_name"
@@ -1151,6 +1156,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_200615) do
     t.index ["type"], name: "index_relationship_profiles_on_type"
     t.index ["user_id", "discarded_at"], name: "index_relationship_profiles_on_user_id_and_discarded_at"
     t.index ["user_id"], name: "index_relationship_profiles_on_user_id"
+    t.check_constraint "relationship_mode::text = ANY (ARRAY['personal'::character varying::text, 'professional'::character varying::text])", name: "relationship_profiles_mode"
   end
 
   create_table "relationship_taggings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

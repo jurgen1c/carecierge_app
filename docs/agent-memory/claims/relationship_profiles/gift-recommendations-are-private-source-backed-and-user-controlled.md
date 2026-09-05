@@ -3,12 +3,16 @@ id: relationship_profiles.gift_recommendations_are_private_source_backed_and_use
 type: decision
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Gift recommendations are private, source-backed, and user-controlled
 
 claim: >
+  In professional mode, the dedicated work-context boundary replaces ordinary profile
+  sourcing with explicitly selected current work records; personal/private/vault data
+  is not imported automatically. See the professional-mode constraint for selection
+  and mode-specific generation behavior.
   Active profile owners generate up to three encrypted gift recommendations
   only through the suggest_gifts permission. The bounded, non-stored provider
   request uses relationship type, preferences and constraints, desires, prior
@@ -40,6 +44,8 @@ claim: >
   exports and selective AI deletion.
 
 source_files:
+  - app/models/professional_context.rb
+  - app/models/concerns/professional_relationship.rb
   - app/models/gift_recommendation.rb
   - app/controllers/gift_recommendations_controller.rb
   - app/services/gift_recommendations/context_builder.rb
@@ -98,6 +104,7 @@ tags:
   - automation_boundary
 
 verification:
+  - bundle exec rspec spec/models/professional_relationship_spec.rb spec/services/professional_context_spec.rb spec/requests/professional_relationships_spec.rb spec/system/professional_relationships_spec.rb
   - bundle exec rspec spec/models/gift_recommendation_spec.rb spec/services/gift_recommendations spec/policies/gift_recommendation_policy_spec.rb spec/components/gift_recommendation_workspace_component_spec.rb spec/requests/gift_recommendations_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/gift_recommendations_spec.rb
   - bin/rubocop app/models/gift_recommendation.rb app/controllers/gift_recommendations_controller.rb app/services/gift_recommendations app/policies/gift_recommendation_policy.rb app/views/components/gift_recommendation_workspace_component.rb
   - bun run build:css
@@ -106,7 +113,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 01dcbec976f621b4abd80a200a401c592675c74c
 ---
 
 # Gift recommendations are private, source-backed, and user-controlled

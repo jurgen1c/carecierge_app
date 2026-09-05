@@ -3,12 +3,16 @@ id: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
 type: constraint
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Message drafts are private, review-only, and revisioned
 
 claim: >
+  In professional mode, the dedicated work-context boundary replaces ordinary profile
+  sourcing with explicitly selected current work records; personal/private/vault data
+  is not imported automatically. See the professional-mode constraint for selection
+  and mode-specific generation behavior.
   Each active, owner-scoped relationship profile has at most one draft workspace whose
   generated, edited, and restored text is retained as immutable revisions; saved
   edits also persist the selected purpose, tone, response length, formality, and
@@ -41,6 +45,8 @@ claim: >
   preventing output built from revoked or deleted context from being persisted.
 
 source_files:
+  - app/models/professional_context.rb
+  - app/models/concerns/professional_relationship.rb
   - app/models/relationship_profile.rb
   - app/models/message_draft.rb
   - app/models/draft_revision.rb
@@ -105,6 +111,7 @@ tags:
   - constraint
 
 verification:
+  - bundle exec rspec spec/models/professional_relationship_spec.rb spec/services/professional_context_spec.rb spec/requests/professional_relationships_spec.rb spec/system/professional_relationships_spec.rb
   - bundle exec rspec spec/models/message_draft_spec.rb spec/models/draft_revision_spec.rb spec/services/message_drafts spec/policies/message_draft_policy_spec.rb spec/components/message_draft_workspace_component_spec.rb spec/requests/message_drafts_spec.rb spec/requests/data_controls_spec.rb spec/system/message_drafts_spec.rb
   - bin/rubocop app/models/message_draft.rb app/models/draft_revision.rb app/services/message_drafts app/controllers/message_drafts_controller.rb app/controllers/relationship_profiles_controller.rb app/policies/message_draft_policy.rb app/views/components/message_draft_workspace_component.rb spec/models/message_draft_spec.rb spec/models/draft_revision_spec.rb spec/services/message_drafts spec/policies/message_draft_policy_spec.rb spec/components/message_draft_workspace_component_spec.rb spec/requests/message_drafts_spec.rb spec/system/message_drafts_spec.rb
   - bun run build:css
@@ -112,7 +119,7 @@ verification:
   - bin/memory coverage --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 01dcbec976f621b4abd80a200a401c592675c74c
 ---
 
 # Message drafts are private, review-only, and revisioned

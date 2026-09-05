@@ -22,6 +22,8 @@
     </div>
   </header>
 
+  <%= component "professional_context", relationship_profile: @relationship_profile if @relationship_profile.professional? %>
+
   <% unless @relationship_profile.archived? %>
     <%= component "relationship_briefing_workspace",
       relationship_profile: @relationship_profile,
@@ -51,7 +53,7 @@
 
   <%= render "important_dates/section", relationship_profile: @relationship_profile %>
   <%= render "contact_cadences/section", relationship_profile: @relationship_profile, interactions: @interactions %>
-  <% unless @relationship_profile.archived? %>
+  <% if !@relationship_profile.archived? && (!@relationship_profile.professional? || @relationship_profile.professional_gifts_allowed?) %>
     <%= component "gift_recommendation_workspace",
       relationship_profile: @relationship_profile,
       recommendations: @gift_recommendations,
@@ -65,7 +67,7 @@
   <%= render "gifts/section", relationship_profile: @relationship_profile %>
   <%= render "privacy_vaults/section", relationship_profile: @relationship_profile %>
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>
-  <%= render "relationship_personas/section", relationship_profile: @relationship_profile, relationship_persona: @relationship_persona %>
+  <%= render "relationship_personas/section", relationship_profile: @relationship_profile, relationship_persona: @relationship_persona unless @relationship_profile.professional? %>
   <%= render "suggestions/section",
     relationship_profile: @relationship_profile,
     suggestions: @suggestions,

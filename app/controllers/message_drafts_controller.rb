@@ -6,6 +6,7 @@ class MessageDraftsController < ApplicationController
   before_action :set_relationship_profile
   before_action :set_message_draft, only: %i[update restore destroy]
 
+  rescue_from MessageDraft::ModeChangedError, with: -> { redirect_to workspace_path, alert: t("professional_relationships.stale_draft") }
   rescue_from ActiveRecord::RecordNotFound, with: -> { head :not_found }
 
   def generate
@@ -17,6 +18,7 @@ class MessageDraftsController < ApplicationController
       relationship_profile: @relationship_profile,
       draft_type: generation_params[:draft_type],
       tone: generation_params[:tone],
+      expected_relationship_mode: generation_params.fetch(:relationship_mode, "personal"),
       situation: generation_params[:situation],
       response_length: generation_params[:response_length],
       formality: generation_params[:formality],
@@ -44,6 +46,7 @@ class MessageDraftsController < ApplicationController
       content: attributes[:content],
       draft_type: attributes[:draft_type],
       tone: attributes[:tone],
+      expected_relationship_mode: attributes.fetch(:relationship_mode, "personal"),
       **attributes.slice(:situation, :response_length, :formality).to_h.symbolize_keys
     )
 
@@ -80,6 +83,7 @@ class MessageDraftsController < ApplicationController
 
   def generation_params
     params.require(:message_draft).permit(
+      :relationship_mode,
       :draft_type,
       :tone,
       :situation,
@@ -91,7 +95,7 @@ class MessageDraftsController < ApplicationController
   end
 
   def update_params
-    params.require(:message_draft).permit(:content, :draft_type, :tone, :situation, :response_length, :formality)
+    params.require(:message_draft).permit(:relationship_mode, :content, :draft_type, :tone, :situation, :response_length, :formality)
   end
 
   def use_private_notes?

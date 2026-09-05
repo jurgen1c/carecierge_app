@@ -13,6 +13,7 @@ module BackupPlans
     )
 
     def self.call(
+      expected_relationship_mode: "personal",
       actor:,
       event_plan:,
       scenario:,
@@ -23,6 +24,7 @@ module BackupPlans
       generator: LlmGenerator.new
     )
       new(
+        expected_relationship_mode:,
         actor:,
         event_plan:,
         scenario:,
@@ -76,7 +78,7 @@ module BackupPlans
 
     private
 
-    attr_reader :actor, :event_plan, :scenario, :private_note_ids, :vault_item_ids, :vault_lease, :locale, :generator
+    attr_reader :expected_relationship_mode, :actor, :event_plan, :scenario, :private_note_ids, :vault_item_ids, :vault_lease, :locale, :generator
 
     def relationship_profile = event_plan.relationship_profile
 
@@ -98,6 +100,7 @@ module BackupPlans
     end
 
     def validate_request!
+      relationship_profile.ensure_generation_mode!(expected_relationship_mode)
       raise ActiveRecord::RecordNotFound unless event_plan.user_id == actor.id
       raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
       raise ActiveRecord::RecordNotFound unless event_plan.active?

@@ -41,6 +41,12 @@ module EventPlans
     attr_reader :event_plan, :relationship_profile, :private_note_ids, :vault_item_ids, :locale, :as_of
 
     def sources
+      if relationship_profile.professional?
+        return relationship_profile.work_context(as_of:).entries.map do |entry|
+          source(**entry.to_h.except(:section))
+        end
+      end
+
       private_sources = selected_private_note_sources
       vault_sources = selected_vault_sources
       ordinary_sources = [ profile_source ] + preference_sources + memory_sources + important_date_sources +

@@ -1,6 +1,21 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    relation: constrains
+    reason: Professional generation requires explicitly selected live work sources and excludes personal and sensitive context.
+    strength: 100
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: constrains
+    reason: Professional generation requires explicitly selected live work sources and excludes personal and sensitive context.
+    strength: 100
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    relation: constrains
+    reason: Professional generation requires explicitly selected live work sources and excludes personal and sensitive context.
+    strength: 100
   - source: shared_spaces.family_membership_is_consensual_and_departure_removes_personal_contributions
     target: shared_spaces.couple_spaces_require_explicit_consent_and_isolate_private_records
     relation: same_area
@@ -1116,3 +1131,38 @@ edges:
     relation: requires
     reason: Analysis and permanent deletion retain metadata-only evidence without copying social content into the audit ledger.
     strength: 95
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    relation: same_area
+    reason: Both provider catalogs apply professional work-source selection before generation.
+    strength: 90
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: same_area
+    reason: Both generators reuse the professional context boundary and exclude personal sources.
+    strength: 90
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    relation: same_area
+    reason: Professional mode withholds gift-box companion suggestions while retaining manual bundles.
+    strength: 90
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    relation: same_area
+    reason: Professional gifts continue through existing manual purchase workflows without automatic buying.
+    strength: 90
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.preference_metadata
+    relation: same_area
+    reason: Selected professional preferences retain the existing source confidence and constraint metadata.
+    strength: 90
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: same_area
+    reason: Professional mode and source selectors remain under the existing profile owner policy.
+    strength: 90
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    relation: same_area
+    reason: Professional generation excludes social-context sources even when separately approved for personal suggestions.
+    strength: 90

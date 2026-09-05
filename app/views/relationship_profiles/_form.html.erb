@@ -2,6 +2,7 @@
 <% relationship_template_groups = relationship_profile_form.relationship_template_groups %>
 
 <%= form_with model: relationship_profile, scope: :relationship_profile, url: form_url, class: "grid gap-6", data: { controller: "relationship-template-fields", relationship_template_fields_fallback_type_value: relationship_profile_form.fallback_relationship_template_type } do |form| %>
+  <%= component "professional_context", relationship_profile:, form: %>
   <% if relationship_profile.errors.any? %>
     <section class="rounded-lg border border-red-200 bg-red-50 p-4" role="alert">
       <h2 class="text-sm font-semibold text-red-950"><%= t(".errors_heading", count: relationship_profile.errors.count) %></h2>

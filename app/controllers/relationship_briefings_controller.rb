@@ -14,6 +14,7 @@ class RelationshipBriefingsController < ApplicationController
     return require_vault_unlock if include_vault_context? && !touch_privacy_vault_lease!
 
     RelationshipBriefings::Generate.call(
+      expected_relationship_mode: briefing_params.fetch(:relationship_mode, "personal"),
       actor: current_user,
       relationship_profile: @relationship_profile,
       interaction_context: briefing_params[:interaction_context],
@@ -24,6 +25,8 @@ class RelationshipBriefingsController < ApplicationController
     )
 
     redirect_to workspace_path, notice: t("relationship_briefings.generate.notice")
+  rescue ProfessionalRelationship::ModeChangedError
+    redirect_to workspace_path, alert: t("professional_relationships.stale_context")
   rescue RelationshipBriefings::VaultAccessError
     require_vault_unlock
   rescue RelationshipBriefings::GenerationSupersededError
@@ -61,7 +64,7 @@ class RelationshipBriefingsController < ApplicationController
   end
 
   def briefing_params
-    params.require(:relationship_briefing).permit(:interaction_context, :include_private_notes, :include_vault_context)
+    params.require(:relationship_briefing).permit(:relationship_mode, :interaction_context, :include_private_notes, :include_vault_context)
   end
 
   def include_private_notes?

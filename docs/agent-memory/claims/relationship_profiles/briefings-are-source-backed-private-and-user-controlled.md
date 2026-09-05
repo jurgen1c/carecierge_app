@@ -3,12 +3,16 @@ id: relationship_profiles.briefings_are_source_backed_private_and_user_controlle
 type: constraint
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Relationship briefings are source-backed, private, and user-controlled
 
 claim: >
+  In professional mode, the dedicated work-context boundary replaces ordinary profile
+  sourcing with explicitly selected current work records; personal/private/vault data
+  is not imported automatically. See the professional-mode constraint for selection
+  and mode-specific generation behavior.
   Active profile owners manually request encrypted relationship briefings for a
   bounded interaction context. The provider receives only a bounded source catalog
   of current timeline entries, open commitments, upcoming dates, preferences, and
@@ -31,6 +35,8 @@ claim: >
   selective AI deletion, and filter submitted interaction context from logs.
 
 source_files:
+  - app/models/professional_context.rb
+  - app/models/concerns/professional_relationship.rb
   - app/models/relationship_briefing.rb
   - app/models/concerns/briefing_source_lock.rb
   - app/models/relationship_profile.rb
@@ -91,6 +97,7 @@ tags:
   - constraint
 
 verification:
+  - bundle exec rspec spec/models/professional_relationship_spec.rb spec/services/professional_context_spec.rb spec/requests/professional_relationships_spec.rb spec/system/professional_relationships_spec.rb
   - bundle exec rspec spec/models/relationship_briefing_spec.rb spec/services/relationship_briefings spec/services/memory_extractions/extract_spec.rb spec/policies/relationship_briefing_policy_spec.rb spec/components/relationship_briefing_workspace_component_spec.rb spec/requests/relationship_briefings_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/config/filter_parameter_logging_spec.rb spec/config/ai_memory_deploy_spec.rb
   - bin/rubocop
   - bun run build:css
@@ -99,7 +106,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 6ec0bccd394b1552e469b2f7d3802dc78b8ac2f1
+last_verified_commit: 01dcbec976f621b4abd80a200a401c592675c74c
 ---
 
 # Relationship briefings are source-backed, private, and user-controlled

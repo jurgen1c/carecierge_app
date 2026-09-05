@@ -11,6 +11,8 @@ module GiftBoxes
     end
 
     def call
+      return [] if @box.relationship_profile.professional?
+
       return [] if @box.constraints.present? || (@box.remaining_budget && @box.remaining_budget <= 0)
 
       preferences = @box.relationship_profile.relationship_preferences.order(:id).to_a

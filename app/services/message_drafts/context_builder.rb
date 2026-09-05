@@ -43,6 +43,11 @@ module MessageDrafts
     end
 
     def entries
+      if relationship_profile.professional?
+        return [ [ "profile", "Professional relationship", relationship_profile.display_name ] ] +
+          relationship_profile.work_context.entries.map { |entry| [ "professional", entry.kind, "[#{entry.certainty}] #{entry.content}" ] }
+      end
+
       private_entries = private_note_entries
       protected_entries = vault_entries
 

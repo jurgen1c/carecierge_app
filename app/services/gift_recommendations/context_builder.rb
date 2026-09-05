@@ -34,6 +34,12 @@ module GiftRecommendations
     attr_reader :relationship_profile, :private_note_ids, :vault_item_ids, :locale, :as_of
 
     def sources
+      if relationship_profile.professional?
+        return relationship_profile.work_context(as_of:).entries.map do |entry|
+          source(**entry.to_h.except(:section), label: I18n.t("professional_relationships.source_label", locale:))
+        end
+      end
+
       private_sources = selected_private_note_sources
       protected_sources = selected_vault_sources
       preferences = preference_sources

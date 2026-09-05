@@ -15,6 +15,7 @@ module EventPlans
     )
 
     def self.call(
+      expected_relationship_mode: "personal",
       actor:,
       event_plan:,
       private_note_ids: [],
@@ -24,6 +25,7 @@ module EventPlans
       generator: LlmSuggester.new
     )
       new(
+        expected_relationship_mode:,
         actor:,
         event_plan:,
         private_note_ids:,
@@ -72,7 +74,7 @@ module EventPlans
 
     private
 
-    attr_reader :actor, :event_plan, :private_note_ids, :vault_item_ids, :vault_lease, :locale, :generator
+    attr_reader :expected_relationship_mode, :actor, :event_plan, :private_note_ids, :vault_item_ids, :vault_lease, :locale, :generator
 
     def relationship_profile = event_plan.relationship_profile
 
@@ -94,6 +96,7 @@ module EventPlans
     end
 
     def validate_plan!
+      relationship_profile.ensure_generation_mode!(expected_relationship_mode)
       raise ActiveRecord::RecordNotFound unless event_plan.user_id == actor.id
       raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
       raise ActiveRecord::RecordNotFound unless event_plan.active?

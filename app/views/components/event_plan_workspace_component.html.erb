@@ -186,6 +186,7 @@
 
         <% if event_plan.active? %>
           <%= form_with url: generate_event_plan_backup_plans_path(event_plan), method: :post, class: "mt-5 space-y-4" do %>
+            <%= hidden_field_tag "backup_plan[relationship_mode]", event_plan.relationship_profile.relationship_mode %>
             <div class="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
               <div>
                 <%= label_tag "backup_plan_scenario", t("event_plans.backup_plans.scenario_label"), class: "block text-sm font-semibold text-ink" %>
@@ -346,6 +347,7 @@
         <h2 id="event-plan-suggestions-title" class="text-lg font-semibold text-ink"><%= t("event_plans.suggestions.title") %></h2>
         <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("event_plans.suggestions.body") %></p>
         <%= form_with url: suggest_event_plan_path(event_plan), method: :post, class: "mt-5 space-y-4" do %>
+          <%= hidden_field_tag "event_plan_suggestion[relationship_mode]", event_plan.relationship_profile.relationship_mode %>
           <% if private_notes.any? %>
             <fieldset class="space-y-2">
               <legend class="text-sm font-semibold text-ink"><%= t("event_plans.suggestions.private_notes") %></legend>

@@ -5,6 +5,7 @@ module GiftRecommendations
     MAX_PROVIDER_EXCLUDED_TITLE_LENGTH = 200
 
     def self.call(
+      expected_relationship_mode: "personal",
       actor:,
       relationship_profile:,
       budget_cents: nil,
@@ -20,6 +21,7 @@ module GiftRecommendations
       generator: OpenAiGenerator.new
     )
       new(
+        expected_relationship_mode:,
         actor:,
         relationship_profile:,
         budget_cents:,
@@ -91,7 +93,7 @@ module GiftRecommendations
 
     private
 
-    attr_reader :actor, :relationship_profile, :budget_cents, :needed_by, :occasion, :allow_repeats,
+    attr_reader :expected_relationship_mode, :actor, :relationship_profile, :budget_cents, :needed_by, :occasion, :allow_repeats,
       :private_note_ids, :vault_item_ids, :vault_lease, :explicitly_approved, :locale, :replace, :generator
 
     def prepare_generation!
@@ -114,6 +116,7 @@ module GiftRecommendations
     end
 
     def validate_request!
+      relationship_profile.ensure_generation_mode!(expected_relationship_mode)
       if relationship_profile.professional? && !relationship_profile.professional_gifts_allowed?
         raise GenerationError, "Professional gift suitability must be confirmed"
       end

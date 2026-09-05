@@ -1,6 +1,7 @@
 module RelationshipBriefings
   class Generate
     def self.call(
+      expected_relationship_mode: "personal",
       actor:,
       relationship_profile:,
       interaction_context:,
@@ -11,6 +12,7 @@ module RelationshipBriefings
       generator: OpenAiGenerator.new
     )
       new(
+        expected_relationship_mode:,
         actor:,
         relationship_profile:,
         interaction_context:,
@@ -23,6 +25,7 @@ module RelationshipBriefings
     end
 
     def initialize(
+      expected_relationship_mode:,
       actor:,
       relationship_profile:,
       interaction_context:,
@@ -32,6 +35,7 @@ module RelationshipBriefings
       locale:,
       generator:
     )
+      @expected_relationship_mode = expected_relationship_mode
       @actor = actor
       @relationship_profile = relationship_profile
       @interaction_context = interaction_context.to_s.squish
@@ -85,7 +89,7 @@ module RelationshipBriefings
 
     private
 
-    attr_reader :actor,
+    attr_reader :expected_relationship_mode, :actor,
       :relationship_profile,
       :interaction_context,
       :include_private_notes,
@@ -109,6 +113,7 @@ module RelationshipBriefings
     end
 
     def validate_profile!
+      relationship_profile.ensure_generation_mode!(expected_relationship_mode)
       raise ActiveRecord::RecordNotFound unless relationship_profile.user_id == actor.id
       raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
     end

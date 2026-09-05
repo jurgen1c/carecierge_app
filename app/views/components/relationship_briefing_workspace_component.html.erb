@@ -15,6 +15,7 @@
       url: generate_relationship_profile_relationship_briefings_path(relationship_profile),
       method: :post,
       class: "space-y-5" do |form| %>
+      <%= form.hidden_field :relationship_mode, value: relationship_profile.relationship_mode %>
       <div>
         <%= form.label :interaction_context, t("relationship_briefings.fields.interaction_context"), class: "block text-sm font-semibold text-ink" %>
         <%= form.text_area :interaction_context,

@@ -14,6 +14,7 @@
   <div class="grid gap-0 lg:grid-cols-[minmax(17rem,0.78fr)_minmax(0,1.22fr)]">
     <% if enabled? %>
       <%= form_with url: generate_relationship_profile_gift_recommendations_path(relationship_profile), scope: :gift_recommendation, class: "border-b border-private-line bg-surface p-5 lg:border-b-0 lg:border-r sm:p-6" do |form| %>
+        <%= hidden_field_tag "gift_recommendation[relationship_mode]", relationship_profile.relationship_mode %>
         <h3 class="text-base font-semibold text-ink"><%= t("gift_recommendations.form.title") %></h3>
         <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("gift_recommendations.form.body") %></p>
 
@@ -109,6 +110,7 @@
                     <%= button_to t("gift_recommendations.actions.purchase"), purchase_relationship_profile_gift_recommendation_path(relationship_profile, recommendation), method: :patch, class: style(:secondary_button) %>
                     <% if enabled? %>
                       <%= form_with url: alternative_relationship_profile_gift_recommendation_path(relationship_profile, recommendation), method: :post, scope: :gift_recommendation, class: "grid gap-2 rounded-lg border border-private-line bg-surface p-2" do |form| %>
+                        <%= hidden_field_tag "gift_recommendation[relationship_mode]", relationship_profile.relationship_mode %>
                         <% if sensitive_source_kind?(recommendation, "private_note") %>
                           <label class="flex items-start gap-2 px-1 text-xs leading-5 text-quiet-note">
                             <%= form.check_box :include_private_notes, { class: "mt-0.5 size-4 rounded border-stone-300 text-primary focus:ring-primary" }, "1", "0" %>

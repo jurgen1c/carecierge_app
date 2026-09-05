@@ -80,6 +80,7 @@ class EventPlansController < ApplicationController
     return require_vault_unlock if selected_vault_item_ids.any? && !touch_privacy_vault_lease!
 
     EventPlans::Suggest.call(
+      expected_relationship_mode: suggestion_params.fetch(:relationship_mode, "personal"),
       actor: current_user,
       event_plan: @event_plan,
       private_note_ids: selected_private_note_ids,
@@ -88,6 +89,8 @@ class EventPlansController < ApplicationController
       locale: I18n.locale
     )
     redirect_to event_plan_path(@event_plan), notice: t("event_plans.suggest.notice")
+  rescue ProfessionalRelationship::ModeChangedError
+    redirect_to event_plan_path(@event_plan), alert: t("professional_relationships.stale_context")
   rescue EventPlans::VaultAccessError
     require_vault_unlock
   rescue EventPlans::GenerationSupersededError
@@ -195,6 +198,7 @@ class EventPlansController < ApplicationController
 
   def suggestion_params
     params.fetch(:event_plan_suggestion, ActionController::Parameters.new).permit(
+      :relationship_mode,
       private_note_ids: [],
       vault_item_ids: []
     )

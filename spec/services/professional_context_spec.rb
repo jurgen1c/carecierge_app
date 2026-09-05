@@ -80,7 +80,7 @@ RSpec.describe "Professional generation lifecycle" do
     generator = double
     expect(generator).not_to receive(:generate)
     expect do
-      GiftRecommendations::Generate.call(actor: profile.user, relationship_profile: profile, generator:)
+      GiftRecommendations::Generate.call(expected_relationship_mode: "professional", actor: profile.user, relationship_profile: profile, generator:)
     end.to raise_error(GiftRecommendations::GenerationError)
   end
 
@@ -115,7 +115,7 @@ RSpec.describe "Professional milestones and retained guidance" do
     profile = create(:relationship_profile, relationship_mode: "professional", professional_context: { "organization" => "Acme" })
     personal = create(:relationship_briefing, relationship_profile: profile, user: profile.user)
     generator = double(generate: [ { "key" => "recent_activity", "items" => [ { "body" => "Prepare for Acme", "certainty" => "confirmed", "source_ids" => [ "professional:organization" ] } ] } ])
-    work = RelationshipBriefings::Generate.call(actor: profile.user, relationship_profile: profile, interaction_context: "Work meeting", generator:)
+    work = RelationshipBriefings::Generate.call(expected_relationship_mode: "professional", actor: profile.user, relationship_profile: profile, interaction_context: "Work meeting", generator:)
     expect(work).to be_generated
     expect(personal.reload).to be_generated
   end
@@ -125,7 +125,7 @@ RSpec.describe "Professional milestones and retained guidance" do
     create(:automation_permission, user: profile.user, capability: "suggest_gifts", mode: "allow_automatically")
     personal = create(:gift_recommendation, relationship_profile: profile, user: profile.user)
     generator = double(generate: [ { "title" => "Office notebook", "rationale" => "Appropriate stationery", "estimated_price_cents" => 1000, "vendor" => nil, "source_ids" => [ "professional:boundaries" ] } ])
-    ideas = GiftRecommendations::Generate.call(actor: profile.user, relationship_profile: profile, generator:)
+    ideas = GiftRecommendations::Generate.call(expected_relationship_mode: "professional", actor: profile.user, relationship_profile: profile, generator:)
     expect(ideas.sole.relationship_mode).to eq("professional")
     expect(personal.reload).to be_generated
   end

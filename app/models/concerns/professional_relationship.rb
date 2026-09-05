@@ -1,6 +1,8 @@
 module ProfessionalRelationship
   extend ActiveSupport::Concern
 
+  class ModeChangedError < StandardError; end
+
   included do
     serialize :professional_context, coder: JSON
     encrypts :professional_context
@@ -8,6 +10,10 @@ module ProfessionalRelationship
     before_validation :normalize_work_source_ids
     validate :professional_context_is_valid, if: :will_save_change_to_professional_context?
     before_update :fence_professional_context_changes
+  end
+
+  def ensure_generation_mode!(expected_mode)
+    raise ModeChangedError unless relationship_mode == expected_mode
   end
 
   def professional_context

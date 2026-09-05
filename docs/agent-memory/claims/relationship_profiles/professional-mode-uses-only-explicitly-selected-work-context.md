@@ -21,6 +21,16 @@ claim: Active owners explicitly choose professional mode independently of the pr
   persist their mode. Owner exports include decrypted work context, account/profile
   deletion removes it, and requests filter context with no-store profile pages.
 source_files:
+- app/controllers/relationship_briefings_controller.rb
+- app/controllers/gift_recommendations_controller.rb
+- app/controllers/event_plans_controller.rb
+- app/controllers/backup_plans_controller.rb
+- app/services/event_plans/suggest.rb
+- app/services/backup_plans/generate.rb
+- app/agents/backup_plans/llm_generator.rb
+- app/views/components/relationship_briefing_workspace_component.html.erb
+- app/views/components/gift_recommendation_workspace_component.html.erb
+- app/views/components/event_plan_workspace_component.html.erb
 - app/controllers/message_drafts_controller.rb
 - app/agents/event_plans/llm_suggester.rb
 - db/migrate/20260905223854_add_relationship_mode_to_relationship_briefings.rb
@@ -60,6 +70,8 @@ source_files:
 - db/schema.rb
 - docs/features/14-03-professional-relationship-mode.md
 related_files:
+- spec/requests/professional_generation_modes_spec.rb
+- spec/requests/event_plans_spec.rb
 - spec/components/professional_context_boundary_spec.rb
 - spec/models/professional_relationship_spec.rb
 - spec/services/professional_context_spec.rb
@@ -104,4 +116,6 @@ Draft settings retain their own mode even when provider generation fails, so a f
 
 Recurring selected milestones use their next occurrence in the owner time zone. Generating guidance retires only results in the active mode, and the briefing uniqueness index permits one generated result per profile and mode.
 
-Draft forms submit their expected relationship mode. Edits and generation reject cross-mode stale submissions under the profile lock, in either direction; legacy forms without the mode field are treated as personal. Event provider instructions prioritize business-appropriate language and work boundaries for professional sources.
+Draft, briefing, gift (including alternatives), event suggestion and backup generation forms submit their expected relationship mode. Edits and generation reject cross-mode stale submissions under the profile lock, in either direction; legacy forms without the mode field are treated as personal. Event provider instructions prioritize business-appropriate language and work boundaries for professional sources.
+
+Mode mismatches redirect to a freshly loaded workspace without retaining stale free-form text. Event and backup plan workspaces retain explicit plan intent while professional source boundaries override conflicting tone.

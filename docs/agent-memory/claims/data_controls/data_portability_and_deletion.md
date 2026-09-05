@@ -3,7 +3,7 @@ id: data_controls.data_portability_and_deletion
 type: fact
 system: data_controls
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -140,6 +140,7 @@ tags:
   - account_deletion
 
 verification:
+  - bundle exec rspec
   - bundle exec rspec spec/requests/contacts_connections_spec.rb spec/services/contacts/provider_spec.rb spec/requests/messaging_connections_spec.rb
   - bundle exec rspec spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
   - bin/rubocop
@@ -148,7 +149,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: f5e5436a323c83d20a3f6d3d895ae1d7a84cca73
+last_verified_commit: 46e8571044889efe4b1047d89378a6f8b25dd51c
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized

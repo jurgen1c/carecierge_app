@@ -3,7 +3,7 @@ id: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservativ
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 title: Gift boxes are private manual bundles with conservative companion suggestions
 claim: >
@@ -61,7 +61,7 @@ verification:
   - bundle exec rspec spec/requests/gift_boxes_spec.rb spec/models/gift_box_spec.rb spec/services/gift_boxes spec/system/gift_boxes_spec.rb spec/serializers/data_exports/gift_box_snapshot_spec.rb
   - bundle exec rspec
   - bin/ci
-last_verified_commit: null
+last_verified_commit: e68e2b7f3e266095c20d7ed3f4ff9f3dad73cafa
 ---
 
 # Gift boxes are private manual bundles with conservative companion suggestions

@@ -1,10 +1,10 @@
 ---
 es:
   shared_spaces:
-    title: Espacios compartidos en pareja
+    title: Espacios compartidos
     back: Volver a hoy
-    introduction: Hagan espacio para los planes que ambos eligen. Comienza con una
-      invitación; el espacio se comparte solo cuando la otra persona acepta.
+    introduction: Coordina en pareja o en familia. Cada persona decide si desea unirse;
+      las relaciones y notas privadas permanecen separadas.
     invitations: Invitaciones para ti
     invitation_from: Invitación de %{email}
     acceptance_rules: Al aceptar, compartes el correo de tu cuenta con esta persona.

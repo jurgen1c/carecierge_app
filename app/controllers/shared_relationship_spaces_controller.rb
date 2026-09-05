@@ -11,8 +11,9 @@ class SharedRelationshipSpacesController < ApplicationController
 
   def show
     authorize @space
+    @family_memberships = @space.family_memberships.includes(:user).order(:created_at) if @space.family?
     if @space.active?
-      @pagy, @items = pagy(:offset, @space.shared_items.ordered.includes(:creator, :assignee, :parent, :shared_reminder_subscriptions), limit: 20)
+      @pagy, @items = pagy(:offset, filtered_items.includes(:creator, :assignee, :parent, :shared_reminder_subscriptions, family_responses: :user), limit: 20)
     end
   end
 
@@ -20,7 +21,7 @@ class SharedRelationshipSpacesController < ApplicationController
     authorize SharedRelationshipSpace
     @new_space = SharedRelationshipSpace.new(space_params.merge(owner: current_user, invitation_expires_at: 7.days.from_now))
     current_user.with_lock("FOR NO KEY UPDATE") do
-      if SharedRelationshipSpace.where(owner: current_user, partner_id: nil).where("invitation_expires_at > ?", Time.current).count >= 5
+      if !@new_space.family? && SharedRelationshipSpace.where(owner: current_user, mode: "couple", partner_id: nil).where("invitation_expires_at > ?", Time.current).count >= 5
         @new_space.errors.add(:base, t("shared_spaces.invitation_limit"))
       else
         @new_space.save
@@ -52,6 +53,7 @@ class SharedRelationshipSpacesController < ApplicationController
 
   def load_index
     @pagy, @spaces = pagy(:offset, policy_scope(SharedRelationshipSpace).includes(:owner, :partner).order(created_at: :desc, id: :desc), limit: 20)
+    @family_invitations = current_user.confirmed? ? FamilyMembership.invitations_for(current_user).includes(shared_relationship_space: :owner).order(created_at: :desc).limit(20) : []
     @invitations = current_user.confirmed? ? SharedRelationshipSpace.invitations_for(current_user).includes(:owner).order(created_at: :desc).limit(20) : []
   end
 
@@ -61,7 +63,19 @@ class SharedRelationshipSpacesController < ApplicationController
     @space = scope.includes(:owner, :partner).find(params[:id])
   end
 
+  def filtered_items
+    items = @space.shared_items.ordered
+    return items unless @space.family?
+
+    items = items.where(category: params[:category]) if SharedItem::CATEGORIES.include?(params[:category])
+    case params[:view]
+    when "calendar" then items.where(due_at: Time.current.., completed_at: nil)
+    when "mine" then items.where(assignee: current_user, completed_at: nil)
+    else items
+    end
+  end
+
   def space_params
-    params.require(:shared_relationship_space).permit(:title, :invited_email)
+    params.require(:shared_relationship_space).permit(:title, :invited_email, :mode)
   end
 end

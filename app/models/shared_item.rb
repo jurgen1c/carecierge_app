@@ -1,5 +1,6 @@
 class SharedItem < ApplicationRecord
   KINDS = %w[plan date task reminder note].freeze
+  CATEGORIES = %w[general birthday gift rsvp care holiday].freeze
   EDITING_RULES = %w[creator participants].freeze
 
   belongs_to :shared_relationship_space
@@ -7,6 +8,7 @@ class SharedItem < ApplicationRecord
   belongs_to :assignee, class_name: "User", optional: true
   belongs_to :parent, class_name: "SharedItem", optional: true
   has_many :children, class_name: "SharedItem", foreign_key: :parent_id, dependent: :nullify, inverse_of: :parent
+  has_many :family_responses, dependent: :destroy
   has_many :shared_reminder_subscriptions, dependent: :destroy
   has_many :notification_events, as: :record, class_name: "Noticed::Event", dependent: :destroy
 
@@ -15,6 +17,7 @@ class SharedItem < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: 160 }
   validates :details, length: { maximum: 5_000 }
+  validates :category, inclusion: { in: CATEGORIES }
   validates :kind, inclusion: { in: KINDS }
   validates :editing, inclusion: { in: EDITING_RULES }
   validates :due_at, presence: true, if: -> { kind.in?(%w[date reminder]) }

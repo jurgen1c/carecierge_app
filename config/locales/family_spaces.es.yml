@@ -1,0 +1,74 @@
+{
+  "es": {
+    "family_spaces": {
+      "mode": "Espacio familiar",
+      "create": "Crear un espacio familiar",
+      "create_hint": "Crea un lugar compartido para fechas y responsabilidades familiares. Invita después a otras personas; cada una decide si desea unirse.",
+      "name": "Nombre del espacio familiar",
+      "privacy": "Solo los familiares que aceptaron pueden ver este espacio. Tus notas privadas siguen siendo privadas.",
+      "boundaries": "Agrega solo lo que tu familia acuerde compartir. No se asignan tareas ni recordatorios automáticamente.",
+      "end_hint": "Solo quien organiza puede terminar el espacio familiar. Se eliminan permanentemente los contenidos, respuestas y recordatorios compartidos. Eliminar la cuenta de quien organiza tiene el mismo efecto.",
+      "confirm_end": "Entiendo que esto elimina todo el espacio familiar para todas las personas.",
+      "item_privacy": "Todo lo que ingreses aquí es visible para los familiares que aceptaron. Las notas personales permanecen en tu espacio privado de relaciones.",
+      "everyone_edits": "Todos los familiares pueden editar",
+      "category": "Actividad familiar",
+      "rsvp_hint": "Usa un plan de confirmación de asistencia para que cada familiar responda por su cuenta. La actividad no cambia después de la primera respuesta.",
+      "rsvp": "Respuestas familiares",
+      "my_rsvp": "Mi respuesta",
+      "choose_response": "Elige una respuesta",
+      "save_rsvp": "Guardar mi respuesta",
+      "invitations": "Invitaciones familiares para ti",
+      "acceptance": "Al aceptar, tu correo de cuenta y la etiqueta de parentesco serán visibles para quienes aceptaron. Podrás ver el contenido compartido existente y agregar el tuyo. Quien organiza administra las invitaciones; puedes salir y retirar tus aportes. Las notas privadas permanecen separadas.",
+      "calendar": "Calendario familiar",
+      "calendar_hint": "Consulta las próximas fechas y las responsabilidades que elegiste. Cada fecha indica su zona horaria; agrega cada cumpleaños o celebración cuando la planifiques.",
+      "show": "Mostrar",
+      "all_categories": "Todas las actividades",
+      "apply": "Mostrar contenidos",
+      "starters": "Comenzar con un momento familiar",
+      "starters_hint": "Son puntos de partida para tu planificación. Confirma quién desea participar y qué quiere compartir. No se usa contexto privado ni se crea nada hasta que guardes.",
+      "private_workspace": "Mis relaciones y notas privadas",
+      "roster": "Quién comparte este espacio",
+      "organizer": "Organiza",
+      "leave": "Salir del espacio familiar",
+      "remove": "Retirar invitación o integrante",
+      "leave_hint": "Se eliminan los aportes compartidos, respuestas y recordatorios de esta persona y se liberan sus responsabilidades. El resto permanece. Para volver, necesita una nueva invitación.",
+      "confirm_leave": "Entiendo que esto retira el acceso y los aportes de esta persona.",
+      "invite": "Invitar a un familiar",
+      "invite_hint": "Usa el correo confirmado de su cuenta de Carecierge. La invitación en la aplicación dura siete días; no se envían correos ni mensajes. Las etiquetas describen su relación contigo y no otorgan tutela ni autoridad. Hasta 20 invitaciones o integrantes por familia.",
+      "email": "Correo de cuenta del familiar",
+      "relationship": "Relación con quien organiza",
+      "invalid_invitation": "Revisa el correo y el parentesco. Puede existir una invitación; cancélala antes de crear otra.",
+      "member_limit": "Retira una invitación o integrante antes de invitar a otra persona.",
+      "invited": "Invitación familiar creada. La otra persona decide si desea unirse.",
+      "confirm_required": "Confirma que deseas retirar el acceso y los aportes.",
+      "removed": "Participación familiar retirada.",
+      "views": {
+        "all": "Toda la coordinación",
+        "calendar": "Próximas fechas",
+        "mine": "Mis responsabilidades"
+      },
+      "categories": {
+        "general": "General",
+        "birthday": "Cumpleaños",
+        "gift": "Coordinación de regalos",
+        "rsvp": "Confirmación de asistencia",
+        "care": "Tareas de cuidado",
+        "holiday": "Planificación de celebraciones"
+      },
+      "types": {
+        "parent": "Madre o padre",
+        "child": "Hija o hijo",
+        "sibling": "Hermana o hermano",
+        "grandparent": "Abuela o abuelo",
+        "extended_family": "Familia extendida",
+        "chosen_family": "Familia elegida",
+        "other": "Otro parentesco"
+      },
+      "attendances": {
+        "yes": "Asistiré",
+        "maybe": "Tal vez",
+        "no": "No asistiré"
+      }
+    }
+  }
+}

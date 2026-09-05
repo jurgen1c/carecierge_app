@@ -3,13 +3,13 @@ id: shared_spaces.family_membership_is_consensual_and_departure_removes_personal
 type: fact
 system: shared_spaces
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Family membership is consensual and departure removes personal contributions
 
 claim: >
-  Family spaces extend shared planning through owner-managed, expiring in-app invitations with confirmed-recipient acceptance and descriptive family relationship types. Accepted members see deliberately shared items and RSVP responses, never private profiles or pending invitation addresses. Only the organizer ends the group; members can leave. Removal serializes under the space lock, deletes the departing person’s contributions, responses and reminder subscriptions/alerts, and releases responsibilities while preserving other content. Account deletion follows the same lifecycle. Self-selected reminders recheck current membership at delivery; category starters never access private context or act automatically.
+  Family spaces extend shared planning through owner-managed, expiring in-app invitations with confirmed-recipient acceptance and descriptive family relationship types. Acceptance checks existing membership under the space lock even after email changes; upcoming dates exclude past occurrences. Accepted members see deliberately shared items and RSVP responses, never private profiles or pending invitation addresses. Only the organizer ends the group; members can leave. Removal serializes under the space lock, deletes the departing person’s contributions, responses and reminder subscriptions/alerts, and releases responsibilities while preserving other content. Account deletion follows the same lifecycle. Self-selected reminders recheck current membership at delivery; category starters never access private context or act automatically.
 
 source_files:
   - app/models/family_membership.rb
@@ -42,14 +42,14 @@ tags:
 verification:
   - bundle exec rspec spec/requests/family_spaces_spec.rb spec/models/family_membership_spec.rb spec/system/family_spaces_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb
 
-last_verified_commit: e3ed6154543f5bd0d495ffe5b106bd05833e4b59
+last_verified_commit: null
 ---
 
 # Family membership is consensual and departure removes personal contributions
 
 ## Claim
 
-Family spaces extend shared planning through owner-managed, expiring in-app invitations with confirmed-recipient acceptance and descriptive family relationship types. Accepted members see deliberately shared items and RSVP responses, never private profiles or pending invitation addresses. Only the organizer ends the group; members can leave. Removal serializes under the space lock, deletes the departing person’s contributions, responses and reminder subscriptions/alerts, and releases responsibilities while preserving other content. Account deletion follows the same lifecycle. Self-selected reminders recheck current membership at delivery; category starters never access private context or act automatically.
+Family spaces extend shared planning through owner-managed, expiring in-app invitations with confirmed-recipient acceptance and descriptive family relationship types. Acceptance checks existing membership under the space lock even after email changes; upcoming dates exclude past occurrences. Accepted members see deliberately shared items and RSVP responses, never private profiles or pending invitation addresses. Only the organizer ends the group; members can leave. Removal serializes under the space lock, deletes the departing person’s contributions, responses and reminder subscriptions/alerts, and releases responsibilities while preserving other content. Account deletion follows the same lifecycle. Self-selected reminders recheck current membership at delivery; category starters never access private context or act automatically.
 
 ## Why It Matters
 

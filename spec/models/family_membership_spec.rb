@@ -55,4 +55,13 @@ RSpec.describe FamilyMembership do
     expect { DispatchSharedRemindersJob.new.send(:deliver, discovered) }.not_to change(Noticed::Notification, :count)
     expect { SharedSpaces::ChangeItem.call(space: space, actor: person, item: item, action: :subscribe) }.to raise_error(ActiveRecord::RecordNotFound)
   end
+  it "rejects a second acceptance by an existing member after their email changes" do
+    invite.accept!(person)
+    person.skip_reconfirmation!
+    person.update!(email: "changed-family-email@example.test")
+    second_invitation = invite
+    expect { second_invitation.accept!(person) }.to raise_error(ActiveRecord::RecordNotFound)
+    expect(second_invitation.reload.user_id).to be_nil
+    expect(space.family_memberships.where(user: person).count).to eq(1)
+  end
 end

@@ -169,4 +169,17 @@ RSpec.describe "Family coordination", type: :request do
     create_list(:shared_relationship_space, 5, owner: owner, partner: nil, accepted_at: nil, invited_email: sibling.email)
     expect(family).to be_family
   end
+  it "keeps past dates in all coordination while upcoming dates start at the current instant" do
+    Timecop.freeze(Time.utc(2027, 1, 1, 12)) do
+      space = family
+      create(:shared_item, shared_relationship_space: space, title: "Last birthday", kind: "date", category: "birthday", due_at: 1.day.ago)
+      create(:shared_item, shared_relationship_space: space, title: "Starting now", kind: "date", due_at: Time.current)
+      create(:shared_item, shared_relationship_space: space, title: "Next holiday", kind: "date", category: "holiday", due_at: 1.day.from_now)
+      get shared_relationship_space_path(space), params: { view: "calendar" }
+      expect(response.body).to include("Starting now", "Next holiday")
+      expect(response.body).not_to include("Last birthday")
+      get shared_relationship_space_path(space), params: { view: "all" }
+      expect(response.body).to include("Last birthday")
+    end
+  end
 end

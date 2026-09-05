@@ -69,7 +69,7 @@ class SharedRelationshipSpacesController < ApplicationController
 
     items = items.where(category: params[:category]) if SharedItem::CATEGORIES.include?(params[:category])
     case params[:view]
-    when "calendar" then items.where.not(due_at: nil).where(completed_at: nil)
+    when "calendar" then items.where(due_at: Time.current.., completed_at: nil)
     when "mine" then items.where(assignee: current_user, completed_at: nil)
     else items
     end

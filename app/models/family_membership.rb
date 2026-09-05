@@ -13,7 +13,7 @@ class FamilyMembership < ApplicationRecord
 
   def can_accept?(person)
     person&.confirmed? && !user_id && invitation_expires_at > Time.current &&
-      invited_email == person.email.downcase && shared_relationship_space.owner_id != person.id
+      invited_email == person.email.downcase && !shared_relationship_space.participant?(person)
   end
 
   def accept!(person)

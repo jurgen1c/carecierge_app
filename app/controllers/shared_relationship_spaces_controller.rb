@@ -19,8 +19,8 @@ class SharedRelationshipSpacesController < ApplicationController
   def create
     authorize SharedRelationshipSpace
     @new_space = SharedRelationshipSpace.new(space_params.merge(owner: current_user, invitation_expires_at: 7.days.from_now))
-    current_user.with_lock do
-      if SharedRelationshipSpace.where(owner: current_user, partner_id: nil).count >= 5
+    current_user.with_lock("FOR NO KEY UPDATE") do
+      if SharedRelationshipSpace.where(owner: current_user, partner_id: nil).where("invitation_expires_at > ?", Time.current).count >= 5
         @new_space.errors.add(:base, t("shared_spaces.invitation_limit"))
       else
         @new_space.save

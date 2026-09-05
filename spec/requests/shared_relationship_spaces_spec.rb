@@ -197,7 +197,7 @@ RSpec.describe "Shared couple spaces", type: :request do
 
   it "rejects a repeated stale claim instead of releasing an accepted responsibility" do
     space = accepted_space
-    task = create(:shared_item, shared_relationship_space: space, kind: "task")
+    task = create(:shared_item, shared_relationship_space: space, kind: "task", editing: "creator")
     2.times { post claim_shared_relationship_space_shared_item_path(space, task), params: { lock_version: 0 } }
     expect(response).to have_http_status(:conflict)
     expect(task.reload.assignee).to eq(partner)
@@ -233,5 +233,19 @@ RSpec.describe "Shared couple spaces", type: :request do
     expect(response.media_type).to eq("text/plain")
     expect(response.body).to eq(I18n.t("shared_spaces.stale", locale: :es))
     expect(task.reload).to be_completed
+  end
+  it "limits only live pending invitations and releases expired capacity" do
+    Timecop.freeze(Time.utc(2026, 9, 5, 15)) do
+      attributes = { owner:, partner: nil, accepted_at: nil, invited_email: partner.email }
+      create_list(:shared_relationship_space, 5, **attributes, invitation_expires_at: Time.current)
+      create_list(:shared_relationship_space, 4, **attributes, invitation_expires_at: 1.day.from_now)
+      sign_in owner
+      request = -> { post shared_relationship_spaces_path, params: { shared_relationship_space: { title: "New invitation", invited_email: partner.email } } }
+      expect { request.call }.to change(SharedRelationshipSpace, :count).by(1)
+      expect(response).to have_http_status(:redirect)
+      expect { request.call }.not_to change(SharedRelationshipSpace, :count)
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include(I18n.t("shared_spaces.invitation_limit"))
+    end
   end
 end

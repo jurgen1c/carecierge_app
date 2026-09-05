@@ -182,6 +182,7 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    root "dashboard#show"
     resources :audit_events, only: :index
     resources :feature_flags, only: :index
   end

@@ -1,6 +1,16 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: audit_events.admin_dashboard_exposes_audited_aggregates_without_owner_action_authority
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Dashboard access records content-free support evidence before aggregate disclosure.
+    strength: 100
+  - source: audit_events.admin_dashboard_exposes_audited_aggregates_without_owner_action_authority
+    target: approvals.owner_scoped_review_queue
+    relation: constrains
+    reason: Cross-account operational counts never authorize support to discover or decide owner approvals.
+    strength: 100
   - source: commerce_integrations.provider_records_are_manual_owner_scoped_and_private
     target: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
     relation: constrains

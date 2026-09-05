@@ -33,6 +33,7 @@
 #
 class AuditEvent < ApplicationRecord
   ACTIONS = %w[
+    admin.dashboard.viewed
     approval.granted
     approval.rejected
     approval.deferred

@@ -1,0 +1,43 @@
+<% content_for :title, t(".title") %>
+<% disable_turbo_cache %>
+
+<main class="flex flex-1 flex-col gap-6 py-6 sm:py-8">
+  <header>
+    <h1 class="text-3xl font-semibold text-ink"><%= t(".title") %></h1>
+    <p class="mt-3 max-w-2xl text-base leading-7 text-quiet-note"><%= t(".body") %></p>
+    <p class="mt-2 text-sm text-quiet-note"><%= t(".observed", time: l(@observed_at, format: :audit_event_admin)) %></p>
+    <nav class="mt-4 flex flex-wrap gap-3" aria-label="<%= t(".navigation") %>">
+      <%= link_to t(".refresh"), admin_root_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <%= link_to t(".audit"), admin_audit_events_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <%= link_to t(".features"), admin_feature_flags_path, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <%= link_to t(".back"), dashboard_path, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    </nav>
+  </header>
+
+  <div class="grid gap-x-10 lg:grid-cols-2">
+    <div class="min-w-0">
+      <%= component "admin_metric_section", section: "approvals", metrics: @approvals %>
+      <section class="border-t border-private-line py-6" aria-labelledby="queue-heading">
+        <h2 id="queue-heading" class="text-xl font-semibold text-ink"><%= t(".sections.queue") %></h2>
+        <% if @queue[:queue_available] %>
+          <%= component "admin_metric_section", section: "jobs", metrics: @queue.except(:queue_available) %>
+        <% else %>
+          <p class="mt-3 font-semibold text-ink"><%= t(".unavailable") %></p>
+          <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t(".queue_unavailable") %></p>
+        <% end %>
+      </section>
+      <%= component "admin_metric_section", section: "trust", metrics: @trust %>
+    </div>
+    <div class="min-w-0">
+      <%= component "admin_metric_section", section: "integrations", metrics: @integrations %>
+      <%= component "admin_metric_section", section: "accounts", metrics: @accounts %>
+    </div>
+  </div>
+
+  <section class="border-t border-private-line pt-6" aria-labelledby="support-heading">
+    <h2 id="support-heading" class="text-xl font-semibold text-ink"><%= t(".support_title") %></h2>
+    <p class="mt-3 max-w-2xl text-base leading-7 text-quiet-note"><%= t(".support_body") %></p>
+    <p class="mt-3 max-w-2xl text-sm leading-6 text-quiet-note"><%= t(".scope") %></p>
+    <%= link_to t(".trust_audit"), admin_audit_events_path(event_action: "privacy_vault.unlock_failed", occurred_from: @observed_at.to_date.iso8601), data: { turbo_prefetch: false }, class: "mt-3 inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+  </section>
+</main>

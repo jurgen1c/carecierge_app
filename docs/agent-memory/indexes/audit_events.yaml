@@ -4,10 +4,24 @@ summary: Privacy-minimized, append-only account history and authorized cross-acc
 claim_globs:
   - claims/audit_events/**/*.md
 default_queries:
+  - admin dashboard operational aggregate queue integration trust
   - audit events account history admin ledger authorization
   - audit metadata allowlist target ownership append only
   - profile reminder automation privacy vault audit integration
 watched_files:
+  - app/controllers/admin/dashboard_controller.rb
+  - app/policies/admin_dashboard_policy.rb
+  - app/queries/admin_dashboard/**/*.rb
+  - app/models/admin_dashboard/**/*.rb
+  - app/views/admin/dashboard/**/*.erb
+  - app/views/components/admin_metric_section_component.*
+  - config/locales/admin_dashboard.*.yml
+  - docs/features/12-01-admin-dashboard.md
+  - spec/requests/admin_dashboard_spec.rb
+  - spec/queries/admin_dashboard_query_spec.rb
+  - spec/models/admin_dashboard/**/*.rb
+  - spec/components/admin_metric_section_component_spec.rb
+  - spec/system/admin_dashboard_spec.rb
   - app/models/audit_event.rb
   - app/models/user.rb
   - app/models/relationship_profile.rb

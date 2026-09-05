@@ -8,6 +8,8 @@ default_queries:
   - shared plan date task note creator editor ownership revision
   - shared reminder subscription quiet hours delivery end sharing deletion export
 watched_files:
+  - app/views/dashboard/index.html.erb
+  - db/schema.rb
   - app/models/shared_*.rb
   - app/controllers/shared_*.rb
   - app/policies/shared_*.rb

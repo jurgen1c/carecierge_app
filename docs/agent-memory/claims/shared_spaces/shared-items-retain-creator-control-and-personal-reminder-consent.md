@@ -3,13 +3,13 @@ id: shared_spaces.shared_items_retain_creator_control_and_personal_reminder_cons
 type: fact
 system: shared_spaces
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Shared items retain creator control and personal reminder consent
 
 claim: >
-  Participants coordinate plans, dates, tasks, reminders and shared notes. Creators own deletion and choose creator-only or shared editing/completion. Responsibility is self-claimed or released. Plan grouping stays within the space; kinds are fixed and revisions guard edits, claims and completion. No-key account-then-space locks serialize writes with deletion while permitting foreign-key readers. Each person opts into their own in-app reminder; disabling consent retains occurrence evidence so re-enabling cannot replay that alert. The dispatcher queries pending occurrences with batched source discovery, skips deleted sources, and rechecks participation, due time, completion, subscription, channel and quiet hours under the space lock. It atomically records one delivery per occurrence and adds a content-free alert to the recipient’s reminder inbox. English/Spanish forms explain privacy, ownership and deletion, without external delivery or activity monitoring.
+  Participants coordinate plans, dates, tasks, reminders and shared notes. Creators own deletion and choose creator-only or shared editing/completion. Responsibility is self-claimed or released. Plan grouping stays within the space; kinds are fixed and revisions guard edits, claims and completion. No-key account-then-space locks serialize writes with deletion while permitting foreign-key readers. Each person opts into their own in-app reminder; disabling consent retains occurrence evidence so re-enabling cannot replay that alert. The dispatcher queries pending occurrences with batched source discovery, skips deleted sources, and rechecks participation, due time, completion, subscription, channel and quiet hours under recipient-account-then-space locks. It atomically records one delivery per occurrence and adds a content-free alert to the recipient’s reminder inbox. English/Spanish forms explain privacy, ownership and deletion, without external delivery or activity monitoring.
 
 source_files:
   - db/migrate/20260905183517_add_enabled_to_shared_reminder_subscriptions.rb
@@ -42,14 +42,13 @@ verification:
   - bundle exec rspec
   - bundle exec rspec spec/services/shared_spaces/locking_spec.rb
   - bundle exec rspec spec/requests/shared_relationship_spaces_spec.rb spec/models/shared_relationship_space_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb spec/system/shared_relationship_spaces_spec.rb
-last_verified_commit: 25dfa54c048f1a0f1ca4c546dab4c3e2bcc7b70d
 ---
 
 # Shared items retain creator control and personal reminder consent
 
 ## Claim
 
-Participants coordinate plans, dates, tasks, reminders and shared notes. Creators own deletion and choose creator-only or shared editing/completion. Responsibility is self-claimed or released. Plan grouping stays within the space; kinds are fixed and revisions guard edits, claims and completion. No-key account-then-space locks serialize writes with deletion while permitting foreign-key readers. Each person opts into their own in-app reminder; disabling consent retains occurrence evidence so re-enabling cannot replay that alert. The dispatcher queries pending occurrences with batched source discovery, skips deleted sources, and rechecks participation, due time, completion, subscription, channel and quiet hours under the space lock. It atomically records one delivery per occurrence and adds a content-free alert to the recipient’s reminder inbox. English/Spanish forms explain privacy, ownership and deletion, without external delivery or activity monitoring.
+Participants coordinate plans, dates, tasks, reminders and shared notes. Creators own deletion and choose creator-only or shared editing/completion. Responsibility is self-claimed or released. Plan grouping stays within the space; kinds are fixed and revisions guard edits, claims and completion. No-key account-then-space locks serialize writes with deletion while permitting foreign-key readers. Each person opts into their own in-app reminder; disabling consent retains occurrence evidence so re-enabling cannot replay that alert. The dispatcher queries pending occurrences with batched source discovery, skips deleted sources, and rechecks participation, due time, completion, subscription, channel and quiet hours under recipient-account-then-space locks. It atomically records one delivery per occurrence and adds a content-free alert to the recipient’s reminder inbox. English/Spanish forms explain privacy, ownership and deletion, without external delivery or activity monitoring.
 
 ## Why It Matters
 

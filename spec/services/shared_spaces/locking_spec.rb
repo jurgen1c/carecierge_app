@@ -3,15 +3,19 @@ require "rails_helper"
 RSpec.describe "Shared-space account locking", type: :service do
   self.use_transactional_tests = false
 
-  [ :save, :accept, :end_sharing ].each do |action|
+  [ :save, :accept, :end_sharing, :deliver ].each do |action|
     it "serializes #{action} with account deletion while allowing foreign-key readers" do
       space = create(:shared_relationship_space)
       owner, partner = space.owner, space.partner
       actor = partner
       space.update!(partner: nil, accepted_at: nil) if action == :accept
+      if action == :deliver
+        reminder = create(:shared_item, shared_relationship_space: space, kind: "reminder", due_at: 1.minute.ago)
+        reminder.shared_reminder_subscriptions.create!(user: actor)
+      end
       observed_lock = false
 
-      allow(space).to receive(:with_lock).and_wrap_original do |original, *arguments, &block|
+      allow_any_instance_of(SharedRelationshipSpace).to receive(:with_lock).and_wrap_original do |original, *arguments, &block|
         %w[UPDATE NO\ KEY\ UPDATE KEY\ SHARE].each do |mode|
           contender = Thread.new do
             ActiveRecord::Base.connection_pool.with_connection do
@@ -34,6 +38,8 @@ RSpec.describe "Shared-space account locking", type: :service do
         space.accept!(actor)
       when :end_sharing
         space.end_sharing!(actor)
+      when :deliver
+        expect { DispatchSharedRemindersJob.perform_now }.to change(actor.notifications, :count).by(1)
       end
       expect(observed_lock).to be(true)
     ensure

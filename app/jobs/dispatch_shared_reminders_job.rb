@@ -2,7 +2,7 @@ class DispatchSharedRemindersJob < ApplicationJob
   queue_as :background
 
   def perform
-    SharedReminderSubscription.pending_delivery.preload(shared_item: :shared_relationship_space).find_each do |subscription|
+    SharedReminderSubscription.pending_delivery.preload(:user, shared_item: :shared_relationship_space).find_each do |subscription|
       deliver(subscription)
     end
   end
@@ -12,18 +12,21 @@ class DispatchSharedRemindersJob < ApplicationJob
   def deliver(subscription)
     item = subscription.shared_item
     space = item&.shared_relationship_space
-    return unless space
+    recipient = subscription.user
+    return unless space && recipient
 
-    space.with_lock do
-      subscription.reload
-      item.reload
-      return unless due?(subscription, item)
+    recipient.with_lock("FOR NO KEY UPDATE") do
+      space.with_lock do
+        subscription.reload
+        item.reload
+        return unless due?(subscription, item)
 
-      preference = NotificationPreference.find_by(user_id: subscription.user_id)
-      return if preference && (!preference.in_app_enabled? || preference.digest_delivery_deferred_until)
+        preference = NotificationPreference.find_by(user_id: subscription.user_id)
+        return if preference && (!preference.in_app_enabled? || preference.digest_delivery_deferred_until)
 
-      SharedReminderNotifier.with(record: item).deliver(subscription.user)
-      subscription.update!(delivered_for: item.due_at)
+        SharedReminderNotifier.with(record: item).deliver(recipient)
+        subscription.update!(delivered_for: item.due_at)
+      end
     end
   rescue ActiveRecord::RecordNotFound
     # Ending sharing or opting out before delivery cancels the reminder.

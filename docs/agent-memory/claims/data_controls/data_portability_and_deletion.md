@@ -2,13 +2,14 @@
 id: data_controls.data_portability_and_deletion
 type: fact
 system: data_controls
-status: current
-confidence: verified
+status: needs_verification
+confidence: high
 severity: critical
 
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
 
 claim: >
+  Connection revocation failures preserve the account and report a provider-neutral recovery message through ConnectionRevocationError.
   Gmail exports include encrypted-at-rest source snippets and local replies without credentials. Selective AI deletion preserves manual-only communication drafts and clears generated replies plus their edited derivatives. Disconnect and source deletion remove both imported context and replies, and account deletion revokes Gmail access with compensated retry state.
   Contacts exports include staged review data and safe provider metadata while excluding OAuth credentials and opaque provider identifiers. Account deletion revokes contacts access and fences restored credentials after a local rollback; revocation failure preserves the account for retry.
   Owner-scoped JSON, CSV, PDF, and private-calendar exports include recordings,
@@ -142,7 +143,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: d6ba3bccc58524242d24afa31835adb2d9126823
+last_verified_commit: null
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized

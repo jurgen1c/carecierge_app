@@ -5,6 +5,7 @@
 #
 #  id                      :uuid             not null, primary key
 #  lock_version            :integer          default(0), not null
+#  reply_ai_generated      :boolean          default(FALSE), not null
 #  reply_draft             :text
 #  snippet                 :text             not null
 #  source_key              :string           not null

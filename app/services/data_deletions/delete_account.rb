@@ -1,6 +1,6 @@
 module DataDeletions
   class DeleteAccount
-    CalendarRevocationError = Class.new(StandardError)
+    ConnectionRevocationError = Class.new(StandardError)
 
     def self.call(user:)
       new(user:).call
@@ -41,7 +41,7 @@ module DataDeletions
         @messaging_revoked = true
       else
         @messaging_revocation_failed = !@messaging_revoked
-        raise CalendarRevocationError, "Messaging access could not be revoked"
+        raise ConnectionRevocationError, "Messaging access could not be revoked"
       end
     end
 
@@ -61,7 +61,7 @@ module DataDeletions
         @contacts_revoked = true
       else
         @contacts_revocation_failed = !@contacts_revoked
-        raise CalendarRevocationError, "Contacts access could not be revoked"
+        raise ConnectionRevocationError, "Contacts access could not be revoked"
       end
     end
 
@@ -82,7 +82,7 @@ module DataDeletions
       end
 
       @calendar_revocation_failed = true
-      raise CalendarRevocationError, "Calendar access could not be revoked"
+      raise ConnectionRevocationError, "Calendar access could not be revoked"
     end
 
     def revoke_pending_calendar_credentials!
@@ -91,7 +91,7 @@ module DataDeletions
         revocation.destroy!
       rescue CalendarConnections::ConnectionError => error
         @pending_revocation_failure = [ revocation.id, error.code ]
-        raise CalendarRevocationError, "Pending calendar access could not be revoked"
+        raise ConnectionRevocationError, "Pending calendar access could not be revoked"
       end
     end
 
@@ -107,7 +107,7 @@ module DataDeletions
     def compensate_calendar_failure!(error)
       compensate_messaging_failure!
       compensate_contacts_failure!
-      if error.is_a?(CalendarRevocationError)
+      if error.is_a?(ConnectionRevocationError)
         record_pending_calendar_revocation_failure!
         record_calendar_revocation_failure! if @calendar_revocation_failed
       elsif calendar_revoked?

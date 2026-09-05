@@ -5,6 +5,7 @@
 #
 #  id               :uuid             not null, primary key
 #  access_token     :text
+#  mailbox_email    :text
 #  provider         :string           default("gmail"), not null
 #  refresh_token    :text
 #  status           :string           default("connected"), not null

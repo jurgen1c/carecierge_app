@@ -2080,7 +2080,7 @@ es:
       invalid_request: "Elige una solicitud de eliminación válida."
       confirmation: "Escribe exactamente el correo de tu cuenta para confirmar la eliminación."
       password: "Tu contraseña actual no fue aceptada."
-      calendar_revocation: "No pudimos revocar el acceso a Google Calendar, por lo que tu cuenta no se eliminó. Inténtalo de nuevo."
+      connection_revocation: "No pudimos revocar el acceso a un servicio conectado, por lo que tu cuenta no se eliminó. Inténtalo de nuevo."
       use_data_controls: "Elimina tu cuenta desde Controles de datos para poder revocar de forma segura el acceso conectado."
     ai_generated:
       notice: "Los datos generados por IA fueron eliminados permanentemente."

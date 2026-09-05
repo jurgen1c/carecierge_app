@@ -57,7 +57,7 @@ RSpec.describe 'Messaging connections', type: :request do
   it 'retains account and retry state when Gmail revocation fails' do
     context
     allow(Messaging::GoogleOauth).to receive(:revoke).and_raise(Messaging::Error)
-    expect { DataDeletions::DeleteAccount.call(user:) }.to raise_error(DataDeletions::DeleteAccount::CalendarRevocationError)
+    expect { DataDeletions::DeleteAccount.call(user:) }.to raise_error(DataDeletions::DeleteAccount::ConnectionRevocationError)
     expect(user.reload).to be_persisted
     expect(connection.reload.status).to eq('cleanup_required')
   end
@@ -91,5 +91,17 @@ RSpec.describe 'Messaging connections', type: :request do
     follow_redirect!
     expect(response.body).to include(I18n.t('messaging.errors.authorization_required'))
     expect(ImportedMessageContext.count).to eq(0)
+  end
+
+  it 'explains an account deletion failure without misidentifying Gmail as Calendar' do
+    user.update!(password: 'Password123!', password_confirmation: 'Password123!')
+    context
+    allow(Messaging::GoogleOauth).to receive(:revoke).and_raise(Messaging::Error)
+    post data_deletions_path, params: { data_deletion: { kind: 'account', confirmation: user.email, current_password: 'Password123!' } }
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).to include('We could not revoke access to a connected service')
+    expect(response.body).not_to include('We could not revoke Google Calendar access')
+    expect(user.reload).to be_persisted
+    expect(connection.reload.status).to eq('cleanup_required')
   end
 end

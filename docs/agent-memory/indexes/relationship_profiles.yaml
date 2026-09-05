@@ -4,6 +4,7 @@ summary: Authenticated, user-owned relationship profile CRUD with localized and 
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
+  - professional mode work context selected meeting notes stakeholder preferences client milestones performance review
   - gift box complementary items confirmed preferences budget manual purchase delivery reminder
   - gift purchase planning budget shipping vendor options manual status reminder event task
   - relationship profile owner scoped CRUD
@@ -35,6 +36,10 @@ default_queries:
   - reusable relationship tags groups filtering
   - Lexxy Action Text relationship notes
 watched_files:
+  - app/models/professional_context.rb
+  - app/models/concerns/professional_relationship.rb
+  - app/views/components/professional_context_component.*
+  - config/locales/professional_relationships.*.yml
   - app/models/gift_box*.rb
   - app/controllers/gift_boxes_controller.rb
   - app/services/gift_boxes/**/*.rb

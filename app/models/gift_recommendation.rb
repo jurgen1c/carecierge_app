@@ -66,6 +66,7 @@ class GiftRecommendation < ApplicationRecord
 
   before_validation :normalize_text_fields
 
+  validates :relationship_mode, inclusion: { in: %w[personal professional] }
   validates :title, presence: true, length: { maximum: MAX_TITLE_LENGTH }
   validates :rationale, presence: true, length: { maximum: MAX_RATIONALE_LENGTH }
   validates :vendor, length: { maximum: MAX_VENDOR_LENGTH }, allow_blank: true

@@ -59,6 +59,7 @@ class MessageDraft < ApplicationRecord
 
   normalizes :situation, with: -> { _1.to_s.strip }
 
+  validates :relationship_mode, inclusion: { in: %w[personal professional] }
   validates :draft_type, inclusion: { in: DRAFT_TYPES }
   validates :tone, inclusion: { in: TONES + LEGACY_FORMALITY_TONES }
   validates :response_length, inclusion: { in: RESPONSE_LENGTHS }
@@ -95,12 +96,12 @@ class MessageDraft < ApplicationRecord
   def save_edit!(content:, draft_type:, tone:, **response_settings)
     with_active_profile_lock do
       with_lock do
-        update!(draft_type:, tone:, **response_settings)
+        update!(draft_type:, tone:, relationship_mode: relationship_profile.relationship_mode, **response_settings)
         revision = draft_revisions.create!(
           position: next_revision_position,
           content:,
           origin: "edited",
-          context_categories: current_revision&.context_categories || []
+          context_categories: relationship_profile.professional? ? [ "professional" ] : (current_revision&.context_categories || []) - [ "professional" ]
         )
         advance_generation_fence!
         revision
@@ -112,6 +113,8 @@ class MessageDraft < ApplicationRecord
     raise ActiveRecord::RecordNotFound unless revision.message_draft_id == id
 
     with_active_profile_lock do
+      raise ActiveRecord::RecordNotFound unless revision.context_categories.include?("professional") == relationship_profile.professional?
+
       restored_revision = append_revision!(
         content: revision.content,
         origin: "restored",

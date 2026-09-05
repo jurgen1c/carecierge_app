@@ -41,6 +41,7 @@ module Suggestions
 
     def call
       return [] if relationship_profile.archived?
+      return [ professional_follow_up_suggestion, check_in_suggestion ].compact if relationship_profile.professional?
 
       [
         gift_suggestion,
@@ -217,9 +218,10 @@ module Suggestions
     end
 
     def professional_follow_up_suggestion
-      return unless relationship_profile.type.in?(PROFESSIONAL_TYPES)
+      return unless relationship_profile.professional? || relationship_profile.type.in?(PROFESSIONAL_TYPES)
 
-      commitment = relationship_profile.commitments
+      scope = relationship_profile.professional? ? relationship_profile.work_context.selected("commitments") : relationship_profile.commitments
+      commitment = scope
         .select { |item| item.overdue?(as_of.to_date) }
         .min_by { |item| [ item.due_on, item.title, item.id ] }
       build("professional_follow_up", commitment, evidence: commitment&.title, reminder_type: "promise_follow_up", priority: "high")

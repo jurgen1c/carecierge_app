@@ -52,12 +52,17 @@ module RelationshipProfileShowWorkspace
     @memory_extraction_enabled = FeatureFlag.enabled?("ai_memory_extraction", user: current_user, environment: Rails.env)
   end
 
+  def mode_scoped(scope)
+    condition = [ "context_categories @> ?::jsonb", [ "professional" ].to_json ]
+    @relationship_profile.professional? ? scope.where(condition) : scope.where.not(condition)
+  end
+
   def prepare_message_draft_workspace
     @message_draft = @relationship_profile.message_draft
     if @message_draft
       @message_draft_revisions_pagy, @message_draft_revisions = pagy(
         :offset,
-        @message_draft.draft_revisions,
+        mode_scoped(@message_draft.draft_revisions),
         limit: MESSAGE_DRAFT_REVISION_PAGE_SIZE,
         page_key: "draft_page"
       )
@@ -69,37 +74,37 @@ module RelationshipProfileShowWorkspace
       relationship_profile: @relationship_profile,
       social_context_notes: @social_context_source_notes
     ).call.categories
-    @message_private_notes_available = @relationship_profile.relationship_notes
+    @message_private_notes_available = !@relationship_profile.professional? && @relationship_profile.relationship_notes
       .where(private: true)
       .where.missing(:privacy_vault_item)
       .exists?
-    @message_vault_items_available = @relationship_profile.privacy_vault_items.exists?
+    @message_vault_items_available = !@relationship_profile.professional? && @relationship_profile.privacy_vault_items.exists?
     @message_vault_unlocked = privacy_vault_unlocked?
   end
 
   def prepare_relationship_briefing_workspace
-    @relationship_briefing = @relationship_profile.relationship_briefings.visible.recent_first.first
-    @briefing_private_notes_available = @relationship_profile.relationship_notes
+    @relationship_briefing = @relationship_profile.relationship_briefings.visible.where(relationship_mode: @relationship_profile.relationship_mode).recent_first.first
+    @briefing_private_notes_available = !@relationship_profile.professional? && @relationship_profile.relationship_notes
       .where(private: true)
       .where.missing(:privacy_vault_item)
       .exists?
-    @briefing_vault_items_available = @relationship_profile.privacy_vault_items.exists?
+    @briefing_vault_items_available = !@relationship_profile.professional? && @relationship_profile.privacy_vault_items.exists?
     @briefing_vault_unlocked = privacy_vault_unlocked?
     @relationship_briefing_form_state ||= {}
   end
 
   def prepare_gift_recommendation_workspace
-    @gift_recommendations = @relationship_profile.gift_recommendations.visible.recent_first.limit(10).to_a
+    @gift_recommendations = @relationship_profile.gift_recommendations.visible.where(relationship_mode: @relationship_profile.relationship_mode).recent_first.limit(10).to_a
     @gift_recommendation_permission = AutomationPermission.decision_for(
       user: current_user,
       capability: "suggest_gifts",
       relationship_profile: @relationship_profile
     )
-    @gift_recommendation_private_notes_available = @relationship_profile.relationship_notes
+    @gift_recommendation_private_notes_available = !@relationship_profile.professional? && @relationship_profile.relationship_notes
       .where(private: true)
       .where.missing(:privacy_vault_item)
       .exists?
-    @gift_recommendation_vault_items_available = @relationship_profile.privacy_vault_items.suggestion_allowed.exists?
+    @gift_recommendation_vault_items_available = !@relationship_profile.professional? && @relationship_profile.privacy_vault_items.suggestion_allowed.exists?
     @gift_recommendation_vault_unlocked = privacy_vault_unlocked?
     @gift_recommendation_form_state ||= {}
   end

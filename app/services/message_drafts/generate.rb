@@ -73,6 +73,9 @@ module MessageDrafts
       relationship_profile.with_lock do
         raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
         reject_stale_generation!(generation_version:, draft_id:)
+        if relationship_profile.professional? && ContextBuilder.new(relationship_profile:).call != context
+          raise GenerationSupersededError, "Professional source context changed"
+        end
 
         draft = MessageDraft.find_by!(id: draft_id, relationship_profile:)
         revision = draft.append_revision!(
@@ -117,6 +120,7 @@ module MessageDrafts
         relationship_profile.with_lock do
           raise ActiveRecord::RecordNotFound unless relationship_profile.user_id == actor.id && !relationship_profile.discarded?
 
+          @tone = "professional" if relationship_profile.professional?
           validate_draft_settings!
           validate_vault_access!
           context = ContextBuilder.new(
@@ -177,6 +181,7 @@ module MessageDrafts
       draft = MessageDraft.find_or_initialize_by(relationship_profile:)
       draft.assign_attributes(
         user: actor,
+        relationship_mode: relationship_profile.relationship_mode,
         draft_type:,
         tone:,
         situation:,

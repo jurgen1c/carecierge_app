@@ -1,0 +1,64 @@
+es:
+  professional_relationships:
+    title: Relación profesional
+    hint: Mantén separado el contexto laboral. Solo los registros laborales que selecciones
+      se usan en borradores, resúmenes y sugerencias profesionales. Se excluyen las
+      notas personales y el contenido de la bóveda.
+    mode: Modo de relación
+    modes:
+      personal: Personal
+      professional: Profesional
+    edit_context: Editar contexto y fuentes laborales
+    fields:
+      organization: Organización
+      role: Cargo y contexto de las partes interesadas
+      goals: Objetivos laborales
+      communication_preferences: Preferencias de comunicación
+      boundaries: Límites laborales y política de regalos
+      review_preparation: Preparación para la evaluación de desempeño
+    gifts_allowed: Los regalos o gestos son apropiados para esta relación laboral
+      según la política y los límites que registré.
+    gifts_enabled: Las ideas de regalos profesionales están habilitadas. Revisa cada
+      idea según los límites registrados.
+    gifts_disabled: Las ideas de regalos están desactivadas hasta que confirmes que
+      son apropiadas en el contexto laboral.
+    sources_title: Elegir registros laborales
+    sources_hint: Selecciona hasta seis registros por categoría. Crea o edita notas,
+      compromisos, preferencias, hitos y regalos en las secciones del perfil, guárdalos
+      y selecciónalos aquí. Los registros seleccionados se mantienen actualizados;
+      no puedes seleccionar notas privadas o protegidas en la bóveda. Se muestran
+      los 100 registros más recientes y las selecciones existentes.
+    empty_sources: Aún no hay registros disponibles. Guarda el perfil, agrega un registro
+      en su sección y vuelve para seleccionarlo.
+    collections:
+      relationship_notes: Notas de reuniones
+      relationship_preferences: Preferencias de las partes interesadas
+      commitments: Compromisos y seguimientos
+      important_dates: Hitos de clientes
+      gifts: Historial de regalos profesionales
+    actions: Preparación profesional
+    meeting_notes: Escribir notas de reuniones
+    follow_ups: Registrar compromisos y seguimientos
+    milestones: Agregar hitos de clientes
+    review: Preparar una reunión o evaluación de desempeño
+    source_label: Contexto laboral seleccionado
+  message_drafts:
+    context:
+      categories:
+        professional: Contexto laboral seleccionado
+  relationship_briefings:
+    context:
+      categories:
+        professional: Contexto laboral seleccionado
+  activerecord:
+    attributes:
+      relationship_profile:
+        relationship_mode: Modo de relación
+        professional_context: Relación profesional
+    errors:
+      models:
+        relationship_profile:
+          attributes:
+            professional_context:
+              invalid: debe incluir contexto laboral válido y hasta seis registros
+                permitidos por categoría

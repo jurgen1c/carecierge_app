@@ -40,6 +40,12 @@ module RelationshipBriefings
     attr_reader :relationship_profile, :include_private_notes, :include_vault_context, :locale, :as_of, :time_zone
 
     def sources
+      if relationship_profile.professional?
+        return relationship_profile.work_context(as_of:).entries.map do |entry|
+          source(**entry.to_h, label: I18n.t("professional_relationships.source_label", locale:))
+        end
+      end
+
       private_sources = note_sources(private: true)
       selected_vault_sources = vault_sources
       reserved_sensitive_sources = [ private_sources.first, selected_vault_sources.first ].compact

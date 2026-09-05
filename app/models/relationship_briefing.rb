@@ -59,6 +59,7 @@ class RelationshipBriefing < ApplicationRecord
 
   before_validation :normalize_interaction_context
 
+  validates :relationship_mode, inclusion: { in: %w[personal professional] }
   validates :interaction_context, presence: true, length: { maximum: MAX_INTERACTION_CONTEXT_LENGTH }
   validates :status, inclusion: { in: STATUSES }
   validates :locale, inclusion: { in: LOCALES }

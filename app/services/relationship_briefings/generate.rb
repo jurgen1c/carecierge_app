@@ -64,6 +64,7 @@ module RelationshipBriefings
             interaction_context:,
             sections:,
             context_categories: current_context.categories,
+            relationship_mode: relationship_profile.relationship_mode,
             status: "generated",
             locale: locale.to_s,
             include_private_notes:,
@@ -189,7 +190,7 @@ module RelationshipBriefings
     end
 
     def dismiss_generated_briefings!
-      relationship_profile.relationship_briefings.where(status: "generated").update_all(
+      relationship_profile.relationship_briefings.where(status: "generated", relationship_mode: relationship_profile.relationship_mode).update_all(
         status: "dismissed",
         dismissed_at: Time.current,
         updated_at: Time.current

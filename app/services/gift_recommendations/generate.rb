@@ -114,10 +114,13 @@ module GiftRecommendations
     end
 
     def validate_request!
+      if relationship_profile.professional? && !relationship_profile.professional_gifts_allowed?
+        raise GenerationError, "Professional gift suitability must be confirmed"
+      end
       replace&.reload
       raise ActiveRecord::RecordNotFound unless relationship_profile.user_id == actor.id
       raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
-      raise ActiveRecord::RecordNotFound if replace && replace.relationship_profile_id != relationship_profile.id
+      raise ActiveRecord::RecordNotFound if replace && (replace.relationship_profile_id != relationship_profile.id || replace.relationship_mode != relationship_profile.relationship_mode)
       raise ActiveRecord::RecordNotFound if replace && !replace.generated?
       if budget_cents && !budget_cents.between?(0, Gift::MAX_PRICE_CENTS)
         raise GenerationError, "Gift recommendation budget was invalid"
@@ -169,18 +172,22 @@ module GiftRecommendations
       raise GenerationSupersededError, "A newer request or source change superseded these recommendations"
     end
 
+    def eligible_gifts
+      relationship_profile.professional? ? relationship_profile.work_context.selected("gifts") : relationship_profile.gifts
+    end
+
     def excluded_gift_titles
-      relationship_profile.gifts.pluck(:name)
+      eligible_gifts.pluck(:name)
     end
 
     def excluded_recommendation_titles
-      relationship_profile.gift_recommendations.where.not(status: "dismissed").pluck(:title)
+      relationship_profile.gift_recommendations.where(relationship_mode: relationship_profile.relationship_mode).where.not(status: "dismissed").pluck(:title)
     end
 
     def provider_excluded_titles
       return [] if allow_repeats
 
-      relationship_profile.gifts
+      eligible_gifts
         .order(created_at: :desc, id: :desc)
         .limit(MAX_PROVIDER_EXCLUDED_TITLES)
         .pluck(:name)
@@ -254,12 +261,13 @@ module GiftRecommendations
     end
 
     def retire_previous_recommendations!
-      scope = replace ? relationship_profile.gift_recommendations.where(id: replace.id) : relationship_profile.gift_recommendations.where(status: "generated")
+      scope = replace ? relationship_profile.gift_recommendations.where(id: replace.id) : relationship_profile.gift_recommendations.where(status: "generated", relationship_mode: relationship_profile.relationship_mode)
       scope.update_all(status: "dismissed", dismissed_at: Time.current, updated_at: Time.current)
     end
 
     def persist_recommendation!(attributes)
       relationship_profile.gift_recommendations.create!(
+        relationship_mode: relationship_profile.relationship_mode,
         **attributes,
         user: actor,
         budget_cents:,

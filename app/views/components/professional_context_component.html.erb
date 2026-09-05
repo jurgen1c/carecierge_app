@@ -1,0 +1,61 @@
+<section id="professional-context" aria-labelledby="professional-context-title" class="border-b border-private-line py-6 text-ink">
+  <h2 id="professional-context-title" class="text-xl font-semibold"><%= t("professional_relationships.title") %></h2>
+  <p class="mt-2 max-w-prose text-sm leading-6 text-quiet-note"><%= t("professional_relationships.hint") %></p>
+  <% if form %>
+    <%= form.label :relationship_mode, t("professional_relationships.mode"), class: "mt-4 block text-sm font-semibold" %>
+    <%= form.select :relationship_mode, %w[personal professional].map { |mode| [t("professional_relationships.modes.#{mode}"), mode] }, {}, class: style(:input) %>
+    <details class="mt-4" <%= "open" if relationship_profile.professional? %>>
+      <summary class="min-h-11 cursor-pointer py-3 font-semibold text-primary"><%= t("professional_relationships.edit_context") %></summary>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <% ProfessionalContext::FIELDS.each do |field| %>
+          <div>
+            <%= label_tag "professional_#{field}", t("professional_relationships.fields.#{field}"), class: "block text-sm font-semibold" %>
+            <%= text_area_tag "relationship_profile[professional_context][#{field}]", relationship_profile.professional_context[field], id: "professional_#{field}", rows: 3, maxlength: 1000, class: style(:input) %>
+          </div>
+        <% end %>
+      </div>
+      <label class="my-5 flex min-h-11 items-start gap-3 text-sm leading-6" for="professional_gifts_allowed">
+        <%= hidden_field_tag "relationship_profile[professional_context][gifts_allowed]", "0" %>
+        <%= check_box_tag "relationship_profile[professional_context][gifts_allowed]", "1", relationship_profile.professional_context["gifts_allowed"] == "1", id: "professional_gifts_allowed", class: "mt-1 size-5 rounded border-private-line text-primary focus:ring-primary" %>
+        <span><%= t("professional_relationships.gifts_allowed") %></span>
+      </label>
+      <h3 class="text-base font-semibold"><%= t("professional_relationships.sources_title") %></h3>
+      <p class="mt-2 max-w-prose text-sm leading-6 text-quiet-note"><%= t("professional_relationships.sources_hint") %></p>
+      <% ProfessionalContext::COLLECTIONS.each do |collection| %>
+        <fieldset class="mt-5">
+          <legend class="text-sm font-semibold"><%= t("professional_relationships.collections.#{collection}") %></legend>
+          <%= hidden_field_tag "relationship_profile[professional_context][#{collection}][]", "" %>
+          <% records = source_options(collection).to_a %>
+          <% if records.empty? %>
+            <p class="mt-2 text-sm text-quiet-note"><%= t("professional_relationships.empty_sources") %></p>
+          <% end %>
+          <% records.each do |record| %>
+            <label class="flex min-h-11 items-start gap-3 py-2 text-sm leading-6" for="professional_source_<%= record.id %>">
+              <%= check_box_tag "relationship_profile[professional_context][#{collection}][]", record.id, Array(relationship_profile.professional_context[collection]).include?(record.id), id: "professional_source_#{record.id}", class: "mt-1 size-5 shrink-0 rounded border-private-line text-primary focus:ring-primary" %>
+              <span class="break-words"><%= source_label(record) %></span>
+            </label>
+          <% end %>
+        </fieldset>
+      <% end %>
+    </details>
+  <% else %>
+    <dl class="mt-4 grid gap-4 sm:grid-cols-2">
+      <% ProfessionalContext::FIELDS.each do |field| %>
+        <% if relationship_profile.professional_context[field].present? %>
+          <div class="min-w-0">
+            <dt class="text-sm font-semibold"><%= t("professional_relationships.fields.#{field}") %></dt>
+            <dd class="mt-1 whitespace-pre-line break-words text-sm leading-6"><%= relationship_profile.professional_context[field] %></dd>
+          </div>
+        <% end %>
+      <% end %>
+    </dl>
+    <p class="mt-4 text-sm text-quiet-note"><%= t(relationship_profile.professional_gifts_allowed? ? "professional_relationships.gifts_enabled" : "professional_relationships.gifts_disabled") %></p>
+    <nav aria-label="<%= t("professional_relationships.actions") %>" class="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+      <%= link_to t("professional_relationships.edit_context"), edit_relationship_profile_path(relationship_profile, anchor: "professional-context"), class: style(:link) %>
+      <%= link_to t("professional_relationships.meeting_notes"), edit_relationship_profile_path(relationship_profile, anchor: "relationship-context"), class: style(:link) %>
+      <%= link_to t("professional_relationships.follow_ups"), relationship_profile_path(relationship_profile, anchor: "commitments_section"), class: style(:link) %>
+      <%= link_to t("professional_relationships.milestones"), relationship_profile_path(relationship_profile, anchor: "important_dates_section"), class: style(:link) %>
+      <%= link_to t("professional_relationships.review"), relationship_profile_path(relationship_profile, anchor: "relationship-briefing"), class: style(:link) %>
+    </nav>
+  <% end %>
+</section>

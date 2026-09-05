@@ -49,10 +49,14 @@ class MessageDraftWorkspaceComponent < ApplicationViewComponent
   end
 
   def tone
+    return "professional" if relationship_profile.professional?
+
     message_draft&.effective_tone || "warm"
   end
 
   def situation
+    return "" if message_draft && message_draft.relationship_mode != relationship_profile.relationship_mode
+
     message_draft&.situation.to_s
   end
 
@@ -83,6 +87,9 @@ class MessageDraftWorkspaceComponent < ApplicationViewComponent
   private
 
   def current_revision
-    @current_revision ||= message_draft&.current_revision
+    @current_revision ||= begin
+      revision = message_draft&.current_revision
+      revision if revision && revision.context_categories.include?("professional") == relationship_profile.professional?
+    end
   end
 end

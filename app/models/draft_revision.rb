@@ -25,6 +25,7 @@ class DraftRevision < ApplicationRecord
   ORIGINS = %w[generated edited restored].freeze
   CONTEXT_CATEGORIES = %w[
     profile
+    professional
     important_dates
     preferences
     public_notes

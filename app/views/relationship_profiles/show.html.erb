@@ -61,6 +61,7 @@
       vault_items_available: @gift_recommendation_vault_items_available,
       vault_unlocked: @gift_recommendation_vault_unlocked %>
   <% end %>
+  <div class="mt-6"><%= link_to t("gift_boxes.title"), relationship_profile_gift_boxes_path(@relationship_profile), class: "inline-flex min-h-11 items-center px-4 text-primary underline" %></div>
   <%= render "gifts/section", relationship_profile: @relationship_profile %>
   <%= render "privacy_vaults/section", relationship_profile: @relationship_profile %>
   <%= render "memory_records/section", relationship_profile: @relationship_profile %>

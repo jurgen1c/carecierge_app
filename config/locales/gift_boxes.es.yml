@@ -1,0 +1,102 @@
+es:
+  gift_boxes:
+    title: Cajas de regalo
+    builder: Armar una caja de regalo
+    back: Todas las cajas de regalo
+    intro: Reúne artículos útiles para esta persona y ocasión. La compra y la preparación son registros tuyos; tú realizas las compras.
+    essentials: La ocasión y el presupuesto
+    empty: Empieza con la ocasión y un presupuesto, luego agrega algunos artículos adecuados.
+    errors: Revisa estos datos
+    saved: Caja de regalo guardada.
+    changed: Esta caja cambió desde que la abriste. Revisa la versión actual antes de guardar.
+    deleted: Caja de regalo eliminada.
+    save: Guardar caja de regalo
+    delete: Eliminar caja de regalo
+    add_item: Agregar un artículo
+    items: Artículos de la caja
+    items_hint: Agrega hasta 30 artículos. Guarda para mostrar más filas vacías. Los costos usan la moneda de la caja; los costos vacíos son desconocidos y se excluyen del total.
+    item_number: "Artículo %{number}"
+    known_total: "Total conocido: %{amount} %{currency}"
+    remaining: "Presupuesto disponible: %{amount} %{currency}"
+    remove_item: Quitar este artículo al guardar
+    open_vendor: Abrir enlace de compra
+    next_steps: Preparar la entrega
+    reminder: Preparar recordatorio de entrega
+    reminder_hint: Abre un formulario privado con la fecha de entrega guardada. Revísalo y guárdalo para programar el recordatorio. Los cambios posteriores en la caja no cambian los recordatorios guardados.
+    reminder_title: "Revisar entrega de caja: %{name}"
+    suggestions_title: Complementos útiles
+    suggestion_hint: Ideas basadas en preferencias confirmadas para agregar a una fila. Verifica materiales, compatibilidad, disponibilidad local y costo total antes de comprar; no son ofertas verificadas.
+    no_suggestions: Aún no hay un complemento claro. Agrega preferencias confirmadas a esta relación. Si hay restricciones o gustos negativos que requieren interpretación, elige los artículos manualmente.
+    based_on: "Basado en %{key}: %{value}."
+    suggestions:
+      bookmark:
+        name: Marcapáginas
+        reason: Ayuda a guardar la página junto a un libro; busca un artesano local si resulta práctico.
+      coffee_filter:
+        name: Filtro de café reutilizable
+        reason: Complementa la rutina del café; verifica el tamaño de la cafetera y las preferencias de materiales.
+      plant_label:
+        name: Etiquetas para plantas
+        reason: Complementan los materiales de jardinería y ayudan a identificar plantas sin agregar consumibles.
+    fields:
+      name: Nombre
+      occasion: Ocasión
+      budget: Presupuesto
+      currency: Moneda (código de tres letras)
+      delivery_on: Fecha de entrega
+      notes: Notas
+      constraints: Restricciones por verificar
+      vendor: Proveedor o artesano local
+      cost: Costo del artículo
+      purchase_url: Enlace de compra
+      purchased: Comprado
+      completed: Listo para la caja
+    pagination:
+      label: "Páginas de cajas de regalo"
+      previous: "Anterior"
+      next: "Siguiente"
+      page: "Página %{page} de %{pages}"
+  activerecord:
+    attributes:
+      gift_box:
+        name: Nombre
+        occasion: Ocasión
+        notes: Notas
+        constraints: Restricciones
+        budget: Presupuesto
+        currency: Moneda
+        delivery_on: Fecha de entrega
+        items: Artículos
+        vendor: Proveedor
+        cost: Costo del artículo
+        purchase_url: Enlace de compra
+        purchased: Comprado
+        completed: Listo para la caja
+      gift_box_item:
+        name: Nombre
+        occasion: Ocasión
+        notes: Notas
+        constraints: Restricciones
+        budget: Presupuesto
+        currency: Moneda
+        delivery_on: Fecha de entrega
+        items: Artículos
+        vendor: Proveedor
+        cost: Costo del artículo
+        purchase_url: Enlace de compra
+        purchased: Comprado
+        completed: Listo para la caja
+      gift_box/items:
+        name: Nombre
+        occasion: Ocasión
+        notes: Notas
+        constraints: Restricciones
+        budget: Presupuesto
+        currency: Moneda
+        delivery_on: Fecha de entrega
+        items: Artículos
+        vendor: Proveedor
+        cost: Costo del artículo
+        purchase_url: Enlace de compra
+        purchased: Comprado
+        completed: Listo para la caja

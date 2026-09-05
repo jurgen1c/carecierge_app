@@ -4,6 +4,7 @@ summary: Authenticated, user-owned relationship profile CRUD with localized and 
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
+  - gift box complementary items confirmed preferences budget manual purchase delivery reminder
   - gift purchase planning budget shipping vendor options manual status reminder event task
   - relationship profile owner scoped CRUD
   - relationship profiles search filter archive
@@ -34,6 +35,11 @@ default_queries:
   - reusable relationship tags groups filtering
   - Lexxy Action Text relationship notes
 watched_files:
+  - app/models/gift_box*.rb
+  - app/controllers/gift_boxes_controller.rb
+  - app/services/gift_boxes/**/*.rb
+  - app/views/components/gift_box_workspace_component.*
+  - app/views/gift_boxes/**/*.erb
   - app/models/gift_purchase_plan.rb
   - app/controllers/gift_purchase_plans_controller.rb
   - app/services/gift_purchase_plans/**/*.rb

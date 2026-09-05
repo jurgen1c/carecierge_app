@@ -3,7 +3,7 @@ id: commerce_integrations.provider_records_are_manual_owner_scoped_and_private
 type: constraint
 system: commerce_integrations
 status: current
-confidence: high
+confidence: verified
 severity: critical
 title: Provider records are manual owner scoped and private
 claim: >
@@ -65,9 +65,10 @@ routes:
   - DELETE /external_provider_actions/:id
 tags: [commerce_integrations, privacy, ownership, manual, provider, booking]
 verification:
+  - bundle exec rspec
   - bundle exec rspec spec/models/external_provider_action_spec.rb spec/requests/external_provider_actions_spec.rb
   - bin/memory validate
-last_verified_commit: null
+last_verified_commit: 2be8a13a9cb8fc20726f1e7a42890614638a3da1
 ---
 
 # Provider records are manual owner scoped and private

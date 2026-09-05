@@ -90,6 +90,17 @@ RSpec.describe "Gift purchase planning", type: :request do
     expect { post task_path, params: { event_plan_id: event.id } }.to change(PlanTask, :count).by(1)
   end
 
+  it "captures the browser zone without reloading an undated milestone" do
+    put path, params: { gift_purchase_plan: attributes.merge(follow_up_on: "", lock_version: "new") }
+    plan = gift.reload.purchase_plan
+    get new_reminder_path(gift_purchase_plan_id: plan.id, gift_milestone: "follow_up")
+    form = response.parsed_body.at_css("form[data-controller='timezone']")
+    expect(form["data-timezone-capture-value"]).to eq("true")
+    expect(form["data-timezone-reload-value"]).to eq("false")
+    get new_reminder_path(gift_purchase_plan_id: plan.id, gift_milestone: "purchase")
+    expect(response.parsed_body.at_css("form[data-controller='timezone']")["data-timezone-reload-value"]).to eq("true")
+  end
+
   it "prefills a private reminder for review without scheduling it" do
     put path, params: { gift_purchase_plan: attributes.merge(lock_version: "new") }
     plan = gift.reload.purchase_plan

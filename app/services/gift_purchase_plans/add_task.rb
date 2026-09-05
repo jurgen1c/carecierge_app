@@ -1,7 +1,7 @@
 module GiftPurchasePlans
   class AddTask
     def self.call(gift:, event_plan:, locale: I18n.locale)
-      gift.relationship_profile.user.with_lock do
+      gift.relationship_profile.user.with_lock("FOR NO KEY UPDATE") do
         gift.relationship_profile.with_lock do
           event_plan.with_lock do
             raise ActiveRecord::RecordNotFound unless gift.relationship_profile.kept? && event_plan.active? &&

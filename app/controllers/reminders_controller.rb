@@ -198,7 +198,7 @@ class RemindersController < ApplicationController
     )
     date = plan.milestone_date(milestone)
     zone = ActiveSupport::TimeZone[@reminder.time_zone]
-    @reload_after_time_zone_capture = @capture_browser_time_zone
+    @reload_after_time_zone_capture = @capture_browser_time_zone && date.present?
     @reminder.scheduled_at = date && zone && !@capture_browser_time_zone ? zone.local(date.year, date.month, date.day, 9) : nil
   end
 

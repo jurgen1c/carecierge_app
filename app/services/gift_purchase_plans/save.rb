@@ -1,7 +1,7 @@
 module GiftPurchasePlans
   class Save
     def self.call(gift:, attributes:, expected_version:)
-      gift.relationship_profile.user.with_lock do
+      gift.relationship_profile.user.with_lock("FOR NO KEY UPDATE") do
         gift.relationship_profile.with_lock do
           raise ActiveRecord::RecordNotFound unless gift.relationship_profile.kept?
 

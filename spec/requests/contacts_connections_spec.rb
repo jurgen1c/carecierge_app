@@ -61,7 +61,7 @@ RSpec.describe 'Contacts connections', type: :request do
   it 'retains the account when contacts revocation fails' do
     connection
     allow(Contacts::GoogleOauth).to receive(:revoke).and_raise(Contacts::Error)
-    expect { DataDeletions::DeleteAccount.call(user:) }.to raise_error(DataDeletions::DeleteAccount::CalendarRevocationError)
+    expect { DataDeletions::DeleteAccount.call(user:) }.to raise_error(DataDeletions::DeleteAccount::ConnectionRevocationError)
     expect(User.exists?(user.id)).to be(true)
     expect(connection.reload.status).to eq('cleanup_required')
   end

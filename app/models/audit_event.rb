@@ -79,6 +79,12 @@ class AuditEvent < ApplicationRecord
     privacy_vault.protected
     privacy_vault.restored
     privacy_vault.suggestion_usage_changed
+    messaging.connection.created
+    messaging.connection.revoked
+    messaging.context.imported
+    messaging.context.deleted
+    messaging.draft.generated
+    messaging.draft.edited
     contacts.connection.created
     contacts.connection.revoked
     contacts.refresh.completed

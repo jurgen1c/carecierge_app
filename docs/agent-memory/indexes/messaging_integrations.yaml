@@ -1,0 +1,58 @@
+id: messaging_integrations
+name: Messaging Integrations
+summary: Explicit read-only Gmail excerpts and encrypted local reply drafts with consent and revocation.
+claim_globs:
+  - claims/messaging_integrations/**/*.md
+default_queries:
+  - Gmail messages snippets OAuth read only permission source draft disconnect delete
+  - communication context AI extraction exclusion encryption review
+watched_files:
+  - .kamal/secrets
+  - app/controllers/messaging_connections_controller.rb
+  - app/models/audit_event.rb
+  - app/models/automation_capability.rb
+  - app/models/imported_message_context.rb
+  - app/models/messaging_connection.rb
+  - app/models/user.rb
+  - app/policies/messaging_connection_policy.rb
+  - app/serializers/data_exports/snapshot.rb
+  - app/services/data_deletions/delete_account.rb
+  - app/services/data_deletions/delete_ai_data.rb
+  - app/services/messaging/access.rb
+  - app/services/messaging/connect.rb
+  - app/services/messaging/delete_context.rb
+  - app/services/messaging/disconnect.rb
+  - app/services/messaging/draft.rb
+  - app/services/messaging/edit_draft.rb
+  - app/services/messaging/error.rb
+  - app/services/messaging/google.rb
+  - app/services/messaging/google_oauth.rb
+  - app/services/messaging/import.rb
+  - app/services/messaging/oauth_state.rb
+  - app/services/messaging/permission.rb
+  - app/views/components/messaging_connection_component.html.erb
+  - app/views/components/messaging_connection_component.rb
+  - app/views/dashboard/index.html.erb
+  - app/views/messaging_connections/show.html.erb
+  - config/deploy.yml
+  - config/initializers/filter_parameter_logging.rb
+  - config/locales/messaging.en.yml
+  - config/locales/messaging.es.yml
+  - config/routes.rb
+  - db/migrate/20260905075430_create_messaging_foundations.rb
+  - db/migrate/20260905080040_allow_messaging_permission.rb
+  - db/migrate/20260905081335_add_draft_provenance_to_imported_message_contexts.rb
+  - spec/models/automation_capability_spec.rb
+  - db/migrate/20260905082549_add_mailbox_identity_to_messaging_connections.rb
+  - db/schema.rb
+  - docs/features/11-03-email-and-messaging-integrations.md
+  - spec/requests/messaging_connections_spec.rb
+  - spec/services/messaging/connect_spec.rb
+  - spec/services/messaging/google_oauth_spec.rb
+  - spec/services/messaging/google_spec.rb
+  - spec/services/messaging/oauth_state_spec.rb
+  - spec/services/messaging/workflow_spec.rb
+  - spec/system/messaging_connections_spec.rb
+tags:
+  - messaging_integrations
+  - privacy

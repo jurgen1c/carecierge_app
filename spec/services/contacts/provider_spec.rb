@@ -97,7 +97,7 @@ RSpec.describe 'Contacts account deletion compensation' do
         original.call(**attributes)
       end
 
-      expected_failure = failure_type == Contacts::Error ? DataDeletions::DeleteAccount::CalendarRevocationError : failure_type
+      expected_failure = failure_type == Contacts::Error ? DataDeletions::DeleteAccount::ConnectionRevocationError : failure_type
       expect { DataDeletions::DeleteAccount.call(user:) }.to raise_error(expected_failure)
 
       expect(User.exists?(user.id)).to be(true)

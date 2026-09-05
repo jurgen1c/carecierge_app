@@ -2104,7 +2104,7 @@ en:
       invalid_request: "Choose a valid deletion request."
       confirmation: "Type your account email exactly to confirm deletion."
       password: "Your current password was not accepted."
-      calendar_revocation: "We could not revoke Google Calendar access, so your account was not deleted. Try again."
+      connection_revocation: "We could not revoke access to a connected service, so your account was not deleted. Try again."
       use_data_controls: "Delete your account from Data controls so connected access can be revoked safely."
     ai_generated:
       notice: "AI-generated data was permanently deleted."

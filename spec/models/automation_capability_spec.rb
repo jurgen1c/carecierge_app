@@ -2,10 +2,11 @@ require "rails_helper"
 
 RSpec.describe AutomationCapability do
   describe ".all" do
-    it "declares the complete CAR-68 capability catalog" do
+    it "declares the supported capability catalog" do
       expect(described_class.all.map(&:key)).to eq(%w[
         draft_messages
         send_reminders
+        access_messages
         access_contacts
         access_calendar
         suggest_gifts

@@ -1,6 +1,36 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_source_bound_and_revocable
+    target: automation_permissions.permission_decisions
+    relation: requires
+    reason: Explicit Gmail and drafting actions fail closed through account permissions.
+    strength: 100
+  - source: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_source_bound_and_revocable
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Account export omits credentials and deletion revokes provider grants without erasing manual-only replies during selective AI cleanup.
+    strength: 100
+  - source: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_source_bound_and_revocable
+    target: audit_events.account_activity_ledger
+    relation: requires
+    reason: Messaging lifecycle and local drafts emit content-free result evidence.
+    strength: 100
+  - source: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_source_bound_and_revocable
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: requires
+    reason: Communication drafts reuse only the non-stored generator and never copy imported snippets into the separate relationship draft workspace.
+    strength: 100
+  - source: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_source_bound_and_revocable
+    target: relationship_profiles.privacy_vault
+    relation: requires
+    reason: Communication sources cannot read or bypass vault protected context.
+    strength: 100
+  - source: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_source_bound_and_revocable
+    target: authentication.localization_baseline
+    relation: requires
+    reason: The messaging workspace preserves English default and Spanish parity.
+    strength: 100
   - source: contacts_integrations.contacts_imports_are_owner_reviewed_private_and_reversible
     target: automation_permissions.permission_decisions
     relation: requires

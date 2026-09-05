@@ -1,6 +1,6 @@
 module DataDeletions
   class DeleteAccount
-    CalendarRevocationError = Class.new(StandardError)
+    ConnectionRevocationError = Class.new(StandardError)
 
     def self.call(user:)
       new(user:).call
@@ -20,6 +20,7 @@ module DataDeletions
         after_commit: -> { DeleteBlobs.call(blobs) },
         after_rollback: ->(error) { compensate_calendar_failure!(error) }
       ) do
+        disconnect_messaging!
         disconnect_contacts!
         revoke_pending_calendar_credentials!
         disconnect_calendar!
@@ -34,13 +35,33 @@ module DataDeletions
 
     attr_reader :user
 
+    def disconnect_messaging!
+      return unless user.messaging_connection
+      if Messaging::Disconnect.call(user:, after_revoke: -> { @messaging_revoked = true })
+        @messaging_revoked = true
+      else
+        @messaging_revocation_failed = !@messaging_revoked
+        raise ConnectionRevocationError, "Messaging access could not be revoked"
+      end
+    end
+
+    def compensate_messaging_failure!
+      connection = MessagingConnection.lock.find_by(user_id: user.id)
+      return unless connection
+      if @messaging_revocation_failed || @messaging_revoked
+        user.increment!(:messaging_connection_generation)
+        connection.imported_message_contexts.destroy_all
+        connection.update!(status: @messaging_revocation_failed ? "cleanup_required" : "authorization_required")
+      end
+    end
+
     def disconnect_contacts!
       return unless user.contacts_connection
       if Contacts::Disconnect.call(user:, after_revoke: -> { @contacts_revoked = true })
         @contacts_revoked = true
       else
         @contacts_revocation_failed = !@contacts_revoked
-        raise CalendarRevocationError, "Contacts access could not be revoked"
+        raise ConnectionRevocationError, "Contacts access could not be revoked"
       end
     end
 
@@ -61,7 +82,7 @@ module DataDeletions
       end
 
       @calendar_revocation_failed = true
-      raise CalendarRevocationError, "Calendar access could not be revoked"
+      raise ConnectionRevocationError, "Calendar access could not be revoked"
     end
 
     def revoke_pending_calendar_credentials!
@@ -70,7 +91,7 @@ module DataDeletions
         revocation.destroy!
       rescue CalendarConnections::ConnectionError => error
         @pending_revocation_failure = [ revocation.id, error.code ]
-        raise CalendarRevocationError, "Pending calendar access could not be revoked"
+        raise ConnectionRevocationError, "Pending calendar access could not be revoked"
       end
     end
 
@@ -84,8 +105,9 @@ module DataDeletions
     def calendar_revoked? = @calendar_revoked
 
     def compensate_calendar_failure!(error)
+      compensate_messaging_failure!
       compensate_contacts_failure!
-      if error.is_a?(CalendarRevocationError)
+      if error.is_a?(ConnectionRevocationError)
         record_pending_calendar_revocation_failure!
         record_calendar_revocation_failure! if @calendar_revocation_failed
       elsif calendar_revoked?

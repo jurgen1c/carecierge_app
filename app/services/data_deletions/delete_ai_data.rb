@@ -1,7 +1,10 @@
 module DataDeletions
   class DeleteAiData
     def self.call(user:)
-      ApplicationRecord.transaction do
+      user.with_lock("FOR NO KEY UPDATE") do
+        user.messaging_connection&.imported_message_contexts&.where(reply_ai_generated: true)&.find_each do |context|
+          context.update!(reply_draft: nil, reply_ai_generated: false)
+        end
         profiles = user.relationship_profiles.with_discarded.order(:id).lock("FOR NO KEY UPDATE").to_a
         ConversationRecap
           .where(relationship_profile: profiles)

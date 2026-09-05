@@ -3,7 +3,7 @@ id: automation_permissions.permission_decisions
 type: fact
 system: automation_permissions
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Automation permissions fail closed with owner-scoped overrides and audited changes
@@ -16,7 +16,7 @@ claim: >
   account defaults; foreign and archived overrides cannot be edited or shown
   through settings.
   Ask-every-time requires literal boolean approval, and high-impact purchase and
-  deposit capabilities cannot run automatically. Writes and removals create
+  deposit capabilities and read-only messaging access cannot run automatically. Writes and removals create
   append-only audits atomically with owner-first locking; bulk defaults lock the
   owner once, and new overrides audit their inherited mode. Relationship
   deletion audits removals while retaining relationship UUID scope. Capability
@@ -24,6 +24,9 @@ claim: >
   browser Back navigation.
 
 source_files:
+  - config/locales/messaging.en.yml
+  - config/locales/messaging.es.yml
+  - db/migrate/20260905080040_allow_messaging_permission.rb
   - app/models/automation_capability.rb
   - app/models/automation_permission.rb
   - app/models/automation_permission_decision.rb
@@ -76,7 +79,7 @@ verification:
   - bin/rubocop
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: f5e5436a323c83d20a3f6d3d895ae1d7a84cca73
 ---
 
 # Automation permissions fail closed with owner-scoped overrides and audited changes

@@ -6,6 +6,7 @@
 Rails.application.config.filter_parameters += [
   :passw, :email, :secret, :token, :_key, :crypt, :salt, :certificate, :otp, :ssn, :cvv, :cvc,
   :memory_query, :situation,
+  :messaging_query, :external_id, :reply_draft, :context_id,
   :code, :state, "calendar_connection.sync_types",
   "conversation_recap.body", "conversation_recap.transcript",
   "extracted_memory.corrected_title", "extracted_memory.corrected_body",

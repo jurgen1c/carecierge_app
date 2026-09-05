@@ -76,6 +76,15 @@ Rails.application.routes.draw do
   resource :notification_preference, only: %i[edit update]
   resource :automation_permissions, only: %i[edit update]
   resources :automation_permission_overrides, only: %i[create update destroy]
+  resource :messaging_connection, only: %i[show destroy] do
+    post :connect
+    get :callback
+    post :search
+    post :import
+    post :draft
+    patch :edit_draft
+    delete :delete_context
+  end
   resource :contacts_connection, only: %i[show new destroy] do
     get :callback
     post :refresh

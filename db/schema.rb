@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_03_208000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_055742) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -331,6 +331,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_208000) do
     t.index ["relationship_profile_id"], name: "index_contact_methods_on_relationship_profile_id"
   end
 
+  create_table "contacts_connections", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "access_token"
+    t.datetime "created_at", null: false
+    t.datetime "last_refreshed_at"
+    t.text "next_page_token"
+    t.string "provider", default: "google_contacts", null: false
+    t.text "refresh_token"
+    t.string "status", default: "connected", null: false
+    t.datetime "token_expires_at"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id"], name: "index_contacts_connections_on_user_id", unique: true
+  end
+
   create_table "conversation_recaps", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "body", null: false
     t.string "capture_source", default: "typed", null: false
@@ -626,6 +640,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_208000) do
     t.index ["relationship_profile_id", "importance_level"], name: "idx_on_relationship_profile_id_importance_level_a07d6afa11"
     t.index ["relationship_profile_id", "starts_on"], name: "index_important_dates_on_relationship_profile_id_and_starts_on"
     t.index ["relationship_profile_id"], name: "index_important_dates_on_relationship_profile_id"
+  end
+
+  create_table "imported_contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "applied_data"
+    t.uuid "contacts_connection_id", null: false
+    t.datetime "created_at", null: false
+    t.text "data", null: false
+    t.string "decision", default: "pending", null: false
+    t.text "external_id", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.text "previous_data"
+    t.string "provider_key", null: false
+    t.uuid "relationship_profile_id"
+    t.datetime "updated_at", null: false
+    t.index ["contacts_connection_id", "provider_key"], name: "idx_on_contacts_connection_id_provider_key_a5445e4db7", unique: true
+    t.index ["contacts_connection_id"], name: "index_imported_contacts_on_contacts_connection_id"
+    t.index ["relationship_profile_id"], name: "index_imported_contacts_on_relationship_profile_id"
   end
 
   create_table "interactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1142,6 +1173,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_208000) do
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
     t.datetime "confirmed_at"
+    t.integer "contacts_connection_generation", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "current_sign_in_at"
     t.string "current_sign_in_ip"
@@ -1297,6 +1329,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_208000) do
   add_foreign_key "commitments", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_cadences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"
+  add_foreign_key "contacts_connections", "users"
   add_foreign_key "conversation_recaps", "relationship_profiles"
   add_foreign_key "deletion_requests", "users", on_delete: :nullify
   add_foreign_key "desire_fulfillments", "desires"
@@ -1320,6 +1353,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_208000) do
   add_foreign_key "gift_recommendations", "users", on_delete: :cascade
   add_foreign_key "gifts", "relationship_profiles"
   add_foreign_key "important_dates", "relationship_profiles"
+  add_foreign_key "imported_contacts", "contacts_connections"
+  add_foreign_key "imported_contacts", "relationship_profiles", on_delete: :nullify
   add_foreign_key "interactions", "relationship_profiles", on_delete: :cascade
   add_foreign_key "memory_records", "relationship_profiles"
   add_foreign_key "memory_revisions", "memory_records"

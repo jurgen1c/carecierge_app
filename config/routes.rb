@@ -76,6 +76,12 @@ Rails.application.routes.draw do
   resource :notification_preference, only: %i[edit update]
   resource :automation_permissions, only: %i[edit update]
   resources :automation_permission_overrides, only: %i[create update destroy]
+  resource :contacts_connection, only: %i[show new destroy] do
+    get :callback
+    post :refresh
+    post "decide/:contact_id", action: :decide, as: :decide
+  end
+
   resource :calendar_connection, only: %i[show new update destroy] do
     get :callback
     post :sync

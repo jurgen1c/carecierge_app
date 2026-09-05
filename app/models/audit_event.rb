@@ -79,6 +79,14 @@ class AuditEvent < ApplicationRecord
     privacy_vault.protected
     privacy_vault.restored
     privacy_vault.suggestion_usage_changed
+    contacts.connection.created
+    contacts.connection.revoked
+    contacts.refresh.completed
+    contacts.decision.create
+    contacts.decision.link
+    contacts.decision.skip
+    contacts.decision.update
+    contacts.decision.undo
     calendar.connection.created
     calendar.connection.revoked
     calendar.connection.revocation_failed

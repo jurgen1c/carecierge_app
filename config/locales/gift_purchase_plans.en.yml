@@ -1,0 +1,104 @@
+---
+en:
+  gift_purchase_plans:
+    title: Plan purchase
+    back: Back to gift
+    intro: Keep the practical details together, compare options, and decide what to
+      do next.
+    essentials: Budget and timing
+    currency_hint: Use a three-letter currency code, such as USD or CRC. All option
+      costs use this currency.
+    options_title: Purchase options
+    options_hint: Save up to three options. Include shipping and taxes in each estimated
+      total. Clear a vendor and its details to remove an option. Prices and availability
+      are not verified.
+    suggested: Suggested option
+    suggestion_reason: Lowest saved cost within your budget among the options you
+      checked. Confirm the final price and availability yourself.
+    no_suggestion: Save a budget and an option with a known cost, then confirm that
+      it fits your constraints to see a suggestion.
+    option_number: Option %{number}
+    open_option: Open purchase link (new tab)
+    constraints_checked: I checked this option against the recipient’s preferences
+      and my constraints.
+    tracking: Delivery and follow-up
+    manual: Manual tracking only.
+    review_only: Record purchases you made yourself. Saving a plan or changing a status
+      never buys, pays, contacts a vendor, or shares shipping details.
+    save: Save purchase plan
+    saved: Purchase plan saved.
+    changed: The purchase plan changed. Review the latest details and try again.
+    errors: Check these purchase details
+    next_steps: Make time to follow through
+    saved_values: These actions use your saved details. Review the reminder before
+      saving. An event-plan task is a separate checklist item; later plan edits do
+      not change it.
+    task_attached: Purchase task added to
+    add_task: Add purchase task
+    task_added: Gift purchase task added.
+    no_event_plans: Create an active event plan for this person to add a purchase
+      task.
+    save_first: Save your purchase plan to prepare reminders or add an event-plan
+      task.
+    history_hint: When the gift is given, return to the gift to record the date and
+      reaction in gift history.
+    task_title: 'Purchase gift: %{name}'
+    fields:
+      budget: Budget
+      currency: Currency
+      purchase_by: Purchase by
+      expected_delivery_on: Expected delivery date
+      constraints: Preferences and constraints to check
+      vendor: Vendor or purchase option
+      cost: Estimated total cost
+      url: Purchase link
+      purchase_status: Purchase status
+      delivery_status: Delivery status
+      shipping_notes: Private shipping notes
+      follow_up_on: Follow-up date
+      follow_up_notes: Wrapping, card, delivery or follow-up needs
+      event_plan: Event plan
+    purchase_status:
+      planning: Planning
+      purchased: Purchased by me
+      cancelled: Cancelled
+    delivery_status:
+      not_started: Not started
+      awaiting: Awaiting delivery
+      shipped: Shipped
+      delivered: Delivered
+    reminders:
+      purchase: Prepare purchase reminder
+      delivery: Prepare delivery reminder
+      follow_up: Prepare follow-up reminder
+    reminder_titles:
+      purchase: 'Purchase gift: %{name}'
+      delivery: 'Check gift delivery: %{name}'
+      follow_up: 'Follow up on gift: %{name}'
+  activerecord:
+    attributes:
+      gift_purchase_plan:
+        budget: Budget
+        currency: Currency
+        purchase_by: Purchase by
+        expected_delivery_on: Expected delivery date
+        constraints: Preferences and constraints to check
+        vendor: Vendor or purchase option
+        cost: Estimated total cost
+        url: Purchase link
+        purchase_status: Purchase status
+        delivery_status: Delivery status
+        shipping_notes: Private shipping notes
+        follow_up_on: Follow-up date
+        follow_up_notes: Wrapping, card, delivery or follow-up needs
+        event_plan: Event plan
+        options: Purchase options
+    errors:
+      models:
+        gift_purchase_plan:
+          attributes:
+            options:
+              invalid: must contain at most three named options with safe HTTP(S)
+                links and costs with up to two decimal places
+            budget:
+              invalid: must be a non-negative amount with up to two decimal places

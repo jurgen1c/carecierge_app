@@ -45,6 +45,7 @@
       </div>
 
       <div class="flex shrink-0 flex-wrap gap-2">
+        <%= link_to t("gift_purchase_plans.title"), relationship_profile_gift_purchase_plan_path(relationship_profile, gift), data: { turbo_frame: "_top" }, class: "inline-flex min-h-11 items-center rounded-lg border border-private-line px-4 py-2 text-sm font-semibold text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" if relationship_profile.kept? %>
         <%= link_to t("gifts.item.edit"), edit_relationship_profile_gift_path(relationship_profile, gift), class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-900 transition hover:bg-stone-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
         <%= button_to t("gifts.item.delete"), relationship_profile_gift_path(relationship_profile, gift), method: :delete, form: { data: { turbo_confirm: t("gifts.item.delete_confirm") } }, class: "inline-flex min-h-10 items-center justify-center rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-800 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700" %>
       </div>

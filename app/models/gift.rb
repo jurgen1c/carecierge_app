@@ -39,6 +39,7 @@ class Gift < ApplicationRecord
   OUTCOMES = %w[successful unsuccessful mixed unknown].freeze
 
   belongs_to :relationship_profile
+  has_one :purchase_plan, class_name: "GiftPurchasePlan", dependent: :destroy
 
   before_validation :normalize_text_fields
 

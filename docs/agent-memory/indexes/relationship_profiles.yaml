@@ -4,6 +4,7 @@ summary: Authenticated, user-owned relationship profile CRUD with localized and 
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
+  - gift purchase planning budget shipping vendor options manual status reminder event task
   - relationship profile owner scoped CRUD
   - relationship profiles search filter archive
   - relationship memory search structured source relationship archive date vault exclusion instrumentation
@@ -33,6 +34,11 @@ default_queries:
   - reusable relationship tags groups filtering
   - Lexxy Action Text relationship notes
 watched_files:
+  - app/models/gift_purchase_plan.rb
+  - app/controllers/gift_purchase_plans_controller.rb
+  - app/services/gift_purchase_plans/**/*.rb
+  - app/views/components/gift_purchase_workspace_component.*
+  - app/views/gift_purchase_plans/**/*.erb
   - app/models/user.rb
   - app/models/relationship_profile.rb
   - app/models/relationship_profiles/**/*.rb

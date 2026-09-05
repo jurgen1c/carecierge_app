@@ -124,7 +124,9 @@ module DataExports
         "relationship_preferences" => records(profile.relationship_preferences),
         "relationship_field_values" => records(profile.relationship_field_values),
         "important_dates" => records(profile.important_dates),
-        "gifts" => records(profile.gifts),
+        "gifts" => profile.gifts.includes(:purchase_plan).map do |gift|
+          attributes_for(gift).merge("purchase_plan" => gift.purchase_plan && attributes_for(gift.purchase_plan, except: %w[gift_id plan_task_id lock_version]))
+        end,
         "gift_recommendations" => profile.gift_recommendations.recent_first.map { |recommendation| gift_recommendation_attributes(recommendation) },
         "event_plans" => event_plans_for(profile).map { |plan| event_plan_attributes(plan) },
         "vendor_shortlists" => vendor_shortlists_for(profile).map { |shortlist| vendor_shortlist_attributes(shortlist) },

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_082549) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_092245) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -570,6 +570,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_082549) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "gift_purchase_plans", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.decimal "budget", precision: 12, scale: 2
+    t.text "constraints"
+    t.datetime "created_at", null: false
+    t.string "currency", default: "USD", null: false
+    t.string "delivery_status", default: "not_started", null: false
+    t.date "expected_delivery_on"
+    t.text "follow_up_notes"
+    t.date "follow_up_on"
+    t.uuid "gift_id", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.text "options", null: false
+    t.uuid "plan_task_id"
+    t.date "purchase_by"
+    t.string "purchase_status", default: "planning", null: false
+    t.text "shipping_notes"
+    t.datetime "updated_at", null: false
+    t.index ["gift_id"], name: "index_gift_purchase_plans_on_gift_id", unique: true
+    t.index ["plan_task_id"], name: "index_gift_purchase_plans_on_plan_task_id"
   end
 
   create_table "gift_recommendations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1378,6 +1399,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_082549) do
   add_foreign_key "feature_flag_audit_events", "feature_flags"
   add_foreign_key "feature_flag_audit_events", "users", column: "actor_id"
   add_foreign_key "feed_item_states", "users", on_delete: :cascade
+  add_foreign_key "gift_purchase_plans", "gifts", on_delete: :cascade
+  add_foreign_key "gift_purchase_plans", "plan_tasks", on_delete: :nullify
   add_foreign_key "gift_recommendations", "gifts", on_delete: :nullify
   add_foreign_key "gift_recommendations", "relationship_profiles", on_delete: :cascade
   add_foreign_key "gift_recommendations", "users", on_delete: :cascade

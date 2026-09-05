@@ -55,6 +55,11 @@ Rails.application.routes.draw do
   end
   resources :vendor_quotes, only: %i[index edit update destroy]
   resources :bookings, only: %i[index edit update destroy]
+  resources :marketplace_listings, only: %i[index show] do
+    get :compare, on: :collection
+    post :save, on: :member
+    get :use, on: :member
+  end
   resources :vendors, except: :show
   resources :vendor_shortlists, only: %i[index new create show] do
     resources :vendor_options, only: %i[create update destroy] do

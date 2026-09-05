@@ -1,1 +1,7 @@
-<%= render "form_frame", relationship_profile: @relationship_profile, gift: @gift %>
+<% if turbo_frame_request? %>
+  <%= render "form_frame", relationship_profile: @relationship_profile, gift: @gift %>
+<% else %>
+  <%= turbo_frame_tag "gifts_section" do %>
+    <%= render "form_frame", relationship_profile: @relationship_profile, gift: @gift %>
+  <% end %>
+<% end %>

@@ -4,6 +4,7 @@ summary: Owner-scoped sourced vendor discovery, bounded comparisons, and manual 
 claim_globs:
   - claims/vendor_discovery/**/*.md
 default_queries:
+  - marketplace shared curated listing service area use case provider published save handoff
   - vendor discovery shortlist category location occasion preference budget timing
   - vendor source provenance manual external source URL fit explanation
   - event plan vendor attach detach owner scope active review only booking contact purchase
@@ -11,6 +12,19 @@ default_queries:
   - vendor shortlist comparison favorite reject restore selected notes constraints next action
   - vendor quote amount currency scope expiration decision deadline status reminder manual review only
 watched_files:
+  - app/models/marketplace_listing.rb
+  - app/controllers/marketplace_listings_controller.rb
+  - app/policies/marketplace_listing_policy.rb
+  - app/services/marketplace_listings/**/*.rb
+  - app/views/marketplace_listings/**/*.erb
+  - app/views/components/marketplace_listing_component.*
+  - config/locales/marketplace.*.yml
+  - db/migrate/*marketplace*.rb
+  - docs/features/07-05-local-marketplace.md
+  - spec/models/marketplace_listing_spec.rb
+  - spec/requests/marketplace_listings_spec.rb
+  - spec/services/marketplace_listings/**/*.rb
+  - spec/system/marketplace_listings_spec.rb
   - app/controllers/vendors_controller.rb
   - app/controllers/event_plan_vendors_controller.rb
   - app/controllers/vendor_shortlists_controller.rb

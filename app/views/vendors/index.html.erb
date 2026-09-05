@@ -7,6 +7,7 @@
         <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("vendors.index.body") %></p>
       </div>
       <div class="flex flex-wrap gap-2">
+        <%= link_to t("marketplace.title"), marketplace_listings_path, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary underline underline-offset-4" %>
         <%= link_to t("vendors.index.quotes"), vendor_quotes_path, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-private-line bg-canvas px-4 py-2 text-sm font-semibold text-ink hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <%= link_to t("vendors.index.compare"), vendor_shortlists_path, class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-private-line bg-canvas px-4 py-2 text-sm font-semibold text-ink hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
         <%= link_to t("vendors.index.add"), new_vendor_path(event_plan_id: @event_plan&.id), class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
@@ -28,6 +29,7 @@
 
   <%= form_with url: vendors_path, method: :get, class: "grid gap-4 border-b border-private-line py-6 lg:grid-cols-4", scope: :vendor_search do |form| %>
     <%= hidden_field_tag :event_plan_id, @event_plan.id if @event_plan %>
+    <%= hidden_field_tag :vendor_id, @selected_vendor.id if @selected_vendor %>
     <div class="lg:col-span-2">
       <%= form.label :query, t("vendors.search.query"), class: "block text-sm font-semibold text-ink" %>
       <%= form.search_field :query, value: @search.query, class: "mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" %>

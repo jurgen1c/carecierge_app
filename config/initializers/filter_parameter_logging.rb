@@ -27,6 +27,7 @@ Rails.application.config.filter_parameters += [
   "vendor_search.query", "vendor_search.category", "vendor_search.location",
   "vendor_search.occasion_type", "vendor_search.preference", "vendor_search.maximum_budget",
   "vendor_search.timing",
+  "q.name_or_curated_summary_cont", "q.service_area_cont", "q.relationship_use_cases_cont",
   "plan_task.title", "plan_task.details", "reminder.title",
   "personal_touch_item.title", "personal_touch_item.details",
   "social_context_note.body", "social_context_note.interpretation",

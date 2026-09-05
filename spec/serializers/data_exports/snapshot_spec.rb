@@ -102,6 +102,36 @@ RSpec.describe DataExports::Snapshot do
     expect(exported_backup_plan).not_to have_key("context_fingerprint")
   end
 
+  it "exports calendar choices and sync state without provider credentials or opaque identifiers" do
+    connection = create(
+      :calendar_connection,
+      access_token: "private-access",
+      refresh_token: "private-refresh",
+      last_error_code: "provider_unavailable"
+    )
+    event_sync = create(:calendar_event_sync, calendar_connection: connection, external_event_id: "private-provider-id")
+
+    exported = described_class.new(user: connection.user).to_h.fetch("calendar_connection")
+
+    expect(exported).to include(
+      "provider" => "google_calendar",
+      "sync_types" => CalendarConnection::SYNC_TYPES,
+      "sync_status" => "connected"
+    )
+    expect(exported.fetch("event_syncs").sole).to include(
+      "source_type" => event_sync.source_type,
+      "source_id" => event_sync.source_id
+    )
+    expect(exported.to_json).not_to include(
+      "private-access",
+      "private-refresh",
+      "private-provider-id",
+      CalendarConnection::GOOGLE_SCOPE,
+      "provider_unavailable"
+    )
+    expect(exported).not_to include("sync_lease_token", "sync_lease_expires_at", "resync_requested", "pending_audit_count")
+  end
+
   private
 
   def capture_sql

@@ -1,0 +1,118 @@
+<header class="border-b border-private-line pb-6">
+  <h1 class="text-3xl font-semibold text-ink"><%= t("calendar_connections.show.heading") %></h1>
+  <p class="mt-2 max-w-3xl text-base leading-6 text-quiet-note"><%= t("calendar_connections.show.body") %></p>
+</header>
+
+<section aria-labelledby="calendar-provider-heading" class="py-7">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div>
+      <h2 id="calendar-provider-heading" class="text-xl font-semibold text-ink"><%= t("calendar_connections.show.provider_heading") %></h2>
+      <% if connected? %>
+        <div class="mt-3 flex flex-wrap items-center gap-3">
+          <span class="flex size-11 items-center justify-center rounded-lg bg-surface text-lg font-semibold text-primary" aria-hidden="true">31</span>
+          <div>
+            <p class="font-semibold text-ink"><%= t("calendar_connections.providers.google_calendar") %></p>
+            <div class="mt-1 flex flex-wrap items-center gap-2 text-sm text-quiet-note">
+              <span class="<%= style(:status, status:) %>"><%= t("calendar_connections.statuses.#{connection.sync_status}") %></span>
+              <% if connection.last_synced_at %>
+                <span><%= t("calendar_connections.show.last_synced", at: l(connection.last_synced_at, format: :long)) %></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <% if error? %>
+          <div role="alert" class="mt-4 max-w-3xl rounded-xl border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger-ink">
+            <p class="font-semibold"><%= t("calendar_connections.errors.#{connection.last_error_code}", default: t("calendar_connections.errors.provider_error")) %></p>
+            <p class="mt-1"><%= t("calendar_connections.show.#{error_recovery_key}") %></p>
+          </div>
+        <% end %>
+      <% elsif provider_available %>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("calendar_connections.show.google_available") %></p>
+      <% else %>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-quiet-note"><%= t("calendar_connections.show.google_unavailable") %></p>
+      <% end %>
+      <% if credential_revocation_pending %>
+        <div role="status" class="mt-4 max-w-3xl rounded-xl border border-danger-border bg-danger-surface px-4 py-3 text-sm text-danger-ink">
+          <p class="font-semibold"><%= t("calendar_connections.show.credential_cleanup_pending") %></p>
+          <p class="mt-1"><%= t("calendar_connections.show.credential_cleanup_recovery") %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <% if credential_revocation_pending %>
+    <% elsif reconnect_required? && provider_available %>
+      <%= link_to t("calendar_connections.show.reconnect_google"),
+        new_calendar_connection_path,
+        data: { turbo: false },
+        class: "inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    <% elsif permission_required? %>
+      <div class="flex shrink-0 flex-col gap-2 sm:items-end">
+        <%= link_to t("calendar_connections.show.review_permission"),
+          edit_automation_permissions_path(capability: "access_calendar"),
+          class: "inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+        <%= button_to sync_action_label,
+          sync_calendar_connection_path,
+          class: "inline-flex min-h-11 items-center justify-center rounded-lg border border-primary bg-canvas px-5 py-2 text-sm font-semibold text-primary hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      </div>
+    <% elsif sync_control? %>
+      <%= button_to sync_action_label,
+        sync_calendar_connection_path,
+        disabled: syncing?,
+        class: "inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg border border-primary bg-canvas px-5 py-2 text-sm font-semibold text-primary hover:bg-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-60" %>
+    <% elsif provider_available && !revocation_failed? %>
+      <%= link_to t("calendar_connections.show.connect_google"),
+        new_calendar_connection_path,
+        data: { turbo: false },
+        class: "inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    <% end %>
+  </div>
+</section>
+
+<% if connected? %>
+  <%= form_with model: connection, url: calendar_connection_path, method: :patch,
+    data: { turbo_confirm: t("calendar_connections.show.sync_confirm") },
+    class: "border-y border-private-line" do |form| %>
+    <div class="flex flex-col gap-2 bg-surface px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+      <div>
+        <h2 class="text-lg font-semibold text-ink"><%= t("calendar_connections.show.sync_heading") %></h2>
+        <p class="mt-1 text-sm leading-5 text-quiet-note"><%= t("calendar_connections.show.sync_body") %></p>
+      </div>
+      <%= form.submit t("calendar_connections.show.save_settings"), class: "min-h-11 w-full rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:w-auto" %>
+    </div>
+
+    <%= hidden_field_tag "calendar_connection[sync_types][]", "" %>
+    <% CalendarConnection::SYNC_TYPES.each do |sync_type| %>
+      <label class="flex min-h-16 cursor-pointer items-center justify-between gap-4 border-t border-private-line px-4 py-3 first:border-t-0 sm:px-5">
+        <span class="min-w-0">
+          <span class="block text-sm font-semibold text-ink"><%= t("calendar_connections.sync_types.#{sync_type}.name") %></span>
+          <span class="mt-1 block max-w-2xl text-sm leading-5 text-quiet-note"><%= t("calendar_connections.sync_types.#{sync_type}.description") %></span>
+        </span>
+        <span class="relative inline-flex min-h-11 shrink-0 items-center">
+          <%= check_box_tag "calendar_connection[sync_types][]",
+            sync_type,
+            connection.syncs?(sync_type),
+            id: "calendar_connection_sync_types_#{sync_type}",
+            class: "peer sr-only",
+            role: "switch",
+            aria: { label: t("calendar_connections.sync_types.#{sync_type}.name") } %>
+          <span aria-hidden="true" class="<%= style(:switch_track) %>"></span>
+          <span aria-hidden="true" class="<%= style(:switch_thumb) %>"></span>
+        </span>
+      </label>
+    <% end %>
+  <% end %>
+
+  <section aria-labelledby="calendar-privacy-heading" class="py-7">
+    <h2 id="calendar-privacy-heading" class="text-lg font-semibold text-ink"><%= t("calendar_connections.show.privacy_heading") %></h2>
+    <p class="mt-2 max-w-3xl text-sm leading-6 text-quiet-note"><%= t("calendar_connections.show.privacy_body") %></p>
+    <div class="mt-5 border-t border-private-line pt-5">
+      <h3 class="font-semibold text-ink"><%= t("calendar_connections.show.disconnect_heading") %></h3>
+      <p class="mt-1 max-w-3xl text-sm leading-6 text-quiet-note"><%= t("calendar_connections.show.disconnect_body") %></p>
+      <%= button_to t("calendar_connections.show.disconnect_google"),
+        calendar_connection_path,
+        method: :delete,
+        form: { class: "mt-4", data: { turbo_confirm: t("calendar_connections.show.disconnect_confirm") } },
+        class: "min-h-11 rounded-lg border border-danger-border bg-canvas px-4 py-2 text-sm font-semibold text-danger-ink hover:bg-danger-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-ink" %>
+    </div>
+  </section>
+<% end %>

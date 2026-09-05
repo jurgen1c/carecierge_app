@@ -49,9 +49,28 @@ module DataExports
         "notifications" => records(user.notifications, except: %w[recipient_type recipient_id]),
         "automation_permissions" => records(user.automation_permissions),
         "automation_permission_changes" => records(user.automation_permission_changes),
+        "calendar_connection" => calendar_connection_attributes,
         "audit_events" => records(user.audit_events, except: %w[user_id actor_id]),
         "deletion_requests" => records(user.deletion_requests, except: %w[user_id account_digest])
       }
+    end
+
+    def calendar_connection_attributes
+      connection = user.calendar_connection
+      return unless connection
+
+      attributes_for(
+        connection,
+        except: %w[
+          user_id access_token refresh_token granted_scopes lock_version last_error_code
+          sync_lease_token sync_lease_expires_at resync_requested pending_audit_count
+        ]
+      ).merge(
+        "event_syncs" => records(
+          connection.calendar_event_syncs,
+          except: %w[calendar_connection_id external_event_id source_fingerprint]
+        )
+      )
     end
 
     def approval_data

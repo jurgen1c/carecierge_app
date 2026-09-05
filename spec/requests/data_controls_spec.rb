@@ -727,6 +727,122 @@ RSpec.describe "Data controls", type: :request do
       expect(ActiveStorage::Blob.service.exist?(blob_key)).to be(false)
     end
 
+    it "revokes calendar access before deleting the account" do
+      connection = create(:calendar_connection, user:)
+      provider = instance_double(CalendarProviders::Google, revoke: true)
+      allow(CalendarProviders::Google).to receive(:new).with(connection:).and_return(provider)
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(provider).to have_received(:revoke)
+      expect(response).to redirect_to(root_path)
+      expect(User.exists?(user.id)).to be(false)
+    end
+
+    it "revokes retained callback credentials before deleting the account" do
+      pending = create(:calendar_credential_revocation, user:)
+      allow(CalendarConnections::GoogleOauth).to receive(:revoke).with(credentials: pending.credentials).and_return(true)
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(CalendarConnections::GoogleOauth).to have_received(:revoke).with(credentials: pending.credentials)
+      expect(response).to redirect_to(root_path)
+      expect(User.exists?(user.id)).to be(false)
+    end
+
+    it "preserves the account and retained callback credentials when revocation fails" do
+      pending = create(:calendar_credential_revocation, user:)
+      allow(CalendarConnections::GoogleOauth).to receive(:revoke)
+        .and_raise(CalendarConnections::ConnectionError.new(code: "provider_unavailable"))
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(User.exists?(user.id)).to be(true)
+      expect(pending.reload).to have_attributes(attempts: 1, last_error_code: "provider_unavailable")
+    end
+
+    it "leaves a healthy live connection unchanged when retained callback credential revocation fails" do
+      connection = create(:calendar_connection, user:)
+      pending = create(:calendar_credential_revocation, user:)
+      allow(CalendarConnections::GoogleOauth).to receive(:revoke)
+        .with(credentials: pending.credentials)
+        .and_raise(CalendarConnections::ConnectionError.new(code: "provider_unavailable"))
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(connection.reload).to have_attributes(sync_status: "connected", last_error_code: nil)
+      expect(user.audit_events.where(action: "calendar.connection.revocation_failed")).to be_empty
+    end
+
+    it "preserves the account and credentials when calendar revocation cannot be confirmed" do
+      connection = create(:calendar_connection, user:)
+      provider = instance_double(CalendarProviders::Google)
+      allow(CalendarProviders::Google).to receive(:new).with(connection:).and_return(provider)
+      allow(provider).to receive(:revoke).and_raise(CalendarProviders::TransientError.new(code: "provider_unavailable"))
+
+      post data_deletions_path, params: {
+        data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(User.exists?(user.id)).to be(true)
+      expect(connection.reload).to have_attributes(sync_status: "failed", last_error_code: "revocation_failed")
+      expect(DeletionRequest.order(:created_at).last).to have_attributes(status: "failed", completed_at: nil)
+    end
+
+    it "requires reconnect and fences stale callbacks when local deletion rolls back after revocation" do
+      connection = create(:calendar_connection, user:)
+      provider = instance_double(CalendarProviders::Google, revoke: true)
+      lock_depth = 0
+      root_lock_acquisitions = 0
+      allow_any_instance_of(User).to receive(:with_lock).and_wrap_original do |original, *args, &block|
+        root_lock_acquisitions += 1 if lock_depth.zero?
+        original.call(*args) do
+          lock_depth += 1
+          block.call
+        ensure
+          lock_depth -= 1
+        end
+      end
+      allow(CalendarProviders::Google).to receive(:new).with(connection:).and_return(provider)
+      allow_any_instance_of(CalendarConnection).to receive(:destroy!).and_raise(StandardError, "local deletion failed")
+
+      expect do
+        post data_deletions_path, params: {
+          data_deletion: { kind: "account", confirmation: user.email, current_password: password }
+        }
+      end.to raise_error(StandardError, "local deletion failed")
+
+      expect(user.reload.calendar_connection_generation).to eq(1)
+      expect(root_lock_acquisitions).to eq(1)
+      expect(connection.reload).to have_attributes(sync_status: "action_required", last_error_code: "authorization_required")
+      expect(user.audit_events.order(:created_at).last).to have_attributes(
+        action: "calendar.connection.revoked",
+        target: user,
+        metadata: { "result" => "success" }
+      )
+    end
+
+    it "does not let Devise account deletion bypass the guarded data-control flow" do
+      connection = create(:calendar_connection, user:)
+
+      delete user_registration_path
+
+      expect(response).to redirect_to(data_control_path)
+      expect(User.exists?(user.id)).to be(true)
+      expect(CalendarConnection.exists?(connection.id)).to be(true)
+    end
+
     it "permanently deletes social context screenshots with the account" do
       blob = create_social_context_image_blob(user:, filename: "delete-me.png", payload: "delete this screenshot")
       create(

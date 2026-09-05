@@ -1,0 +1,59 @@
+id: calendar_integrations
+name: Calendar Integrations
+summary: Owner-controlled private Google Calendar publication with encrypted OAuth credentials, recoverable sync, and explicit revocation.
+claim_globs:
+  - claims/calendar_integrations/**/*.md
+default_queries:
+  - Google Calendar OAuth owned events scope connect callback revoke
+  - calendar sync important dates reminders event plans bookings commitments
+  - calendar private event encrypted token retry reconnect status audit export
+watched_files:
+  - .kamal/secrets
+  - app/controllers/calendar_connections_controller.rb
+  - app/controllers/users/registrations_controller.rb
+  - app/jobs/calendar_sync_job.rb
+  - app/jobs/calendar_credential_revocation_job.rb
+  - app/jobs/dispatch_calendar_credential_revocations_job.rb
+  - app/jobs/dispatch_calendar_syncs_job.rb
+  - app/models/calendar_connection.rb
+  - app/models/calendar_credential_revocation.rb
+  - app/models/calendar_event_sync.rb
+  - app/policies/calendar_connection_policy.rb
+  - app/presenters/audit_event_presenter.rb
+  - app/services/calendar_connections/**/*.rb
+  - app/services/calendar_providers/**/*.rb
+  - app/services/calendar_syncs/**/*.rb
+  - app/services/data_deletions/delete_account.rb
+  - app/views/calendar_connections/**/*.erb
+  - app/views/components/calendar_connection_component.*
+  - config/locales/calendar_connections.*.yml
+  - config/deploy.yml
+  - config/locales/en.yml
+  - config/locales/es.yml
+  - config/recurring.yml
+  - config/routes.rb
+  - db/migrate/*calendar_connection*.rb
+  - db/migrate/*calendar_credential_revocation*.rb
+  - docs/features/11-01-calendar-integration.md
+  - spec/components/calendar_connection_component_spec.rb
+  - spec/config/calendar_integration_deploy_spec.rb
+  - spec/jobs/calendar_sync_job_spec.rb
+  - spec/jobs/calendar_credential_revocation_job_spec.rb
+  - spec/jobs/dispatch_calendar_credential_revocations_job_spec.rb
+  - spec/jobs/dispatch_calendar_syncs_job_spec.rb
+  - spec/models/calendar_connection_spec.rb
+  - spec/models/calendar_credential_revocation_spec.rb
+  - spec/models/calendar_event_sync_spec.rb
+  - spec/policies/calendar_connection_policy_spec.rb
+  - spec/requests/calendar_connections_spec.rb
+  - spec/services/calendar_connections/**/*.rb
+  - spec/services/calendar_providers/**/*.rb
+  - spec/services/calendar_syncs/**/*.rb
+  - spec/requests/data_controls_spec.rb
+  - spec/system/calendar_connections_spec.rb
+tags:
+  - calendar_integrations
+  - google_calendar
+  - oauth
+  - privacy
+  - revocation

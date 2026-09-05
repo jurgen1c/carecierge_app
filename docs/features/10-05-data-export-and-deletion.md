@@ -93,6 +93,12 @@ auditable without retaining the account email or relationship contents.
   creation cannot race storage deletion. If Active Storage already removed a
   blob row, the captured storage key receives one final idempotent delete and the
   account request completes.
+- Account deletion revokes connected and pending calendar credentials before
+  removing the owner. A failed pending-token revocation preserves that retryable
+  credential without changing an as-yet untouched live connection. A failed live
+  connection revocation preserves and marks that connection for another attempt,
+  and a later local failure restores a reconnect-required generation fence inside
+  the still-held owner lock before another sync or OAuth callback can proceed.
 - Social-context screenshot reads are owner-authorized and returned with
   `no-store`, including previews before a note is saved. Reads return stored,
   lazy-loaded variants bounded to 1024 by 768 rather than original screenshots.

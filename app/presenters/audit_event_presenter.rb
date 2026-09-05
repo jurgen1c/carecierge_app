@@ -27,6 +27,7 @@ class AuditEventPresenter
       reveal_relationship_name ? event.target.display_name : I18n.t("audit_events.targets.relationship_profile")
     when Reminder then I18n.t("audit_events.targets.reminder")
     when EventPlan then I18n.t("audit_events.targets.event_plan")
+    when CalendarConnection then I18n.t("audit_events.targets.calendar_connection")
     when AutomationPermission then I18n.t("audit_events.targets.automation_permission")
     when PrivacyVaultItem then I18n.t("audit_events.targets.privacy_vault")
     when User then I18n.t("audit_events.targets.account")

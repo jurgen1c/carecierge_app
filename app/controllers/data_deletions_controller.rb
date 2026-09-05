@@ -49,6 +49,8 @@ class DataDeletionsController < ApplicationController
     sign_out(:user)
 
     redirect_to root_path, notice: t("data_deletions.account.notice")
+  rescue DataDeletions::DeleteAccount::CalendarRevocationError
+    render_controls_error(t("data_deletions.errors.calendar_revocation"))
   end
 
   def render_controls_error(message)

@@ -2,7 +2,7 @@ class SharedReminderSubscription < ApplicationRecord
   belongs_to :shared_item
   belongs_to :user
   scope :pending_delivery, -> {
-    joins(:shared_item)
+    where(enabled: true).joins(:shared_item)
       .where(shared_items: { kind: "reminder", completed_at: nil })
       .where("shared_items.due_at <= ?", Time.current)
       .where("shared_reminder_subscriptions.delivered_for IS DISTINCT FROM shared_items.due_at")
@@ -14,6 +14,8 @@ class SharedReminderSubscription < ApplicationRecord
   private
 
   def eligible_participant
+    return unless enabled?
+
     item = shared_item
     return if item&.kind == "reminder" && !item.completed? && item.shared_relationship_space.active? && item.shared_relationship_space.participant?(user)
 

@@ -38,9 +38,9 @@ module SharedSpaces
           require_revision!(item, revision)
           item.update!(assignee: item.assignee_id == actor.id ? nil : actor)
         when :subscribe
-          item.shared_reminder_subscriptions.find_or_create_by!(user: actor)
+          item.shared_reminder_subscriptions.find_or_initialize_by(user: actor).update!(enabled: true)
         when :unsubscribe
-          item.shared_reminder_subscriptions.where(user: actor).destroy_all
+          item.shared_reminder_subscriptions.find_by(user: actor)&.update!(enabled: false)
         end
         item
       end

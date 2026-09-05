@@ -11,5 +11,5 @@ class SharedItemComponent < ApplicationViewComponent
 
   def space = item.shared_relationship_space
   def policy = SharedItemPolicy.new(user, item)
-  def subscribed? = item.shared_reminder_subscriptions.any? { |subscription| subscription.user_id == user.id }
+  def subscribed? = item.shared_reminder_subscriptions.any? { |subscription| subscription.user_id == user.id && subscription.enabled? }
 end

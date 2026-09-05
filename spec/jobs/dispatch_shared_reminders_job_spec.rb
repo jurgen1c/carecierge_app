@@ -81,4 +81,17 @@ RSpec.describe DispatchSharedRemindersJob, type: :job do
     expect(reads.reject { |sql| sql.include?("FOR UPDATE") }.size).to be <= 4
     expect(Noticed::Notification.count).to eq(0)
   end
+  it "does not replay an occurrence after reminders are turned off and on again" do
+    item = create(:shared_item, kind: "reminder", due_at: 1.minute.ago)
+    space, actor = item.shared_relationship_space, item.creator
+    SharedSpaces::ChangeItem.call(space:, actor:, item:, action: :subscribe)
+    described_class.perform_now
+    expect(actor.notifications.count).to eq(1)
+    SharedSpaces::ChangeItem.call(space:, actor:, item:, action: :unsubscribe)
+    expect(SharedReminderSubscription.pending_delivery).to be_empty
+    SharedSpaces::ChangeItem.call(space:, actor:, item:, action: :subscribe)
+    expect { described_class.perform_now }.not_to change(Noticed::Notification, :count)
+    item.update!(due_at: 2.minutes.ago)
+    expect { described_class.perform_now }.to change(Noticed::Notification, :count).by(1)
+  end
 end

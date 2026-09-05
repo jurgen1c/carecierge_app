@@ -21,6 +21,7 @@ watched_files:
   - app/views/components/shared_item_component.*
   - config/locales/shared_spaces.*.yml
   - db/migrate/*shared_relationship_spaces*.rb
+  - db/migrate/*shared_reminder_subscriptions*.rb
   - docs/features/14-01-shared-couple-space.md
   - spec/requests/shared_relationship_spaces_spec.rb
   - spec/models/shared_relationship_space_spec.rb

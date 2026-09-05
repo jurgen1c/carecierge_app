@@ -149,7 +149,11 @@ RSpec.describe "Shared couple spaces", type: :request do
     expect(response.body).to include("Detalles compartidos", "Zona horaria")
     expect(response.body).not_to include("Translation missing")
     delete unsubscribe_shared_relationship_space_shared_item_path(space, item)
-    expect(item.shared_reminder_subscriptions.count).to eq(0)
+    expect(item.shared_reminder_subscriptions.sole).not_to be_enabled
+    get shared_relationship_space_path(space)
+    expect(response.body).to include(I18n.t("shared_spaces.subscribe"))
+    exported = DataExports::Snapshot.new(user: partner).to_h.fetch("shared_relationship_spaces").sole
+    expect(exported.fetch("items").sole.fetch("my_reminder_enabled")).to be(false)
     delete shared_relationship_space_shared_item_path(space, item)
     expect(SharedItem.exists?(item.id)).to be(false)
   end

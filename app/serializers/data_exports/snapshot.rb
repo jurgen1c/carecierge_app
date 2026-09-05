@@ -65,7 +65,7 @@ module DataExports
           "partner_id" => space.partner_id, "accepted_at" => space.accepted_at,
           "items" => space.shared_items.map do |item|
             attributes_for(item, except: %w[lock_version]).merge(
-              "my_reminder_enabled" => item.shared_reminder_subscriptions.any? { |subscription| subscription.user_id == user.id }
+              "my_reminder_enabled" => item.shared_reminder_subscriptions.any? { |subscription| subscription.user_id == user.id && subscription.enabled? }
             )
           end
         }

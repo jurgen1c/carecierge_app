@@ -31,7 +31,7 @@ class DispatchSharedRemindersJob < ApplicationJob
 
   def due?(subscription, item)
     space = item.shared_relationship_space
-    space.active? && space.participant?(subscription.user) && item.kind == "reminder" &&
+    subscription.enabled? && space.active? && space.participant?(subscription.user) && item.kind == "reminder" &&
       !item.completed? && item.due_at && item.due_at <= Time.current && subscription.delivered_for != item.due_at
   end
 end

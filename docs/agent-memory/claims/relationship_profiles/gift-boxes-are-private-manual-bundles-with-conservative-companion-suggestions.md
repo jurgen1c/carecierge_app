@@ -3,7 +3,7 @@ id: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservativ
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 title: Gift boxes are private manual bundles with conservative companion suggestions
 claim: >
@@ -63,7 +63,7 @@ verification:
   - bundle exec rspec spec/requests/gift_box_locking_spec.rb spec/requests/gift_boxes_spec.rb spec/models/gift_box_spec.rb spec/services/gift_boxes spec/system/gift_boxes_spec.rb spec/serializers/data_exports/gift_box_snapshot_spec.rb
   - bundle exec rspec
   - bin/ci
-last_verified_commit: e68e2b7f3e266095c20d7ed3f4ff9f3dad73cafa
+last_verified_commit: 5dc411659dfc6a11f51265352da8e88a639321b6
 ---
 
 # Gift boxes are private manual bundles with conservative companion suggestions
@@ -72,3 +72,7 @@ Suggestions are local, conservative planning hints. Their presence never establi
 suitability, available stock, price or permission to act externally. Migration adds
 only new UUID tables, indexed foreign keys and cascading deletion; rollback removes
 those tables and their data. Existing tables are not rewritten.
+
+The verification reference identifies the implementation commit that passed the
+full suite and signoff before this metadata update; the metadata commit also
+receives its own final CI/signoff, without creating a self-referencing Git hash.

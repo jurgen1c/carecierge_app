@@ -4,17 +4,17 @@ RSpec.describe Contacts::GoogleOauth do
   before do
     allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with("GOOGLE_CONTACTS_ISOLATED_PROJECT").and_return("true")
-    allow(ENV).to receive(:[]).with("GOOGLE_CONTACTS_CLIENT_ID").and_return("calendar-client")
-    allow(ENV).to receive(:[]).with("GOOGLE_CONTACTS_CLIENT_SECRET").and_return("calendar-secret")
+    allow(ENV).to receive(:[]).with("GOOGLE_CONTACTS_CLIENT_ID").and_return("contacts-client")
+    allow(ENV).to receive(:[]).with("GOOGLE_CONTACTS_CLIENT_SECRET").and_return("contacts-secret")
   end
 
-  it "builds an offline incremental authorization URL with the owned-events scope" do
+  it "builds an offline authorization URL with the read-only contacts scope" do
     uri = URI.parse(described_class.authorization_url(state: "signed-state", redirect_uri: "https://example.test/callback"))
     query = Rack::Utils.parse_query(uri.query)
 
     expect(uri.host).to eq("accounts.google.com")
     expect(query).to include(
-      "client_id" => "calendar-client",
+      "client_id" => "contacts-client",
       "redirect_uri" => "https://example.test/callback",
       "scope" => ContactsConnection::GOOGLE_SCOPE,
       "access_type" => "offline",
@@ -24,7 +24,7 @@ RSpec.describe Contacts::GoogleOauth do
     )
   end
 
-  it "is unavailable without dedicated calendar credentials" do
+  it "is unavailable without dedicated contacts credentials" do
     allow(ENV).to receive(:[]).with("GOOGLE_CONTACTS_CLIENT_ID").and_return(nil)
     allow(ENV).to receive(:[]).with("GOOGLE_CONTACTS_CLIENT_SECRET").and_return(nil)
 
@@ -57,8 +57,8 @@ RSpec.describe Contacts::GoogleOauth do
     )
     expect(Rack::Utils.parse_query(request.body)).to include(
       "code" => "oauth-code",
-      "client_id" => "calendar-client",
-      "client_secret" => "calendar-secret",
+      "client_id" => "contacts-client",
+      "client_secret" => "contacts-secret",
       "grant_type" => "authorization_code"
     )
     expect(request["Authorization"]).to be_nil

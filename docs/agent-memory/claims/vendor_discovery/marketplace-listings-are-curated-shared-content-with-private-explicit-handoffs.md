@@ -3,7 +3,7 @@ id: vendor_discovery.marketplace_listings_are_curated_shared_content_with_privat
 type: fact
 system: vendor_discovery
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Marketplace listings are curated shared content with private explicit handoffs
@@ -81,7 +81,7 @@ verification:
   - bin/memory validate
   - bin/memory audit --git-diff
   - bin/ci
-last_verified_commit: null
+last_verified_commit: 9231a3278f49d408ea7471d75e6b349fc7e91638
 ---
 
 # Marketplace listings are curated shared content with private explicit handoffs

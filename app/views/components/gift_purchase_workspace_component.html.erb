@@ -67,7 +67,7 @@
     <% if purchase_plan.persisted? %>
       <p class="mt-2 text-sm leading-6 text-quiet-note"><%= t("gift_purchase_plans.saved_values") %></p>
       <div class="mt-4 flex flex-wrap gap-2"><% GiftPurchasePlan::MILESTONES.each do |milestone| %><%= link_to t("gift_purchase_plans.reminders.#{milestone}"), new_reminder_path(gift_purchase_plan_id: purchase_plan.id, gift_milestone: milestone), class: style(:button) %><% end %></div>
-      <% if purchase_plan.plan_task %>
+      <% if purchase_plan.current_plan_task %>
         <p class="mt-4 text-sm"><%= t("gift_purchase_plans.task_attached") %> <%= link_to purchase_plan.plan_task.event_plan.title, event_plan_path(purchase_plan.plan_task.event_plan), class: style(:button) %></p>
       <% elsif event_plans.any? %>
         <%= form_with url: task_relationship_profile_gift_purchase_plan_path(gift.relationship_profile, gift), class: "mt-5 flex flex-col items-start gap-3 sm:flex-row sm:items-end" do |form| %>

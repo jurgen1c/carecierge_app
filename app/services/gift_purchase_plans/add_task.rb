@@ -10,7 +10,7 @@ module GiftPurchasePlans
 
             plan = gift.reload.purchase_plan || raise(ActiveRecord::RecordNotFound)
             plan.with_lock do
-              return plan.plan_task if plan.plan_task
+              return plan.current_plan_task if plan.current_plan_task
 
               title = I18n.with_locale(locale) { I18n.t("gift_purchase_plans.task_title", name: gift.name) }
               task = event_plan.plan_tasks.create!(

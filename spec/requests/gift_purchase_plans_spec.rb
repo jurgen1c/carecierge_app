@@ -90,6 +90,26 @@ RSpec.describe "Gift purchase planning", type: :request do
     expect { post task_path, params: { event_plan_id: event.id } }.to change(PlanTask, :count).by(1)
   end
 
+  it "offers an explicit replacement for a superseded purchase task", :aggregate_failures do
+    put path, params: { gift_purchase_plan: attributes.merge(lock_version: "new") }
+    event = create(:event_plan, user: profile.user, relationship_profile: profile)
+    task_path = task_relationship_profile_gift_purchase_plan_path(profile, gift)
+    post task_path, params: { event_plan_id: event.id }
+    original = gift.reload.purchase_plan.plan_task
+    original.update!(completed_at: Time.zone.local(2026, 9, 5))
+    expect { post task_path, params: { event_plan_id: event.id } }.not_to change(PlanTask, :count)
+
+    original.update!(completed_at: nil, superseded_at: Time.zone.local(2026, 9, 5))
+    expect { get path }.not_to change(PlanTask, :count)
+    expect(response.parsed_body.at_css("form[action='#{task_path}']")).to be_present
+    expect { post task_path, params: { event_plan_id: event.id } }.to change(PlanTask, :count).by(1)
+    replacement = gift.purchase_plan.reload.plan_task
+    expect(replacement.id).not_to eq(original.id)
+    expect(replacement).not_to be_superseded
+    expect(original.reload).to be_superseded
+    expect { post task_path, params: { event_plan_id: event.id } }.not_to change(PlanTask, :count)
+  end
+
   it "captures the browser zone without reloading an undated milestone" do
     put path, params: { gift_purchase_plan: attributes.merge(follow_up_on: "", lock_version: "new") }
     plan = gift.reload.purchase_plan

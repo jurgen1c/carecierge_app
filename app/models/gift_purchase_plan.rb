@@ -56,6 +56,10 @@ class GiftPurchasePlan < ApplicationRecord
   validate :valid_options
   validate :matching_plan_task
 
+  def current_plan_task
+    plan_task unless plan_task&.superseded?
+  end
+
   def suggested_option
     return unless budget && valid_money?(budget_before_type_cast) && options.is_a?(Array)
 

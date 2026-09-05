@@ -82,6 +82,9 @@ source_files:
   - app/services/calendar_connections/disconnect.rb
 
 related_files:
+  - spec/requests/contacts_connections_spec.rb
+  - spec/services/contacts/provider_spec.rb
+  - spec/requests/messaging_connections_spec.rb
   - app/models/approval_request.rb
   - app/models/approval_decision.rb
   - app/models/relationship_briefing.rb
@@ -136,6 +139,7 @@ tags:
   - account_deletion
 
 verification:
+  - bundle exec rspec spec/requests/contacts_connections_spec.rb spec/services/contacts/provider_spec.rb spec/requests/messaging_connections_spec.rb
   - bundle exec rspec spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
   - bin/rubocop
   - bin/memory validate

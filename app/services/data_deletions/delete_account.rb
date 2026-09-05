@@ -39,7 +39,7 @@ module DataDeletions
       if Contacts::Disconnect.call(user:, after_revoke: -> { @contacts_revoked = true })
         @contacts_revoked = true
       else
-        @contacts_revocation_failed = true
+        @contacts_revocation_failed = !@contacts_revoked
         raise CalendarRevocationError, "Contacts access could not be revoked"
       end
     end

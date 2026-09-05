@@ -1,117 +1,117 @@
-{
-  "en": {
-    "contacts": {
-      "heading": "Contacts",
-      "body": "Choose who you want to add. Nothing becomes a profile until you decide.",
-      "back": "Back to your day",
-      "provider": "Google Contacts",
-      "available": "Connect read-only access to review names, email addresses, phone numbers and birthdays.",
-      "unavailable": "Google Contacts is not available yet. You can still add profiles manually.",
-      "connect": "Connect Google Contacts",
-      "refresh": "Refresh contacts",
-      "permissions": "Review contacts permission",
-      "refreshed_at": "Last refreshed %{at}",
-      "empty": "Refresh contacts to start reviewing. If Google returns no contacts, you can add a profile manually.",
-      "unnamed": "Unnamed contact",
-      "source": "Source: Google Contacts",
-      "matches": "Possible matches: %{names}",
-      "choose": "What would you like to do?",
-      "match_label": "Existing profile to link",
-      "select_match": "Choose a matching profile",
-      "duplicate_override": "Create a separate profile even if a possible match exists.",
-      "update_help": "Apply replaces the displayed name, birthday, email and personal phone, clearing fields marked Not provided. Local changes block replacement. Undo restores the last update, removes a link, or archives a created profile while keeping its history.",
-      "link_help": "Linking keeps existing profile details. Creating adds the reviewed fields to a new profile.",
-      "save": "Save choice",
-      "pagination": "Contacts pages",
-      "previous": "Previous",
-      "next": "Next",
-      "load_more": "Fetch next 100 contacts",
-      "privacy_heading": "Your choices stay in your control",
-      "privacy_body": "Only you can review these contacts. Nothing is sent to anyone. Refreshing changes the review list; you choose whether to update a profile.",
-      "disconnect_help": "Disconnect revokes Google access and removes the review list. Profiles you chose to create or link remain in Carecierge.",
-      "disconnect": "Disconnect Google Contacts",
-      "fields": {
-        "email": "Email",
-        "phone": "Phone",
-        "birthday": "Birthday"
-      },
-      "choices": {
-        "skip": "Skip for now",
-        "create": "Create profile",
-        "link": "Link existing profile",
-        "update": "Apply reviewed update",
-        "undo": "Undo last choice"
-      },
-      "decisions": {
-        "pending": "Not imported",
-        "skip": "Skipped",
-        "create": "Profile created",
-        "link": "Linked",
-        "update": "Profile updated"
-      },
-      "statuses": {
-        "connected": "Connected. Fetch contacts when you are ready to review.",
-        "cleanup_required": "Access cleanup needs another attempt. Disconnect again before reconnecting.",
-        "authorization_required": "Google access needs renewal. Disconnect, then connect again."
-      },
-      "notices": {
-        "connected": "Connected. Refresh contacts to review before importing.",
-        "refreshed": "Contacts refreshed for your review.",
-        "saved": "Your choice was saved.",
-        "disconnected": "Google Contacts disconnected. Your profiles remain available."
-      },
-      "errors": {
-        "failed": "This action could not be completed. Review your choices and try again.",
-        "permission_required": "Allow contacts access in your permission settings before continuing.",
-        "duplicate": "A possible duplicate exists. Link a match or explicitly choose a separate profile.",
-        "stale": "This contact or connection changed. Review the latest details and try again.",
-        "conflict": "Profile details changed since your last choice. Review them in the profile before updating.",
-        "cleanup_required": "Google access could not be revoked. Your credentials are retained so you can retry disconnecting.",
-        "provider_unavailable": "Google Contacts is unavailable. Please try again later.",
-        "already_connected": "Disconnect the existing connection before connecting again.",
-        "cancelled": "Connection cancelled. No contacts were imported.",
-        "missing_name": "This contact needs a name before it can become a profile.",
-        "archived": "Restore the archived profile before updating it."
-      },
-      "profile_source": "Imported or linked from Google Contacts. Source history remains after disconnecting.",
-      "not_provided": "Not provided",
-      "cleanup_help": "You can still undo a saved choice or skip a contact while Google access is unavailable. Creating, linking and updating profiles require an active connection."
-    },
-    "audit_events": {
-      "actions": {
-        "contacts_connection_created": {
-          "title": "Contacts connected",
-          "description": "You changed contacts integration for %{target}."
-        },
-        "contacts_connection_revoked": {
-          "title": "Contacts disconnected",
-          "description": "You changed contacts integration for %{target}."
-        },
-        "contacts_refresh_completed": {
-          "title": "Contacts refreshed",
-          "description": "You changed contacts integration for %{target}."
-        },
-        "contacts_decision_create": {
-          "title": "Contact imported",
-          "description": "You changed contacts integration for %{target}."
-        },
-        "contacts_decision_link": {
-          "title": "Contact linked",
-          "description": "You changed contacts integration for %{target}."
-        },
-        "contacts_decision_skip": {
-          "title": "Contact skipped",
-          "description": "You changed contacts integration for %{target}."
-        },
-        "contacts_decision_update": {
-          "title": "Imported profile updated",
-          "description": "You changed contacts integration for %{target}."
-        },
-        "contacts_decision_undo": {
-          "title": "Contact choice undone",
-          "description": "You changed contacts integration for %{target}."
-        }
-      }
-    }
-  }
-}
+---
+en:
+  contacts:
+    heading: Contacts
+    body: Choose who you want to add. Nothing becomes a profile until you decide.
+    back: Back to your day
+    provider: Google Contacts
+    available: Connect read-only access to review names, email addresses, phone numbers
+      and birthdays.
+    unavailable: Google Contacts is not available yet. You can still add profiles
+      manually.
+    connect: Connect Google Contacts
+    refresh: Refresh contacts
+    permissions: Review contacts permission
+    refreshed_at: Last refreshed %{at}
+    empty: Refresh contacts to start reviewing. If Google returns no contacts, you
+      can add a profile manually.
+    unnamed: Unnamed contact
+    source: 'Source: Google Contacts'
+    matches: 'Possible matches: %{names}'
+    choose: What would you like to do?
+    match_label: Existing profile to link
+    select_match: Choose a matching profile
+    duplicate_override: Create a separate profile even if a possible match exists.
+    update_help: Apply replaces the displayed name, birthday, email and personal phone,
+      clearing fields marked Not provided. Local changes block replacement. Undo restores
+      the last update, removes a link, or archives a created profile while keeping
+      its history.
+    link_help: Linking keeps existing profile details. Creating adds the reviewed
+      fields to a new profile.
+    save: Save choice
+    pagination: Contacts pages
+    previous: Previous
+    next: Next
+    load_more: Fetch next 100 contacts
+    privacy_heading: Your choices stay in your control
+    privacy_body: Only you can review these contacts. Nothing is sent to anyone. Refreshing
+      changes the review list; you choose whether to update a profile.
+    disconnect_help: Disconnect revokes Google access and removes the review list.
+      Profiles you chose to create or link remain in Carecierge.
+    disconnect: Disconnect Google Contacts
+    fields:
+      email: Email
+      phone: Phone
+      birthday: Birthday
+    choices:
+      skip: Skip for now
+      create: Create profile
+      link: Link existing profile
+      update: Apply reviewed update
+      undo: Undo last choice
+    decisions:
+      pending: Not imported
+      skip: Skipped
+      create: Profile created
+      link: Linked
+      update: Profile updated
+    statuses:
+      connected: Connected. Fetch contacts when you are ready to review.
+      cleanup_required: Access cleanup needs another attempt. Disconnect again before
+        reconnecting.
+      authorization_required: Google access needs renewal. Disconnect, then connect
+        again.
+    notices:
+      connected: Connected. Refresh contacts to review before importing.
+      refreshed: Contacts refreshed for your review.
+      saved: Your choice was saved.
+      disconnected: Google Contacts disconnected. Your profiles remain available.
+    errors:
+      failed: This action could not be completed. Review your choices and try again.
+      permission_required: Allow contacts access in your permission settings before
+        continuing.
+      duplicate: A possible duplicate exists. Link a match or explicitly choose a
+        separate profile.
+      stale: This contact or connection changed. Review the latest details and try
+        again.
+      conflict: Profile details changed since your last choice. Review them in the
+        profile before updating.
+      cleanup_required: Google access could not be revoked. Your credentials are retained
+        so you can retry disconnecting.
+      provider_unavailable: Google Contacts is unavailable. Please try again later.
+      already_connected: Disconnect the existing connection before connecting again.
+      cancelled: Connection cancelled. No contacts were imported.
+      missing_name: This contact needs a name before it can become a profile.
+      archived: Restore the archived profile before updating it.
+    profile_source: Imported or linked from Google Contacts. Source history remains
+      after disconnecting.
+    not_provided: Not provided
+    cleanup_help: You can still undo a saved choice or skip a contact while Google
+      access is unavailable. Creating, linking and updating profiles require an active
+      connection.
+  audit_events:
+    actions:
+      contacts_connection_created:
+        title: Contacts connected
+        description: You changed contacts integration for %{target}.
+      contacts_connection_revoked:
+        title: Contacts disconnected
+        description: You changed contacts integration for %{target}.
+      contacts_refresh_completed:
+        title: Contacts refreshed
+        description: You changed contacts integration for %{target}.
+      contacts_decision_create:
+        title: Contact imported
+        description: You changed contacts integration for %{target}.
+      contacts_decision_link:
+        title: Contact linked
+        description: You changed contacts integration for %{target}.
+      contacts_decision_skip:
+        title: Contact skipped
+        description: You changed contacts integration for %{target}.
+      contacts_decision_update:
+        title: Imported profile updated
+        description: You changed contacts integration for %{target}.
+      contacts_decision_undo:
+        title: Contact choice undone
+        description: You changed contacts integration for %{target}.

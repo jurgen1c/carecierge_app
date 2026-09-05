@@ -1,117 +1,120 @@
-{
-  "es": {
-    "contacts": {
-      "heading": "Contactos",
-      "body": "Elige a quién quieres agregar. Ningún contacto se convierte en perfil hasta que tú lo decidas.",
-      "back": "Volver a tu día",
-      "provider": "Contactos de Google",
-      "available": "Conecta acceso de solo lectura para revisar nombres, correos, teléfonos y cumpleaños.",
-      "unavailable": "Contactos de Google no está disponible todavía. Puedes agregar perfiles manualmente.",
-      "connect": "Conectar Contactos de Google",
-      "refresh": "Actualizar contactos",
-      "permissions": "Revisar permiso de contactos",
-      "refreshed_at": "Última actualización: %{at}",
-      "empty": "Actualiza los contactos para comenzar a revisar. Si Google no devuelve contactos, puedes agregar un perfil manualmente.",
-      "unnamed": "Contacto sin nombre",
-      "source": "Fuente: Contactos de Google",
-      "matches": "Posibles coincidencias: %{names}",
-      "choose": "¿Qué te gustaría hacer?",
-      "match_label": "Perfil existente para vincular",
-      "select_match": "Elegir un perfil coincidente",
-      "duplicate_override": "Crear un perfil separado aunque exista una posible coincidencia.",
-      "update_help": "Aplicar reemplaza el nombre, cumpleaños, correo y teléfono personal mostrados, y borra los campos marcados No disponible. Los cambios locales bloquean el reemplazo. Deshacer restaura la última actualización, elimina un vínculo o archiva el perfil creado conservando su historial.",
-      "link_help": "Vincular conserva los datos del perfil existente. Crear agrega los campos revisados a un perfil nuevo.",
-      "save": "Guardar elección",
-      "pagination": "Páginas de contactos",
-      "previous": "Anterior",
-      "next": "Siguiente",
-      "load_more": "Obtener los siguientes 100 contactos",
-      "privacy_heading": "Tú mantienes el control de tus decisiones",
-      "privacy_body": "Solo tú puedes revisar estos contactos. No se envía nada a nadie. Actualizar cambia la lista de revisión; tú decides si actualizas un perfil.",
-      "disconnect_help": "Desconectar revoca el acceso a Google y elimina la lista de revisión. Los perfiles que creaste o vinculaste permanecen en Carecierge.",
-      "disconnect": "Desconectar Contactos de Google",
-      "fields": {
-        "email": "Correo",
-        "phone": "Teléfono",
-        "birthday": "Cumpleaños"
-      },
-      "choices": {
-        "skip": "Omitir por ahora",
-        "create": "Crear perfil",
-        "link": "Vincular perfil existente",
-        "update": "Aplicar actualización revisada",
-        "undo": "Deshacer última elección"
-      },
-      "decisions": {
-        "pending": "Sin importar",
-        "skip": "Omitido",
-        "create": "Perfil creado",
-        "link": "Vinculado",
-        "update": "Perfil actualizado"
-      },
-      "statuses": {
-        "connected": "Conectado. Obtén los contactos cuando quieras revisarlos.",
-        "cleanup_required": "La limpieza del acceso necesita otro intento. Vuelve a desconectar antes de conectar de nuevo.",
-        "authorization_required": "Debes renovar el acceso a Google. Desconecta y vuelve a conectar."
-      },
-      "notices": {
-        "connected": "Conectado. Actualiza los contactos para revisarlos antes de importar.",
-        "refreshed": "Contactos actualizados para tu revisión.",
-        "saved": "Se guardó tu elección.",
-        "disconnected": "Contactos de Google desconectado. Tus perfiles siguen disponibles."
-      },
-      "errors": {
-        "failed": "No se pudo completar esta acción. Revisa tus elecciones e inténtalo de nuevo.",
-        "permission_required": "Permite el acceso a contactos en la configuración de permisos antes de continuar.",
-        "duplicate": "Existe un posible duplicado. Vincula una coincidencia o elige explícitamente un perfil separado.",
-        "stale": "Este contacto o conexión cambió. Revisa los datos actuales e inténtalo de nuevo.",
-        "conflict": "Los datos del perfil cambiaron desde tu última elección. Revísalos en el perfil antes de actualizar.",
-        "cleanup_required": "No se pudo revocar el acceso a Google. Las credenciales se conservan para reintentar la desconexión.",
-        "provider_unavailable": "Contactos de Google no está disponible. Inténtalo más tarde.",
-        "already_connected": "Desconecta la conexión existente antes de conectar de nuevo.",
-        "cancelled": "Conexión cancelada. No se importaron contactos.",
-        "missing_name": "Este contacto necesita un nombre antes de convertirse en perfil.",
-        "archived": "Restaura el perfil archivado antes de actualizarlo."
-      },
-      "profile_source": "Importado o vinculado desde Contactos de Google. El historial de origen permanece después de desconectar.",
-      "not_provided": "No disponible",
-      "cleanup_help": "Puedes deshacer una decisión guardada u omitir un contacto aunque el acceso a Google no esté disponible. Crear, vincular y actualizar perfiles requiere una conexión activa."
-    },
-    "audit_events": {
-      "actions": {
-        "contacts_connection_created": {
-          "title": "Contactos conectados",
-          "description": "Cambiaste la integración de contactos para %{target}."
-        },
-        "contacts_connection_revoked": {
-          "title": "Contactos desconectados",
-          "description": "Cambiaste la integración de contactos para %{target}."
-        },
-        "contacts_refresh_completed": {
-          "title": "Contactos actualizados",
-          "description": "Cambiaste la integración de contactos para %{target}."
-        },
-        "contacts_decision_create": {
-          "title": "Contacto importado",
-          "description": "Cambiaste la integración de contactos para %{target}."
-        },
-        "contacts_decision_link": {
-          "title": "Contacto vinculado",
-          "description": "Cambiaste la integración de contactos para %{target}."
-        },
-        "contacts_decision_skip": {
-          "title": "Contacto omitido",
-          "description": "Cambiaste la integración de contactos para %{target}."
-        },
-        "contacts_decision_update": {
-          "title": "Perfil importado actualizado",
-          "description": "Cambiaste la integración de contactos para %{target}."
-        },
-        "contacts_decision_undo": {
-          "title": "Elección de contacto deshecha",
-          "description": "Cambiaste la integración de contactos para %{target}."
-        }
-      }
-    }
-  }
-}
+---
+es:
+  contacts:
+    heading: Contactos
+    body: Elige a quién quieres agregar. Ningún contacto se convierte en perfil hasta
+      que tú lo decidas.
+    back: Volver a tu día
+    provider: Contactos de Google
+    available: Conecta acceso de solo lectura para revisar nombres, correos, teléfonos
+      y cumpleaños.
+    unavailable: Contactos de Google no está disponible todavía. Puedes agregar perfiles
+      manualmente.
+    connect: Conectar Contactos de Google
+    refresh: Actualizar contactos
+    permissions: Revisar permiso de contactos
+    refreshed_at: 'Última actualización: %{at}'
+    empty: Actualiza los contactos para comenzar a revisar. Si Google no devuelve
+      contactos, puedes agregar un perfil manualmente.
+    unnamed: Contacto sin nombre
+    source: 'Fuente: Contactos de Google'
+    matches: 'Posibles coincidencias: %{names}'
+    choose: "¿Qué te gustaría hacer?"
+    match_label: Perfil existente para vincular
+    select_match: Elegir un perfil coincidente
+    duplicate_override: Crear un perfil separado aunque exista una posible coincidencia.
+    update_help: Aplicar reemplaza el nombre, cumpleaños, correo y teléfono personal
+      mostrados, y borra los campos marcados No disponible. Los cambios locales bloquean
+      el reemplazo. Deshacer restaura la última actualización, elimina un vínculo
+      o archiva el perfil creado conservando su historial.
+    link_help: Vincular conserva los datos del perfil existente. Crear agrega los
+      campos revisados a un perfil nuevo.
+    save: Guardar elección
+    pagination: Páginas de contactos
+    previous: Anterior
+    next: Siguiente
+    load_more: Obtener los siguientes 100 contactos
+    privacy_heading: Tú mantienes el control de tus decisiones
+    privacy_body: Solo tú puedes revisar estos contactos. No se envía nada a nadie.
+      Actualizar cambia la lista de revisión; tú decides si actualizas un perfil.
+    disconnect_help: Desconectar revoca el acceso a Google y elimina la lista de revisión.
+      Los perfiles que creaste o vinculaste permanecen en Carecierge.
+    disconnect: Desconectar Contactos de Google
+    fields:
+      email: Correo
+      phone: Teléfono
+      birthday: Cumpleaños
+    choices:
+      skip: Omitir por ahora
+      create: Crear perfil
+      link: Vincular perfil existente
+      update: Aplicar actualización revisada
+      undo: Deshacer última elección
+    decisions:
+      pending: Sin importar
+      skip: Omitido
+      create: Perfil creado
+      link: Vinculado
+      update: Perfil actualizado
+    statuses:
+      connected: Conectado. Obtén los contactos cuando quieras revisarlos.
+      cleanup_required: La limpieza del acceso necesita otro intento. Vuelve a desconectar
+        antes de conectar de nuevo.
+      authorization_required: Debes renovar el acceso a Google. Desconecta y vuelve
+        a conectar.
+    notices:
+      connected: Conectado. Actualiza los contactos para revisarlos antes de importar.
+      refreshed: Contactos actualizados para tu revisión.
+      saved: Se guardó tu elección.
+      disconnected: Contactos de Google desconectado. Tus perfiles siguen disponibles.
+    errors:
+      failed: No se pudo completar esta acción. Revisa tus elecciones e inténtalo
+        de nuevo.
+      permission_required: Permite el acceso a contactos en la configuración de permisos
+        antes de continuar.
+      duplicate: Existe un posible duplicado. Vincula una coincidencia o elige explícitamente
+        un perfil separado.
+      stale: Este contacto o conexión cambió. Revisa los datos actuales e inténtalo
+        de nuevo.
+      conflict: Los datos del perfil cambiaron desde tu última elección. Revísalos
+        en el perfil antes de actualizar.
+      cleanup_required: No se pudo revocar el acceso a Google. Las credenciales se
+        conservan para reintentar la desconexión.
+      provider_unavailable: Contactos de Google no está disponible. Inténtalo más
+        tarde.
+      already_connected: Desconecta la conexión existente antes de conectar de nuevo.
+      cancelled: Conexión cancelada. No se importaron contactos.
+      missing_name: Este contacto necesita un nombre antes de convertirse en perfil.
+      archived: Restaura el perfil archivado antes de actualizarlo.
+    profile_source: Importado o vinculado desde Contactos de Google. El historial
+      de origen permanece después de desconectar.
+    not_provided: No disponible
+    cleanup_help: Puedes deshacer una decisión guardada u omitir un contacto aunque
+      el acceso a Google no esté disponible. Crear, vincular y actualizar perfiles
+      requiere una conexión activa.
+  audit_events:
+    actions:
+      contacts_connection_created:
+        title: Contactos conectados
+        description: Cambiaste la integración de contactos para %{target}.
+      contacts_connection_revoked:
+        title: Contactos desconectados
+        description: Cambiaste la integración de contactos para %{target}.
+      contacts_refresh_completed:
+        title: Contactos actualizados
+        description: Cambiaste la integración de contactos para %{target}.
+      contacts_decision_create:
+        title: Contacto importado
+        description: Cambiaste la integración de contactos para %{target}.
+      contacts_decision_link:
+        title: Contacto vinculado
+        description: Cambiaste la integración de contactos para %{target}.
+      contacts_decision_skip:
+        title: Contacto omitido
+        description: Cambiaste la integración de contactos para %{target}.
+      contacts_decision_update:
+        title: Perfil importado actualizado
+        description: Cambiaste la integración de contactos para %{target}.
+      contacts_decision_undo:
+        title: Elección de contacto deshecha
+        description: Cambiaste la integración de contactos para %{target}.

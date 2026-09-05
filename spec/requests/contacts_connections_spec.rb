@@ -24,6 +24,18 @@ RSpec.describe 'Contacts connections', type: :request do
     expect(response).to redirect_to(contacts_connection_path)
   end
 
+  it 'does not query duplicate candidates for an already linked contact' do
+    allow(Contacts::Permission).to receive(:check!)
+    contact = connection.imported_contacts.create!(provider_key: 'one', external_id: 'people/1', data: { 'first_name' => 'Elena' })
+    Contacts::Decide.call(contact:, actor: user, choice: 'create', expected_version: contact.lock_version)
+    expect(Contacts::Matches).not_to receive(:call)
+
+    get contacts_connection_path
+
+    expect(response).to have_http_status(:ok)
+    expect(response.body).to include('Elena')
+  end
+
   it 'rejects cross-owner contact ids and stale versions' do
     foreign = ContactsConnection.create!(user: create(:user))
     contact = foreign.imported_contacts.create!(provider_key: 'one', external_id: 'people/1', data: { 'first_name' => 'Private' })

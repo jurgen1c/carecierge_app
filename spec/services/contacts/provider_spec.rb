@@ -85,3 +85,24 @@ RSpec.describe 'Contacts rollback cleanup' do
     expect(connection.reload.status).to eq('authorization_required')
   end
 end
+
+RSpec.describe 'Contacts account deletion compensation' do
+  [ Contacts::Error, ActiveRecord::RecordInvalid ].each do |failure_type|
+    it "preserves the revoked fence after a local #{failure_type} rolls deletion back" do
+      user = create(:user)
+      connection = ContactsConnection.create!(user:, access_token: 'access', refresh_token: 'refresh')
+      allow(Contacts::GoogleOauth).to receive(:revoke).and_return(true)
+      allow(AuditEvent).to receive(:record!).and_wrap_original do |original, **attributes|
+        raise failure_type if attributes[:action] == 'contacts.connection.revoked'
+        original.call(**attributes)
+      end
+
+      expected_failure = failure_type == Contacts::Error ? DataDeletions::DeleteAccount::CalendarRevocationError : failure_type
+      expect { DataDeletions::DeleteAccount.call(user:) }.to raise_error(expected_failure)
+
+      expect(User.exists?(user.id)).to be(true)
+      expect(connection.reload.status).to eq('authorization_required')
+      expect(user.reload.contacts_connection_generation).to be > 0
+    end
+  end
+end

@@ -119,3 +119,5 @@ Recurring selected milestones use their next occurrence in the owner time zone. 
 Draft, briefing, gift (including alternatives), event suggestion and backup generation forms submit their expected relationship mode. Edits and generation reject cross-mode stale submissions under the profile lock, in either direction; legacy forms without the mode field are treated as personal. Event provider instructions prioritize business-appropriate language and work boundaries for professional sources.
 
 Mode mismatches redirect to a freshly loaded workspace without retaining stale free-form text. Event and backup plan workspaces retain explicit plan intent while professional source boundaries override conflicting tone.
+
+Professional event suggestion and backup-generation forms hide private-note and vault selectors, matching the server's source exclusion. Personal forms retain their existing per-request consent controls.

@@ -149,7 +149,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 46e8571044889efe4b1047d89378a6f8b25dd51c
+last_verified_commit: 74b9d2ec8efa2c8997a97fdf54292c42a6ddca99
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized

@@ -79,7 +79,7 @@ verification:
   - bin/rubocop
   - bin/ci
 
-last_verified_commit: d6ba3bccc58524242d24afa31835adb2d9126823
+last_verified_commit: f5e5436a323c83d20a3f6d3d895ae1d7a84cca73
 ---
 
 # Automation permissions fail closed with owner-scoped overrides and audited changes

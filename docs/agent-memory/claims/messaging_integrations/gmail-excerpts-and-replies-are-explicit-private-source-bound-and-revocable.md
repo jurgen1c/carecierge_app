@@ -63,7 +63,7 @@ verification:
   - bundle exec rspec spec/services/messaging spec/requests/messaging_connections_spec.rb spec/system/messaging_connections_spec.rb
   - bin/ci
   - bin/memory validate
-last_verified_commit: d6ba3bccc58524242d24afa31835adb2d9126823
+last_verified_commit: f5e5436a323c83d20a3f6d3d895ae1d7a84cca73
 ---
 
 # Gmail excerpts and replies

@@ -72,6 +72,7 @@ related_files:
   - app/services/privacy_vault/manage_mfa.rb
   - spec/requests/vault_mfas_spec.rb
   - spec/services/privacy_vault/unlock_spec.rb
+  - spec/services/privacy_vault/enrollment_spec.rb
   - config/locales/vault_mfa.en.yml
   - config/locales/vault_mfa.es.yml
   - app/views/audit_events/_filters.html.erb
@@ -123,7 +124,7 @@ tags:
   - authorized_audit_admin
 
 verification:
-  - bundle exec rspec spec/requests/vault_mfas_spec.rb spec/services/privacy_vault/unlock_spec.rb
+  - bundle exec rspec spec/requests/vault_mfas_spec.rb spec/services/privacy_vault/unlock_spec.rb spec/services/privacy_vault/enrollment_spec.rb
   - bundle exec rspec spec/models/audit_event_spec.rb spec/services/audit_events/track_spec.rb spec/queries/audit_events/query_spec.rb spec/policies/audit_event_policy_spec.rb spec/requests/audit_events_spec.rb spec/requests/admin_audit_events_spec.rb spec/requests/audit_event_integrations_spec.rb spec/models/vault_access_event_spec.rb spec/services/automation_permissions/change_spec.rb
   - bundle exec rspec
   - bin/rubocop
@@ -132,7 +133,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 8a93fbffb9be414ede882ec6e088f0452e2f04f0
+last_verified_commit: 022581c95af508bf161ad3818a3b6cb7c00c3e1d
 ---
 
 # Audit events provide privacy-minimized account and admin history

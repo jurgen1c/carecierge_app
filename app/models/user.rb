@@ -77,6 +77,10 @@ class User < ApplicationRecord
   has_many :commitments, through: :relationship_profiles
   has_many :relationship_tags, dependent: :destroy
   has_many :relationship_groups, dependent: :destroy
+  has_one :vault_mfa_credential, dependent: :destroy
+
+  before_update :revoke_vault_lease_on_security_change
+
   has_many :vault_access_events, dependent: :destroy
   has_many :automation_permissions, dependent: :destroy
   has_many :automation_permission_changes, dependent: :delete_all
@@ -115,6 +119,10 @@ class User < ApplicationRecord
     update!(onboarding_completed_at: Time.current, onboarding_skipped_at: nil)
   end
 
+  def vault_mfa_enabled?
+    vault_mfa_credential&.enabled? || false
+  end
+
   def self.from_google_oauth(auth)
     email = auth.info.email.to_s.downcase
 
@@ -124,6 +132,14 @@ class User < ApplicationRecord
       user.password = Devise.friendly_token.first(32) if user.encrypted_password.blank?
       user.skip_confirmation! if user.new_record?
       user.save!
+    end
+  end
+  private
+
+  def revoke_vault_lease_on_security_change
+    security_attributes = %w[encrypted_password email unconfirmed_email provider uid locked_at]
+    if security_attributes.any? { |attribute| will_save_change_to_attribute?(attribute) }
+      self.privacy_vault_lease_version = self.class.where(id:).lock.pick(:privacy_vault_lease_version) + 1
     end
   end
 end

@@ -9,19 +9,18 @@ class DataExportsController < ApplicationController
   def create
     authorize :data_control, :create?
     return render_controls_error(t("data_exports.errors.invalid_request")) unless valid_request?
-    return render_controls_error(t("data_exports.errors.password_required")) unless sensitive_access_allowed?
-
     profile = selected_profile
+    result = DataExports::Prepare.call(user: current_user, relationship_profile: profile, format: export_format,
+      include_sensitive: include_sensitive?, password: export_params[:current_password], code: export_params[:code])
+    if result.error
+      key = result.error == :password_required ? "data_exports.errors.password_required" : "vault_mfa.errors.#{result.error}"
+      return render_controls_error(t(key))
+    end
+
     content, media_type, extension = if export_format == "ics"
       serialize_calendar(profile:)
     else
-      snapshot = DataExports::Snapshot.new(
-        user: current_user,
-        relationship_profile: profile,
-        include_sensitive: include_sensitive?,
-        include_file_contents: export_format.in?(%w[json csv])
-      ).to_h
-      serialize(snapshot)
+      serialize(result.snapshot)
     end
 
     AuditEvent.record!(
@@ -47,7 +46,8 @@ class DataExportsController < ApplicationController
       :format,
       :relationship_profile_id,
       :include_sensitive,
-      :current_password
+      :current_password,
+      :code
     )
   end
 
@@ -72,10 +72,6 @@ class DataExportsController < ApplicationController
 
   def include_sensitive?
     ActiveModel::Type::Boolean.new.cast(export_params[:include_sensitive])
-  end
-
-  def sensitive_access_allowed?
-    !include_sensitive? || current_user.valid_password?(export_params[:current_password].to_s)
   end
 
   def serialize(snapshot)

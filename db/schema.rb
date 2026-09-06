@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_223854) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_235653) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -1436,6 +1436,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_223854) do
     t.check_constraint "event_type::text = ANY (ARRAY['unlock_failed'::character varying, 'unlocked'::character varying, 'locked'::character varying, 'viewed'::character varying, 'protected'::character varying, 'restored'::character varying, 'suggestion_usage_changed'::character varying]::text[])", name: "vault_access_events_supported_event_type"
   end
 
+  create_table "vault_mfa_credentials", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "attempt_window_at"
+    t.integer "attempts", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "enabled_at"
+    t.datetime "enrollment_expires_at"
+    t.string "enrollment_password_fingerprint"
+    t.string "enrollment_session_digest"
+    t.datetime "enrollment_verified_at"
+    t.bigint "last_totp_at"
+    t.jsonb "recovery_code_digests", default: [], null: false
+    t.text "totp_secret"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id"], name: "index_vault_mfa_credentials_on_user_id", unique: true
+  end
+
   create_table "vendor_options", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "constraints"
     t.datetime "created_at", null: false
@@ -1658,4 +1675,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_223854) do
   add_foreign_key "vendor_shortlists", "users", on_delete: :cascade
   add_foreign_key "vendors", "marketplace_listings", on_delete: :nullify
   add_foreign_key "vendors", "users", on_delete: :cascade
+  add_foreign_key "vault_mfa_credentials", "users", on_delete: :cascade
+
 end

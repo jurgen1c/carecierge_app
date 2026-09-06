@@ -3,7 +3,7 @@ id: agent_workflow.development_journeys_use_isolated_synthetic_records
 type: fact
 system: agent_workflow
 status: current
-confidence: high
+confidence: verified
 severity: important
 title: Development journeys use isolated synthetic records
 claim: >
@@ -36,7 +36,7 @@ tags:
 verification:
   - bundle exec rspec spec/lib/development_seeds/world_spec.rb spec/system/development_journeys_spec.rb
   - bin/ci
-last_verified_commit: null
+last_verified_commit: cd42f7b2fcba7cb58dd1689993e424a516930159
 ---
 
 # Development journeys use isolated synthetic records

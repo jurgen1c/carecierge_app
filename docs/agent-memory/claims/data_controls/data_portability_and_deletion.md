@@ -54,6 +54,7 @@ claim: >
 source_files:
   - app/controllers/data_controls_controller.rb
   - app/controllers/data_exports_controller.rb
+  - app/services/data_exports/prepare.rb
   - app/controllers/data_deletions_controller.rb
   - app/controllers/users/registrations_controller.rb
   - app/models/deletion_request.rb
@@ -99,6 +100,7 @@ related_files:
   - app/views/data_exports/summary.html.erb
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb
+  - spec/requests/vault_mfa_exports_spec.rb
   - spec/requests/social_context_notes_spec.rb
   - spec/jobs/purge_abandoned_social_context_upload_job_spec.rb
   - spec/services/data_deletions/delete_ai_data_spec.rb
@@ -114,6 +116,7 @@ symbols:
   - PurgeAbandonedSocialContextUploadJob
   - DataControlsController
   - DataExportsController
+  - DataExports::Prepare
   - DataDeletionsController
   - DataExports::Snapshot
   - DataExports::CsvSerializer
@@ -140,6 +143,7 @@ tags:
   - account_deletion
 
 verification:
+  - bundle exec rspec spec/services/data_exports/prepare_spec.rb spec/requests/vault_mfa_exports_spec.rb
   - bundle exec rspec
   - bundle exec rspec spec/requests/contacts_connections_spec.rb spec/services/contacts/provider_spec.rb spec/requests/messaging_connections_spec.rb
   - bundle exec rspec spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
@@ -149,14 +153,18 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 1948fa58e71eabbe484518a7e7c6649af4cfe31d
+last_verified_commit: 8c6daa3f4178da840a7214a407f948d1d29bbdb6
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized
 
 ## Claim
 
-Exports are owner-scoped, and decrypted vault payloads require reauthentication.
+Exports are owner-scoped. Sensitive exports require explicit consent, a fresh
+password and an unused authenticator or recovery code when MFA is enabled.
+DataExports::Prepare locks verification and protected reads together, sharing
+vault replay and attempt limits. Password reset cannot bypass MFA. Ordinary
+exports redact protected payloads without factors or account locks.
 They include user-facing records, source provenance, consent state, screenshots,
 and privacy-safe evidence while excluding internal keys, errors, leases, and
 fences. Serialization neutralizes formulas, preserves recurrences, and audits

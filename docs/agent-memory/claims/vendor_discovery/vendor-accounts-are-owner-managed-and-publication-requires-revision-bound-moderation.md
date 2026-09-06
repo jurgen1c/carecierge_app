@@ -3,7 +3,7 @@ id: vendor_discovery.vendor_accounts_are_owner_managed_and_publication_requires_
 type: constraint
 system: vendor_discovery
 status: current
-confidence: verified
+confidence: high
 severity: critical
 title: Vendor accounts are owner managed and publication requires revision bound moderation
 claim: >
@@ -20,6 +20,7 @@ source_files:
   - app/controllers/vendor_accounts_controller.rb
   - app/controllers/admin/vendor_accounts_controller.rb
   - app/serializers/data_exports/snapshot.rb
+  - app/services/data_exports/prepare.rb
   - config/routes.rb
   - config/initializers/filter_parameter_logging.rb
   - app/views/vendor_accounts/show.html.erb
@@ -69,7 +70,6 @@ verification:
   - bin/memory validate
   - bin/memory coverage --git-diff
   - bin/ci
-last_verified_commit: 58c7fb652e2b93b6798044bd3a2538b70c826144
 ---
 
 # Vendor account moderation and ownership
@@ -85,3 +85,5 @@ Vendor identity must never become a path into consumer relationship data, and ed
 ## Verification
 
 Run the focused command above and the full repository gate. Account erasure intentionally removes review content; rejection and suspension retain it for the account lifetime. Suspension restoration is not exposed in this delivery.
+
+The vendor request spec also verifies integration with `relationship_profiles.privacy_vault`: ordinary account exports retain business evidence while omitting protected memories; sensitive exports require fresh MFA for enrolled owners, reject factor replay, and never include MFA secrets. The shared export boundary remains owned by `data_controls.data_portability_and_deletion`.

@@ -4,6 +4,42 @@ RSpec.describe "Vendor onboarding and moderation", type: :request do
   let(:user) { create(:user) }
   let(:moderator) { create(:user, admin: true) }
 
+  it "preserves vendor exports alongside fresh vault MFA verification" do
+    password = "known-password123"
+    user.update!(password:, password_confirmation: password)
+    credential = create(:vault_mfa_credential, user:)
+    account = create(:vendor_account, user:)
+    VendorAccounts::Transition.call(user:, account:, to: "submitted", version: "0")
+    profile = create(:relationship_profile, user:)
+    memory = create(:memory_record, relationship_profile: profile, body: "Protected owner memory")
+    PrivacyVault::Protect.call(actor: user, protectable: memory)
+    sign_in user
+
+    export = { scope: "account", format: "json" }
+    post data_exports_path, params: { data_export: export }
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.dig("vendor_account", "business_name")).to eq(account.business_name)
+    expect(response.body).not_to include("Protected owner memory", credential.totp_secret)
+
+    export = export.merge(include_sensitive: "1", current_password: password)
+    post data_exports_path, params: { data_export: export }
+    expect(response).to have_http_status(:unprocessable_content)
+    expect(response.body).not_to include("Protected owner memory")
+
+    Timecop.freeze(Time.current.change(sec: 0)) do
+      code = ROTP::TOTP.new(credential.totp_secret).now
+      post data_exports_path, params: { data_export: export.merge(code:) }
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Protected owner memory")
+      expect(response.body).not_to include(credential.totp_secret)
+      business = response.parsed_body.fetch("vendor_account")
+      expect(business["business_name"]).to eq(account.business_name)
+      expect(business.fetch("reviews").sole).not_to have_key("actor_id")
+      post data_exports_path, params: { data_export: export.merge(code:) }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
   it "requires login and a confirmed identity" do
     get vendor_account_path
     expect(response).to redirect_to(new_user_session_path)

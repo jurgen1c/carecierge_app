@@ -1,0 +1,93 @@
+<% content_for :title, t("vault_mfa.title") %>
+<% disable_turbo_cache %>
+<% if @secret.present? || @recovery_codes.present? || @enrollment_pending %>
+  <% display_expires_at = @credential.enrollment_expires_at || VaultMfaCredential::ENROLLMENT_DURATION.from_now %>
+  <% content_for :privacy_vault_lease_duration, [ ((display_expires_at - Time.current) * 1000).to_i, 0 ].max %>
+<% end %>
+<main class="mx-auto w-full max-w-xl space-y-6 py-8">
+  <header>
+    <%= link_to t("vault_mfa.back"), dashboard_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline focus-visible:outline-2 focus-visible:outline-offset-2" %>
+    <h1 class="mt-3 text-3xl font-semibold text-ink"><%= t("vault_mfa.title") %></h1>
+    <p class="mt-3 text-base leading-6 text-quiet-note"><%= t("vault_mfa.boundary") %></p>
+  </header>
+  <%= tag.p @error, id: "vault-mfa-error", role: ("alert" if @error.present?), class: "text-sm font-semibold text-danger-ink" %>
+
+  <% if @recovery_codes.present? %>
+    <section class="space-y-4" aria-labelledby="recovery-title" data-privacy-vault-target="content">
+      <h2 id="recovery-title" class="text-xl font-semibold text-ink"><%= t("vault_mfa.recovery_title") %></h2>
+      <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.recovery_body") %></p>
+      <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.display_timeout") %></p>
+      <ul class="grid gap-2 rounded-xl border border-private-line bg-surface p-4 sm:grid-cols-2">
+        <% @recovery_codes.each do |code| %>
+          <li class="font-mono text-base text-ink"><code><%= code %></code></li>
+        <% end %>
+      </ul>
+      <% if @enrollment_codes %>
+        <%= form_with url: complete_vault_mfa_path, scope: :vault_mfa, data: { turbo: false, action: "submit->privacy-vault#lock" }, class: "space-y-4" do |form| %>
+          <div class="flex min-h-11 items-center gap-3">
+            <%= form.check_box :acknowledged, required: true, class: "h-5 w-5 accent-primary" %>
+            <%= form.label :acknowledged, t("vault_mfa.acknowledged"), class: "text-sm font-semibold text-ink" %>
+          </div>
+          <%= form.submit t("vault_mfa.finish"), class: "min-h-11 cursor-pointer rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+        <% end %>
+      <% else %>
+        <%= link_to t("vault_mfa.saved"), vault_mfa_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %>
+      <% end %>
+    </section>
+  <% elsif @secret.present? || @enrollment_pending %>
+    <section class="space-y-4" aria-labelledby="setup-title" data-privacy-vault-target="content">
+      <% if @secret.present? %>
+        <h2 id="setup-title" class="text-xl font-semibold text-ink"><%= t("vault_mfa.scan_title") %></h2>
+        <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.scan_body") %></p>
+        <%= image_tag vault_mfa_qr_data(@secret, current_user.email), alt: t("vault_mfa.qr_alt"), class: "h-auto w-64 max-w-full", width: 256, height: 256 %>
+        <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.manual_key") %> <code class="break-all font-mono text-ink"><%= @secret %></code></p>
+      <% else %>
+        <h2 id="setup-title" class="text-xl font-semibold text-ink"><%= t("vault_mfa.retry_title") %></h2>
+        <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.retry_body") %></p>
+      <% end %>
+      <%= form_with url: prove_vault_mfa_path, scope: :vault_mfa, data: { turbo: false, action: "submit->privacy-vault#lock" }, class: "space-y-4" do |form| %>
+        <%= component "vault_verification_fields", form:, password: false, totp_only: true %>
+        <%= form.submit t("vault_mfa.verify"), class: "min-h-11 cursor-pointer rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <% end %>
+      <%= link_to t("vault_mfa.restart"), vault_mfa_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %>
+    </section>
+  <% elsif @credential.enabled? %>
+    <section class="space-y-4 border-t border-private-line pt-6">
+      <h2 class="text-xl font-semibold text-ink"><%= t("vault_mfa.enabled_title") %></h2>
+      <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.remaining", count: @credential.recovery_code_digests.size) %></p>
+      <h3 class="font-semibold text-ink"><%= t("vault_mfa.regenerate") %></h3>
+      <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.regenerate_body") %></p>
+      <%= form_with url: regenerate_vault_mfa_path, scope: :vault_mfa, namespace: :regenerate, data: { turbo: false, action: "submit->privacy-vault#lock" }, class: "space-y-4" do |form| %>
+        <%= component "vault_verification_fields", form:, totp_only: true %>
+        <%= form.submit t("vault_mfa.regenerate"), class: "min-h-11 cursor-pointer rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <% end %>
+    </section>
+    <section class="space-y-4 border-t border-private-line pt-6">
+      <h2 class="text-xl font-semibold text-ink"><%= t("vault_mfa.disable") %></h2>
+      <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.disable_body") %></p>
+      <%= form_with url: vault_mfa_path, method: :delete, scope: :vault_mfa, namespace: :disable, data: { turbo: false, action: "submit->privacy-vault#lock" }, class: "space-y-4" do |form| %>
+        <%= component "vault_verification_fields", form: %>
+        <%= form.submit t("vault_mfa.disable"), class: "min-h-11 cursor-pointer rounded-lg border border-danger-border bg-canvas px-5 py-3 font-semibold text-danger-ink hover:bg-danger-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger-ink" %>
+      <% end %>
+    </section>
+  <% else %>
+    <section class="space-y-4 border-t border-private-line pt-6">
+      <h2 class="text-xl font-semibold text-ink"><%= t("vault_mfa.start_title") %></h2>
+      <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.start_body") %></p>
+      <%= form_with url: vault_mfa_path, scope: :vault_mfa, data: { turbo: false, action: "submit->privacy-vault#lock" }, class: "space-y-4" do |form| %>
+        <%= component "vault_verification_fields", form:, second_factor: false %>
+        <%= form.submit t("vault_mfa.start"), class: "min-h-11 cursor-pointer rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <% end %>
+    </section>
+  <% end %>
+
+  <p hidden data-privacy-vault-target="locked" role="status" class="text-sm font-semibold text-ink"><%= t("privacy_vaults.show.lease_ended_title") %></p>
+
+  <section id="lost-device" class="space-y-3 border-t border-private-line pt-6">
+    <h2 class="text-xl font-semibold text-ink"><%= t("vault_mfa.lost_title") %></h2>
+    <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.lost_body") %></p>
+    <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.no_recovery") %></p>
+    <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.password_prerequisite") %></p>
+    <%= button_to t("vault_mfa.reset_password"), reset_password_vault_mfa_path, form: { data: { action: "submit->privacy-vault#lock" } }, class: "min-h-11 text-left font-semibold text-primary underline focus-visible:outline-2 focus-visible:outline-offset-2" %>
+  </section>
+</main>

@@ -19,23 +19,16 @@ class PrivacyVaultsController < ApplicationController
   def unlock
     authorize @relationship_profile, :show?
 
-    password_valid = current_user.with_lock do
-      if current_user.valid_password?(unlock_params[:password])
-        unlock_privacy_vault!
-        true
-      else
-        current_user.increment!(:privacy_vault_lease_version)
-        false
-      end
-    end
+    result = PrivacyVault::Unlock.call(user: current_user, password: unlock_params[:password], code: unlock_params[:code])
 
-    if password_valid
+    if result.lease
+      session[PrivacyVaultSession::SESSION_KEY] = result.lease.to_session
       VaultAccessEvent.record_safely(event_type: "unlocked", user: current_user, relationship_profile: @relationship_profile)
       redirect_to relationship_profile_privacy_vault_path(@relationship_profile), notice: t("privacy_vaults.unlock.notice")
     else
       clear_privacy_vault_lease
       VaultAccessEvent.record_safely(event_type: "unlock_failed", user: current_user, relationship_profile: @relationship_profile)
-      @unlock_error = t("privacy_vaults.unlock.invalid_password")
+      @unlock_error = current_user.vault_mfa_enabled? ? t("vault_mfa.errors.#{result.error}") : t("privacy_vaults.unlock.invalid_password")
       render :show, status: :unprocessable_content
     end
   end
@@ -64,7 +57,7 @@ class PrivacyVaultsController < ApplicationController
   end
 
   def unlock_params
-    params.require(:privacy_vault_unlock).permit(:password)
+    params.require(:privacy_vault_unlock).permit(:password, :code)
   end
 
   def prepare_unlocked_vault

@@ -3,7 +3,7 @@ id: audit_events.account_activity_ledger
 type: fact
 system: audit_events
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Audit events provide privacy-minimized account and admin history
@@ -19,7 +19,12 @@ claim: >
   reuse those generic reminder events without copying quote content into audit
   metadata. Automation permissions add the
   generic event beside specialized evidence in the same owner lock, while vault
-  events preserve existing transactional and best-effort semantics. Approval
+  events preserve existing transactional and best-effort semantics. Vault MFA
+  enrollment, verification success/failure, recovery-code consumption,
+  disablement and regeneration use account-owned, target-free security events
+  with empty metadata. Lifecycle audit writes are transactional; verification
+  audit failures cannot roll back factor consumption, attempt counters or lease
+  revocation. Passwords, TOTP secrets and recovery codes never enter evidence. Approval
   queue decisions target owner-matched requests with request-kind and result
   metadata only; direct extracted-memory rejections instead target the owning
   relationship with result-only metadata. Request deletion nullifies its target while preserving evidence. Gift
@@ -62,6 +67,14 @@ source_files:
   - db/migrate/20260807045425_create_audit_events.rb
 
 related_files:
+  - app/services/privacy_vault/verify.rb
+  - app/services/privacy_vault/enrollment.rb
+  - app/services/privacy_vault/manage_mfa.rb
+  - spec/requests/vault_mfas_spec.rb
+  - spec/services/privacy_vault/unlock_spec.rb
+  - spec/services/privacy_vault/enrollment_spec.rb
+  - config/locales/vault_mfa.en.yml
+  - config/locales/vault_mfa.es.yml
   - app/views/audit_events/_filters.html.erb
   - app/views/audit_events/_pagination.html.erb
   - app/views/components/audit_event_marker_component.rb
@@ -111,6 +124,7 @@ tags:
   - authorized_audit_admin
 
 verification:
+  - bundle exec rspec spec/requests/vault_mfas_spec.rb spec/services/privacy_vault/unlock_spec.rb spec/services/privacy_vault/enrollment_spec.rb
   - bundle exec rspec spec/models/audit_event_spec.rb spec/services/audit_events/track_spec.rb spec/queries/audit_events/query_spec.rb spec/policies/audit_event_policy_spec.rb spec/requests/audit_events_spec.rb spec/requests/admin_audit_events_spec.rb spec/requests/audit_event_integrations_spec.rb spec/models/vault_access_event_spec.rb spec/services/automation_permissions/change_spec.rb
   - bundle exec rspec
   - bin/rubocop
@@ -119,7 +133,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 022581c95af508bf161ad3818a3b6cb7c00c3e1d
 ---
 
 # Audit events provide privacy-minimized account and admin history

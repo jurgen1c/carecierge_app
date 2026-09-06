@@ -108,7 +108,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 2ca7493a66422b57fd1f0bee27be355148a6907e
+last_verified_commit: 58c7fb652e2b93b6798044bd3a2538b70c826144
 ---
 
 # Saved vendors are owner-scoped, sourced, and review-only

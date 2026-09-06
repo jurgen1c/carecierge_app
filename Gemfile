@@ -96,3 +96,7 @@ gem "lexxy", "~> 0.9.30"
 gem "timecop", "~> 0.9.11", groups: [ :development, :test ]
 
 gem "ruby_llm", "~> 1.16.0"
+
+gem "rotp", "~> 6.3"
+
+gem "rqrcode", "~> 3.2"

@@ -124,6 +124,13 @@ Rails.application.routes.draw do
     post :skip
   end
 
+  resource :vault_mfa, only: %i[show create destroy] do
+    post :prove
+    post :complete
+    post :regenerate
+    post :reset_password
+  end
+
   resources :relationship_profiles do
     patch :archive, on: :member
     resources :relationship_briefings, only: [] do

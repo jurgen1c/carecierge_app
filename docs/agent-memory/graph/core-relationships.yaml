@@ -804,7 +804,7 @@ edges:
   - source: relationship_profiles.privacy_vault
     target: authentication.account_access_boundary
     relation: requires
-    reason: Opening protected relationship context requires both the authenticated session and a fresh valid account password.
+    reason: Opening protected relationship context requires an authenticated session, fresh account password and, when enrolled, verified TOTP or recovery code; identity changes and logout revoke leases and pending enrollment.
     strength: 95
   - source: relationship_profiles.privacy_vault
     target: relationship_profiles.memory_records

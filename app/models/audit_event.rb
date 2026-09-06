@@ -73,6 +73,12 @@ class AuditEvent < ApplicationRecord
     reminder.deleted
     reminder.snoozed
     reminder.completed
+    privacy_vault.mfa_enrolled
+    privacy_vault.mfa_verified
+    privacy_vault.mfa_verification_failed
+    privacy_vault.recovery_used
+    privacy_vault.mfa_disabled
+    privacy_vault.recovery_regenerated
     privacy_vault.opened
     privacy_vault.unlock_failed
     privacy_vault.locked

@@ -54,6 +54,7 @@ claim: >
 source_files:
   - app/controllers/data_controls_controller.rb
   - app/controllers/data_exports_controller.rb
+  - app/services/data_exports/prepare.rb
   - app/controllers/data_deletions_controller.rb
   - app/controllers/users/registrations_controller.rb
   - app/models/deletion_request.rb
@@ -99,6 +100,7 @@ related_files:
   - app/views/data_exports/summary.html.erb
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb
+  - spec/requests/vault_mfa_exports_spec.rb
   - spec/requests/social_context_notes_spec.rb
   - spec/jobs/purge_abandoned_social_context_upload_job_spec.rb
   - spec/services/data_deletions/delete_ai_data_spec.rb
@@ -114,6 +116,7 @@ symbols:
   - PurgeAbandonedSocialContextUploadJob
   - DataControlsController
   - DataExportsController
+  - DataExports::Prepare
   - DataDeletionsController
   - DataExports::Snapshot
   - DataExports::CsvSerializer
@@ -157,6 +160,11 @@ last_verified_commit: 1948fa58e71eabbe484518a7e7c6649af4cfe31d
 ## Claim
 
 Exports are owner-scoped, and decrypted vault payloads require reauthentication.
+Sensitive exports require explicit inclusion and a fresh password plus an unused
+authenticator or recovery code when vault MFA is enabled. DataExports::Prepare
+keeps verification and protected snapshot reads under the owning account lock,
+sharing vault replay and attempt limits. Password reset does not bypass this
+boundary, and ordinary exports omit protected payloads without requiring a factor.
 They include user-facing records, source provenance, consent state, screenshots,
 and privacy-safe evidence while excluding internal keys, errors, leases, and
 fences. Serialization neutralizes formulas, preserves recurrences, and audits

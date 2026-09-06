@@ -9,6 +9,7 @@
   <header class="flex flex-col gap-4 border-b border-stone-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
     <div>
       <%= link_to @relationship_profile.display_name, relationship_profile_path(@relationship_profile), class: "text-sm font-semibold text-emerald-800 hover:text-emerald-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
+      <%= link_to t("vault_mfa.title"), vault_mfa_path, class: "ml-3 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline" %>
       <h1 class="mt-3 text-3xl font-semibold text-stone-950"><%= t("privacy_vaults.show.title") %></h1>
       <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.body") %></p>
     </div>
@@ -107,6 +108,13 @@
           <% end %>
           <p id="vault-password-hint" class="mt-2 text-sm leading-6 text-stone-700"><%= t("privacy_vaults.show.password_hint") %></p>
         </div>
+
+        <% if current_user.vault_mfa_enabled? %>
+          <p id="vault-mfa-error" role="alert" class="text-sm font-semibold text-danger-ink"><%= @unlock_error %></p>
+          <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.unlock_body") %></p>
+          <%= component "vault_verification_fields", form:, password: false %>
+          <%= link_to t("vault_mfa.lost_title"), vault_mfa_path(anchor: "lost-device"), class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline" %>
+        <% end %>
 
         <div class="flex flex-wrap items-center justify-between gap-3">
           <%= button_tag t("privacy_vaults.show.reset_password"), type: "submit", formaction: reset_password_relationship_profile_privacy_vault_path(@relationship_profile), formmethod: "post", formnovalidate: true, class: "cursor-pointer text-sm font-semibold text-emerald-800 hover:text-emerald-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>

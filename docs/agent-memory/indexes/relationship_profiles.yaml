@@ -4,6 +4,7 @@ summary: Authenticated, user-owned relationship profile CRUD with localized and 
 claim_globs:
   - claims/relationship_profiles/**/*.md
 default_queries:
+  - privacy vault MFA authenticator TOTP enrollment recovery single use replay lease security
   - professional mode work context selected meeting notes stakeholder preferences client milestones performance review
   - gift box complementary items confirmed preferences budget manual purchase delivery reminder
   - gift purchase planning budget shipping vendor options manual status reminder event task
@@ -36,6 +37,12 @@ default_queries:
   - reusable relationship tags groups filtering
   - Lexxy Action Text relationship notes
 watched_files:
+  - app/models/vault_mfa_credential.rb
+  - app/controllers/vault_mfas_controller.rb
+  - app/policies/vault_mfa_credential_policy.rb
+  - app/views/vault_mfas/**/*.erb
+  - app/views/components/vault_verification_fields_component.*
+  - config/locales/vault_mfa.*.yml
   - app/models/professional_context.rb
   - app/models/concerns/professional_relationship.rb
   - app/views/components/professional_context_component.*

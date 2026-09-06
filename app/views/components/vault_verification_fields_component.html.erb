@@ -1,0 +1,12 @@
+<% if password %>
+  <div>
+    <%= form.label :password, t("vault_mfa.password"), class: style(:label) %>
+    <%= form.password_field :password, required:, autocomplete: "current-password", aria: { describedby: description_id }, class: style(:input) %>
+  </div>
+<% end %>
+<% if second_factor %>
+  <div>
+    <%= form.label :code, t(totp_only ? "vault_mfa.totp" : "vault_mfa.code"), class: style(:label) %>
+    <%= form.text_field :code, required:, autocomplete: "one-time-code", autocapitalize: "none", spellcheck: false, maxlength: 17, aria: { describedby: description_id }, class: style(:input) %>
+  </div>
+<% end %>

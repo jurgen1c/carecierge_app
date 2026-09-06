@@ -2,7 +2,7 @@ module VendorAccounts
   class Save
     def self.call(user:, account:, attributes:, version:)
       raise Pundit::NotAuthorizedError unless VendorAccountPolicy.new(user, account).update?
-      user.with_lock do
+      user.with_lock("FOR NO KEY UPDATE") do
         account.with_lock do
           account.verify_version!(version)
           from = account.status

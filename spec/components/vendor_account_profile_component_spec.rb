@@ -20,4 +20,12 @@ RSpec.describe VendorAccountProfileComponent, type: :component do
       expect(page).to have_no_css("form")
     end
   end
+
+  it "links category validation errors to the focusable category group" do
+    account = build(:vendor_account, status: "submitted", categories: [])
+    account.valid?
+    render_inline(described_class.new(account:, editable: true))
+    expect(page).to have_css('a[href="#vendor_account_categories"]', text: account.errors.full_messages_for(:categories).first)
+    expect(page).to have_css('fieldset#vendor_account_categories[tabindex="-1"][aria-invalid="true"][aria-describedby="categories-hint categories-errors"]')
+  end
 end

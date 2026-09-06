@@ -8,7 +8,7 @@
       <h2 class="font-semibold"><%= t("vendor_accounts.errors") %></h2>
       <ul class="mt-2 list-disc space-y-2 pl-5">
         <% account.errors.each do |error| %>
-          <li><% if FIELDS.key?(error.attribute) %><%= link_to error.full_message, "#vendor_account_#{error.attribute}", class: "underline" %><% else %><%= error.full_message %><% end %></li>
+          <li><% if FIELDS.key?(error.attribute) || error.attribute == :categories %><%= link_to error.full_message, "#vendor_account_#{error.attribute}", class: "underline" %><% else %><%= error.full_message %><% end %></li>
         <% end %>
       </ul>
     </div>
@@ -32,7 +32,7 @@
           <p id="<%= field %>-errors" class="mt-1 text-sm text-danger-ink"><%= account.errors.full_messages_for(field).join(". ") %></p>
         </div>
       <% end %>
-      <fieldset aria-describedby="categories-hint categories-errors">
+      <fieldset id="vendor_account_categories" tabindex="-1" aria-invalid="<%= account.errors[:categories].any? %>" aria-describedby="categories-hint categories-errors" class="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
         <legend class="font-semibold text-ink"><%= t("vendor_accounts.fields.categories") %></legend>
         <p id="categories-hint" class="mt-1 text-sm leading-6 text-quiet-note"><%= t("vendor_accounts.hints.categories") %></p>
         <%= hidden_field_tag "vendor_account[categories][]", "" %>

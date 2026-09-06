@@ -12,7 +12,7 @@ module VendorAccounts
     def call
       policy = VendorAccountPolicy.new(@user, @account)
       raise Pundit::NotAuthorizedError unless @to == "submitted" ? policy.submit? : policy.moderate?
-      @account.user.with_lock do
+      @account.user.with_lock("FOR NO KEY UPDATE") do
         @account.with_lock do
           @account.verify_version!(@version)
           from = @account.status

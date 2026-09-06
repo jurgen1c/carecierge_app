@@ -10,9 +10,14 @@ default_queries:
   - project dependency list
   - local CI signoff gate
   - data backfills data_migrate
+  - development seed synthetic journeys
 watched_files:
+  - lib/development_seeds/**/*.rb
+  - lib/tasks/development.rake
+  - docs/development/journeys.md
   - AGENTS.md
   - config/ci.rb
+  - bin/setup
   - eslint.config.mjs
   - db/data/**/*.rb
   - db/migrate/**/*.rb

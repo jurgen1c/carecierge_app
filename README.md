@@ -22,3 +22,7 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+## Development journeys
+
+After `bin/setup`, run `bin/rails development:seed` for isolated synthetic accounts. See the [journey manifest](docs/development/journeys.md) for credentials, routes, reference dates and safe reset.

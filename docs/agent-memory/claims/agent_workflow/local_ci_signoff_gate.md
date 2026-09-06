@@ -9,6 +9,7 @@ severity: important
 title: Local CI signs off GitHub after the full quality gate
 
 claim: >
+  bin/setup configures core.hooksPath to .githooks.
   bin/ci is the canonical local quality gate. It runs setup, RuboCop, ESLint,
   Bun audit, Bundler Audit, Brakeman, and RSpec before writing the GitHub
   signoff status with gh signoff; CI_SIGNOFF=false runs the same checks without
@@ -20,6 +21,7 @@ claim: >
 
 source_files:
   - config/ci.rb
+  - bin/setup
 
 tags:
   - rule

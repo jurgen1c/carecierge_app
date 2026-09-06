@@ -195,9 +195,23 @@ RSpec.describe "Vault MFA", type: :request do
         expect(response.body).to include(I18n.t("vault_mfa.title"), I18n.t("vault_mfa.no_recovery"))
         expect(response.body).not_to include("Translation missing")
         expect(response.parsed_body.at_css("label[for='vault_mfa_password']")).to be_present
-        expect(response.parsed_body.at_css("#vault-mfa-error[role='alert']")).to be_present
+        expect(response.parsed_body.at_css("#vault-mfa-error")).to be_present
+        expect(response.parsed_body.at_css("#vault-mfa-error[role='alert']")).to be_nil
+        post vault_mfa_path, params: { vault_mfa: { password: "wrong" } }
+        expect(response.parsed_body.at_css("#vault-mfa-error[role='alert']").text).to be_present
       end
     end
+  end
+
+  it "shares one nonempty vault error announcement between both verification fields" do
+    create(:vault_mfa_credential, user:)
+    get relationship_profile_privacy_vault_path(profile)
+    expect(response.parsed_body.css("#vault-mfa-error[role='alert'], #vault-password-error[role='alert']")).to be_empty
+    post unlock_relationship_profile_privacy_vault_path(profile), params: { privacy_vault_unlock: { password: "wrong", code: "123456" } }
+    errors = response.parsed_body.css("#vault-mfa-error[role='alert'], #vault-password-error[role='alert']")
+    expect(errors.size).to eq(1)
+    expect(errors.first.text).to be_present
+    expect(response.parsed_body.at_css("input[name='privacy_vault_unlock[code]']")["aria-describedby"]).to include(errors.first["id"])
   end
 
   it "rejects missing verification fields without creating a lease or raising" do

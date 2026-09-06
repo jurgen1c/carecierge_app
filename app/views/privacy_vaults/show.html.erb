@@ -110,9 +110,8 @@
         </div>
 
         <% if current_user.vault_mfa_enabled? %>
-          <p id="vault-mfa-error" role="alert" class="text-sm font-semibold text-danger-ink"><%= @unlock_error %></p>
-          <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.unlock_body") %></p>
-          <%= component "vault_verification_fields", form:, password: false %>
+          <p id="vault-mfa-hint" class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.unlock_body") %></p>
+          <%= component "vault_verification_fields", form:, password: false, description_id: @unlock_error.present? ? "vault-password-error vault-mfa-hint" : "vault-mfa-hint" %>
           <%= link_to t("vault_mfa.lost_title"), vault_mfa_path(anchor: "lost-device"), class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline" %>
         <% end %>
 

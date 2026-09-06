@@ -150,7 +150,7 @@ verification:
   - bin/memory validate
   - bin/memory coverage --git-diff
 
-last_verified_commit: 244a2f383220a546d4b52f003b4475f54f7acf5b
+last_verified_commit: 8a93fbffb9be414ede882ec6e088f0452e2f04f0
 ---
 
 # Privacy vault encrypts and gates sensitive relationship context

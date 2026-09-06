@@ -132,7 +132,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 244a2f383220a546d4b52f003b4475f54f7acf5b
+last_verified_commit: 8a93fbffb9be414ede882ec6e088f0452e2f04f0
 ---
 
 # Audit events provide privacy-minimized account and admin history

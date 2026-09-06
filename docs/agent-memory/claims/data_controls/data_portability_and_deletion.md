@@ -143,6 +143,7 @@ tags:
   - account_deletion
 
 verification:
+  - bundle exec rspec spec/services/data_exports/prepare_spec.rb spec/requests/vault_mfa_exports_spec.rb
   - bundle exec rspec
   - bundle exec rspec spec/requests/contacts_connections_spec.rb spec/services/contacts/provider_spec.rb spec/requests/messaging_connections_spec.rb
   - bundle exec rspec spec/jobs/purge_abandoned_social_context_upload_job_spec.rb spec/requests/direct_uploads_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/data_controls_spec.rb spec/requests/privacy_vaults_spec.rb spec/requests/relationship_profiles_spec.rb spec/requests/audit_event_integrations_spec.rb
@@ -159,12 +160,11 @@ last_verified_commit: 244a2f383220a546d4b52f003b4475f54f7acf5b
 
 ## Claim
 
-Exports are owner-scoped, and decrypted vault payloads require reauthentication.
-Sensitive exports require explicit inclusion and a fresh password plus an unused
-authenticator or recovery code when vault MFA is enabled. DataExports::Prepare
-keeps verification and protected snapshot reads under the owning account lock,
-sharing vault replay and attempt limits. Password reset does not bypass this
-boundary, and ordinary exports omit protected payloads without requiring a factor.
+Exports are owner-scoped. Sensitive exports require explicit consent, a fresh
+password and an unused authenticator or recovery code when MFA is enabled.
+DataExports::Prepare locks verification and protected reads together, sharing
+vault replay and attempt limits. Password reset cannot bypass MFA. Ordinary
+exports redact protected payloads without factors or account locks.
 They include user-facing records, source provenance, consent state, screenshots,
 and privacy-safe evidence while excluding internal keys, errors, leases, and
 fences. Serialization neutralizes formulas, preserves recurrences, and audits

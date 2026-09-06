@@ -70,6 +70,7 @@ verification:
   - bin/memory validate
   - bin/memory coverage --git-diff
   - bin/ci
+last_verified_commit: 330108f04efe6e63525a71603a6215f53fa1212a
 ---
 
 # Vendor account moderation and ownership

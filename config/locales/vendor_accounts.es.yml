@@ -1,0 +1,99 @@
+---
+es:
+  vendor_accounts:
+    title: Mi negocio en el mercado
+    intro: Prepara un perfil de negocio para Carecierge. Solo los detalles aprobados
+      aparecen en el mercado.
+    begin_hint: Usa esta cuenta para mantener un perfil de negocio. Puedes guardar
+      tu progreso y volver más tarde.
+    begin: Crear mi perfil de negocio
+    enrolled: Tu borrador de negocio está listo.
+    saved: Borrador guardado. Los cambios necesitan revisión antes de publicarse.
+    submitted: Tu perfil de negocio se envió a revisión.
+    moderated: Decisión de revisión registrada.
+    stale: Este perfil cambió mientras lo revisabas. Comprueba los detalles actuales
+      e inténtalo de nuevo.
+    errors: Revisa los siguientes detalles
+    form_hint: Todos los campos son obligatorios antes del envío. Puedes guardar un
+      borrador en cualquier momento. Comparte información del negocio que quieras
+      mostrar al público.
+    save: Guardar borrador del negocio
+    ready: "¿Listo para la revisión?"
+    submit_hint: Guarda tus cambios primero y luego envía el perfil guardado. El envío
+      no publica ni contacta a nadie.
+    submit: Enviar perfil guardado a revisión
+    history: Historial de revisión
+    no_reviews: Todavía no hay decisiones de revisión.
+    admin_back: Panel administrativo
+    moderation_title: Revisar negocios del mercado
+    moderation_hint: Revisa los detalles proporcionados por el negocio. La aprobación
+      publica esta versión; el rechazo y la suspensión mantienen el negocio fuera
+      del mercado.
+    empty_queue: No hay perfiles de negocio pendientes o bajo moderación.
+    decision: Decisión
+    reason: Motivo para el negocio
+    reason_hint: Obligatorio para rechazar o suspender. Hasta 1.000 caracteres. El
+      negocio puede leer este motivo.
+    decide: Registrar decisión de revisión
+    supplied: Productos y servicios proporcionados por el negocio
+    states:
+      draft: Borrador · sin publicar
+      submitted: Enviado · pendiente de revisión
+      approved: Aprobado · visible en el mercado
+      rejected: Rechazado · necesita cambios
+      suspended: Suspendido · oculto del mercado
+    guidance:
+      draft: Completa los detalles de tu negocio, guárdalos y envíalos a revisión.
+      submitted: Tus detalles guardados están pendientes de revisión. Editarlos devuelve
+        este perfil a borrador.
+      approved: Tu perfil revisado está publicado. Guardar cambios lo oculta hasta
+        que se apruebe de nuevo.
+      rejected: Lee el motivo de la revisión abajo. Actualiza tus detalles y vuelve
+        a enviarlos.
+      suspended: Tu negocio está oculto. Puedes guardar correcciones, pero editar
+        no levanta la suspensión.
+    decisions:
+      approved: Aprobar y publicar
+      rejected: Rechazar con un motivo
+      suspended: Suspender publicación
+    fields:
+      business_name: Nombre del negocio
+      categories: Categorías del negocio
+      service_area: Zonas de servicio
+      offerings: Productos y servicios
+      contact_channels: Canales de contacto públicos del negocio
+      source_url: Sitio web del negocio o URL de la fuente
+      provenance: Fuente y antecedentes del negocio
+    hints:
+      business_name: Usa el nombre que conocen tus clientes. Hasta %{limit} caracteres.
+      categories: Elige hasta cinco categorías. La primera seleccionada se usa en
+        los filtros del mercado.
+      service_area: Enumera las ciudades o regiones que atiendes. Hasta %{limit} caracteres
+        en total.
+      offerings: Describe lo que ofreces y los límites relevantes. Hasta %{limit}
+        caracteres.
+      contact_channels: Teléfono, correo u otros datos de contacto públicos. Hasta
+        %{limit} caracteres.
+      source_url: Una página http:// o https:// sin credenciales incluidas. Hasta
+        %{limit} caracteres.
+      provenance: Explica quién proporcionó estos datos y los antecedentes del negocio.
+        Hasta %{limit} caracteres.
+  activerecord:
+    attributes:
+      vendor_account:
+        business_name: Nombre del negocio
+        categories: Categorías del negocio
+        service_area: Zonas de servicio
+        offerings: Productos y servicios
+        contact_channels: Canales de contacto públicos del negocio
+        source_url: Sitio web del negocio o URL de la fuente
+        provenance: Fuente y antecedentes del negocio
+      vendor_account_review:
+        reason: Motivo para el negocio
+    errors:
+      models:
+        vendor_account:
+          attributes:
+            base:
+              invalid_transition: Esta acción de revisión no está disponible en el
+                estado actual.

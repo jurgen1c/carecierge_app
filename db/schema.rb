@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_235653) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_06_044421) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -818,7 +818,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_235653) do
     t.string "service_area", null: false
     t.string "source_url", null: false
     t.datetime "updated_at", null: false
+    t.uuid "vendor_account_id"
     t.index ["published", "category"], name: "index_marketplace_listings_on_published_and_category"
+    t.index ["vendor_account_id"], name: "index_marketplace_listings_on_vendor_account_id", unique: true
   end
 
   create_table "memory_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -1453,6 +1455,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_235653) do
     t.index ["user_id"], name: "index_vault_mfa_credentials_on_user_id", unique: true
   end
 
+  create_table "vendor_account_reviews", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "actor_id"
+    t.datetime "created_at", null: false
+    t.string "from_status", null: false
+    t.text "profile_snapshot", null: false
+    t.integer "profile_version", null: false
+    t.text "reason"
+    t.string "to_status", null: false
+    t.uuid "vendor_account_id", null: false
+    t.index ["actor_id"], name: "index_vendor_account_reviews_on_actor_id"
+    t.index ["vendor_account_id", "created_at"], name: "idx_on_vendor_account_id_created_at_bfff056fe8"
+    t.index ["vendor_account_id"], name: "index_vendor_account_reviews_on_vendor_account_id"
+  end
+
+  create_table "vendor_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "business_name", default: "", null: false
+    t.string "categories", default: [], null: false, array: true
+    t.text "contact_channels", default: "", null: false
+    t.datetime "created_at", null: false
+    t.integer "lock_version", default: 0, null: false
+    t.text "offerings", default: "", null: false
+    t.text "provenance", default: "", null: false
+    t.string "service_area", default: "", null: false
+    t.text "source_url", default: "", null: false
+    t.string "status", default: "draft", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["status", "updated_at"], name: "index_vendor_accounts_on_status_and_updated_at"
+    t.index ["user_id"], name: "index_vendor_accounts_on_user_id", unique: true
+    t.check_constraint "status::text = ANY (ARRAY['draft'::character varying, 'submitted'::character varying, 'approved'::character varying, 'rejected'::character varying, 'suspended'::character varying]::text[])", name: "vendor_accounts_valid_status"
+  end
+
   create_table "vendor_options", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.text "constraints"
     t.datetime "created_at", null: false
@@ -1675,6 +1709,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_235653) do
   add_foreign_key "vendor_shortlists", "users", on_delete: :cascade
   add_foreign_key "vendors", "marketplace_listings", on_delete: :nullify
   add_foreign_key "vendors", "users", on_delete: :cascade
+  add_foreign_key "marketplace_listings", "vendor_accounts", on_delete: :cascade
+  add_foreign_key "vendor_account_reviews", "users", column: "actor_id", on_delete: :nullify
+  add_foreign_key "vendor_account_reviews", "vendor_accounts", on_delete: :cascade
+  add_foreign_key "vendor_accounts", "users", on_delete: :cascade
   add_foreign_key "vault_mfa_credentials", "users", on_delete: :cascade
-
 end

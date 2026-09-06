@@ -42,6 +42,7 @@ module DataExports
         "notification_preference" => attributes_for(user.notification_preference),
         "relationship_tags" => records(user.relationship_tags),
         "relationship_groups" => records(user.relationship_groups),
+        "vendor_account" => vendor_account_attributes,
         "vendors" => user.vendors.ordered.includes(:event_plan_vendors).map { |vendor| vendor_attributes(vendor) },
         "feed_item_states" => records(user.feed_item_states, except: %w[user_id]),
         "reminders" => user.reminders.includes(:reminder_deliveries).map { |reminder| reminder_attributes(reminder) },
@@ -215,6 +216,15 @@ module DataExports
         "vendor_quotes" => plan.vendor_quotes.map { |quote| vendor_quote_attributes(quote) },
         "bookings" => plan.bookings.map { |booking| booking_attributes(booking) },
         "backup_plans" => plan.backup_plans.map { |backup_plan| backup_plan_attributes(backup_plan) }
+      )
+    end
+
+    def vendor_account_attributes
+      account = user.vendor_account
+      return unless account
+
+      attributes_for(account, except: %w[user_id lock_version]).merge(
+        "reviews" => records(account.reviews.order(:created_at, :id), except: %w[actor_id vendor_account_id])
       )
     end
 

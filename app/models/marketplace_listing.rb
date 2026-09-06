@@ -25,6 +25,8 @@
 class MarketplaceListing < ApplicationRecord
   MAX_COMPARISON = 5
 
+  belongs_to :vendor_account, optional: true
+
   has_many :vendors, dependent: :nullify
 
   validates :name, :service_area, :provider_name, presence: true, length: { maximum: 200 }

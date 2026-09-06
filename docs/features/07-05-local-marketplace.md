@@ -38,3 +38,12 @@ Verify with `bundle exec rspec spec/models/marketplace_listing_spec.rb spec/requ
 ## Future supply-side capabilities
 
 Vendor accounts/onboarding, availability management, quote responses, booking confirmation APIs, payments, ratings/reviews, transactions, and featured placement remain future integrations. This foundation never contacts, books, purchases, pays, or shares relationship data externally.
+
+
+## Delivered vendor onboarding (CAR-83)
+
+Confirmed users open **My marketplace business** from the marketplace and resume one business draft at `/vendor_account`. Business name, up to five categories, combined service areas, offerings, public contact channels, source URL and provenance have server-enforced bounds. All fields are required for submission.
+
+Administrators use **Review marketplace businesses** from `/admin` to review submitted business details separately from consumer data. Approval publishes the exact reviewed content as a vendor-supplied catalog snapshot. Rejecting or suspending requires a vendor-visible reason. Editing approved or submitted content withdraws publication and requires a new submission and approval; stale forms cannot approve or overwrite newer content. Suspended businesses may save corrections but cannot lift their own suspension. Restoration after suspension remains an administrative follow-up outside this surface.
+
+Status transitions keep encrypted, append-only profile/reason evidence until account deletion. Business/profile forms and review pages work without JavaScript in English and Spanish. Account exports include business details and decrypted review evidence; deleting an account removes its publication while consumers retain their private saved snapshots. No provider calls, consumer contact, quoting, booking or payment actions are introduced.

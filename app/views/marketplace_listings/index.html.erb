@@ -3,6 +3,7 @@
     <h1 id="marketplace-title" class="text-3xl font-semibold text-ink"><%= t("marketplace.title") %></h1>
     <p class="max-w-prose leading-7 text-quiet-note"><%= t("marketplace.intro") %></p>
     <%= link_to t("marketplace.my_vendors"), vendors_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
+    <%= link_to t("vendor_accounts.title"), vendor_account_path, class: "inline-flex min-h-11 items-center px-3 font-semibold text-primary underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" %>
   </header>
   <%= search_form_for @query, url: marketplace_listings_path, class: "grid gap-4 border-b border-private-line py-6 sm:grid-cols-2" do |form| %>
     <% { name_or_curated_summary_cont: "search", service_area_cont: "area", relationship_use_cases_cont: "use_cases" }.each do |field, label| %>

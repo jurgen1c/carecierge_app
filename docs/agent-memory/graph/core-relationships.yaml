@@ -1,6 +1,16 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: vendor_discovery.vendor_accounts_are_owner_managed_and_publication_requires_revision_bound_moderation
+    target: vendor_discovery.marketplace_listings_are_curated_shared_content_with_private_explicit_handoffs
+    relation: constrains
+    reason: Vendor-managed content enters the existing shared catalog only through revision-bound moderator approval and is withdrawn on edits or suspension.
+    strength: 100
+  - source: vendor_discovery.vendor_accounts_are_owner_managed_and_publication_requires_revision_bound_moderation
+    target: audit_events.admin_dashboard_exposes_audited_aggregates_without_owner_action_authority
+    relation: same_area
+    reason: Business moderation uses the established admin authority in separate routes without broadening the aggregate dashboard or exposing consumer records.
+    strength: 100
   - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
     target: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
     relation: constrains

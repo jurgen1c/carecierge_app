@@ -1,0 +1,7 @@
+<% if @pagy.last > 1 %>
+  <nav aria-label="<%= t('vendors.pagination.label') %>" class="flex flex-wrap gap-4 py-5">
+    <% if @pagy.previous %><%= link_to t("vendors.pagination.previous"), page_url.call(@pagy.previous), class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %><% end %>
+    <span class="py-3 text-sm text-quiet-note"><%= t("vendors.pagination.page", page: @pagy.page, pages: @pagy.last) %></span>
+    <% if @pagy.next %><%= link_to t("vendors.pagination.next"), page_url.call(@pagy.next), class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %><% end %>
+  </nav>
+<% end %>

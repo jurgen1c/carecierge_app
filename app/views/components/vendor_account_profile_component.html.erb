@@ -1,0 +1,59 @@
+<section aria-labelledby="profile-status" class="space-y-6">
+  <div class="rounded-xl border border-private-line bg-canvas p-5">
+    <h2 id="profile-status" class="text-xl font-semibold text-ink"><%= t("vendor_accounts.states.#{account.status}") %></h2>
+    <p class="mt-2 max-w-prose leading-7 text-quiet-note"><%= t("vendor_accounts.guidance.#{account.status}") %></p>
+  </div>
+  <% if account.errors.any? %>
+    <div role="alert" tabindex="-1" id="vendor-errors" class="rounded-lg border border-danger-border bg-danger-surface p-4 text-danger-ink">
+      <h2 class="font-semibold"><%= t("vendor_accounts.errors") %></h2>
+      <ul class="mt-2 list-disc space-y-2 pl-5">
+        <% account.errors.each do |error| %>
+          <li><% if FIELDS.key?(error.attribute) || error.attribute == :categories %><%= link_to error.full_message, "#vendor_account_#{error.attribute}", class: "underline" %><% else %><%= error.full_message %><% end %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <% if editable %>
+    <%= form_with model: account, url: vendor_account_path, method: :patch, class: "space-y-6" do |form| %>
+      <%= form.hidden_field :lock_version %>
+      <p class="max-w-prose leading-7 text-quiet-note"><%= t("vendor_accounts.form_hint") %></p>
+      <% FIELDS.each do |field, limit| %>
+        <div>
+          <%= form.label field, t("vendor_accounts.fields.#{field}"), class: "block font-semibold text-ink" %>
+          <p id="<%= field %>-hint" class="mt-1 text-sm leading-6 text-quiet-note"><%= t("vendor_accounts.hints.#{field}", limit:) %></p>
+          <% options = { maxlength: limit, class: style(:input), aria: { describedby: "#{field}-hint #{field}-errors", invalid: account.errors[field].any? } } %>
+          <% if field.in?([:offerings, :contact_channels, :provenance]) %>
+            <%= form.text_area field, **options, rows: 3 %>
+          <% elsif field == :source_url %>
+            <%= form.url_field field, **options %>
+          <% else %>
+            <%= form.text_field field, **options %>
+          <% end %>
+          <p id="<%= field %>-errors" class="mt-1 text-sm text-danger-ink"><%= account.errors.full_messages_for(field).join(". ") %></p>
+        </div>
+      <% end %>
+      <fieldset id="vendor_account_categories" tabindex="-1" aria-invalid="<%= account.errors[:categories].any? %>" aria-describedby="categories-hint categories-errors" class="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <legend class="font-semibold text-ink"><%= t("vendor_accounts.fields.categories") %></legend>
+        <p id="categories-hint" class="mt-1 text-sm leading-6 text-quiet-note"><%= t("vendor_accounts.hints.categories") %></p>
+        <%= hidden_field_tag "vendor_account[categories][]", "" %>
+        <div class="mt-2 grid gap-x-6 sm:grid-cols-2">
+          <% Vendor::CATEGORIES.each do |category| %>
+            <label class="flex min-h-11 items-center gap-3 text-ink">
+              <%= check_box_tag "vendor_account[categories][]", category, account.categories.include?(category), id: "vendor_category_#{category}", class: "h-5 w-5 accent-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" %>
+              <%= t("vendors.categories.#{category}") %>
+            </label>
+          <% end %>
+        </div>
+        <p id="categories-errors" class="mt-1 text-sm text-danger-ink"><%= account.errors.full_messages_for(:categories).join(". ") %></p>
+      </fieldset>
+      <%= form.submit t("vendor_accounts.save"), class: style(:button) %>
+    <% end %>
+  <% else %>
+    <dl class="divide-y divide-private-line break-words">
+      <% FIELDS.each_key do |field| %>
+        <div class="py-4"><dt class="font-semibold text-ink"><%= t("vendor_accounts.fields.#{field}") %></dt><dd class="mt-2 whitespace-pre-wrap leading-7 text-quiet-note"><%= account.public_send(field) %></dd></div>
+      <% end %>
+      <div class="py-4"><dt class="font-semibold text-ink"><%= t("vendor_accounts.fields.categories") %></dt><dd class="mt-2 text-quiet-note"><%= account.categories.map { |category| t("vendors.categories.#{category}") }.join(" · ") %></dd></div>
+    </dl>
+  <% end %>
+</section>

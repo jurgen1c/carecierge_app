@@ -61,6 +61,9 @@ Rails.application.routes.draw do
     post :save, on: :member
     get :use, on: :member
   end
+  resource :vendor_account, only: %i[show create update] do
+    post :submit
+  end
   resources :vendors, except: :show
   resources :vendor_shortlists, only: %i[index new create show] do
     resources :vendor_options, only: %i[create update destroy] do
@@ -204,6 +207,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "dashboard#show"
+    resources :vendor_accounts, only: %i[index show update]
     resources :audit_events, only: :index
     resources :feature_flags, only: :index
   end

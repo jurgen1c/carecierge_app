@@ -3,10 +3,10 @@
     <% if heading %><h2 class="text-xl font-semibold text-ink"><%= link_to listing.name, marketplace_listing_path(listing), class: style(:link) %></h2><% end %>
     <p class="text-sm text-quiet-note"><%= t("vendors.categories.#{listing.category}") %> · <%= listing.service_area %></p>
   </header>
-  <section aria-label="<%= t('marketplace.curated') %>" class="space-y-2">
-    <h3 class="text-sm font-semibold text-ink"><%= t("marketplace.curated") %></h3>
+  <section aria-label="<%= t(listing.vendor_account_id? ? "vendor_accounts.supplied" : "marketplace.curated") %>" class="space-y-2">
+    <h3 class="text-sm font-semibold text-ink"><%= t(listing.vendor_account_id? ? "vendor_accounts.supplied" : "marketplace.curated") %></h3>
     <p class="max-w-prose text-sm leading-6 text-quiet-note"><%= listing.curated_summary %></p>
-    <p class="max-w-prose text-sm leading-6 text-quiet-note"><%= listing.relationship_use_cases %></p>
+    <p class="max-w-prose text-sm leading-6 text-quiet-note"><%= listing.relationship_use_cases unless listing.vendor_account_id? %></p>
     <p class="text-sm text-quiet-note"><%= listing.occasion_types.map { |occasion| t("event_plans.occasion_types.#{occasion}") }.join(" · ") %></p>
   </section>
   <section aria-label="<%= t('marketplace.provider') %>" class="space-y-2 border-t border-private-line pt-3">

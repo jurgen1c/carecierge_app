@@ -181,7 +181,9 @@ enter session cookies, logs, audit metadata, or owner exports. Completing
 setup requires password, session-bound authenticator proof and recovery-code
 acknowledgement. Without an authenticator or unused recovery code there is no
 vault bypass; ordinary sign-in remains available. Verification audit failures
-use a savepoint and cannot undo failed-attempt counters or lease revocation;
+use a savepoint and cannot undo failed-attempt counters or lease revocation.
+Initial enrollment proof also preserves the consumed TOTP period, verified
+state, and recovery digests when an audit database statement fails;
 lifecycle audit failures roll back the corresponding credential mutation.
 Password recovery emits the same cross-tab concealment signal as other vault
 security forms; displayed enrollment keys and recovery codes are removed by

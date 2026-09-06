@@ -53,6 +53,27 @@ RSpec.describe PrivacyVault::Enrollment do
     }.to change { user.audit_events.where(action: "privacy_vault.mfa_verification_failed").count }.by(1)
   end
 
+  it "preserves consumed proof and recovery digests when the verification audit database write fails" do
+    secret = start_enrollment.secret
+    code = ROTP::TOTP.new(secret).now
+    allow(AuditEvent).to receive(:record!) { AuditEvent.connection.execute("SELECT 1 / 0") }
+    result = nil
+    expect {
+      result = described_class.call(user:, action: :prove, session_token:, code:)
+    }.not_to raise_error
+    credential = user.reload.vault_mfa_credential
+    expect(result.success).to be(true)
+    expect(result.recovery_codes.size).to eq(10)
+    expect(credential.recovery_code_digests.size).to eq(10)
+    expect(credential.enrollment_verified_at).to eq(Time.current)
+    expect(credential.last_totp_at).to eq(Time.current.to_i)
+    expect(described_class.call(user:, action: :prove, session_token:, code:).recovery_codes).to be_nil
+
+    allow(AuditEvent).to receive(:record!).and_call_original
+    expect(described_class.call(user:, action: :complete, session_token:, acknowledged: true).success).to be(true)
+    expect(PrivacyVault::Unlock.call(user: user.reload, password:, code:).lease).to be_nil
+  end
+
   it "revokes existing leases only after verified and acknowledged enrollment completes" do
     lease = PrivacyVault::Lease.issue_for(user)
     secret = start_enrollment.secret

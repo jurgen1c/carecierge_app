@@ -28,7 +28,7 @@ class PrivacyVault::Enrollment
         end
         codes = credential.replace_recovery_codes!
         credential.update!(enrollment_verified_at: Time.current)
-        PrivacyVault::Verify.audit(user, "mfa_verified")
+        PrivacyVault::Verify.audit_safely(user, "mfa_verified")
         Result.new(success: true, error: nil, secret: nil, recovery_codes: codes)
       when :complete
         return failure(:expired) unless credential.enrollment_active_for?(session_token) && credential.enrollment_verified_at.present?

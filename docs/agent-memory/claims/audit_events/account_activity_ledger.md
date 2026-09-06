@@ -3,7 +3,7 @@ id: audit_events.account_activity_ledger
 type: fact
 system: audit_events
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Audit events provide privacy-minimized account and admin history
@@ -132,7 +132,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 244a2f383220a546d4b52f003b4475f54f7acf5b
 ---
 
 # Audit events provide privacy-minimized account and admin history

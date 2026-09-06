@@ -5,6 +5,7 @@ claim_globs:
   - claims/data_controls/**/*.md
 default_queries:
   - data export JSON CSV PDF calendar protected vault password
+  - sensitive exports vault MFA authenticator recovery replay account lock
   - delete account profile sensitive note AI generated data
   - social context export screenshot deletion blob cleanup
   - social context abandoned upload cleanup owner metadata foreign key
@@ -28,6 +29,7 @@ watched_files:
   - app/models/vendor_quote.rb
   - app/policies/data_control_policy.rb
   - app/serializers/data_exports/**/*.rb
+  - app/services/data_exports/**/*.rb
   - app/services/data_deletions/**/*.rb
   - app/services/privacy_vault/delete.rb
   - app/views/data_controls/**/*.erb
@@ -44,6 +46,7 @@ watched_files:
   - db/migrate/*vendor_quotes*.rb
   - docs/features/10-05-data-export-and-deletion.md
   - spec/requests/data_controls_spec.rb
+  - spec/requests/vault_mfa_exports_spec.rb
   - spec/system/data_controls_spec.rb
   - spec/serializers/data_exports/snapshot_spec.rb
 tags:

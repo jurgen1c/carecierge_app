@@ -3,7 +3,7 @@ id: relationship_profiles.privacy_vault
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: Privacy vault encrypts and gates sensitive relationship context
@@ -150,7 +150,7 @@ verification:
   - bin/memory validate
   - bin/memory coverage --git-diff
 
-last_verified_commit: null
+last_verified_commit: 244a2f383220a546d4b52f003b4475f54f7acf5b
 ---
 
 # Privacy vault encrypts and gates sensitive relationship context

@@ -18,6 +18,7 @@ RSpec.describe "Relationship profile Lexxy editor", type: :system do
 
     click_button "Save profile"
 
+    expect(page).to have_css("h1", text: "Maya Rivera")
     profile = user.relationship_profiles.find_by!(first_name: "Maya")
 
     expect(page).to have_current_path(relationship_profile_path(profile))

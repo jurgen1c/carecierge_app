@@ -42,3 +42,5 @@ Rails.application.config.filter_parameters += [ :contacts, :contacts_oauth_nonce
 Rails.application.config.filter_parameters += [ :family_membership, :attendance ]
 
 Rails.application.config.filter_parameters += [ :professional_context ]
+
+Rails.application.config.filter_parameters += [ :vendor_account, :moderation, :profile_snapshot, :business_name, :contact_channels, :offerings, :provenance, :source_url, :service_area, :reason ]

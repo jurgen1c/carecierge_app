@@ -1,0 +1,96 @@
+---
+en:
+  vendor_accounts:
+    title: My marketplace business
+    intro: Prepare a business profile for Carecierge. Only approved details appear
+      in the marketplace.
+    begin_hint: Use this account to keep one business profile. You can save your progress
+      and return later.
+    begin: Start my business profile
+    enrolled: Your business draft is ready.
+    saved: Business draft saved. Changes need review before publication.
+    submitted: Your business profile was submitted for review.
+    moderated: Review decision recorded.
+    stale: This profile changed while you were reviewing it. Check the latest details
+      and try again.
+    errors: Check the following details
+    form_hint: All fields are required before submission. Save a draft at any time.
+      Share business information you want consumers to see.
+    save: Save business draft
+    ready: Ready for review?
+    submit_hint: Save your changes first, then submit the saved profile. Submission
+      does not publish or contact anyone.
+    submit: Submit saved profile for review
+    history: Review history
+    no_reviews: No review decisions yet.
+    admin_back: Admin dashboard
+    moderation_title: Review marketplace businesses
+    moderation_hint: Review vendor-supplied business details. Approval publishes this
+      version; rejection and suspension keep the business out of discovery.
+    empty_queue: No business profiles are waiting or under moderation.
+    decision: Decision
+    reason: Reason for the vendor
+    reason_hint: Required for rejection or suspension. Up to 1,000 characters. The
+      vendor can read this reason.
+    decide: Record review decision
+    supplied: Vendor-supplied offerings
+    states:
+      draft: Draft · not published
+      submitted: Submitted · awaiting review
+      approved: Approved · visible in the marketplace
+      rejected: Rejected · changes needed
+      suspended: Suspended · hidden from the marketplace
+    guidance:
+      draft: Complete your business details, save them, then submit for review.
+      submitted: Your saved details are awaiting a moderator. Editing returns this
+        profile to a draft.
+      approved: Your reviewed profile is published. Saving edits withdraws it until
+        a moderator approves it again.
+      rejected: Read the review reason below. Update your details and submit them
+        again.
+      suspended: Your business is hidden. You can save corrections, but editing cannot
+        lift a suspension.
+    decisions:
+      approved: Approve and publish
+      rejected: Reject with a reason
+      suspended: Suspend publication
+    fields:
+      business_name: Business name
+      categories: Business categories
+      service_area: Service areas
+      offerings: Products and services
+      contact_channels: Public business contact channels
+      source_url: Business website or source URL
+      provenance: Source and business background
+    hints:
+      business_name: Use the name customers recognize. Up to %{limit} characters.
+      categories: Choose up to five categories. The first selected category is used
+        in marketplace filters.
+      service_area: List the cities or regions you serve. Up to %{limit} characters
+        in total.
+      offerings: Describe what you offer and relevant limits. Up to %{limit} characters.
+      contact_channels: Business phone, email, or other public contact details. Up
+        to %{limit} characters.
+      source_url: An http:// or https:// page without embedded credentials. Up to
+        %{limit} characters.
+      provenance: Explain who supplied these details and the business background.
+        Up to %{limit} characters.
+  activerecord:
+    attributes:
+      vendor_account:
+        business_name: Business name
+        categories: Business categories
+        service_area: Service areas
+        offerings: Products and services
+        contact_channels: Public business contact channels
+        source_url: Business website or source URL
+        provenance: Source and business background
+      vendor_account_review:
+        reason: Reason for the vendor
+    errors:
+      models:
+        vendor_account:
+          attributes:
+            base:
+              invalid_transition: This review action is not available for the current
+                state.

@@ -64,6 +64,7 @@ class User < ApplicationRecord
   has_many :suggestion_feedbacks, dependent: :destroy
   has_many :gift_recommendations, dependent: :destroy
   has_many :event_plans, dependent: :destroy
+  has_one :vendor_account, dependent: :destroy
   has_many :vendors, dependent: :destroy
   has_many :vendor_shortlists, dependent: :destroy
   has_many :vendor_quotes, dependent: :destroy

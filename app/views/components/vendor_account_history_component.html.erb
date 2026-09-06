@@ -1,0 +1,13 @@
+<section aria-labelledby="review-history" class="border-t border-private-line pt-6">
+  <h2 id="review-history" class="text-xl font-semibold text-ink"><%= t("vendor_accounts.history") %></h2>
+  <% if reviews.empty? %><p class="mt-3 text-quiet-note"><%= t("vendor_accounts.no_reviews") %></p><% end %>
+  <ol class="mt-3 divide-y divide-private-line">
+    <% reviews.each do |review| %>
+      <li class="break-words py-4">
+        <p class="font-semibold text-ink"><%= t("vendor_accounts.states.#{review.from_status}") %> → <%= t("vendor_accounts.states.#{review.to_status}") %></p>
+        <time datetime="<%= review.created_at.iso8601 %>" class="text-sm text-quiet-note"><%= l(review.created_at, format: :audit_event_admin) %></time>
+        <% if review.reason.present? %><p class="mt-2 whitespace-pre-wrap leading-7 text-quiet-note"><%= review.reason %></p><% end %>
+      </li>
+    <% end %>
+  </ol>
+</section>

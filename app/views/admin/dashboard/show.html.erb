@@ -11,6 +11,7 @@
       <%= link_to t(".audit"), admin_audit_events_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
       <%= link_to t(".features"), admin_feature_flags_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
       <%= link_to t(".back"), dashboard_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      <%= link_to t("vendor_accounts.moderation_title"), admin_vendor_accounts_path, data: { turbo_prefetch: false }, class: "inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" %>
     </nav>
   </header>
 

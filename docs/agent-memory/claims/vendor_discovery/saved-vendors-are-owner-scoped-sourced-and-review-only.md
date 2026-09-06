@@ -31,8 +31,7 @@ claim: >
   evidence first. Account exports include
   decrypted vendor details, provenance, and event-plan attachments, while
   ownership foreign keys cascade through account deletion. The surface is
-  available in English and Spanish. External provider discovery and vendor
-  self-registration remain separate future integrations.
+  available in English and Spanish. External provider discovery remains future work; self-registration uses a separate VendorAccount aggregate without altering saved-vendor ownership.
 
 source_files:
   - app/models/vendor.rb

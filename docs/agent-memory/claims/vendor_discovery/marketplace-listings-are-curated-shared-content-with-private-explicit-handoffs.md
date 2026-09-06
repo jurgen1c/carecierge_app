@@ -14,8 +14,7 @@ claim: >
   selected listings. Invalid comparison selections return localized recovery
   feedback and retain up to twenty checked options without JavaScript. App-curated descriptions and relationship/event use cases
   remain visibly separate from provider details with named credential-free
-  HTTP(S) sources and reviewed dates; no application endpoint mutates the shared
-  catalog or fetches external URLs. Saving locks the owner before the listing,
+  HTTP(S) sources and reviewed dates; catalog reads fetch no external URLs; separate vendor-account moderation publishes reviewed business snapshots. Saving locks the owner before the listing,
   rechecks publication, and reuses one private Vendor per owner/listing pair,
   enforced by a partial unique index. The private copy preserves name, category,
   service area, occasions and external attribution; later catalog changes do
@@ -27,8 +26,7 @@ claim: >
   gift drafts include the surrounding Turbo completion target. These GET
   requests persist nothing, and normal existing forms remain the confirmation
   boundary. English and Spanish workflows never contact, book, purchase, pay,
-  or disclose relationship data externally. Catalog maintenance is an authorized
-  maintainer workflow, not provider onboarding or a safety guarantee.
+  or disclose relationship data externally. Curated catalog maintenance remains an authorized maintainer workflow. Separate vendor-account moderation owns business publication; neither origin is a safety guarantee.
 
 source_files:
   - app/models/marketplace_listing.rb

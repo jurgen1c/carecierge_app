@@ -1,0 +1,24 @@
+<% disable_turbo_cache %>
+<main lang="<%= I18n.locale %>" class="mx-auto w-full max-w-3xl space-y-6 py-6">
+  <%= link_to t("vendor_accounts.moderation_title"), admin_vendor_accounts_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %>
+  <h1 class="break-words text-3xl font-semibold text-ink"><%= @account.business_name %></h1>
+  <%= component "vendor_account_profile", account: @account %>
+  <% if @account.status.in?(%w[submitted approved]) %>
+    <%= form_with url: admin_vendor_account_path(@account), method: :patch, scope: :moderation, class: "space-y-4 border-t border-private-line pt-6" do |form| %>
+      <%= form.hidden_field :version, value: @account.lock_version %>
+      <div>
+        <%= form.label :decision, t("vendor_accounts.decision"), class: "block font-semibold text-ink" %>
+        <% decisions = @account.status == "submitted" ? %w[approved rejected] : %w[suspended] %>
+        <%= form.select :decision, decisions.map { |state| [t("vendor_accounts.decisions.#{state}"), state] }, { selected: @moderation&.[](:decision) }, class: "mt-2 min-h-11 w-full rounded-lg border border-private-line bg-canvas px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" %>
+      </div>
+      <div>
+        <%= form.label :reason, t("vendor_accounts.reason"), class: "block font-semibold text-ink" %>
+        <p id="reason-hint" class="mt-1 text-sm leading-6 text-quiet-note"><%= t("vendor_accounts.reason_hint") %></p>
+        <%= form.text_area :reason, value: @moderation&.[](:reason), maxlength: 1_000, rows: 3, aria: { describedby: "reason-hint" }, class: "mt-2 min-h-11 w-full rounded-lg border border-private-line bg-canvas px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" %>
+      </div>
+      <%= form.submit t("vendor_accounts.decide"), class: "min-h-11 rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+    <% end %>
+  <%- end %>
+  <%= component "vendor_account_history", reviews: @reviews %>
+  <%= render "vendor_accounts/pagination", page_url: ->(page) { admin_vendor_account_path(@account, page:) } %>
+</main>

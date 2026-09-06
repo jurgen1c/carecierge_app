@@ -1,0 +1,24 @@
+<% content_for :title, t("vendor_accounts.title") %>
+<% disable_turbo_cache %>
+<main lang="<%= I18n.locale %>" class="mx-auto w-full max-w-3xl space-y-6 py-6">
+  <header class="space-y-3">
+    <%= link_to t("marketplace.title"), marketplace_listings_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" %>
+    <h1 class="text-3xl font-semibold text-ink"><%= t("vendor_accounts.title") %></h1>
+    <p class="max-w-prose leading-7 text-quiet-note"><%= t("vendor_accounts.intro") %></p>
+  </header>
+  <% if @account.new_record? %>
+    <p class="leading-7 text-quiet-note"><%= t("vendor_accounts.begin_hint") %></p>
+    <%= button_to t("vendor_accounts.begin"), vendor_account_path, class: "min-h-11 rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+  <% else %>
+    <%= component "vendor_account_profile", account: @account, editable: true %>
+    <% if @account.status.in?(%w[draft rejected]) %>
+      <section class="space-y-3 border-t border-private-line pt-6">
+        <h2 class="text-xl font-semibold text-ink"><%= t("vendor_accounts.ready") %></h2>
+        <p class="max-w-prose leading-7 text-quiet-note"><%= t("vendor_accounts.submit_hint") %></p>
+        <%= button_to t("vendor_accounts.submit"), submit_vendor_account_path, params: { version: @account.lock_version }, class: "min-h-11 rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
+      </section>
+    <% end %>
+    <%= component "vendor_account_history", reviews: @reviews %>
+    <%= render "vendor_accounts/pagination", page_url: ->(page) { vendor_account_path(page:) } %>
+  <% end %>
+</main>

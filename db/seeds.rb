@@ -8,6 +8,10 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+if ENV["DEVELOPMENT_SEEDS"] == "true" && !Rails.env.development?
+  raise ArgumentError, "Development scenarios require RAILS_ENV=development"
+end
+
 RelationshipTemplate.install_defaults!
 
 FeatureFlag.find_or_create_by!(key: "ai_memory_extraction") do |flag|
@@ -15,3 +19,6 @@ FeatureFlag.find_or_create_by!(key: "ai_memory_extraction") do |flag|
   flag.description = "Allows opted-in conversation recaps to produce source-backed memory proposals for owner review."
   flag.enabled = false
 end
+
+environment_seeds = Rails.root.join("db/seeds", "#{Rails.env}.rb")
+load environment_seeds if environment_seeds.file?

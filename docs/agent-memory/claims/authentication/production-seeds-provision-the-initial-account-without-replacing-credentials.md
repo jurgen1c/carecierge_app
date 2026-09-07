@@ -1,0 +1,44 @@
+---
+id: authentication.production_seeds_provision_the_initial_account_without_replacing_credentials
+type: fact
+system: authentication
+status: current
+confidence: high
+severity: important
+title: Production seeds provision the initial account without replacing credentials
+claim: >
+  db:seed loads db/seeds/production.rb in production after baseline data. The production
+  file finds or creates the initial account by its explicitly configured seed email.
+  Creation requires PRODUCTION_SEED_PASSWORD and normal User validations, retains the
+  regular-user and unconfirmed defaults, and suppresses the confirmation email.
+  Existing accounts keep their password, role, confirmation and security state; reruns
+  do not require the password environment variable. Development demo accounts are never
+  loaded in production, and requesting DEVELOPMENT_SEEDS=true outside development fails
+  before baseline seed mutations.
+source_files:
+  - db/seeds.rb
+  - db/seeds/production.rb
+  - README.md
+related_files:
+  - app/models/user.rb
+  - config/initializers/devise.rb
+  - spec/db/seeds_spec.rb
+symbols:
+  - User
+routes: []
+tags:
+  - authentication
+  - seeds
+  - production
+verification:
+  - bundle exec rspec spec/db/seeds_spec.rb
+  - bin/ci
+last_verified_commit: null
+---
+
+# Production seeds provision the initial account without replacing credentials
+
+The production account is separate from deterministic synthetic development users.
+The password is an environment input for initial creation, never a committed default.
+Email confirmation is requested through the existing Devise flow after provisioning.
+Reruns must not reset existing credentials or change authority.

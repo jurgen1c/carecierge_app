@@ -71,10 +71,31 @@ RSpec.describe DevelopmentSeeds::World do
       expect(User.count).to eq(7)
     end
 
+    %w[approve reject correct].each do |decision|
+      it "refuses reseeding after a #{decision} decision without changing review evidence" do
+        world.seed!
+        user = world.users.fetch("owner_en")
+        proposal = ExtractedMemory.find(world.uuid("owner_en/proposal"))
+        corrections = decision == "correct" ? { corrected_title: "Edited preference", corrected_body: "A developer-reviewed preference." } : {}
+        ApprovalQueue::RecordSourceDecision.call(user:, subject: proposal, decision:, **corrections)
+        proposal.reload
+        recap = proposal.conversation_recap.reload
+        snapshot = [ proposal.attributes, recap.attributes, ApprovalRequest.count, ApprovalDecision.count, MemoryRecord.count ]
+
+        expect { world.seed! }.to raise_error(described_class::OwnershipConflict, /reviewed.*proposal/i)
+        expect([ proposal.reload.attributes, recap.reload.attributes, ApprovalRequest.count, ApprovalDecision.count, MemoryRecord.count ]).to eq(snapshot)
+      end
+    end
+
+    it "rejects future reference dates before creating records" do
+      expect { described_class.new(reference_date: "2026-09-07") }.to raise_error(ArgumentError, /REFERENCE_DATE.*today or earlier/)
+      expect(User.count).to eq(0)
+    end
+
     it "uses the chosen reference date and refuses invalid dates" do
       world.seed!
       expect(Reminder.pluck(:scheduled_at).uniq).to eq([ Time.zone.local(2026, 9, 7, 12) ])
-      expect { described_class.new(reference_date: "invalid") }.to raise_error(Date::Error)
+      expect { described_class.new(reference_date: "invalid") }.to raise_error(described_class::InvalidReferenceDate, /REFERENCE_DATE.*valid date/)
     end
 
     it "refuses to claim an existing account with a synthetic email" do

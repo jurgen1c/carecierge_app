@@ -1,6 +1,21 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: authentication.production_seeds_provision_the_initial_account_without_replacing_credentials
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Production bootstrap uses Devise user validations and preserves the existing confirmation and security lifecycle.
+    strength: 100
+  - source: authentication.production_seeds_provision_the_initial_account_without_replacing_credentials
+    target: feature_flags.admin_registry_authorization
+    relation: same_area
+    reason: Seeded production users retain ordinary authority defaults and existing accounts are never promoted or demoted by reruns.
+    strength: 100
+  - source: authentication.production_seeds_provision_the_initial_account_without_replacing_credentials
+    target: agent_workflow.development_journeys_use_isolated_synthetic_records
+    relation: same_area
+    reason: The common Rails seed entry point selects separate production account bootstrap and opt-in synthetic development files.
+    strength: 100
   - source: vendor_discovery.vendor_accounts_are_owner_managed_and_publication_requires_revision_bound_moderation
     target: vendor_discovery.marketplace_listings_are_curated_shared_content_with_private_explicit_handoffs
     relation: constrains

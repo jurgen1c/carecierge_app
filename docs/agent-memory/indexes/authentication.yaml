@@ -8,7 +8,9 @@ default_queries:
   - devise registration login logout dashboard
   - onboarding first-run relationship profile setup
   - google oauth user account
+  - production seeds initial account password
 watched_files:
+  - db/seeds/production.rb
   - app/models/user.rb
   - app/controllers/application_controller.rb
   - app/controllers/dashboard_controller.rb

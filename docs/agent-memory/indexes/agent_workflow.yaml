@@ -14,6 +14,8 @@ default_queries:
 watched_files:
   - lib/development_seeds/**/*.rb
   - lib/tasks/development.rake
+  - db/seeds.rb
+  - db/seeds/**/*.rb
   - docs/development/journeys.md
   - AGENTS.md
   - config/ci.rb

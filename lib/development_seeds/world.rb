@@ -6,6 +6,7 @@ module DevelopmentSeeds
   class World
     class UnsafeEnvironment < StandardError; end
     class OwnershipConflict < StandardError; end
+    class InvalidReferenceDate < ArgumentError; end
 
     PREFIX = "ca105000-"
     PASSWORD = "Synthetic-only-105!"
@@ -18,7 +19,10 @@ module DevelopmentSeeds
 
     def initialize(reference_date: "2026-09-06")
       @date = Date.iso8601(reference_date)
+      raise InvalidReferenceDate, "REFERENCE_DATE must be today or earlier (YYYY-MM-DD)" if @date > Date.current
       @users = {}
+    rescue Date::Error
+      raise InvalidReferenceDate, "REFERENCE_DATE must be a valid date (YYYY-MM-DD)"
     end
 
     def seed!
@@ -26,6 +30,7 @@ module DevelopmentSeeds
       User.transaction do
         # Serialize concurrent seed/reset invocations in this database.
         User.connection.execute("SELECT pg_advisory_xact_lock(105, 105)")
+        ensure_unreviewed_proposals!
         PERSONAS.each { |persona| create_persona(persona) }
         PrivateJourneys.new(self).build
         SharedJourneys.new(self).build
@@ -67,6 +72,13 @@ module DevelopmentSeeds
     end
 
     private
+
+    def ensure_unreviewed_proposals!
+      ids = %w[owner_en owner_es].map { |persona| uuid("#{persona}/proposal") }
+      if ExtractedMemory.where(id: ids).reviewed.exists?
+        raise OwnershipConflict, "Reviewed synthetic proposals cannot be reseeded; preserve or explicitly remove their review records first"
+      end
+    end
 
     def guard!
       raise UnsafeEnvironment, "Development scenarios require RAILS_ENV=development" unless Rails.env.development?

@@ -3,10 +3,10 @@
 After normal `bin/setup`, run:
 
 ```sh
-REFERENCE_DATE=2026-09-06 bin/rails development:seed
+DEVELOPMENT_SEEDS=true REFERENCE_DATE=2026-09-06 bin/rails db:seed
 ```
 
-This opt-in command refuses every environment except development. `db:seed` remains the environment-independent bootstrap and preserves feature flag assignments. No factories, live tokens, customer data, AI generators, OAuth exchanges, payment calls, emails or jobs are used by scenario creation. Notifications use in-app delivery only. Existing integration credentials on unrelated accounts are never read.
+`db/seeds.rb` loads the file for the current Rails environment after installing baseline data. In development, `db/seeds/development.rb` adds synthetic journeys only when `DEVELOPMENT_SEEDS=true`. Ordinary `db:seed` keeps development data limited to the baseline. Requesting development scenarios in another environment fails before any seed mutation. Existing feature flag assignments are preserved. No factories, live tokens, customer data, AI generators, OAuth exchanges, payment calls, emails or jobs are used by scenario creation. Notifications use in-app delivery only. Existing integration credentials on unrelated accounts are never read.
 
 All accounts below use `Synthetic-only-105!` and are confirmed. Sign out between personas. The `.example` addresses are fictional. Locale is selected by `?locale=en` or `?locale=es`, not a persisted user setting. The application retains English as its default.
 
@@ -31,13 +31,15 @@ All accounts below use `Synthetic-only-105!` and are confirmed. Sign out between
 
 AI results are synthetic persisted states. Seeding does not enable feature flags. The proposal/retry controls remain subject to existing flags and configuration. Live generation, connection, export-email and other explicit actions made later in the browser retain their normal application behavior; they are outside the offline seed command. Avoid those actions during the offline walkthrough.
 
-The default reference date is fixed at 2026-09-06. Choose a current or past date to browse timely reminders; recap validation rejects future occurrences. Repeating with the same date keeps record identities/counts stable. Repeating with a different date moves scenario dates and restores fixture fields, while leaving password/MFA changes intact.
+The default reference date is fixed at 2026-09-06. Choose a current or past date to browse timely reminders; invalid or future reference dates are rejected up front with a `REFERENCE_DATE` error. Repeating with the same date keeps record identities/counts stable. Repeating with a different date moves scenario dates and restores fixture fields, while leaving password/MFA changes intact. If you have approved, rejected, or corrected a synthetic memory proposal, reseeding refuses the scenario transaction and preserves its review evidence. Deliberately retain or remove those review records before rebuilding; seeds never silently undo a review decision.
 
 ## Seed-only reset
 
 ```sh
 bin/rails development:reset_seeds
 ```
+
+Rails also provides `db:seed:replant`, which truncates all tables before seeding. Use it only for a database you intend to erase completely; the selective reset above preserves unrelated records.
 
 The reserved UUID prefix `ca105000-` identifies these records; emails alone never confer ownership. Reset deletes only those records from the explicit scenario model allowlist. It refuses the entire transaction when dependent records outside that reserved set would be changed, including records created manually beneath a demo account. Remove those dependencies intentionally before retrying. Unrelated accounts and their data are preserved. Never assign this reserved prefix to developer-created records.
 
@@ -47,4 +49,4 @@ Billing dependencies must extend this manifest with plan, trial, paid, exhausted
 
 ## Verification
 
-`bundle exec rspec spec/lib/development_seeds/world_spec.rb` checks environment guards, repeatability, isolation, collisions, reset and outbound boundaries. Full `bin/ci` is the coverage authority. Walk through the routes above using the indicated persona and locale; verify private profile denial when switching owners. No new interface is introduced by these fixtures.
+`bundle exec rspec spec/db/seeds_spec.rb spec/lib/development_seeds/world_spec.rb` checks environment guards, repeatability, isolation, collisions, reset and outbound boundaries. Full `bin/ci` is the coverage authority. Walk through the routes above using the indicated persona and locale; verify private profile denial when switching owners. No new interface is introduced by these fixtures.

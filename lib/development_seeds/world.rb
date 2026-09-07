@@ -131,8 +131,7 @@ module DevelopmentSeeds
       email = "#{persona}@carecierge.example"
       reserved = User.find_by(id: uuid("user/#{persona}"))
       raise OwnershipConflict, "Synthetic account email changed" if reserved && reserved.email != email
-      existing = User.find_by(email:)
-      if existing && existing.id != uuid("user/#{persona}")
+      if User.where("LOWER(email) = ?", email).where.not(id: uuid("user/#{persona}")).exists?
         raise OwnershipConflict, "Reserved synthetic email already belongs to another account"
       end
       attributes = { email:, confirmed_at: at(-30), admin: persona == "admin",

@@ -130,5 +130,16 @@ RSpec.describe DevelopmentSeeds::World do
       expect { world.seed! }.to raise_error(DevelopmentSeeds::World::OwnershipConflict)
       expect(other.reload).not_to be_admin
     end
+
+    it "refuses to claim an existing mixed-case synthetic email" do
+      other = create(:user, email: "owner_en@carecierge.example")
+      other.update_column(:email, "Owner_EN@carecierge.example")
+      snapshot = other.reload.attributes
+
+      expect { world.seed! }.to raise_error(described_class::OwnershipConflict, /email/)
+
+      expect(User.pluck(:id)).to eq([ other.id ])
+      expect(other.reload.attributes).to eq(snapshot)
+    end
   end
 end

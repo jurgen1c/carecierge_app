@@ -10,7 +10,7 @@ claim: >
   db:seed loads the current environment file from db/seeds after baseline data.
   db/seeds/development.rb creates synthetic journeys only with DEVELOPMENT_SEEDS=true;
   requesting development scenarios outside development fails before seed mutation.
-  It uses deterministic reserved ca105000 UUIDs, fictional confirmed .example accounts,
+  It uses deterministic reserved ca105000 UUIDs, fictional confirmed .example accounts with case-insensitive collision checks,
   an explicit reference date validated as today or earlier, validated domain builders, and transactional reruns.
   Email, OAuth, AI, payments and external actions are not invoked; notifications are
   configured for in-app delivery. Feature flags remain unchanged. Reseeding refuses reviewed

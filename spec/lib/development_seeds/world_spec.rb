@@ -71,6 +71,19 @@ RSpec.describe DevelopmentSeeds::World do
       expect(User.count).to eq(7)
     end
 
+    it "preserves unrelated moderation evidence referencing the seeded admin" do
+      world.seed!
+      review = VendorAccountReview.create!(vendor_account: create(:vendor_account),
+        actor: world.users.fetch("admin"), from_status: "submitted", to_status: "approved",
+        profile_version: 1, profile_snapshot: { business_name: "Unrelated vendor" })
+      before_attributes = review.attributes
+
+      expect { world.reset! }.to raise_error(described_class::OwnershipConflict)
+
+      expect(review.reload.attributes).to eq(before_attributes)
+      expect(User.exists?(world.users.fetch("admin").id)).to be(true)
+    end
+
     %w[approve reject correct].each do |decision|
       it "refuses reseeding after a #{decision} decision without changing review evidence" do
         world.seed!
@@ -85,6 +98,20 @@ RSpec.describe DevelopmentSeeds::World do
         expect { world.seed! }.to raise_error(described_class::OwnershipConflict, /reviewed.*proposal/i)
         expect([ proposal.reload.attributes, recap.reload.attributes, ApprovalRequest.count, ApprovalDecision.count, MemoryRecord.count ]).to eq(snapshot)
       end
+    end
+
+    it "preserves vendor moderation and publication when reseeding is refused" do
+      world.seed!
+      account = world.users.fetch("vendor").vendor_account
+      VendorAccounts::Transition.call(user: world.users.fetch("admin"), account:,
+        to: "approved", version: account.lock_version.to_s)
+      listing = account.marketplace_listing
+      review = account.reviews.sole
+      snapshot = [ account.attributes, listing.attributes, review.attributes ]
+
+      expect { world.seed! }.to raise_error(described_class::OwnershipConflict, /vendor/i)
+
+      expect([ account.reload.attributes, listing.reload.attributes, review.reload.attributes ]).to eq(snapshot)
     end
 
     it "rejects future reference dates before creating records" do

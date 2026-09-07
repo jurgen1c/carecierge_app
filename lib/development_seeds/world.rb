@@ -31,6 +31,7 @@ module DevelopmentSeeds
         # Serialize concurrent seed/reset invocations in this database.
         User.connection.execute("SELECT pg_advisory_xact_lock(105, 105)")
         ensure_unreviewed_proposals!
+        ensure_unreviewed_vendor!
         PERSONAS.each { |persona| create_persona(persona) }
         PrivateJourneys.new(self).build
         SharedJourneys.new(self).build
@@ -43,6 +44,7 @@ module DevelopmentSeeds
       User.transaction do
         User.connection.execute("SELECT pg_advisory_xact_lock(105, 105)")
         records = MODELS.flat_map { |name| owned(name.constantize).to_a }
+        verify_foreign_keys!(records)
         records.each { |record| verify_dependents!(record) }
         records.each { |record| record.reload.destroy! if record.class.exists?(record.id) }
       end
@@ -80,6 +82,12 @@ module DevelopmentSeeds
       end
     end
 
+    def ensure_unreviewed_vendor!
+      if VendorAccountReview.where(vendor_account_id: uuid("vendor/account")).exists?
+        raise OwnershipConflict, "Reviewed synthetic vendor cannot be reseeded; preserve or explicitly remove its review records first"
+      end
+    end
+
     def guard!
       raise UnsafeEnvironment, "Development scenarios require RAILS_ENV=development" unless Rails.env.development?
     end
@@ -95,6 +103,26 @@ module DevelopmentSeeds
         Array(related).each do |child|
           next if child.id.to_s.start_with?(PREFIX) && MODELS.include?(child.class.base_class.name)
           raise OwnershipConflict, "Reset refused: #{record.class} has non-seed #{association.name} records"
+        end
+      end
+    end
+
+    def verify_foreign_keys!(records)
+      ids_by_table = records.group_by { |record| record.class.table_name }
+        .transform_values { |rows| rows.map(&:id) }
+      connection = User.connection
+      connection.tables.each do |table_name|
+        connection.foreign_keys(table_name).each do |foreign_key|
+          target_ids = ids_by_table[foreign_key.to_table]
+          next if target_ids.blank?
+
+          table = Arel::Table.new(table_name)
+          query = table.project(Arel.sql("1")).where(table[foreign_key.column].in(target_ids))
+          seed_ids = ids_by_table[table_name]
+          query = query.where(table[:id].not_in(seed_ids)) if seed_ids.present?
+          if connection.select_value(query.take(1))
+            raise OwnershipConflict, "Reset refused: non-seed #{table_name} records reference synthetic data"
+          end
         end
       end
     end

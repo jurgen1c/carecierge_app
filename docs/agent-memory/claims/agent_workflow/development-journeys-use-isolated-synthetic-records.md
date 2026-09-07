@@ -14,8 +14,8 @@ claim: >
   an explicit reference date validated as today or earlier, validated domain builders, and transactional reruns.
   Email, OAuth, AI, payments and external actions are not invoked; notifications are
   configured for in-app delivery. Feature flags remain unchanged. Reseeding refuses reviewed
-  synthetic proposals without altering their decisions or resulting records. Reset preflights
-  dependent associations and refuses non-seed dependencies before deleting its allowlisted
+  synthetic proposals and vendors without altering their decisions, resulting records, or publication state. Reset preflights
+  database foreign keys and dependent associations and refuses non-seed dependencies before deleting its allowlisted
   records. The journey manifest maps EN/ES personas to available routes and marks billing
   and conversation-import scenarios pending until their dependencies ship.
 source_files:

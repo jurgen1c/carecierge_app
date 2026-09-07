@@ -3,7 +3,7 @@ id: authentication.production_seeds_provision_the_initial_account_without_replac
 type: fact
 system: authentication
 status: current
-confidence: high
+confidence: verified
 severity: important
 title: Production seeds provision the initial account without replacing credentials
 claim: >
@@ -33,7 +33,7 @@ tags:
 verification:
   - bundle exec rspec spec/db/seeds_spec.rb
   - bin/ci
-last_verified_commit: null
+last_verified_commit: dc5b7041ebe5d68f01ae17d8b6772bb425edb5e6
 ---
 
 # Production seeds provision the initial account without replacing credentials

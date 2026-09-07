@@ -25,7 +25,7 @@ Things you may want to cover:
 
 ## Development journeys
 
-After `bin/setup`, run `DEVELOPMENT_SEEDS=true bin/rails db:seed` for isolated synthetic accounts. See the [journey manifest](docs/development/journeys.md) for credentials, routes, reference dates and safe reset.
+After `bin/setup`, run `bin/rails db:seed` for isolated synthetic accounts. See the [journey manifest](docs/development/journeys.md) for credentials, routes, reference dates and safe reset.
 
 ## Production account
 

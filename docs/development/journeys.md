@@ -3,10 +3,10 @@
 After normal `bin/setup`, run:
 
 ```sh
-DEVELOPMENT_SEEDS=true REFERENCE_DATE=2026-09-06 bin/rails db:seed
+REFERENCE_DATE=2026-09-06 bin/rails db:seed
 ```
 
-`db/seeds.rb` loads the file for the current Rails environment after installing baseline data. In development, `db/seeds/development.rb` adds synthetic journeys only when `DEVELOPMENT_SEEDS=true`. Ordinary `db:seed` keeps development data limited to the baseline. Requesting development scenarios in another environment fails before any seed mutation. Existing feature flag assignments are preserved. No factories, live tokens, customer data, AI generators, OAuth exchanges, payment calls, emails or jobs are used by scenario creation. Notifications use in-app delivery only. Existing integration credentials on unrelated accounts are never read.
+`db/seeds.rb` loads the file for the current Rails environment after installing baseline data. In development, ordinary `bin/rails db:seed` loads `db/seeds/development.rb` and creates the synthetic journeys. Rails environment selection determines which seed file runs; production loads only its production file. Direct calls to the development world remain guarded against other environments. Existing feature flag assignments are preserved. No factories, live tokens, customer data, AI generators, OAuth exchanges, payment calls, emails or jobs are used by scenario creation. Notifications use in-app delivery only. Existing integration credentials on unrelated accounts are never read.
 
 All accounts below use `Synthetic-only-105!` and are confirmed. Sign out between personas. The `.example` addresses are fictional. Locale is selected by `?locale=en` or `?locale=es`, not a persisted user setting. The application retains English as its default.
 

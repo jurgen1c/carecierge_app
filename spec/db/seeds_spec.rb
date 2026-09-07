@@ -2,15 +2,12 @@ require "rails_helper"
 
 RSpec.describe "Rails seeds" do
   let(:environment) { "development" }
-  let(:development_seeds) { nil }
   let(:production_password) { "Production-test-only-105!" }
 
   around { |example| Timecop.freeze(Time.zone.local(2026, 9, 6, 12)) { example.run } }
 
   before do
     allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new(environment))
-    allow(ENV).to receive(:[]).and_call_original
-    allow(ENV).to receive(:[]).with("DEVELOPMENT_SEEDS").and_return(development_seeds)
     allow(ENV).to receive(:fetch).and_call_original
     allow(ENV).to receive(:fetch).with("PRODUCTION_SEED_PASSWORD").and_return(production_password)
     allow(ENV).to receive(:fetch).with("REFERENCE_DATE", "2026-09-06").and_return("2026-09-05")
@@ -20,38 +17,27 @@ RSpec.describe "Rails seeds" do
     load Rails.root.join("db/seeds.rb")
   end
 
-  it "keeps ordinary development seeds limited to baseline data" do
+  it "loads development journeys through ordinary db:seed and supports reruns" do
+    flag = create(:feature_flag, key: "ai_memory_extraction", enabled: true)
+    seed
+    expect(User.count).to eq(6)
+    expect(Reminder.pluck(:scheduled_at).uniq).to eq([ Time.zone.local(2026, 9, 6, 12) ])
     expect { seed }.not_to change(User, :count)
+    expect(flag.reload).to be_enabled
     expect(RelationshipTemplate.count).to be_positive
-    expect(FeatureFlag.find_by!(key: "ai_memory_extraction")).not_to be_enabled
   end
 
-  context "with development scenarios requested" do
-    let(:development_seeds) { "true" }
+  context "in test" do
+    let(:environment) { "test" }
 
-    it "loads the development file through db:seed, preserves flags, and supports reruns" do
-      flag = create(:feature_flag, key: "ai_memory_extraction", enabled: true)
-      seed
-      expect(User.count).to eq(6)
-      expect(Reminder.pluck(:scheduled_at).uniq).to eq([ Time.zone.local(2026, 9, 6, 12) ])
+    it "installs only baseline data when no environment seed file exists" do
       expect { seed }.not_to change(User, :count)
-      expect(flag.reload).to be_enabled
-    end
-
-    %w[production test].each do |env|
-      context "in #{env}" do
-        let(:environment) { env }
-
-        it "refuses the request before running even the baseline seeds" do
-          expect(RelationshipTemplate).not_to receive(:install_defaults!)
-          expect(FeatureFlag).not_to receive(:find_or_create_by!)
-          expect { seed }.to raise_error(ArgumentError, /development/)
-        end
-      end
+      expect(RelationshipTemplate.count).to be_positive
+      expect(FeatureFlag.find_by!(key: "ai_memory_extraction")).not_to be_enabled
     end
   end
 
-  context "in production without development scenarios" do
+  context "in production" do
     let(:environment) { "production" }
 
     it "installs the baseline and provisions only Jurgen without sending email" do

@@ -14,8 +14,8 @@ claim: >
   regular-user and unconfirmed defaults, and suppresses the confirmation email.
   Existing accounts keep their password, role, confirmation and security state; reruns
   do not require the password environment variable. Development demo accounts are never
-  loaded in production, and requesting DEVELOPMENT_SEEDS=true outside development fails
-  before baseline seed mutations.
+  loaded in production because the common entry point loads only the current Rails
+  environment seed file.
 source_files:
   - db/seeds.rb
   - db/seeds/production.rb

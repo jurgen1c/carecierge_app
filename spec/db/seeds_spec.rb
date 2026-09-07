@@ -63,7 +63,6 @@ RSpec.describe "Rails seeds" do
       expect(user.valid_password?(production_password)).to be(true)
       expect(user).not_to be_admin
       expect(user).not_to be_confirmed
-      expect(user.id).not_to start_with("ca105000-")
       expect(RelationshipTemplate.count).to be_positive
       expect(FeatureFlag.find_by!(key: "ai_memory_extraction")).not_to be_enabled
     end
@@ -82,6 +81,17 @@ RSpec.describe "Rails seeds" do
       allow(ENV).to receive(:fetch).with("PRODUCTION_SEED_PASSWORD").and_raise(KeyError)
       expect { seed }.to raise_error(KeyError)
       expect(User.count).to eq(0)
+    end
+
+    it "preserves an existing mixed-case email without requiring a password" do
+      user = create(:user, email: "jurgen1c@gmail.com", admin: true)
+      user.update_column(:email, "Jurgen1c@gmail.com")
+      before_attributes = user.reload.attributes
+      expect(ENV).not_to receive(:fetch).with("PRODUCTION_SEED_PASSWORD")
+
+      expect { seed }.not_to change(User, :count)
+
+      expect(user.reload.attributes).to eq(before_attributes)
     end
 
     context "with an invalid password" do

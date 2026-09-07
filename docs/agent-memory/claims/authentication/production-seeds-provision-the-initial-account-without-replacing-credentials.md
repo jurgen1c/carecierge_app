@@ -8,7 +8,8 @@ severity: important
 title: Production seeds provision the initial account without replacing credentials
 claim: >
   db:seed loads db/seeds/production.rb in production after baseline data. The production
-  file finds or creates the initial account by its explicitly configured seed email.
+  file finds the initial account case-insensitively by its explicitly configured seed
+  email and creates it only when missing.
   Creation requires PRODUCTION_SEED_PASSWORD and normal User validations, retains the
   regular-user and unconfirmed defaults, and suppresses the confirmation email.
   Existing accounts keep their password, role, confirmation and security state; reruns

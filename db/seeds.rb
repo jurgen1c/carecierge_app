@@ -15,3 +15,6 @@ FeatureFlag.find_or_create_by!(key: "ai_memory_extraction") do |flag|
   flag.description = "Allows opted-in conversation recaps to produce source-backed memory proposals for owner review."
   flag.enabled = false
 end
+
+environment_seeds = Rails.root.join("db/seeds", "#{Rails.env}.rb")
+load environment_seeds if environment_seeds.file?

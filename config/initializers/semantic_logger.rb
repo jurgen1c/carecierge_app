@@ -14,5 +14,8 @@ unless SemanticLogger.appenders.any?
   SemanticLogger.add_appender(**appender_options)
 end
 
-Rails.logger = ActiveSupport::TaggedLogging.new(SemanticLogger["Rails"])
+# This initializer runs after Rails wraps its default logger for server broadcasts.
+Rails.logger = ActiveSupport::BroadcastLogger.new(
+  ActiveSupport::TaggedLogging.new(SemanticLogger["Rails"])
+)
 Rails.application.config.logger = Rails.logger

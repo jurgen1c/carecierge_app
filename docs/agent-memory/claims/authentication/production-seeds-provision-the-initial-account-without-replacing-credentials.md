@@ -34,7 +34,7 @@ tags:
 verification:
   - bundle exec rspec spec/db/seeds_spec.rb
   - bin/ci
-last_verified_commit: dc5b7041ebe5d68f01ae17d8b6772bb425edb5e6
+last_verified_commit: 80c53eb3eb3104c75cc253e2d06883492952f305
 ---
 
 # Production seeds provision the initial account without replacing credentials

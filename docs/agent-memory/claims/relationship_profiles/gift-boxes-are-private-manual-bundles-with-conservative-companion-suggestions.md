@@ -63,7 +63,7 @@ verification:
   - bundle exec rspec spec/requests/gift_box_locking_spec.rb spec/requests/gift_boxes_spec.rb spec/models/gift_box_spec.rb spec/services/gift_boxes spec/system/gift_boxes_spec.rb spec/serializers/data_exports/gift_box_snapshot_spec.rb
   - bundle exec rspec
   - bin/ci
-last_verified_commit: 5dc411659dfc6a11f51265352da8e88a639321b6
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Gift boxes are private manual bundles with conservative companion suggestions

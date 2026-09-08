@@ -113,7 +113,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 01dcbec976f621b4abd80a200a401c592675c74c
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Gift recommendations are private, source-backed, and user-controlled

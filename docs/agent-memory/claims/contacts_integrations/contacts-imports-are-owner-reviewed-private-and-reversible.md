@@ -68,7 +68,7 @@ tags:
 verification:
   - bundle exec rspec spec/services/contacts spec/requests/contacts_connections_spec.rb spec/system/contacts_connections_spec.rb
   - bin/ci
-last_verified_commit: 026de04f0560060964acf8b0546eb9bfd09d6072
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Contacts imports are owner reviewed private and reversible

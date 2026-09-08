@@ -3,7 +3,7 @@ id: authentication.user_access_flow
 type: workflow
 system: authentication
 status: current
-confidence: high
+confidence: verified
 severity: normal
 
 title: User access flow redirects through welcome, onboarding, and dashboard surfaces
@@ -55,7 +55,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/onboarding_spec.rb spec/system/user_access_flow_spec.rb spec/requests/localization_spec.rb
   - bundle exec rspec spec/requests/authentication_gate_spec.rb
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # User access flow redirects through welcome, onboarding, and dashboard surfaces

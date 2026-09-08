@@ -3,7 +3,7 @@ id: relationship_profiles.commitments
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Commitments track owner-scoped promises through reminders and timeline history
@@ -70,7 +70,7 @@ verification:
   - bundle exec rspec spec/models/commitment_spec.rb spec/models/reminder_spec.rb spec/services/commitments/save_spec.rb spec/policies/commitment_policy_spec.rb spec/requests/commitments_spec.rb spec/requests/commitment_reminders_spec.rb spec/requests/reminders_spec.rb spec/requests/timeline_entries_spec.rb
   - bin/rubocop
   - bin/ci
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Commitments track owner-scoped promises through reminders and timeline history

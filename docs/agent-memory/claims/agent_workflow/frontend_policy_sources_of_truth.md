@@ -3,7 +3,7 @@ id: agent_workflow.frontend_policy_sources_of_truth
 type: rule
 system: agent_workflow
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Frontend policy uses product and design docs plus StyleVariants
@@ -34,7 +34,7 @@ tags:
 
 verification:
   - test -f PRODUCT.md && test -f DESIGN.md && test -f .impeccable/design.json && test -f app/assets/stylesheets/application.tailwind.css && test -f app/helpers/style_variants_helper.rb && test ! -e STYLE_GUIDE.md
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Frontend policy uses product and design docs plus StyleVariants

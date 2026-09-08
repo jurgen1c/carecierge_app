@@ -3,7 +3,7 @@ id: relationship_profiles.mood_notes
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Mood notes are observation-first owner-scoped follow-up records
@@ -50,7 +50,7 @@ tags:
 verification:
   - bundle exec rspec spec/models/mood_note_spec.rb spec/policies/mood_note_policy_spec.rb spec/requests/mood_notes_spec.rb spec/models/timeline_entry_spec.rb
   - bundle exec rspec
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Mood notes are observation-first owner-scoped follow-up records

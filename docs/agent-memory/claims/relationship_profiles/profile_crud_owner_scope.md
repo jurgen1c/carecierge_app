@@ -3,7 +3,7 @@ id: relationship_profiles.profile_crud_owner_scope
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Relationship profile CRUD is owner scoped
@@ -132,7 +132,6 @@ source_files:
 related_files:
   - app/models/relationship_persona.rb
   - app/views/relationship_personas/_section.html.erb
-  - docs/agent-memory/claims/relationship_profiles/relationship-personas-remain-source-backed-and-uncertainty-aware.md
   - app/models/user.rb
   - app/javascript/application.js
   - app/views/layouts/application.html.erb
@@ -141,7 +140,6 @@ related_files:
   - app/views/relationship_profiles/edit.html.erb
   - app/views/relationship_profiles/_form.html.erb
   - app/views/relationship_profiles/show.html.erb
-  - docs/agent-memory/claims/relationship_profiles/preference_metadata.md
   - config/routes.rb
   - spec/forms/relationship_profiles/form_state_spec.rb
   - spec/models/relationship_profile_spec.rb
@@ -248,7 +246,7 @@ verification:
   - bundle exec rspec spec/system/relationship_profile_edit_spec.rb
   - bundle exec rspec spec/system/relationship_profile_lexxy_spec.rb
   - bundle exec rspec
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Relationship profile CRUD is owner scoped

@@ -114,7 +114,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 2ca7493a66422b57fd1f0bee27be355148a6907e
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Vendor comparisons are owner-scoped, bounded, and explicitly decided

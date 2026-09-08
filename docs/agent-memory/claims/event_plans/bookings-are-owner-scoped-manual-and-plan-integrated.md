@@ -97,7 +97,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: dbf3d409616e55f8add8047fc75677686fb783ec
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Bookings are owner-scoped, manual, and plan-integrated

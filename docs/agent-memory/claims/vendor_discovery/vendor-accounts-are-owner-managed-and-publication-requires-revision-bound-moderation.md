@@ -3,7 +3,7 @@ id: vendor_discovery.vendor_accounts_are_owner_managed_and_publication_requires_
 type: constraint
 system: vendor_discovery
 status: current
-confidence: high
+confidence: verified
 severity: critical
 title: Vendor accounts are owner managed and publication requires revision bound moderation
 claim: >
@@ -70,7 +70,7 @@ verification:
   - bin/memory validate
   - bin/memory coverage --git-diff
   - bin/ci
-last_verified_commit: 330108f04efe6e63525a71603a6215f53fa1212a
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Vendor account moderation and ownership

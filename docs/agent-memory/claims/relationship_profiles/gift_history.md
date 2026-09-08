@@ -3,7 +3,7 @@ id: relationship_profiles.gift_history
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Gift history is owner-scoped relationship memory
@@ -54,7 +54,7 @@ verification:
   - bundle exec rspec spec/models/gift_spec.rb spec/requests/gifts_spec.rb
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb spec/models/relationship_profile_spec.rb spec/models/gift_spec.rb spec/requests/gifts_spec.rb
   - bundle exec rspec
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Gift history is owner-scoped relationship memory

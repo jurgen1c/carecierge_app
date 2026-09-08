@@ -3,7 +3,7 @@ id: relationship_profiles.important_dates
 type: fact
 system: relationship_profiles
 status: needs_verification
-confidence: high
+confidence: verified
 severity: important
 
 title: Important dates are owner-scoped relationship memory
@@ -69,7 +69,7 @@ verification:
   - bundle exec rspec spec/requests/onboarding_spec.rb
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb spec/models/relationship_profile_spec.rb spec/models/important_date_spec.rb spec/requests/important_dates_spec.rb
   - bundle exec rspec
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Important dates are owner-scoped relationship memory

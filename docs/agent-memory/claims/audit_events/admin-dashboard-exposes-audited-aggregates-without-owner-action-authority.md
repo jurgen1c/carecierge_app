@@ -59,7 +59,7 @@ tags:
   - operations
 verification:
   - bundle exec rspec spec/requests/admin_dashboard_spec.rb spec/queries/admin_dashboard_query_spec.rb spec/models/admin_dashboard/queue_status_spec.rb spec/components/admin_metric_section_component_spec.rb spec/system/admin_dashboard_spec.rb
-last_verified_commit: 98db0839f6484c86b8b119c42dbfc9c9d72addd8
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Admin dashboard exposes audited aggregates without owner action authority

@@ -79,7 +79,7 @@ verification:
   - bin/memory validate
   - bin/memory audit --git-diff
   - bin/ci
-last_verified_commit: 58c7fb652e2b93b6798044bd3a2538b70c826144
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Marketplace listings are curated shared content with private explicit handoffs

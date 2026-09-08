@@ -7,7 +7,7 @@
   </div>
 
   <% if commitment.errors.any? %>
-    <div role="alert" class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950" role="alert">
+    <div role="alert" class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950">
       <p class="font-semibold"><%= t("commitments.form.errors_heading", count: commitment.errors.count) %></p>
       <ul class="mt-2 list-disc space-y-1 pl-5">
         <% commitment.errors.full_messages.each do |message| %><li><%= message %></li><% end %>

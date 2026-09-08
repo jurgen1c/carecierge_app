@@ -5,6 +5,23 @@ RSpec.describe 'Contacts connections', type: :request do
   let(:connection) { ContactsConnection.create!(user:, access_token: 'access', refresh_token: 'refresh') }
   before { sign_in user }
 
+  it 'keeps the registered OAuth callback independent of the selected language' do
+    allow(Contacts::Permission).to receive(:check!)
+    state = nil
+    allow(Contacts::GoogleOauth).to receive(:authorization_url) do |**options|
+      state = options.fetch(:state)
+      'https://accounts.google.com/example'
+    end
+    allow(Contacts::Connect).to receive(:call)
+
+    get new_contacts_connection_path(locale: :es)
+    expect(Contacts::GoogleOauth).to have_received(:authorization_url).with(state: anything, redirect_uri: callback_contacts_connection_url)
+    get callback_contacts_connection_path, params: { state:, code: 'oauth-code' }
+
+    expect(Contacts::Connect).to have_received(:call).with(hash_including(user:, redirect_uri: callback_contacts_connection_url))
+    expect(response).to redirect_to(contacts_connection_path(locale: :es))
+  end
+
   it 'shows setup availability and Spanish parity without exposing credentials' do
     allow(Contacts::GoogleOauth).to receive(:available?).and_return(false)
     get contacts_connection_path

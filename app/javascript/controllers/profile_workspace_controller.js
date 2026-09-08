@@ -29,8 +29,16 @@ export default class extends Controller {
   }
 
   revealFrame(event) {
-    this.openAncestors(event.target)
+    const frame = event.target
+    this.openAncestors(frame)
     this.revealErrors()
+    const field = frame.querySelector('form input:not([type="hidden"]):not([disabled]), form select:not([disabled]), form textarea:not([disabled]), form button:not([disabled])')
+    if (!field) return
+    window.requestAnimationFrame(() => {
+      if (!frame.isConnected) return
+      frame.scrollIntoView({ block: "start" })
+      field.focus({ preventScroll: true })
+    })
   }
 
   openAncestors(element) {

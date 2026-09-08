@@ -4,7 +4,8 @@ module WorkspaceHelper
     draft_page social_context_page memory_proposal selected_capability capability
     relationship_profile_id important_date_id commitment_id event_plan_id plan_task_id
     vendor_quote_id booking_id booking_milestone gift_purchase_plan_id gift_milestone
-    gift_box_id id time_zone tab mode kind risk_level category occasion
+    gift_box_id id time_zone listing_ids vendor_id vendor_ids booking_kind view
+    tab mode kind risk_level category occasion
   ].freeze
 
   def workspace_page_kind
@@ -12,7 +13,7 @@ module WorkspaceHelper
   end
 
   def workspace_locale_path(locale)
-    path = request.get? || request.head? ? request.path : dashboard_path
+    path = request.get? || request.head? ? request.path : dashboard_path(locale: nil)
     query = request.query_parameters.slice(*LOCALE_QUERY_KEYS).merge("locale" => locale.to_s)
     "#{path}?#{query.to_query}"
   end

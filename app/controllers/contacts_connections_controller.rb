@@ -18,7 +18,7 @@ class ContactsConnectionsController < ApplicationController
     raise Contacts::Error.new(code: "already_connected") if current_user.contacts_connection
     Contacts::Permission.check!(user: current_user)
     state = Contacts::OauthState.issue(user: current_user, session:)
-    redirect_to Contacts::GoogleOauth.authorization_url(state:, redirect_uri: callback_contacts_connection_url), allow_other_host: true
+    redirect_to Contacts::GoogleOauth.authorization_url(state:, redirect_uri: callback_contacts_connection_url(locale: nil)), allow_other_host: true
   end
 
   def callback
@@ -26,7 +26,7 @@ class ContactsConnectionsController < ApplicationController
     generation = Contacts::OauthState.verify(state: params[:state], user: current_user, session:)
     raise Contacts::Error.new(code: "stale") if generation == false
     raise Contacts::Error.new(code: "cancelled") if params[:error].present?
-    Contacts::Connect.call(user: current_user, code: params.require(:code), redirect_uri: callback_contacts_connection_url, generation:)
+    Contacts::Connect.call(user: current_user, code: params.require(:code), redirect_uri: callback_contacts_connection_url(locale: nil), generation:)
     redirect_to contacts_connection_path, notice: t("contacts.notices.connected")
   end
 

@@ -117,10 +117,13 @@ RSpec.describe "Relationship workspace experience", type: :system do
   it "completes the primary profile actions inline in both languages" do
     profile = create(:relationship_profile, user:)
     sign_in user
+    page.current_window.resize_to(390, 844)
 
     %i[en es].each do |locale|
       visit relationship_profile_path(profile, locale:)
       within(".profile-primary-actions") { click_link I18n.t("profile_workspace.record", locale:) }
+      expect(page).to have_css("#new_interaction select:focus")
+      expect(page.evaluate_script("document.activeElement.getBoundingClientRect().bottom < innerHeight")).to be(true)
       within("turbo-frame#new_interaction") do
         select I18n.t("contact_rhythm.interaction_types.call", locale:), from: "interaction_interaction_type"
         click_button I18n.t("contact_rhythm.form.create", locale:)
@@ -131,6 +134,8 @@ RSpec.describe "Relationship workspace experience", type: :system do
       expect(page).to have_current_path(relationship_profile_path(profile, locale:))
 
       within("#upcoming_important_dates") { click_link I18n.t("profile_workspace.add_date", locale:) }
+      expect(page).to have_css("#new_important_date select:focus")
+      expect(page.evaluate_script("document.activeElement.getBoundingClientRect().bottom < innerHeight")).to be(true)
       within("turbo-frame#new_important_date") do
         fill_in "important_date_starts_on", with: (now.to_date + 5.days).iso8601
         fill_in "important_date_title", with: "A day together #{locale}"

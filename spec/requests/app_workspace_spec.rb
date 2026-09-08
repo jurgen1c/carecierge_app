@@ -92,6 +92,30 @@ RSpec.describe "Application workspace", type: :request do
     expect(response.parsed_body.at_css("#approval_request_corrected_title")["value"]).to eq("The chosen review")
   end
 
+  it "keeps the selected marketplace comparison when changing language" do
+    listing = create(:marketplace_listing)
+    get compare_marketplace_listings_path(listing_ids: [ listing.id ])
+    expect(response).to have_http_status(:ok)
+
+    get response.parsed_body.at_css(".app-language a[lang='es']")["href"]
+
+    expect(response).to have_http_status(:ok)
+    expect(response.parsed_body.at_css("html")["lang"]).to eq("es")
+    expect(response.parsed_body.text).to include(listing.name)
+  end
+
+  it "provides working language links after a Spanish validation error" do
+    post relationship_profiles_path(locale: :es), params: { relationship_profile: { first_name: "" } }
+    expect(response).to have_http_status(:unprocessable_content)
+    links = response.parsed_body.css(".app-language a").to_h { |link| [ link["lang"], link["href"] ] }
+
+    %w[en es].each do |locale|
+      get links.fetch(locale)
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body.at_css("html")["lang"]).to eq(locale)
+    end
+  end
+
   it "preserves Spanish through the authentication redirect" do
     sign_out user
     get dashboard_path(locale: :es)

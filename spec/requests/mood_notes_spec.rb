@@ -105,6 +105,7 @@ RSpec.describe "Mood notes", type: :request do
       )
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       expect(response.body).to include(%(turbo-stream action="replace" target="mood_notes_section"))
+      expect(response.body).to include(%(turbo-stream action="replace" target="profile_overview"))
       expect(response.body).to include(%(turbo-stream action="replace" target="timeline_entries_section"))
     end
 

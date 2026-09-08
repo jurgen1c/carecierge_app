@@ -3,6 +3,7 @@ class ActionLinkComponent < ApplicationViewComponent
   option :path
   option :variant, default: -> { :secondary }
   option :icon, optional: true
+  option :turbo_frame, optional: true
 
   style do
     base { %w[workspace-action] }

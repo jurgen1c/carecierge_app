@@ -171,6 +171,7 @@ RSpec.describe "Conversation recaps", type: :request do
       )
       expect(response.media_type).to eq("text/vnd.turbo-stream.html")
       expect(response.body).to include(%(turbo-stream action="replace" target="conversation_recaps_section"))
+      expect(response.body).to include(%(turbo-stream action="replace" target="profile_overview"))
       expect(response.body).to include(%(turbo-stream action="replace" target="timeline_entries_section"))
       expect(response.body).to include("Lunch with David")
     end

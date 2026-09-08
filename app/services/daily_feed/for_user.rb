@@ -591,6 +591,7 @@ module DailyFeed
       <<~SQL.squish
         commitments.relationship_profile_id,
         CASE
+          WHEN commitments.due_on IS NULL THEN 3
           WHEN commitments.due_on < #{today}::date THEN 0
           WHEN commitments.due_on = #{today}::date THEN 1
           ELSE 2

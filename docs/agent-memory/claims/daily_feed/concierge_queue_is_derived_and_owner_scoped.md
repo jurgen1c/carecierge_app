@@ -28,7 +28,7 @@ claim: >
   permanently deleted sources or relationships, and cascades on account deletion.
   Recent interaction candidates are bounded per active relationship before they
   can ground spontaneous gestures. Today separates needs_attention, later_today, coming_up and optional ideas, with
-  eight visible items per section. Future dated promises remain upcoming;
+  eight visible items per section. SQL candidate bounds partition undated promises separately from dated upcoming commitments. Future dated promises remain upcoming;
   undated promises, drafts, goals, gift ideas and suggestions remain optional.
   Today::Overview adds up to four active event plans over the next 30 owner-local
   days with an uncapped matching total, up to four due saved contact rhythms,

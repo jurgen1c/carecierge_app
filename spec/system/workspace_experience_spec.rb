@@ -114,6 +114,36 @@ RSpec.describe "Relationship workspace experience", type: :system do
     end
   end
 
+  it "completes the primary profile actions inline in both languages" do
+    profile = create(:relationship_profile, user:)
+    sign_in user
+
+    %i[en es].each do |locale|
+      visit relationship_profile_path(profile, locale:)
+      within(".profile-primary-actions") { click_link I18n.t("profile_workspace.record", locale:) }
+      within("turbo-frame#new_interaction") do
+        select I18n.t("contact_rhythm.interaction_types.call", locale:), from: "interaction_interaction_type"
+        click_button I18n.t("contact_rhythm.form.create", locale:)
+      end
+      expect(page).to have_text(I18n.t("interactions.create.notice", locale:))
+      expect(page).to have_no_css("form select[name='interaction[interaction_type]']")
+      expect(page).to have_css("#profile_overview time")
+      expect(page).to have_current_path(relationship_profile_path(profile, locale:))
+
+      within("#upcoming_important_dates") { click_link I18n.t("profile_workspace.add_date", locale:) }
+      within("turbo-frame#new_important_date") do
+        fill_in "important_date_starts_on", with: (now.to_date + 5.days).iso8601
+        fill_in "important_date_title", with: "A day together #{locale}"
+        click_button I18n.t("important_dates.form.create", locale:)
+      end
+      expect(page).to have_text(I18n.t("important_dates.create.notice", locale:))
+      expect(page).to have_no_css("form input[name='important_date[starts_on]']")
+      expect(page).to have_css("#upcoming_important_dates", text: "A day together #{locale}")
+    end
+    expect(profile.interactions.count).to eq(2)
+    expect(profile.important_dates.count).to eq(2)
+  end
+
   it "closes the mobile menu when keyboard focus leaves in either direction" do
     sign_in user
     [ 390, 768 ].each do |width|

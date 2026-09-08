@@ -9,7 +9,7 @@
       <% if @relationship_profile.archived? %><p class="profile-full-name"><%= t("relationship_profiles.index.archived") %></p><% end %>
     </div>
     <div class="workspace-actions profile-primary-actions">
-      <%= component "action_link", label: t("profile_workspace.record"), path: new_relationship_profile_interaction_path(@relationship_profile), variant: :primary, icon: "plus" %>
+      <%= component "action_link", label: t("profile_workspace.record"), path: new_relationship_profile_interaction_path(@relationship_profile), turbo_frame: "new_interaction", variant: :primary, icon: "plus" %>
       <%= component "action_link", label: t("profile_workspace.remind"), path: new_reminder_path(relationship_profile_id: @relationship_profile.id), variant: :secondary %>
       <%= component "action_link", label: t("relationship_profiles.show.edit"), path: edit_relationship_profile_path(@relationship_profile), variant: :quiet %>
     </div>

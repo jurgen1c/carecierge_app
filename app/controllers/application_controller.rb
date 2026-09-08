@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
 
   def with_request_locale(&action)
     available = I18n.available_locales.map(&:to_s)
-    if params.key?(:locale)
+    if params.key?(:locale) && request.headers["X-Sec-Purpose"] != "prefetch"
       requested = params[:locale]
       session[:locale] = available.include?(requested) ? requested : I18n.default_locale.to_s
     end

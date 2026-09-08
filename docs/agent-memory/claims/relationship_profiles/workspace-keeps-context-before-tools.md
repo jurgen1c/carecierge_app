@@ -9,7 +9,7 @@ severity: normal
 title: Relationship workspace keeps person context before tools
 
 claim: >
-  The owner-scoped People directory uses Ransack filters with 24 records per Pagy page, batch last-interaction dates and upcoming date context without eagerly loading note bodies or vault contents. Profiles lead with identity, practical actions and recorded facts, then six native addressable sections. Inline creation and generation forms open on intent; validation, Turbo refreshes and legacy fragments reveal the relevant section. Saved AI tools redirect with section=ideas while retaining legacy anchors.
+  The owner-scoped People directory uses Ransack filters with 24 records per Pagy page, batch last-interaction dates and upcoming date context without eagerly loading note bodies or vault contents. Profiles lead with identity, practical actions and recorded facts, then six native addressable sections. Primary interaction and date actions target their inline form frames, and manual, recap and mood interaction changes refresh the recorded overview. Inline creation and generation forms open on intent; validation, Turbo refreshes and legacy fragments reveal the relevant section. Saved AI tools redirect with section=ideas while retaining legacy anchors.
 
 source_files:
   - app/controllers/relationship_profiles_controller.rb
@@ -32,6 +32,13 @@ related_files:
   - app/controllers/message_drafts_controller.rb
   - app/controllers/relationship_briefings_controller.rb
   - app/views/interactions/refresh.turbo_stream.erb
+  - app/views/conversation_recaps/refresh.turbo_stream.erb
+  - app/views/mood_notes/refresh.turbo_stream.erb
+  - app/views/important_dates/_upcoming.html.erb
+  - app/views/components/action_link_component.rb
+  - app/views/components/action_link_component.html.erb
+  - spec/requests/conversation_recaps_spec.rb
+  - spec/requests/mood_notes_spec.rb
   - config/locales/people.en.yml
   - config/locales/people.es.yml
   - config/locales/profile_workspace.en.yml
@@ -57,7 +64,7 @@ tags:
   - localization
 
 verification:
-  - bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb
+  - bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb
 
 last_verified_commit: null
 ---
@@ -66,7 +73,7 @@ last_verified_commit: null
 
 ## Claim
 
-The owner-scoped People directory uses Ransack filters with 24 records per Pagy page, batch last-interaction dates and upcoming date context without eagerly loading note bodies or vault contents. Profiles lead with identity, practical actions and recorded facts, then six native addressable sections. Inline creation and generation forms open on intent; validation, Turbo refreshes and legacy fragments reveal the relevant section. Saved AI tools redirect with section=ideas while retaining legacy anchors.
+The owner-scoped People directory uses Ransack filters with 24 records per Pagy page, batch last-interaction dates and upcoming date context without eagerly loading note bodies or vault contents. Profiles lead with identity, practical actions and recorded facts, then six native addressable sections. Primary interaction and date actions target their inline form frames, and manual, recap and mood interaction changes refresh the recorded overview. Inline creation and generation forms open on intent; validation, Turbo refreshes and legacy fragments reveal the relevant section. Saved AI tools redirect with section=ideas while retaining legacy anchors.
 
 ## Why It Matters
 
@@ -74,6 +81,6 @@ Grouping an existing capability must not remove it or strand its errors inside a
 
 ## Verification
 
-- `bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb`
+- `bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb`
 
 Local changes are validated before commit; no committed revision is claimed as verified.

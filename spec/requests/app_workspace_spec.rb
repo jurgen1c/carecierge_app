@@ -44,6 +44,15 @@ RSpec.describe "Application workspace", type: :request do
     end
   end
 
+  it "keeps language previews from changing the selected session locale" do
+    get dashboard_path(locale: :en)
+    expect(response.parsed_body.css(".app-language a").map { |link| link["data-turbo-prefetch"] }).to all(eq("false"))
+
+    get dashboard_path(locale: :es), headers: { "X-Sec-Purpose" => "prefetch" }
+    get dashboard_path
+    expect(response.parsed_body.at_css("html")["lang"]).to eq("en")
+  end
+
   it "never exposes administrator destinations to an ordinary owner" do
     get dashboard_path
     expect(response.parsed_body.css("nav[data-app-navigation] a[href^='/admin']")).to be_empty

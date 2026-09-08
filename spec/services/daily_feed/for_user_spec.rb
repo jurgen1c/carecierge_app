@@ -317,7 +317,7 @@ RSpec.describe DailyFeed::ForUser do
     expect(result.coming_up.map(&:title)).to include("Future commitment", "Future date")
   end
 
-  it "ranks unscheduled commitments before post-horizon plans when bounding candidates" do
+  it "keeps unscheduled commitments independent of dated plans when bounding candidates" do
     now = Time.zone.local(2026, 8, 14, 9)
     user = create(:user)
     profile = create(:relationship_profile, user:)
@@ -326,7 +326,7 @@ RSpec.describe DailyFeed::ForUser do
         :commitment,
         relationship_profile: profile,
         title: "Post-horizon plan #{index}",
-        due_on: now.to_date + (31 + index).days
+        due_on: now.to_date + (1 + index).days
       )
     end
     create(:commitment, relationship_profile: profile, title: "Unscheduled priority", due_on: nil)
@@ -334,6 +334,19 @@ RSpec.describe DailyFeed::ForUser do
     result = described_class.call(user:, as_of: now)
 
     expect(result.ideas.map(&:title)).to include("Unscheduled priority")
+  end
+
+  it "keeps dated commitments visible when a profile has a full set of undated ideas" do
+    now = Time.zone.local(2026, 8, 14, 9)
+    user = create(:user)
+    profile = create(:relationship_profile, user:)
+    8.times { |index| create(:commitment, relationship_profile: profile, title: "Idea #{index}", due_on: nil) }
+    create(:commitment, relationship_profile: profile, title: "Dated promise", due_on: now.to_date + 40.days)
+
+    result = described_class.call(user:, as_of: now)
+
+    expect(result.coming_up.map(&:title)).to include("Dated promise")
+    expect(result.ideas.count).to eq(8)
   end
 
   it "uses localized display titles when bounding untitled important dates" do

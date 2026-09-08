@@ -25,7 +25,7 @@
   <div class="app-nav-footer">
     <div class="app-language" aria-label="<%= t('workspace.language') %>">
       <% { en: 'English', es: 'Español' }.each do |locale, label| %>
-        <%= link_to label, helpers.workspace_locale_path(locale), lang: locale, hreflang: locale, aria: { current: I18n.locale == locale ? 'true' : nil }, class: 'app-language-link' %>
+        <%= link_to label, helpers.workspace_locale_path(locale), data: { turbo_prefetch: false }, lang: locale, hreflang: locale, aria: { current: I18n.locale == locale ? 'true' : nil }, class: 'app-language-link' %>
       <% end %>
     </div>
     <%= button_to t('daily_feed.navigation.sign_out'), destroy_user_session_path, method: :delete, form: { data: { action: 'submit->privacy-vault#lock' } }, class: 'app-nav-signout' %>

@@ -1,6 +1,11 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: relationship_profiles.commitments
+    target: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    relation: requires
+    reason: Commitment forms reuse shared form headings while their explicit page titles remain authoritative.
+    strength: 90
   - source: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revocable
     target: authentication.request_locale_follows_explicit_session_choice
     relation: requires

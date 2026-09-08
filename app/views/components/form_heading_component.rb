@@ -16,6 +16,6 @@ class FormHeadingComponent < ApplicationViewComponent
   end
 
   def before_render
-    helpers.content_for(:title, title) if page?
+    helpers.content_for(:title, title) if page? && !helpers.content_for?(:title)
   end
 end

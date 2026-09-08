@@ -3,13 +3,13 @@ id: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
 type: fact
 system: agent_workflow
 status: current
-confidence: verified
+confidence: high
 severity: normal
 
 title: Authenticated UI uses one shared shell and local reading measures
 
 claim: >
-  The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. At enlarged text sizes the wordmark stays intact, the Menu control can wrap to a second row, and the open menu scrolls within the remaining viewport below the actual header height. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md.
+  The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. At enlarged text sizes the wordmark stays intact, the Menu control can wrap to a second row, and the open menu scrolls within the remaining viewport below the actual header height. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md. Standalone form headings supply a document title only when the page has not already provided one.
 
 source_files:
   - app/views/layouts/application.html.erb
@@ -40,6 +40,7 @@ related_files:
   - app/views/event_plans/index.html.erb
   - app/views/gift_boxes/index.html.erb
   - spec/components/workspace_primitives_spec.rb
+  - spec/requests/commitments_spec.rb
   - spec/components/previews/workspace_preview.rb
   - spec/requests/app_workspace_spec.rb
   - spec/system/workspace_experience_spec.rb
@@ -74,7 +75,7 @@ last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 
 ## Claim
 
-The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. At enlarged text sizes the wordmark stays intact, the Menu control can wrap to a second row, and the open menu scrolls within the remaining viewport below the actual header height. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md.
+The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. At enlarged text sizes the wordmark stays intact, the Menu control can wrap to a second row, and the open menu scrolls within the remaining viewport below the actual header height. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md. Standalone form headings supply a document title only when the page has not already provided one.
 
 ## Why It Matters
 

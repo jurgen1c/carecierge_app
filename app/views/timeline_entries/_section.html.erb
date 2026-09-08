@@ -36,7 +36,7 @@
           <span class="text-xs font-medium text-stone-600"><%= t("timeline_entries.section.shown_count", count: filtered_entries.size) %></span>
         </div>
 
-        <%= turbo_frame_tag "new_timeline_entry", src: new_relationship_profile_timeline_entry_path(relationship_profile, timeline_type: selected_type), loading: :lazy do %>
+        <%= turbo_frame_tag "new_timeline_entry" do %>
           <div class="mt-4 rounded-lg border border-dashed border-emerald-200 bg-white px-4 py-5">
             <p class="text-sm font-semibold text-stone-950"><%= t("timeline_entries.form.new_title") %></p>
             <p class="mt-2 text-sm leading-6 text-stone-700"><%= t("timeline_entries.form.body") %></p>

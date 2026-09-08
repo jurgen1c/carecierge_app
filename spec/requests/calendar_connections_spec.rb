@@ -76,7 +76,7 @@ RSpec.describe "Calendar connections", type: :request do
     end.to change { CalendarConnection.where(user:).count }.by(1)
       .and have_enqueued_job(CalendarSyncJob)
 
-    expect(response).to redirect_to(calendar_connection_path)
+    expect(response).to redirect_to(calendar_connection_path(locale: :es))
     expect(user.calendar_connection.access_token).to eq("new-access")
     expect(user.calendar_connection.locale).to eq("es")
   end

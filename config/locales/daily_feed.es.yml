@@ -37,7 +37,7 @@ es:
       inferred: "Inferido"
     actions:
       complete: "Completar"
-      act: "Actuar"
+      act: "Planear un recordatorio"
       plan: "Planificar"
       plan_gift: "Planificar regalo"
       open_draft: "Abrir borrador"
@@ -46,7 +46,7 @@ es:
       snooze: "Posponer"
       dismiss: "Descartar"
     source_context:
-      summary: "Contexto de origen"
+      summary: "Por qué aparece aquí"
       open_profile: "Abrir el perfil de %{name}"
     sources:
       reminder: "Recordatorio"

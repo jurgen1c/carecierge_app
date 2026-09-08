@@ -11,6 +11,7 @@
   </header>
 
   <div class="p-5 sm:p-6">
+    <%= component "form_reveal", label: t("profile_workspace.prepare_briefing"), expanded: form_state.present? do %>
     <%= form_with scope: :relationship_briefing,
       url: generate_relationship_profile_relationship_briefings_path(relationship_profile),
       method: :post,
@@ -49,6 +50,7 @@
 
       <%= form.submit briefing ? t("relationship_briefings.actions.refresh") : t("relationship_briefings.actions.generate"),
         class: style(:primary_button), data: { turbo_submits_with: t("relationship_briefings.actions.generating") } %>
+    <% end %>
     <% end %>
 
     <% if briefing %>

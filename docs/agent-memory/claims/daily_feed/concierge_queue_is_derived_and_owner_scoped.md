@@ -9,7 +9,7 @@ severity: critical
 title: The Concierge Queue is derived, owner-scoped, and source-authoritative
 
 claim: >
-  The dashboard derives a bounded Concierge Queue only from the authenticated
+  The Today dashboard derives a bounded feed only from the authenticated
   user's active reminders and relationship sources. Reminder bounds use effective
   scheduled-or-snoozed delivery time rather than dispatch reservation state.
   Priorities span every active relationship before independent section limits
@@ -27,11 +27,17 @@ claim: >
   notification time zone. Feed state is exported with the account, pruned with
   permanently deleted sources or relationships, and cascades on account deletion.
   Recent interaction candidates are bounded per active relationship before they
-  can ground spontaneous gestures. The dashboard links to the separate approval
-  queue and standalone vendor catalog in both desktop and mobile navigation
-  without mixing either lifecycle into the derived Concierge Queue.
+  can ground spontaneous gestures. Today separates needs_attention, later_today, coming_up and optional ideas, with
+  eight visible items per section. Future dated promises remain upcoming;
+  undated promises, drafts, goals, gift ideas and suggestions remain optional.
+  Today::Overview adds up to four active event plans over the next 30 owner-local
+  days with an uncapped matching total, up to four due saved contact rhythms,
+  active people count, and eligible persisted pending-review count. Overview
+  reads do not synchronize or mutate approval requests. Shared navigation links
+  to each source workspace without mixing its lifecycle into feed state.
 
 source_files:
+  - app/queries/today/overview.rb
   - app/controllers/dashboard_controller.rb
   - app/controllers/feed_items_controller.rb
   - app/models/concerns/feed_item_state_source.rb
@@ -64,6 +70,9 @@ related_files:
   - app/controllers/approval_requests_controller.rb
   - app/views/components/daily_feed_item_component.rb
   - app/views/components/daily_feed_item_component.html.erb
+  - config/locales/today.en.yml
+  - config/locales/today.es.yml
+  - spec/queries/today/overview_spec.rb
   - config/locales/daily_feed.en.yml
   - config/locales/daily_feed.es.yml
   - config/routes.rb
@@ -75,6 +84,7 @@ related_files:
   - spec/system/daily_feed_spec.rb
 
 symbols:
+  - Today::Overview
   - DailyFeed::ForUser
   - DailyFeed::Item
   - DailyFeed::Result
@@ -97,7 +107,7 @@ tags:
   - owner_scope
 
 verification:
-  - bundle exec rspec spec/models/feed_item_state_spec.rb spec/services/daily_feed/for_user_spec.rb spec/components/daily_feed_item_component_spec.rb spec/requests/daily_feed_spec.rb spec/requests/data_controls_spec.rb spec/system/daily_feed_spec.rb
+  - bundle exec rspec spec/queries/today/overview_spec.rb spec/models/feed_item_state_spec.rb spec/services/daily_feed/for_user_spec.rb spec/components/daily_feed_item_component_spec.rb spec/requests/daily_feed_spec.rb spec/requests/data_controls_spec.rb spec/system/daily_feed_spec.rb
   - bin/rubocop
   - bin/memory validate
   - bin/memory coverage --git-diff
@@ -147,9 +157,13 @@ experience actionable.
 
 ## Verification
 
-- `bundle exec rspec spec/models/feed_item_state_spec.rb spec/services/daily_feed/for_user_spec.rb spec/components/daily_feed_item_component_spec.rb spec/requests/daily_feed_spec.rb spec/requests/data_controls_spec.rb spec/system/daily_feed_spec.rb`
+- `bundle exec rspec spec/queries/today/overview_spec.rb spec/models/feed_item_state_spec.rb spec/services/daily_feed/for_user_spec.rb spec/components/daily_feed_item_component_spec.rb spec/requests/daily_feed_spec.rb spec/requests/data_controls_spec.rb spec/system/daily_feed_spec.rb`
 - `bin/rubocop`
 - `bin/memory validate`
 - `bin/memory coverage --git-diff`
 - `bin/memory audit --git-diff`
 - `bin/ci`
+
+## Today composition
+
+Scheduled obligations and optional ideas have independent bounded sections. Owner-local upcoming plans and saved contact rhythms are previews, not new source records. The review number counts persisted eligible pending requests; opening Reviews can discover newly eligible work through its existing synchronization.

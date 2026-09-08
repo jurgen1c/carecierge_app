@@ -30,6 +30,8 @@ Carecierge should not feel like a cold enterprise CRM, a clinical healthcare por
 4. Private by default: treat relationship data as sensitive, with clear boundaries around visibility, sharing, and system action.
 5. Support the moment: prioritize timely prompts, gentle recovery paths, and low-friction follow-through over broad dashboard spectacle.
 
+The authenticated experience centers on Today and People. Today separates scheduled follow-through from optional ideas and shows the people and timing behind each action. People keeps search immediate; a profile starts with identity, recent interaction and upcoming dates before deeper tools. Navigation stays available throughout the app. Larger screens support simultaneous context and work, while smaller screens preserve the same capabilities through deliberate disclosure.
+
 ## Accessibility & Inclusion
 
 Use industry-standard accessibility practices as the baseline: WCAG AA contrast, keyboard-accessible workflows, visible focus states, semantic markup, reduced-motion support, and color-blind-safe states. Interaction patterns should remain understandable without relying on color, animation, or pointer-only controls.

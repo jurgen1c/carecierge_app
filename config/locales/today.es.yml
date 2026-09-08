@@ -1,0 +1,54 @@
+es:
+  today:
+    introduction: Tus planes, recordatorios y las personas detrás de ellos.
+    add_person: Agregar a alguien
+    add_reminder: Crear recordatorio
+    people: Dedica un momento a tus personas
+    outlook: Próximos momentos y revisiones
+    showing:
+      one: Mostrando 1
+      other: "Mostrando %{count}"
+    relationship_count:
+      one: Una persona en tu círculo
+      other: "%{count} personas en tu círculo"
+    welcome:
+      title: Empieza por alguien importante para ti
+      body: Agrega una persona y una fecha o detalle que quieras recordar.
+      action: Agregar tu primera persona
+    agenda:
+      title: Tus próximos pasos
+      body: Lo que tienes para hoy y lo que queda por cumplir.
+      quiet_title: Un poco de espacio en tu día
+      quiet_body: No hay pendientes para hoy en esta selección. Puedes preparar lo que viene o ponerte en contacto con alguien.
+      quiet_action: Elegir a alguien para conversar
+      all: Todos los recordatorios
+    check_ins:
+      title: Encuentra un momento
+      body: Una sugerencia amable según el ritmo de contacto que elegiste.
+      rhythm:
+        one: Cada día
+        other: "Tu ritmo de %{count} días"
+      last: "Última conversación registrada: %{date}"
+      first: Aún no has registrado una conversación. Tu ritmo guardado está listo cuando quieras.
+      action: Planear un contacto
+    ideas:
+      title: Un próximo paso con intención
+      body: Ideas y planes por terminar que puedes elegir cuando sea un buen momento.
+      all: Explorar ideas con tus personas
+    moments:
+      title: Lo que se acerca
+      body: Próximos planes y fechas para tener presentes.
+      open: Abrir plan
+      preview: "%{count} de %{total} próximos planes"
+      empty: No hay planes con fecha en los próximos 30 días.
+      create: Planear un momento juntos
+      dates: Fechas y recordatorios
+      all: Todos los planes de eventos
+    reviews:
+      title: Tu criterio importa
+      body: Revisa las sugerencias antes de incorporarlas a los recuerdos de tus relaciones.
+      waiting:
+        zero: Abre las revisiones para consultar nuevas sugerencias.
+        one: Hay un elemento esperando tu revisión.
+        other: "Hay %{count} elementos esperando tu revisión."
+      action: Abrir revisiones

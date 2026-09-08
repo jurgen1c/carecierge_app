@@ -23,7 +23,7 @@ RSpec.describe "Relationship briefings", type: :request do
     post generate_relationship_profile_relationship_briefings_path(profile), params: {
       relationship_briefing: { interaction_context: "Dinner after her first week", include_private_notes: "1" }
     }
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "relationship-briefing"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "relationship-briefing"))
     expect(RelationshipBriefings::Generate).to have_received(:call).with(hash_including(
       actor: user,
       relationship_profile: have_attributes(id: profile.id, user_id: user.id),
@@ -93,7 +93,7 @@ RSpec.describe "Relationship briefings", type: :request do
 
     patch save_relationship_profile_relationship_briefing_path(profile, briefing)
 
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "relationship-briefing"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "relationship-briefing"))
     follow_redirect!
     expect(response.body).to include("This briefing is no longer available to save")
   end

@@ -1,5 +1,5 @@
 <% disable_turbo_cache %>
-<main aria-labelledby="provider-history-title" class="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+<div aria-labelledby="provider-history-title" class="w-full">
   <%= link_to @relationship_profile.display_name, relationship_profile_path(@relationship_profile), class: "inline-flex min-h-11 items-center text-primary underline" %>
   <header class="border-b border-private-line py-5">
     <h1 id="provider-history-title" class="text-3xl font-semibold text-ink"><%= t("external_provider_actions.title") %></h1>
@@ -14,4 +14,4 @@
       <% if @pagy.next %><%= link_to t("external_provider_actions.next"), url_for(request.query_parameters.merge(page: @pagy.next)), class: "inline-flex min-h-11 items-center text-primary underline" %><% end %>
     </nav>
   <% end %>
-</main>
+</div>

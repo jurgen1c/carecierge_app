@@ -91,8 +91,8 @@ RSpec.describe MessageDraftWorkspaceComponent, type: :component do
     end
 
     expect(page).to have_content("Sugiere una respuesta considerada")
-    expect(page).to have_field("Propósito", with: "check_in")
-    expect(page).to have_button("Sugerir una respuesta")
+    expect(page).to have_field("Propósito", with: "check_in", visible: :all)
+    expect(page).to have_button("Sugerir una respuesta", visible: :all)
     expect(page).to have_no_content("Translation missing")
   end
 

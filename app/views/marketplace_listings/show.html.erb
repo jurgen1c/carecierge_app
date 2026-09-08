@@ -1,5 +1,5 @@
 <% disable_turbo_cache %>
-<main aria-labelledby="marketplace-title" class="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+<div aria-labelledby="marketplace-title" class="">
   <%= link_to t("marketplace.title"), marketplace_listings_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
   <h1 id="marketplace-title" class="mt-4 break-words text-3xl font-semibold text-ink"><%= @listing.name %></h1>
   <%= component "marketplace_listing", listing: @listing, heading: false %>
@@ -41,4 +41,4 @@
   <% else %>
     <%= button_to t("marketplace.save"), save_marketplace_listing_path(@listing), class: "mt-5 min-h-11 rounded-lg bg-primary px-5 py-3 font-semibold text-canvas hover:bg-primary-hover" %>
   <% end %>
-</main>
+</div>

@@ -1,6 +1,6 @@
-<main aria-labelledby="event-plan-title" class="mx-auto w-full max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
-  <div class="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)_18rem]">
-    <aside class="lg:border-r lg:border-private-line lg:pr-5" aria-labelledby="event-plans-navigation-title">
+<div aria-labelledby="event-plan-title" class="event-plan-workspace w-full">
+  <div class="event-plan-columns">
+    <aside class="event-plan-directory" aria-labelledby="event-plans-navigation-title">
       <div class="flex items-center justify-between gap-3">
         <h2 id="event-plans-navigation-title" class="text-lg font-semibold text-ink"><%= t("event_plans.workspace.navigation_title") %></h2>
         <%= link_to t("event_plans.workspace.create_short"), new_event_plan_path, class: "text-sm font-semibold text-primary hover:text-primary-hover lg:hidden" %>
@@ -20,9 +20,10 @@
       <%= link_to t("event_plans.workspace.all_plans"), event_plans_path, class: "mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:text-primary-hover" %>
     </aside>
 
-    <div class="min-w-0">
+    <div class="event-plan-main min-w-0">
+      <%= component "action_link", label: t("event_plans.workspace.all_plans"), path: event_plans_path, variant: :quiet %>
       <header class="border-b border-private-line pb-5">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div class="event-plan-heading">
           <div>
             <p class="text-sm font-semibold text-primary"><%= event_plan.relationship_profile.display_name %></p>
             <h1 id="event-plan-title" class="mt-1 text-3xl font-semibold text-ink"><%= event_plan.title %></h1>
@@ -385,7 +386,7 @@
       <% end %>
     </div>
 
-    <aside class="space-y-6 lg:border-l lg:border-private-line lg:pl-5">
+    <aside class="event-plan-context space-y-6">
       <section aria-labelledby="outstanding-decisions-title">
         <h2 id="outstanding-decisions-title" class="text-base font-semibold text-ink"><%= t("event_plans.workspace.decisions_title") %></h2>
         <% if event_plan.outstanding_decisions.any? %>
@@ -440,4 +441,4 @@
       </section>
     </aside>
   </div>
-</main>
+</div>

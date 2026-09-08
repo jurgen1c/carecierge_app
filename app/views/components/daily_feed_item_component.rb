@@ -2,18 +2,19 @@ class DailyFeedItemComponent < ApplicationViewComponent
   option :item
   option :featured, default: -> { false }
   option :compact, default: -> { false }
+  option :time_zone, default: -> { Time.zone }
 
   style do
     base do
-      %w[border-b border-private-line bg-canvas last:border-b-0]
+      %w[feed-item]
     end
     variants do
       featured do
-        yes { %w[rounded-xl border border-private-line p-5] }
-        no { %w[px-4 py-4] }
+        yes { %w[feed-item-featured] }
+        no { [] }
       end
       compact do
-        yes { %w[px-0 py-4] }
+        yes { %w[feed-item-compact] }
         no { [] }
       end
     end
@@ -30,6 +31,22 @@ class DailyFeedItemComponent < ApplicationViewComponent
         inferred { %w[text-quiet-note] }
       end
     end
+  end
+
+  style :primary_action do
+    base { %w[workspace-action workspace-action-secondary] }
+  end
+
+  def scheduled_at
+    return unless item.kind.in?(%w[reminder commitment important_date plan_continuation])
+    return if item.source.is_a?(Commitment) && item.source.due_on.nil?
+
+    item.sort_at&.in_time_zone(time_zone)
+  end
+
+  def scheduled_label
+    format = item.source.is_a?(Reminder) ? :short : :long
+    l(item.source.is_a?(Reminder) ? scheduled_at : scheduled_at.to_date, format:)
   end
 
   style :urgency do

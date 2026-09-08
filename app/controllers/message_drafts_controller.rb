@@ -111,6 +111,6 @@ class MessageDraftsController < ApplicationController
   end
 
   def workspace_path
-    relationship_profile_path(@relationship_profile, anchor: "message-drafting")
+    relationship_profile_path(@relationship_profile, section: "ideas", anchor: "message-drafting")
   end
 end

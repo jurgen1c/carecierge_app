@@ -29,8 +29,8 @@ RSpec.describe DailyFeed::ForUser do
       "suggestion"
     )
     expect(result.needs_attention.map(&:title)).to include("Call Taylor", "Send the introduction")
-    expect(result.later_today.map(&:title)).to include("Photo book")
-    expect(result.coming_up.map(&:title)).to include("Taylor's birthday", "Plan the weekend", "Walk together")
+    expect(result.ideas.map(&:title)).to include("Photo book", "Walk together")
+    expect(result.coming_up.map(&:title)).to include("Taylor's birthday", "Plan the weekend")
     expect(result.items).to all(satisfy { |item| item.source_label.present? && item.source_context.present? })
     expect(result.items.size).to be <= described_class::MAX_ITEMS
   end
@@ -333,7 +333,7 @@ RSpec.describe DailyFeed::ForUser do
 
     result = described_class.call(user:, as_of: now)
 
-    expect(result.coming_up.map(&:title)).to include("Unscheduled priority")
+    expect(result.ideas.map(&:title)).to include("Unscheduled priority")
   end
 
   it "uses localized display titles when bounding untitled important dates" do
@@ -571,7 +571,7 @@ RSpec.describe DailyFeed::ForUser do
 
     result = described_class.call(user:, as_of: now)
 
-    expect(result.later_today.map(&:title)).to include("Gift 08")
+    expect(result.ideas.map(&:title)).to include("Gift 08")
     expect(described_class.find(user:, item_key: "gift:#{gifts.last.id}", as_of: now)).to be_present
   end
 

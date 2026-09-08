@@ -40,8 +40,10 @@ A central feed that tells users what deserves attention today.
 
 ## Implementation Notes
 
-The dashboard is the Concierge Queue. It groups a bounded set of work into
-Needs attention, Later today, and Coming up, while preserving the source context
+Today groups a bounded set of dated work into Needs attention, Later today,
+and Coming up. Optional suggestions, gift ideas, drafts, goals and undated promises
+appear separately as ideas. Each section shows up to eight entries and labels its
+displayed count. Items preserve the source context
 and a direct path back to the originating relationship or workflow. Suggestion
 evidence keeps its confirmed or inferred label. Recent interactions are bounded
 per active relationship before they can ground a spontaneous gesture. The private dashboard opts out
@@ -51,3 +53,5 @@ Dismiss and snooze affect only the queue. Snooze returns an item at 9:00 AM the
 next day in the user's notification time zone. Feed state is owner-scoped,
 included in account exports, pruned with permanently deleted sources and
 relationships, and deleted with the account.
+
+Today also reads up to four upcoming active event plans in the owner's next 30 days, with an uncapped matching plan count; up to four due saved contact rhythms; and the count of persisted, currently eligible pending reviews. Opening Reviews performs its existing synchronization. The overview itself does not create review requests, change sources or call a provider. Navigation lives in the shared authenticated layout.

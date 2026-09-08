@@ -1,0 +1,76 @@
+en:
+  workspace:
+    skip: Skip to content
+    language: Language
+    menu: Menu
+    tagline: A little closer, every day.
+    navigation:
+      label: Carecierge navigation
+      groups:
+        everyday: Your day
+        tools: More ways to care
+        account: Settings & connections
+        admin: Administration
+      today: Today
+      people: People
+      reminders: Reminders
+      plans: Plans & moments
+      shared: Shared spaces
+      reviews: Reviews
+      search: Search memory
+      marketplace: Discover
+      vendors: Vendors
+      notifications: Notifications
+      permissions: Automation permissions
+      calendar: Calendar
+      contacts: Contacts
+      messages: Email and messages
+      activity: Activity
+      privacy: Privacy & data
+      business: My business
+      admin: Admin overview
+      admin_activity: Admin activity
+      admin_vendors: Marketplace businesses
+      admin_flags: Feature settings
+    page_actions:
+      new: "New %{name}"
+      edit: "Edit %{name}"
+    pages:
+      dashboard: Today
+      relationship_profiles: People
+      relationship_searches: Search memory
+      reminders: Reminder
+      commitments: Promise
+      contact_cadences: Contact rhythm
+      important_dates: Important date
+      interactions: Interaction
+      timeline_entries: Timeline entry
+      conversation_recaps: Conversation recap
+      mood_notes: Mood note
+      memory_records: Memory
+      desires: Idea
+      gifts: Gift
+      gift_boxes: Gift boxes
+      gift_purchase_plans: Purchase plan
+      event_plans: Plans & moments
+      bookings: Bookings
+      vendor_quotes: Quotes
+      vendor_shortlists: Shortlists
+      vendors: Vendors
+      marketplace_listings: Discover
+      vendor_accounts: Business profile
+      external_provider_actions: Provider records
+      shared_relationship_spaces: Shared spaces
+      shared_items: Shared item
+      notification_preferences: Notifications
+      automation_permissions: Automation permissions
+      calendar_connections: Calendar
+      contacts_connections: Contacts
+      messaging_connections: Email and messages
+      audit_events: Activity
+      data_controls: Privacy & data
+      vault_mfas: Vault verification
+      privacy_vaults: Privacy vault
+      approval_requests: Reviews
+      onboarding: Welcome
+      feature_flags: Feature settings

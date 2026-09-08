@@ -179,7 +179,7 @@ class GiftRecommendationsController < ApplicationController
   end
 
   def workspace_path
-    relationship_profile_path(@relationship_profile, anchor: "gift-recommendations")
+    relationship_profile_path(@relationship_profile, section: "ideas", anchor: "gift-recommendations")
   end
 
   def render_generation_error(translation_key)

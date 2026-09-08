@@ -67,7 +67,7 @@ RSpec.describe "Draft forms across relationship mode changes", type: :request do
       post generate_relationship_profile_message_draft_path(profile), params: { message_draft: {
         situation: "Stale situation", draft_type: "check_in", tone: "warm", relationship_mode: before_mode
       } }
-      expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+      expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "message-drafting"))
       expect(draft.reload.draft_revisions.count).to eq(1)
     end
   end

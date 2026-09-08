@@ -1,141 +1,80 @@
-<% content_for :title, t("daily_feed.title") %>
+<% content_for :title, t('workspace.navigation.today') %>
 <% disable_turbo_cache %>
-
-<main class="flex flex-1 flex-col py-4 sm:py-6">
-  <div class="grid overflow-hidden rounded-2xl border border-private-line bg-canvas lg:grid-cols-[14rem_minmax(0,1fr)]">
-    <aside class="hidden border-r border-private-line bg-surface p-4 lg:flex lg:flex-col" aria-label="<%= t("daily_feed.navigation.label") %>">
-      <%= link_to dashboard_path, class: "rounded-lg px-3 py-3 text-xl font-semibold text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" do %>
-        Carecierge
-      <% end %>
-
-      <nav class="mt-8 flex flex-col gap-1">
-        <%= link_to t("daily_feed.navigation.queue"), dashboard_path, aria: { current: "page" }, class: "min-h-11 rounded-lg bg-canvas px-3 py-3 text-sm font-semibold text-primary" %>
-        <%= link_to t("daily_feed.navigation.approvals"), approvals_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("daily_feed.navigation.people"), relationship_profiles_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("daily_feed.navigation.reminders"), reminders_path, aria: { label: t("daily_feed.navigation.open_reminders") }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("daily_feed.navigation.event_plans"), event_plans_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("shared_spaces.title"), shared_relationship_spaces_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("daily_feed.navigation.vendors"), vendors_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("daily_feed.navigation.activity"), audit_events_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("daily_feed.navigation.data_controls"), data_control_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("daily_feed.navigation.calendar_integrations"), calendar_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("contacts.heading"), contacts_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("messaging.heading"), messaging_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <% if current_user.admin? %>
-          <%= link_to t("admin.dashboard.show.title"), admin_root_path, data: { turbo_prefetch: false }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-          <%= link_to t("daily_feed.navigation.admin_activity"), admin_audit_events_path, data: { turbo_prefetch: false }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <% end %>
-      </nav>
-
-      <div class="mt-auto flex flex-col gap-1 pt-10">
-        <%= link_to t("daily_feed.navigation.add_relationship"), new_relationship_profile_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-semibold text-primary transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= link_to t("daily_feed.navigation.settings"), edit_notification_preference_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        <%= button_to t("daily_feed.navigation.sign_out"), destroy_user_session_path, method: :delete, form: { data: { action: "submit->privacy-vault#lock" } }, class: "min-h-11 w-full rounded-lg px-3 py-3 text-left text-sm font-medium text-ink transition hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-      </div>
-    </aside>
-
-    <div class="min-w-0">
-      <header class="border-b border-private-line px-5 py-5 sm:px-7">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 class="text-3xl font-semibold text-ink"><%= t("daily_feed.heading") %></h1>
-            <p class="mt-2 max-w-2xl text-base leading-7 text-quiet-note"><%= t("daily_feed.body") %></p>
-          </div>
-
-          <details class="relative lg:hidden">
-            <summary class="inline-flex min-h-11 cursor-pointer list-none items-center rounded-lg border border-private-line px-4 py-2 text-sm font-semibold text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
-              <%= t("daily_feed.navigation.menu") %>
-            </summary>
-            <nav class="mt-2 grid min-w-56 gap-1 rounded-xl border border-private-line bg-canvas p-2 shadow-sm" aria-label="<%= t("daily_feed.navigation.mobile_label") %>">
-              <%= link_to t("daily_feed.navigation.approvals"), approvals_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("daily_feed.navigation.people"), relationship_profiles_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("daily_feed.navigation.reminders"), reminders_path, aria: { label: t("daily_feed.navigation.open_reminders") }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("daily_feed.navigation.event_plans"), event_plans_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("shared_spaces.title"), shared_relationship_spaces_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("daily_feed.navigation.vendors"), vendors_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("daily_feed.navigation.activity"), audit_events_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("daily_feed.navigation.data_controls"), data_control_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("daily_feed.navigation.calendar_integrations"), calendar_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= link_to t("contacts.heading"), contacts_connection_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <% if current_user.admin? %>
-                <%= link_to t("admin.dashboard.show.title"), admin_root_path, data: { turbo_prefetch: false }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-                <%= link_to t("daily_feed.navigation.admin_activity"), admin_audit_events_path, data: { turbo_prefetch: false }, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <% end %>
-              <%= link_to t("daily_feed.navigation.add_relationship"), new_relationship_profile_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-semibold text-primary hover:bg-surface" %>
-              <%= link_to t("daily_feed.navigation.settings"), edit_notification_preference_path, class: "min-h-11 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-surface" %>
-              <%= button_to t("daily_feed.navigation.sign_out"), destroy_user_session_path, method: :delete, form: { data: { action: "submit->privacy-vault#lock" } }, class: "min-h-11 w-full rounded-lg px-3 py-3 text-left text-sm font-medium text-ink hover:bg-surface" %>
-            </nav>
-          </details>
-        </div>
-
-        <% if @onboarding_available %>
-          <div class="mt-5 rounded-xl border border-private-line bg-surface px-4 py-4">
-            <p class="text-sm leading-6 text-quiet-note"><%= t("daily_feed.onboarding.body") %></p>
-            <%= link_to t("daily_feed.onboarding.action"), onboarding_path, class: "mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:text-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-          </div>
-        <% end %>
-      </header>
-
-      <% if @daily_feed.empty? %>
-        <section class="px-5 py-12 sm:px-7" aria-labelledby="daily-feed-empty-title">
-          <h2 id="daily-feed-empty-title" class="text-xl font-semibold text-ink"><%= t("daily_feed.empty.title") %></h2>
-          <p class="mt-3 max-w-2xl text-base leading-7 text-quiet-note"><%= t("daily_feed.empty.body") %></p>
-          <%= link_to t("daily_feed.empty.action"), new_reminder_path, class: "mt-5 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-canvas hover:bg-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
-        </section>
-      <% else %>
-        <div class="grid xl:grid-cols-[minmax(0,1fr)_18rem]">
-          <div class="min-w-0 px-5 py-6 sm:px-7">
-            <section aria-labelledby="needs-attention-title">
-              <div class="mb-4 flex items-center gap-2">
-                <h2 id="needs-attention-title" class="text-lg font-semibold text-ink"><%= t("daily_feed.sections.needs_attention") %></h2>
-                <span class="rounded-full bg-surface px-2 py-1 text-xs font-semibold text-quiet-note"><%= @daily_feed.needs_attention.size %></span>
-              </div>
-
-              <% if @daily_feed.needs_attention.any? %>
-                <div class="space-y-3">
-                  <% @daily_feed.needs_attention.each_with_index do |item, index| %>
-                    <%= component "daily_feed_item", item:, featured: index.zero? %>
-                  <% end %>
-                </div>
-              <% else %>
-                <p class="rounded-xl bg-surface px-4 py-4 text-sm leading-6 text-quiet-note"><%= t("daily_feed.sections.none_needs_attention") %></p>
-              <% end %>
-            </section>
-
-            <section class="mt-8" aria-labelledby="later-today-title">
-              <div class="mb-3 flex items-center gap-2">
-                <h2 id="later-today-title" class="text-lg font-semibold text-ink"><%= t("daily_feed.sections.later_today") %></h2>
-                <span class="rounded-full bg-surface px-2 py-1 text-xs font-semibold text-quiet-note"><%= @daily_feed.later_today.size %></span>
-              </div>
-              <div class="overflow-hidden rounded-xl border border-private-line">
-                <% if @daily_feed.later_today.any? %>
-                  <% @daily_feed.later_today.each do |item| %>
-                    <%= component "daily_feed_item", item: %>
-                  <% end %>
-                <% else %>
-                  <p class="px-4 py-5 text-sm leading-6 text-quiet-note"><%= t("daily_feed.sections.none_later_today") %></p>
-                <% end %>
-              </div>
-            </section>
-          </div>
-
-          <aside class="border-t border-private-line bg-surface px-5 py-6 sm:px-7 xl:border-l xl:border-t-0" aria-labelledby="coming-up-title">
-            <div class="mb-2 flex items-center gap-2">
-              <h2 id="coming-up-title" class="text-lg font-semibold text-ink"><%= t("daily_feed.sections.coming_up") %></h2>
-              <span class="rounded-full bg-canvas px-2 py-1 text-xs font-semibold text-quiet-note"><%= @daily_feed.coming_up.size %></span>
-            </div>
-            <% if @daily_feed.coming_up.any? %>
-              <div>
-                <% @daily_feed.coming_up.each do |item| %>
-                  <%= component "daily_feed_item", item:, compact: true %>
-                <% end %>
-              </div>
-            <% else %>
-              <p class="mt-3 text-sm leading-6 text-quiet-note"><%= t("daily_feed.sections.none_coming_up") %></p>
+<div class="today-workspace">
+  <%= component 'page_header', title: t('workspace.navigation.today'), context: l(@today.local_now.to_date, format: :long), description: t('today.introduction') do %>
+    <%= component 'action_link', label: t('today.add_person'), path: new_relationship_profile_path, variant: :secondary, icon: :people %>
+    <%= component 'action_link', label: t('today.add_reminder'), path: new_reminder_path, variant: :primary, icon: :plus %>
+  <% end %>
+  <% if @onboarding_available %>
+    <section class="workspace-welcome" aria-labelledby="today-welcome">
+      <div><h2 id="today-welcome"><%= t('today.welcome.title') %></h2><p><%= t('today.welcome.body') %></p></div>
+      <%= component 'action_link', label: t('today.welcome.action'), path: onboarding_path, variant: :primary %>
+    </section>
+  <% end %>
+  <div class="today-columns">
+    <div class="today-agenda">
+      <section class="workspace-panel" aria-labelledby="today-agenda-title">
+        <header class="workspace-section-heading"><div><h2 id="today-agenda-title"><%= t('today.agenda.title') %></h2><p><%= t('today.agenda.body') %></p></div><%= component 'ui_icon', name: :reminders %></header>
+        <% if @daily_feed.needs_attention.empty? && @daily_feed.later_today.empty? %>
+          <div class="workspace-empty"><h3><%= t('today.agenda.quiet_title') %></h3><p><%= t('today.agenda.quiet_body') %></p><%= component 'action_link', label: t('today.agenda.quiet_action'), path: relationship_profiles_path, icon: :arrow, variant: :quiet %></div>
+        <% else %>
+          <% { needs_attention: @daily_feed.needs_attention, later_today: @daily_feed.later_today }.each do |section, items| %>
+            <% if items.any? %>
+              <div class="workspace-subheading"><h3><%= t("daily_feed.sections.#{section}") %></h3><span><%= t('today.showing', count: items.size) %></span></div>
+              <div class="feed-list"><% items.each do |item| %><%= component 'daily_feed_item', item:, time_zone: @today.local_now.time_zone %><% end %></div>
             <% end %>
-          </aside>
-        </div>
+          <% end %>
+        <% end %>
+        <footer class="workspace-panel-footer"><%= component 'action_link', label: t('today.agenda.all'), path: reminders_path, variant: :quiet, icon: :arrow %></footer>
+      </section>
+      <% if @today.check_ins.any? %>
+        <section class="workspace-panel" aria-labelledby="today-check-ins-title">
+          <header class="workspace-section-heading"><div><h2 id="today-check-ins-title"><%= t('today.check_ins.title') %></h2><span class="workspace-count"><%= t('today.showing', count: @today.check_ins.size) %></span><p><%= t('today.check_ins.body') %></p></div><%= component 'ui_icon', name: :people %></header>
+          <ul class="workspace-list">
+            <% @today.check_ins.each do |cadence| %>
+              <li class="check-in-row">
+                <div><%= link_to relationship_profile_path(cadence.relationship_profile, anchor: 'contact_rhythm_section') do %><%= component 'person_identity', name: cadence.relationship_profile.display_name, subtitle: t('today.check_ins.rhythm', count: cadence.interval_days) %><% end %><p class="check-in-context"><%= cadence.last_interaction_at ? t('today.check_ins.last', date: l(cadence.last_interaction_at.in_time_zone(@today.local_now.time_zone).to_date, format: :long)) : t('today.check_ins.first') %></p></div>
+                <%= component 'action_link', label: t('today.check_ins.action'), path: new_reminder_path(relationship_profile_id: cadence.relationship_profile_id) %>
+              </li>
+            <% end %>
+          </ul>
+          <footer class="workspace-panel-footer"><%= component 'action_link', label: t('today.people'), path: relationship_profiles_path, variant: :quiet, icon: :arrow %></footer>
+        </section>
+      <% end %>
+    </div>
+    <aside class="today-outlook" aria-label="<%= t('today.outlook') %>">
+      <section class="workspace-panel" aria-labelledby="today-moments-title">
+        <header class="workspace-section-heading"><div><h2 id="today-moments-title"><%= t('today.moments.title') %></h2><p><%= t('today.moments.body') %></p></div><%= component 'ui_icon', name: :plans %></header>
+        <% if @today.plans.any? %>
+          <ul class="workspace-list">
+            <% @today.plans.each do |plan| %>
+              <li><%= link_to event_plan_path(plan), class: 'moment-row' do %><%= component 'date_marker', date: plan.starts_on %><span class="moment-copy"><strong><%= plan.title %></strong><span><%= plan.relationship_profile.display_name %></span><span class="moment-action"><%= t('today.moments.open') %> →</span></span><% end %></li>
+            <% end %>
+          </ul>
+          <p class="workspace-preview-note"><%= t('today.moments.preview', count: @today.plans.size, total: @today.plan_count) %></p>
+        <% else %>
+          <div class="workspace-empty workspace-empty-compact"><p><%= t('today.moments.empty') %></p><%= component 'action_link', label: t('today.moments.create'), path: new_event_plan_path, variant: :quiet, icon: :plus %></div>
+        <% end %>
+        <% if @daily_feed.coming_up.any? %>
+          <div class="workspace-subheading"><h3><%= t('today.moments.dates') %></h3><span><%= t('today.showing', count: @daily_feed.coming_up.size) %></span></div>
+          <div class="feed-list"><% @daily_feed.coming_up.each do |item| %><%= component 'daily_feed_item', item:, compact: true, time_zone: @today.local_now.time_zone %><% end %></div>
+        <% end %>
+        <footer class="workspace-panel-footer"><%= component 'action_link', label: t('today.moments.all'), path: event_plans_path, variant: :quiet, icon: :arrow %></footer>
+      </section>
+      <section class="workspace-panel" aria-labelledby="today-reviews-title">
+        <header class="workspace-section-heading"><div><h2 id="today-reviews-title"><%= t('today.reviews.title') %></h2><p><%= t('today.reviews.body') %></p></div><%= component 'ui_icon', name: :reviews %></header>
+        <div class="workspace-empty workspace-empty-compact"><p><%= t('today.reviews.waiting', count: @today.review_count) %></p><%= component 'action_link', label: t('today.reviews.action'), path: approvals_path, variant: :quiet, icon: :arrow %></div>
+      </section>
+      <%= link_to relationship_profiles_path, class: 'today-people-link' do %><%= component 'ui_icon', name: :people %><span><strong><%= t('today.relationship_count', count: @today.profile_count) %></strong><span><%= t('today.people') %></span></span><%= component 'ui_icon', name: :arrow %><% end %>
+    </aside>
+    <div class="today-ideas">
+      <% if @daily_feed.ideas.any? %>
+        <section class="workspace-panel" aria-labelledby="today-ideas-title">
+          <header class="workspace-section-heading"><div><h2 id="today-ideas-title"><%= t('today.ideas.title') %></h2><p><%= t('today.ideas.body') %></p></div><span class="workspace-count"><%= t('today.showing', count: @daily_feed.ideas.size) %></span></header>
+          <div class="feed-list"><% @daily_feed.ideas.each do |item| %><%= component 'daily_feed_item', item:, time_zone: @today.local_now.time_zone %><% end %></div>
+          <footer class="workspace-panel-footer"><%= component 'action_link', label: t('today.ideas.all'), path: relationship_profiles_path, variant: :quiet, icon: :arrow %></footer>
+        </section>
       <% end %>
     </div>
   </div>
-</main>
+</div>

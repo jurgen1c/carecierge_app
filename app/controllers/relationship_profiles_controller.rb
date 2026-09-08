@@ -14,12 +14,13 @@ class RelationshipProfilesController < ApplicationController
       policy_scope(RelationshipProfile).includes(
         :relationship_tags,
         :relationship_groups,
-        relationship_notes: [ :privacy_vault_item, :rich_text_body ]
+        :important_dates
       ),
       params:
     )
 
-    @relationship_profiles = query.resolve
+    @pagy, @relationship_profiles = pagy(:offset, query.resolve, limit: 24)
+    @people_summaries = People::Summaries.new(profiles: @relationship_profiles, user: current_user)
     @search_params = query.search_params
     @search_query = query.search_query
     @q = query.ransack

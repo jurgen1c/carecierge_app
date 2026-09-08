@@ -1,7 +1,7 @@
 module DailyFeed
-  Result = Data.define(:needs_attention, :later_today, :coming_up) do
+  Result = Data.define(:needs_attention, :later_today, :coming_up, :ideas) do
     def items
-      needs_attention + later_today + coming_up
+      needs_attention + later_today + coming_up + ideas
     end
 
     def empty?

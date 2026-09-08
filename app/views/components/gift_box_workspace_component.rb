@@ -1,5 +1,6 @@
 class GiftBoxWorkspaceComponent < ApplicationViewComponent
   option :gift_box
+  option :embedded, default: -> { false }
   style :control do
     base { %w[mt-2 min-h-11 w-full rounded-lg border border-stone-300 bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20] }
   end

@@ -1,0 +1,40 @@
+es:
+  profile_workspace:
+    add_date: "Agregar fecha"
+    next_reminder: "Próximo recordatorio: %{title} · %{date}"
+    open_promise: "Promesa pendiente: %{title}"
+    about_hint: "Guarda los detalles que te ayudan a cuidar. Agrégalos o edítalos cuando quieras."
+    preferences: "Preferencias"
+    details: "Datos personales"
+    prepare_briefing: Preparar una conversación
+    find_gift: Buscar una idea de regalo
+    prepare_message: Abrir el editor de mensajes
+    back: Todas las personas
+    record: Registrar una interacción
+    remind: Planear un recordatorio
+    overview: De un vistazo
+    last_recorded: Última interacción registrada
+    next_moment: Próxima fecha importante
+    no_moment: No hay próximas fechas guardadas.
+    contact: Datos de contacto
+    no_contact: Agrega datos de contacto cuando los necesites.
+    navigation: Explora esta relación
+    sections:
+      moments:
+        title: Momentos y ritmo de contacto
+        description: "Fechas importantes, interacciones recientes y cada cuánto te gustaría conectar."
+      plans:
+        title: Planes y promesas
+        description: "Recordatorios, eventos, compromisos, deseos y regalos."
+      notes:
+        title: Notas y recuerdos
+        description: "Conversaciones, tu cronología y el contexto que has decidido guardar."
+      about:
+        title: Sobre esta persona
+        description: "Datos, preferencias, notas, etiquetas y grupos."
+      ideas:
+        title: Ideas y preparación
+        description: "Gestos opcionales, preparación para conversar y borradores para revisar."
+      privacy:
+        title: Privacidad y ajustes del perfil
+        description: "Información protegida, archivo y eliminación."

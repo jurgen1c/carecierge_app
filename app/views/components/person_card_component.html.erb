@@ -1,0 +1,26 @@
+<article class="<%= style %>" data-person="<%= profile.id %>">
+  <h2><%= link_to relationship_profile_path(profile), class: "person-card-link" do %>
+    <%= component "person_identity", name: profile.display_name, subtitle: profile.relationship_type_label, size: :large %>
+  <% end %></h2>
+  <% if profile.archived? %><p class="person-card-status"><%= t("relationship_profiles.index.archived") %></p><% end %>
+  <p class="person-card-context">
+    <% if last_interaction_on %>
+      <%= t("people.last_recorded") %> <time datetime="<%= last_interaction_on.iso8601 %>"><%= l(last_interaction_on, format: :long) %></time>
+    <% else %>
+      <%= t("people.no_interaction") %>
+    <% end %>
+  </p>
+  <% if next_moment %>
+    <% occurrence = next_moment.next_occurrence_on(as_of: summaries.as_of) %>
+    <div class="person-card-moment">
+      <%= component "date_marker", date: occurrence %>
+      <p><strong><%= next_moment.display_title %></strong><time datetime="<%= occurrence.iso8601 %>"><%= l(occurrence, format: :long) %></time></p>
+    </div>
+  <% end %>
+  <% if profile.relationship_tags.any? || profile.relationship_groups.any? %>
+    <ul class="person-card-tags" aria-label="<%= t("people.labels") %>">
+      <% (profile.relationship_tags + profile.relationship_groups).each do |label| %><li><%= label.name %></li><% end %>
+    </ul>
+  <% end %>
+  <%= component "action_link", label: t("people.open_profile"), path: relationship_profile_path(profile), variant: :quiet %>
+</article>

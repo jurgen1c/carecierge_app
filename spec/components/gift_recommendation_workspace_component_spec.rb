@@ -19,14 +19,14 @@ RSpec.describe GiftRecommendationWorkspaceComponent, type: :component do
     )
 
     expect(page).to have_css("#gift-recommendations")
-    expect(page).to have_field("Maximum budget")
-    expect(page).to have_unchecked_field("Include private notes")
-    expect(page).to have_unchecked_field("Include Privacy Vault context", disabled: true)
+    expect(page).to have_field("Maximum budget", visible: :all)
+    expect(page).to have_unchecked_field("Include private notes", visible: :all)
+    expect(page).to have_unchecked_field("Include Privacy Vault context", disabled: true, visible: :all)
     expect(page).to have_link(
-      "Unlock the Privacy Vault",
+      "Unlock the Privacy Vault", visible: :all,
       href: Rails.application.routes.url_helpers.relationship_profile_privacy_vault_path(profile)
     )
-    expect(page).to have_unchecked_field("Allow repeatable staples")
+    expect(page).to have_unchecked_field("Allow repeatable staples", visible: :all)
     expect(page).to have_content("Coffee tasting set")
     expect(page).to have_content("Preference")
     expect(page).to have_content("Confirmed")
@@ -50,7 +50,7 @@ RSpec.describe GiftRecommendationWorkspaceComponent, type: :component do
     end
 
     expect(page).to have_content("Recomendaciones de regalos")
-    expect(page).to have_button("Recomendar regalos")
+    expect(page).to have_button("Recomendar regalos", visible: :all)
     expect(page).to have_no_content("Translation missing")
   end
 
@@ -132,7 +132,7 @@ RSpec.describe GiftRecommendationWorkspaceComponent, type: :component do
 
     expect(page).to have_unchecked_field("Reuse Privacy Vault context for this alternative", disabled: true)
     expect(page).to have_link(
-      "Unlock the Privacy Vault",
+      "Unlock the Privacy Vault", visible: :all,
       href: Rails.application.routes.url_helpers.relationship_profile_privacy_vault_path(profile)
     )
   end
@@ -150,6 +150,6 @@ RSpec.describe GiftRecommendationWorkspaceComponent, type: :component do
       render_inline described_class.new(relationship_profile: profile, permission:)
     end
 
-    expect(page).to have_css('input[type="date"][min="2026-08-19"][max="9999-12-31"]')
+    expect(page).to have_css('input[type="date"][min="2026-08-19"][max="9999-12-31"]', visible: :all)
   end
 end

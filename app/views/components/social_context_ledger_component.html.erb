@@ -134,7 +134,7 @@
     <% end %>
 
     <% if editable %>
-      <details class="group px-5 py-4 sm:px-6" <%= "open" if notes.empty? || new_note.errors.any? %>>
+      <details class="group px-5 py-4 sm:px-6" <%= "open" if new_note.errors.any? %>>
         <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 rounded-lg text-sm font-semibold text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
           <span><%= t("social_context_notes.new.title") %></span>
           <span aria-hidden="true" class="text-lg text-primary transition group-open:rotate-45">+</span>

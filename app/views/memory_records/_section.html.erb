@@ -57,7 +57,7 @@
           </dl>
         </section>
 
-        <%= turbo_frame_tag "new_memory_record", src: new_relationship_profile_memory_record_path(relationship_profile), loading: :lazy do %>
+        <%= turbo_frame_tag "new_memory_record" do %>
           <div class="rounded-xl border border-stone-200 bg-white p-4">
             <h3 class="text-base font-semibold text-stone-950"><%= t("memory_records.form.new_title") %></h3>
             <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("memory_records.form.body") %></p>

@@ -19,10 +19,10 @@ RSpec.describe "Concierge Queue", type: :system do
     Timecop.freeze(now) do
       visit dashboard_path
 
-      expect(page).to have_css("h1", text: "Concierge queue")
-      expect(page).to have_css("h2", text: "Needs attention")
-      expect(page).to have_css("h2", text: "Later today")
-      expect(page).to have_css("h2", text: "Coming up")
+      expect(page).to have_css("h1", text: "Today")
+      expect(page).to have_css("h3", text: "Needs attention")
+      expect(page).to have_css("h2", text: "A thoughtful next move")
+      expect(page).to have_css("h2", text: "On the horizon")
       expect(page).to have_content("Follow up with Taylor")
       expect(page).to have_content("Ask how the new role is going.")
       expect(page).to have_button("Complete")

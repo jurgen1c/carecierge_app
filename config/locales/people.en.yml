@@ -1,0 +1,20 @@
+en:
+  people:
+    title: People
+    description: "The people in your life, and the things you want to remember."
+    search: Search
+    filters: More filters
+    results:
+      one: "1 person"
+      other: "%{count} people"
+    last_recorded: "Last recorded:"
+    no_interaction: No interaction recorded yet.
+    labels: Tags and groups
+    open_profile: Open profile
+    pagination: People pages
+    previous: Previous
+    next: Next
+    page: "%{page} of %{pages}"
+    empty_title: Find someone in your circle
+    empty_body: "Add a person to begin, or adjust your search and filters."
+    clear_filters: Clear filters

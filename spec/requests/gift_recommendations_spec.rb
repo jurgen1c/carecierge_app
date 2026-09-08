@@ -64,7 +64,7 @@ RSpec.describe "Gift recommendations", type: :request do
       }
     }
 
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "gift-recommendations"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "gift-recommendations"))
     expect(GiftRecommendations::Generate).to have_received(:call).with(hash_including(
       actor: user,
       relationship_profile: have_attributes(id: profile.id),

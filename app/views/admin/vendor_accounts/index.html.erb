@@ -1,5 +1,5 @@
 <% disable_turbo_cache %>
-<main lang="<%= I18n.locale %>" class="mx-auto w-full max-w-3xl space-y-6 py-6">
+<div lang="<%= I18n.locale %>" class="mx-auto w-full max-w-3xl space-y-6 py-6">
   <%= link_to t("vendor_accounts.admin_back"), admin_root_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline" %>
   <h1 class="text-3xl font-semibold text-ink"><%= t("vendor_accounts.moderation_title") %></h1>
   <p class="max-w-prose leading-7 text-quiet-note"><%= t("vendor_accounts.moderation_hint") %></p>
@@ -13,4 +13,4 @@
     <% end %>
   </ol>
   <%= render "vendor_accounts/pagination", page_url: ->(page) { admin_vendor_accounts_path(page:) } %>
-</main>
+</div>

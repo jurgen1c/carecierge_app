@@ -1,3 +1,4 @@
+<%= component "form_heading", title: t("contact_rhythm.cadence.title") %>
 <% form_url = relationship_profile_contact_cadence_path(relationship_profile) %>
 
 <%= form_with model: contact_cadence, url: form_url, method: contact_cadence.persisted? ? :patch : :post, class: "mt-4 border-t border-stone-200 pt-4" do |form| %>

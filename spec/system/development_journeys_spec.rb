@@ -28,6 +28,7 @@ RSpec.describe "Development journey manifest", type: :system do
         expect(page).not_to have_text("Routing Error")
       end
       visit "/relationship_profiles/alex-synthetic-owner_#{locale}?locale=#{locale}"
+      find("#profile-notes > summary").click
       expect(page).to have_text("Jasmine tea")
       expect(page).to have_text("Synthetic failed extraction")
       expect(page).not_to have_text("Fictional private context for vault walkthrough.")
@@ -50,7 +51,7 @@ RSpec.describe "Development journey manifest", type: :system do
       sign_out user
     end
     sign_in @world.users.fetch("vendor")
-    visit "/vendor_account"
+    visit "/vendor_account?locale=en"
     expect(page).to have_field("Business name", with: "Synthetic Orchid Studio")
     sign_out @world.users.fetch("vendor")
     sign_in @world.users.fetch("admin")

@@ -1,6 +1,61 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    target: agent_workflow.frontend_policy_sources_of_truth
+    relation: requires
+    reason: Shared navigation and container layouts follow the existing product direction and component styling policy.
+    strength: 100
+  - source: authentication.request_locale_follows_explicit_session_choice
+    target: authentication.localization_baseline
+    relation: requires
+    reason: Request language selection preserves English default and Spanish availability.
+    strength: 100
+  - source: authentication.request_locale_follows_explicit_session_choice
+    target: authentication.user_access_flow
+    relation: requires
+    reason: Locale follows existing sign-in and onboarding destinations without changing their eligibility.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    relation: requires
+    reason: The relationship workspace composes within the global navigation and single main landmark.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.preference_metadata
+    relation: requires
+    reason: Compact About sections retain preference values and confidence metadata.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    relation: requires
+    reason: Grouped forms preserve mode guards and selected work context on every existing generation path.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    relation: requires
+    reason: The Ideas section retains source-backed personas and legacy evidence anchors.
+    strength: 100
+  - source: daily_feed.concierge_queue_is_derived_and_owner_scoped
+    target: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    relation: requires
+    reason: Today adds useful contextual columns inside the shared authenticated workspace.
+    strength: 100
+  - source: authentication.request_locale_follows_explicit_session_choice
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Language selection precedes authentication and preserves the existing Devise authority.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Directory previews and profile sections retain the existing owner-scoped relationship authority.
+    strength: 100
+  - source: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    target: authentication.request_locale_follows_explicit_session_choice
+    relation: requires
+    reason: Shared navigation and document language follow the selected request locale.
+    strength: 100
   - source: authentication.production_seeds_provision_the_initial_account_without_replacing_credentials
     target: authentication.account_access_boundary
     relation: requires

@@ -1,5 +1,5 @@
 <% disable_turbo_cache %>
-<main aria-labelledby="bookings-page-title" class="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
+<div aria-labelledby="bookings-page-title" class="w-full">
   <% if @event_plan %>
     <header class="border-b border-private-line pb-6">
       <%= link_to t("bookings.index.back"), (@event_plan.archived? || @event_plan.relationship_profile.discarded? ? bookings_path : event_plan_path(@event_plan)), class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4" %>
@@ -48,4 +48,4 @@
       </nav>
     <% end %>
   <% end %>
-</main>
+</div>

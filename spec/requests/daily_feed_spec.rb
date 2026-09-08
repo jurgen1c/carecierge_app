@@ -23,7 +23,7 @@ RSpec.describe "Daily relationship feed", type: :request do
     Timecop.freeze(now) { get dashboard_path }
 
     expect(response).to have_http_status(:ok)
-    expect(response.body).to include("Concierge queue", "Needs attention", "Follow up with Taylor", "Share the introduction.")
+    expect(response.body).to include("Today", "Needs attention", "Follow up with Taylor", "Share the introduction.")
     expect(response.body).to include(relationship_profiles_path, reminders_path, edit_notification_preference_path)
     expect(response.body).to include(data_control_path, audit_events_path, new_relationship_profile_path)
     expect(response.parsed_body.at_css("meta[name='turbo-cache-control']")&.[]("content")).to eq("no-cache")
@@ -167,7 +167,7 @@ RSpec.describe "Daily relationship feed", type: :request do
 
     Timecop.freeze(now) { I18n.with_locale(:es) { get dashboard_path } }
 
-    expect(response.body).to include("Cola de concierge", "Necesita atención", "Posponer", "Descartar")
+    expect(response.body).to include("Hoy", "Necesita atención", "Posponer", "Descartar")
     expect(response.body).not_to include("Translation missing")
   end
 end

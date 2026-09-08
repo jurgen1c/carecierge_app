@@ -1,0 +1,20 @@
+<%= turbo_frame_tag "profile_overview" do %>
+      <section class="workspace-panel">
+        <header class="workspace-section-heading"><h2><%= t("profile_workspace.overview") %></h2><%= component "ui_icon", name: "people" %></header>
+        <dl class="profile-facts">
+          <div>
+            <dt><%= t("profile_workspace.last_recorded") %></dt>
+            <% last_interaction = interactions.find { |interaction| interaction.occurred_at <= Time.current } %>
+            <dd><% if last_interaction %><strong><%= t("contact_rhythm.interaction_types.#{last_interaction.interaction_type}") %></strong><time datetime="<%= last_interaction.occurred_at.iso8601 %>"><%= l(OwnerLocalCalendar.date_for(user: current_user, at: last_interaction.occurred_at), format: :long) %></time><% else %><%= t("people.no_interaction") %><% end %></dd>
+          </div>
+          <div>
+            <dt><%= t("profile_workspace.contact") %></dt>
+            <dd>
+              <% if relationship_profile.contact_methods.any? %>
+                <% relationship_profile.contact_methods.each do |method| %><p><span class="profile-contact-kind"><%= t(method.kind, scope: "relationship_profiles.show.contact_kinds") %></span> <%= method.value %></p><% end %>
+              <% else %><%= t("profile_workspace.no_contact") %><% end %>
+            </dd>
+          </div>
+        </dl>
+      </section>
+<% end %>

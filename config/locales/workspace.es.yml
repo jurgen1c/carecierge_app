@@ -1,0 +1,76 @@
+es:
+  workspace:
+    skip: Ir al contenido
+    language: Idioma
+    menu: Menú
+    tagline: Un poco más cerca, cada día.
+    navigation:
+      label: Navegación de Carecierge
+      groups:
+        everyday: Tu día
+        tools: Más formas de cuidar
+        account: Configuración y conexiones
+        admin: Administración
+      today: Hoy
+      people: Personas
+      reminders: Recordatorios
+      plans: Planes y momentos
+      shared: Espacios compartidos
+      reviews: Revisiones
+      search: Buscar recuerdos
+      marketplace: Descubrir
+      vendors: Proveedores
+      notifications: Notificaciones
+      permissions: Permisos de automatización
+      calendar: Calendario
+      contacts: Contactos
+      messages: Correo y mensajes
+      activity: Actividad
+      privacy: Privacidad y datos
+      business: Mi negocio
+      admin: Resumen administrativo
+      admin_activity: Actividad administrativa
+      admin_vendors: Negocios del mercado
+      admin_flags: Configuración de funciones
+    page_actions:
+      new: "Crear: %{name}"
+      edit: "Editar: %{name}"
+    pages:
+      dashboard: Hoy
+      relationship_profiles: Personas
+      relationship_searches: Buscar recuerdos
+      reminders: Recordatorio
+      commitments: Promesa
+      contact_cadences: Ritmo de contacto
+      important_dates: Fecha importante
+      interactions: Interacción
+      timeline_entries: Entrada del historial
+      conversation_recaps: Resumen de conversación
+      mood_notes: Nota de ánimo
+      memory_records: Recuerdo
+      desires: Idea
+      gifts: Regalo
+      gift_boxes: Cajas de regalo
+      gift_purchase_plans: Plan de compra
+      event_plans: Planes y momentos
+      bookings: Reservas
+      vendor_quotes: Cotizaciones
+      vendor_shortlists: Listas de opciones
+      vendors: Proveedores
+      marketplace_listings: Descubrir
+      vendor_accounts: Perfil de negocio
+      external_provider_actions: Registros de proveedores
+      shared_relationship_spaces: Espacios compartidos
+      shared_items: Elemento compartido
+      notification_preferences: Notificaciones
+      automation_permissions: Permisos de automatización
+      calendar_connections: Calendario
+      contacts_connections: Contactos
+      messaging_connections: Correo y mensajes
+      audit_events: Actividad
+      data_controls: Privacidad y datos
+      vault_mfas: Verificación de la bóveda
+      privacy_vaults: Bóveda privada
+      approval_requests: Revisiones
+      onboarding: Bienvenida
+      feature_flags: Configuración de funciones

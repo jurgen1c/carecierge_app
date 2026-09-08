@@ -80,7 +80,7 @@ class RelationshipBriefingsController < ApplicationController
   end
 
   def workspace_path
-    relationship_profile_path(@relationship_profile, anchor: "relationship-briefing")
+    relationship_profile_path(@relationship_profile, section: "ideas", anchor: "relationship-briefing")
   end
 
   def record_action(action)

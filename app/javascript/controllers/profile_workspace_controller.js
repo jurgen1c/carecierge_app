@@ -32,7 +32,8 @@ export default class extends Controller {
     const frame = event.target
     this.openAncestors(frame)
     this.revealErrors()
-    const field = frame.querySelector('form input:not([type="hidden"]):not([disabled]), form select:not([disabled]), form textarea:not([disabled]), form button:not([disabled])')
+    // Action-only refreshes should not move the viewport or steal the next click.
+    const field = frame.querySelector('form input:not([type="hidden"]):not([disabled]), form select:not([disabled]), form textarea:not([disabled])')
     if (!field) return
     window.requestAnimationFrame(() => {
       if (!frame.isConnected) return

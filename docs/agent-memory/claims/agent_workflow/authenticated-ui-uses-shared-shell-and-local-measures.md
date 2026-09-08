@@ -3,13 +3,13 @@ id: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
 type: fact
 system: agent_workflow
 status: current
-confidence: verified
+confidence: high
 severity: normal
 
 title: Authenticated UI uses one shared shell and local reading measures
 
 claim: >
-  The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md.
+  The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. At enlarged text sizes the wordmark stays intact, the Menu control can wrap to a second row, and the open menu scrolls within the remaining viewport below the actual header height. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md.
 
 source_files:
   - app/views/layouts/application.html.erb
@@ -67,14 +67,13 @@ verification:
   - bun run build:css
   - bun run lint:js
 
-last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
 ---
 
 # Authenticated UI uses one shared shell and local reading measures
 
 ## Claim
 
-The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md.
+The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. At enlarged text sizes the wordmark stays intact, the Menu control can wrap to a second row, and the open menu scrolls within the remaining viewport below the actual header height. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md.
 
 ## Why It Matters
 

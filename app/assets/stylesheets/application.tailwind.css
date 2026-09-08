@@ -156,12 +156,13 @@
   .app-content { min-width: 0; padding: 1.25rem 1rem 3rem; }
   .app-content:focus, .public-content:focus { outline: none; }
   .public-content { margin-inline: auto; max-width: 72rem; padding: 1.5rem; }
-  .app-brand { display: inline-flex; align-items: center; min-height: 2.75rem; font-size: 1.375rem; font-weight: 600; letter-spacing: -.03em; color: var(--color-primary); }
+  .app-brand { display: inline-flex; align-items: center; flex-shrink: 0; white-space: nowrap; min-height: 2.75rem; font-size: 1.375rem; font-weight: 600; letter-spacing: -.03em; color: var(--color-primary); }
   .app-brand-note { color: var(--color-quiet-note); font-size: .8125rem; line-height: 1.5; margin-top: .125rem; }
-  .app-mobile-header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .625rem 1rem; border-bottom: 1px solid var(--color-private-line); background: var(--color-canvas); }
+  .app-mobile-header { position: sticky; top: 0; z-index: 30; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; padding: .625rem 1rem; border-bottom: 1px solid var(--color-private-line); background: var(--color-canvas); }
+  .app-mobile-menu { margin-left: auto; }
   .app-menu-trigger { display: flex; gap: .5rem; align-items: center; justify-content: center; min-height: 2.75rem; padding: .5rem .75rem; border: 1px solid var(--color-private-line); border-radius: .5rem; font-size: .875rem; font-weight: 600; cursor: pointer; list-style: none; }
   .app-menu-trigger::-webkit-details-marker { display: none; }
-  .app-mobile-navigation { position: absolute; right: .75rem; left: .75rem; top: calc(100% + .375rem); max-height: calc(100dvh - 6rem); overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--color-private-line); border-radius: .75rem; padding: 1rem; background: var(--color-canvas); box-shadow: 0 10px 30px rgb(28 25 23 / .14); }
+  .app-mobile-navigation { position: absolute; right: .75rem; left: .75rem; top: calc(100% + .375rem); max-height: calc(100dvh - 100% - .75rem); overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--color-private-line); border-radius: .75rem; padding: 1rem; background: var(--color-canvas); box-shadow: 0 10px 30px rgb(28 25 23 / .14); }
   .app-navigation { display: flex; flex-direction: column; gap: 1.5rem; }
   .app-nav-group { min-width: 0; }
   .app-nav-group-label { margin: 0 .75rem .5rem; color: var(--color-quiet-note); font-size: .75rem; font-weight: 600; }

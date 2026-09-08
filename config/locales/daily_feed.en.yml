@@ -37,7 +37,7 @@ en:
       inferred: "Inferred"
     actions:
       complete: "Complete"
-      act: "Act"
+      act: "Plan a reminder"
       plan: "Plan"
       plan_gift: "Plan gift"
       open_draft: "Open draft"
@@ -46,7 +46,7 @@ en:
       snooze: "Snooze"
       dismiss: "Dismiss"
     source_context:
-      summary: "Source context"
+      summary: "Why this is here"
       open_profile: "Open %{name}'s profile"
     sources:
       reminder: "Reminder"

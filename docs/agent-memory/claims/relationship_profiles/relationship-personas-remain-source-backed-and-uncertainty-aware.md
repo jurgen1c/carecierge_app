@@ -3,7 +3,7 @@ id: relationship_profiles.relationship_personas_remain_source_backed_and_uncerta
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Relationship personas remain source-backed and uncertainty-aware
@@ -67,7 +67,7 @@ verification:
   - bin/memory coverage --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Relationship personas remain source-backed and uncertainty-aware

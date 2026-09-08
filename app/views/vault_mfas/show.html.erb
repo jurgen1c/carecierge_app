@@ -4,7 +4,7 @@
   <% display_expires_at = @credential.enrollment_expires_at || VaultMfaCredential::ENROLLMENT_DURATION.from_now %>
   <% content_for :privacy_vault_lease_duration, [ ((display_expires_at - Time.current) * 1000).to_i, 0 ].max %>
 <% end %>
-<main class="mx-auto w-full max-w-xl space-y-6 py-8">
+<div class="w-full max-w-xl space-y-6">
   <header>
     <%= link_to t("vault_mfa.back"), dashboard_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline focus-visible:outline-2 focus-visible:outline-offset-2" %>
     <h1 class="mt-3 text-3xl font-semibold text-ink"><%= t("vault_mfa.title") %></h1>
@@ -90,4 +90,4 @@
     <p class="text-sm leading-6 text-quiet-note"><%= t("vault_mfa.password_prerequisite") %></p>
     <%= button_to t("vault_mfa.reset_password"), reset_password_vault_mfa_path, form: { data: { action: "submit->privacy-vault#lock" } }, class: "min-h-11 text-left font-semibold text-primary underline focus-visible:outline-2 focus-visible:outline-offset-2" %>
   </section>
-</main>
+</div>

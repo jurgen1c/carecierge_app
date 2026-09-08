@@ -1,14 +1,15 @@
 module DailyFeed
   class ForUser
     SECTION_LIMIT = 8
-    MAX_ITEMS = SECTION_LIMIT * 3
+    MAX_ITEMS = SECTION_LIMIT * 4
     UPCOMING_DAYS = 30
     REMINDER_EFFECTIVE_DELIVERY_SQL = "COALESCE(reminders.snoozed_until, reminders.scheduled_at)"
 
     SECTION_ORDER = {
       "needs_attention" => 0,
       "later_today" => 1,
-      "coming_up" => 2
+      "coming_up" => 2,
+      "ideas" => 3
     }.freeze
 
     def self.call(user:, as_of: Time.current, include_hidden: false)
@@ -36,7 +37,8 @@ module DailyFeed
       Result.new(
         needs_attention: sort(grouped.fetch("needs_attention", [])).first(SECTION_LIMIT),
         later_today: sort(grouped.fetch("later_today", [])).first(SECTION_LIMIT),
-        coming_up: sort(grouped.fetch("coming_up", [])).first(SECTION_LIMIT)
+        coming_up: sort(grouped.fetch("coming_up", [])).first(SECTION_LIMIT),
+        ideas: sort(grouped.fetch("ideas", [])).first(SECTION_LIMIT)
       )
     end
 
@@ -117,7 +119,7 @@ module DailyFeed
         action_kind = "complete_commitment"
       else
         kind = "plan_continuation"
-        section = "coming_up"
+        section = commitment.due_on ? "coming_up" : "ideas"
         action_kind = "edit_commitment"
       end
 
@@ -171,7 +173,7 @@ module DailyFeed
       build_item(
         key: "gift:#{gift.id}",
         kind: "gift",
-        section: "later_today",
+        section: "ideas",
         title: gift.name,
         detail: gift.occasion.presence || relationship_name(profile),
         source_label: source_label("gift"),
@@ -196,7 +198,7 @@ module DailyFeed
       build_item(
         key: "message_draft:#{draft.id}",
         kind: "message_draft",
-        section: "later_today",
+        section: "ideas",
         title: I18n.t("daily_feed.items.message_draft.title", name: relationship_name(profile)),
         detail: draft.situation.presence || revision.content.truncate(120),
         source_label: source_label("message_draft"),
@@ -218,7 +220,7 @@ module DailyFeed
       build_item(
         key: "relationship_goal:#{desire.id}",
         kind: "relationship_goal",
-        section: "coming_up",
+        section: "ideas",
         title: desire.title,
         detail: relationship_name(profile),
         source_label: source_label("relationship_goal"),
@@ -252,7 +254,7 @@ module DailyFeed
       build_item(
         key: suggestion_item_key(profile, suggestion),
         kind: "suggestion",
-        section: suggestion.high_impact? ? "needs_attention" : "later_today",
+        section: "ideas",
         title: suggestion.title,
         detail: suggestion.detail,
         source_label: source_label("suggestion"),
@@ -589,6 +591,7 @@ module DailyFeed
       <<~SQL.squish
         commitments.relationship_profile_id,
         CASE
+          WHEN commitments.due_on IS NULL THEN 3
           WHEN commitments.due_on < #{today}::date THEN 0
           WHEN commitments.due_on = #{today}::date THEN 1
           ELSE 2

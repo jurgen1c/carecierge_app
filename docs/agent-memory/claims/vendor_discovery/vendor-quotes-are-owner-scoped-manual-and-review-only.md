@@ -90,7 +90,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 4390cc8d2f5d6896696c013af41b2f7b6e60cd5f
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Vendor quotes are owner-scoped, manual, and review-only

@@ -31,7 +31,7 @@ tags:
 
 verification:
   - bundle exec rspec spec/models/feature_flag_audit_event_spec.rb spec/requests/admin_feature_flags_spec.rb
-last_verified_commit: 59c16d37d66419852ab109e5f68ef29f0a746e53
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Feature flag audit events store future write workflow changes

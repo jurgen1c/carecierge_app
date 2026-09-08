@@ -1,0 +1,40 @@
+en:
+  profile_workspace:
+    add_date: "Add date"
+    next_reminder: "Next reminder: %{title} · %{date}"
+    open_promise: "Open promise: %{title}"
+    about_hint: "Keep the details that help you care. Add or edit them whenever you like."
+    preferences: "Preferences"
+    details: "Personal details"
+    prepare_briefing: Prepare for a conversation
+    find_gift: Find a gift idea
+    prepare_message: Open the message editor
+    back: All people
+    record: Record an interaction
+    remind: Plan a reminder
+    overview: At a glance
+    last_recorded: Last recorded interaction
+    next_moment: Next important date
+    no_moment: No upcoming date saved.
+    contact: Contact details
+    no_contact: Add contact details when you need them.
+    navigation: Explore this relationship
+    sections:
+      moments:
+        title: Moments and contact rhythm
+        description: "Important dates, recent interactions, and how often you'd like to connect."
+      plans:
+        title: Plans and promises
+        description: "Reminders, events, commitments, wishes, and gifts."
+      notes:
+        title: Notes and memories
+        description: "Conversations, your timeline, and context you've chosen to keep."
+      about:
+        title: About this person
+        description: "Details, preferences, notes, tags, and groups."
+      ideas:
+        title: Ideas and preparation
+        description: "Optional gestures, conversation preparation, and drafts you can review."
+      privacy:
+        title: Privacy and profile settings
+        description: "Protected information, archiving, and deletion."

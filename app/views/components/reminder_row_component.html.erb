@@ -12,7 +12,7 @@
         <span class="rounded-full bg-white px-3 py-1 text-xs font-medium text-stone-700"><%= reminder.priority_label %></span>
         <span class="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-700"><%= reminder.recurrence_label %></span>
       </div>
-      <h4 class="mt-3 text-base font-semibold text-stone-950"><%= reminder.title %></h4>
+      <h3 class="mt-3 text-base font-semibold text-stone-950"><%= reminder.title %></h3>
       <% if relationship_name.present? || reminder.important_date.present? %>
         <p class="mt-1 text-sm text-stone-700">
           <%= [relationship_name, reminder.important_date&.display_title].compact.join(" · ") %>

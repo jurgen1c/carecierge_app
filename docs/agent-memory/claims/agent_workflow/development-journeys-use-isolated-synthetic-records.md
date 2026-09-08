@@ -42,7 +42,7 @@ tags:
 verification:
   - bundle exec rspec spec/db/seeds_spec.rb spec/lib/development_seeds/world_spec.rb spec/system/development_journeys_spec.rb
   - bin/ci
-last_verified_commit: 59ab0e7d2ec67285f048e5b2c1e567a5618e5741
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Development journeys use isolated synthetic records

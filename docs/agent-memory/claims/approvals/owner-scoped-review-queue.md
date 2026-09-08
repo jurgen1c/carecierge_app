@@ -91,7 +91,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: f6c1dce45bfae9c3e1b62c5438054cb569f964df
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Approval queue centralizes owner decisions without external execution

@@ -6,6 +6,23 @@ RSpec.describe 'Messaging connections', type: :request do
   let(:context) { connection.imported_message_contexts.create!(source_key: 'key', external_id: 'abc123', thread_id: 'def456', subject: 'A private subject', snippet: 'Private excerpt', reply_draft: 'Generated reply', reply_ai_generated: true) }
   before { sign_in user }
 
+  it 'keeps the registered OAuth callback independent of the selected language' do
+    allow(Messaging::Permission).to receive(:check!)
+    state = nil
+    allow(Messaging::GoogleOauth).to receive(:authorization_url) do |**options|
+      state = options.fetch(:state)
+      'https://accounts.google.com/example'
+    end
+    allow(Messaging::Connect).to receive(:call)
+
+    post connect_messaging_connection_path(locale: :es), params: { approved: '1' }
+    expect(Messaging::GoogleOauth).to have_received(:authorization_url).with(state: anything, redirect_uri: callback_messaging_connection_url)
+    get callback_messaging_connection_path, params: { state:, code: 'oauth-code' }
+
+    expect(Messaging::Connect).to have_received(:call).with(hash_including(user:, redirect_uri: callback_messaging_connection_url))
+    expect(response).to redirect_to(messaging_connection_path(locale: :es))
+  end
+
   it 'presents explicit setup and both languages without credentials' do
     allow(Messaging::GoogleOauth).to receive(:available?).and_return(false)
     get messaging_connection_path

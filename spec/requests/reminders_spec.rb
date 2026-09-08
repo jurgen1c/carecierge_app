@@ -9,7 +9,7 @@ RSpec.describe "Reminders", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include(reminders_path)
-      expect(response.body).to include("Open reminders")
+      expect(response.body).to include("All reminders")
     end
   end
 

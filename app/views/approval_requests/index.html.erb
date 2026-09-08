@@ -1,7 +1,7 @@
 <% content_for :title, t("approvals.index.title") %>
 <% disable_turbo_cache %>
 
-<main class="flex flex-1 flex-col py-4 sm:py-6">
+<div class="flex flex-1 flex-col py-4 sm:py-6">
   <div class="overflow-hidden rounded-2xl border border-private-line bg-canvas">
     <header class="border-b border-private-line px-5 py-5 sm:px-7">
       <%= link_to t("approvals.index.back"), dashboard_path, class: "inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:text-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
@@ -62,4 +62,4 @@
       </div>
     <% end %>
   </div>
-</main>
+</div>

@@ -3,7 +3,7 @@ id: relationship_profiles.conversation_recaps
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Conversation recaps are owner-scoped and approval-gated before memory mutation
@@ -65,7 +65,7 @@ tags:
 verification:
   - bundle exec rspec spec/config/filter_parameter_logging_spec.rb spec/requests/conversation_recaps_spec.rb
   - bundle exec rspec
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Conversation recaps are owner-scoped and approval-gated before memory mutation

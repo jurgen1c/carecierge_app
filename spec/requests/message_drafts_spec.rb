@@ -44,7 +44,7 @@ RSpec.describe "Message drafts", type: :request do
       }
     }
 
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "message-drafting"))
     expect(profile.reload.message_draft).to have_attributes(
       situation: "Maya shared a birthday post.",
       response_length: "short",
@@ -78,7 +78,7 @@ RSpec.describe "Message drafts", type: :request do
       }
     }
 
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "message-drafting"))
     expect(profile.reload.message_draft.current_revision.context_categories).to include("private_notes")
   end
 
@@ -199,7 +199,7 @@ RSpec.describe "Message drafts", type: :request do
       }
     }
 
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "message-drafting"))
     expect(profile.reload.message_draft.current_revision.context_categories).to include("vault")
   end
 
@@ -222,7 +222,7 @@ RSpec.describe "Message drafts", type: :request do
     }
     post restore_revision_relationship_profile_message_draft_path(profile, revision_id: original.id)
 
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "message-drafting"))
     expect(draft.reload).to have_attributes(
       draft_type: "check_in",
       tone: "concise",
@@ -254,7 +254,7 @@ RSpec.describe "Message drafts", type: :request do
       message_draft: { draft_type: "check_in", tone: "concise", content: "Edited by an existing client" }
     }
 
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "message-drafting"))
     expect(draft.reload).to have_attributes(
       draft_type: "check_in",
       tone: "concise",
@@ -316,7 +316,7 @@ RSpec.describe "Message drafts", type: :request do
       delete relationship_profile_message_draft_path(profile)
     end.to change(MessageDraft, :count).by(-1).and change(DraftRevision, :count).by(-1)
 
-    expect(response).to redirect_to(relationship_profile_path(profile, anchor: "message-drafting"))
+    expect(response).to redirect_to(relationship_profile_path(profile, section: "ideas", anchor: "message-drafting"))
   end
 
   it "returns not found across account boundaries" do

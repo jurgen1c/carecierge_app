@@ -13,6 +13,8 @@ RSpec.describe "Privacy vault", type: :system do
     sign_in user
 
     visit relationship_profile_path(profile)
+    find("#profile-privacy > summary").click
+    find("#profile-notes > summary").click
 
     expect(page).to have_content("Privacy vault")
     expect(page).to have_content("Book the quiet table.")

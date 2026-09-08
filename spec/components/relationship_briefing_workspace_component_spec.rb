@@ -14,7 +14,7 @@ RSpec.describe RelationshipBriefingWorkspaceComponent, type: :component do
     )
 
     expect(page).to have_css("#relationship-briefing")
-    expect(page).to have_field("What are you preparing for?", with: briefing.interaction_context)
+    expect(page).to have_field("What are you preparing for?", with: briefing.interaction_context, visible: :all)
     expect(page).to have_content("She started a new role.")
     expect(page).to have_content("Confirmed")
     expect(page).to have_content("Timeline entry from May 22")
@@ -22,9 +22,9 @@ RSpec.describe RelationshipBriefingWorkspaceComponent, type: :component do
     expect(page).to have_button("Dismiss")
     expect(page).to have_link("Create reminder")
     expect(page).to have_link("Open message draft")
-    expect(page).to have_link("Unlock the privacy vault")
-    expect(page).to have_unchecked_field("Include private notes for this briefing")
-    expect(page).to have_unchecked_field("Include vault items for this briefing", disabled: true)
+    expect(page).to have_link("Unlock the privacy vault", visible: :all)
+    expect(page).to have_unchecked_field("Include private notes for this briefing", visible: :all)
+    expect(page).to have_unchecked_field("Include vault items for this briefing", disabled: true, visible: :all)
     expect(rendered_content).to include("bg-primary", "border-private-line")
     expect(rendered_content).not_to match(/(?:emerald|red)-\d/)
   end
@@ -37,7 +37,7 @@ RSpec.describe RelationshipBriefingWorkspaceComponent, type: :component do
     end
 
     expect(page).to have_content("Prepárate para el próximo momento")
-    expect(page).to have_button("Crear informe")
+    expect(page).to have_button("Crear informe", visible: :all)
     expect(page).to have_no_content("Translation missing")
   end
 end

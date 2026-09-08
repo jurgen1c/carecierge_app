@@ -10,7 +10,6 @@
         <h2 class="mt-2 text-xl font-semibold text-stone-950"><%= t("gifts.section.title") %></h2>
         <p class="mt-2 max-w-3xl text-sm leading-6 text-stone-700"><%= t("gifts.section.body") %></p>
       </div>
-      <span class="inline-flex w-fit items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-900"><%= t("gifts.section.turbo_hint") %></span>
     </div>
 
     <div class="mt-5 grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
@@ -49,7 +48,7 @@
           <% end %>
         </section>
 
-        <%= turbo_frame_tag "new_gift", src: new_relationship_profile_gift_path(relationship_profile), loading: :lazy do %>
+        <%= turbo_frame_tag "new_gift" do %>
           <div class="rounded-xl border border-stone-200 bg-white p-4">
             <h3 class="text-base font-semibold text-stone-950"><%= t("gifts.form.new_title") %></h3>
             <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("gifts.form.body") %></p>

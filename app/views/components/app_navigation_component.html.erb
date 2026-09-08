@@ -1,0 +1,33 @@
+<nav data-app-navigation aria-label="<%= t('workspace.navigation.label') %>" class="app-navigation">
+  <% groups.each do |group, entries| %>
+    <% if group == :account %>
+      <details class="app-nav-group" <%= 'open' if entries.any? { |entry| entry[:active] } %>>
+        <summary class="app-nav-group-toggle"><%= t("workspace.navigation.groups.#{group}") %></summary>
+        <div class="app-nav-items">
+          <% entries.each do |entry| %>
+            <%= link_to entry[:path], data: { nav_key: entry[:key], turbo_prefetch: false }, aria: { current: entry[:active] ? 'page' : nil }, class: style(:link, active: entry[:active]) do %>
+              <%= component 'ui_icon', name: entry[:icon] %><span><%= t("workspace.navigation.#{entry[:key]}") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      </details>
+    <% else %>
+      <div class="app-nav-group">
+        <p class="app-nav-group-label"><%= t("workspace.navigation.groups.#{group}") %></p>
+        <% entries.each do |entry| %>
+          <%= link_to entry[:path], data: { nav_key: entry[:key], turbo_prefetch: false }, aria: { current: entry[:active] ? 'page' : nil }, class: style(:link, active: entry[:active]) do %>
+            <%= component 'ui_icon', name: entry[:icon] %><span><%= t("workspace.navigation.#{entry[:key]}") %></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+  <div class="app-nav-footer">
+    <div class="app-language" aria-label="<%= t('workspace.language') %>">
+      <% { en: 'English', es: 'Español' }.each do |locale, label| %>
+        <%= link_to label, helpers.workspace_locale_path(locale), data: { turbo_prefetch: false }, lang: locale, hreflang: locale, aria: { current: I18n.locale == locale ? 'true' : nil }, class: 'app-language-link' %>
+      <% end %>
+    </div>
+    <%= button_to t('daily_feed.navigation.sign_out'), destroy_user_session_path, method: :delete, form: { data: { action: 'submit->privacy-vault#lock' } }, class: 'app-nav-signout' %>
+  </div>
+</nav>

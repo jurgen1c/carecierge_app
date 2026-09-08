@@ -175,6 +175,20 @@ Carecierge uses familiar Rails product UI primitives, with ViewComponent for reu
 - **Style:** Familiar app navigation with clear active states, calm labels, and restrained density.
 - **Mobile Treatment:** Prioritize reachable primary actions, progressive disclosure, and predictable back paths.
 
+### Authenticated Workspace
+- The application layout owns the main landmark, global gutters, desktop rail and mobile menu. Page wrappers must not reintroduce centered global width caps or a second main landmark. The desktop rail is 15rem at 1024px and above, with its own scroll area. Below that, the sticky header provides a native disclosure menu with Escape and focus restoration. At enlarged text sizes, the wordmark remains intact and the Menu control can occupy a second row. The open menu fits the viewport below the actual header height and scrolls independently.
+- Today uses one column on narrow screens, an agenda with a supporting outlook above 58rem of available content width, and a separate ideas column above 92rem when ideas exist. Dates, shown counts and actions must describe the underlying source. Optional ideas never acquire scheduled urgency from their category.
+- Directory layouts add useful columns as space permits. People shows 24 results per page, keeps its advanced filters closed by default, and presents the first person within the initial 390×844 viewport.
+- Profiles start with person identity, a small action group, recorded interaction and upcoming dates. Native sections organize deeper tools. Section URLs render the requested section open; legacy fragments and Turbo updates reveal the appropriate ancestors. New forms load on request and generation forms use deliberate disclosures.
+- Local forms and prose keep readable measures: normally 52rem for a single form and 65–75ch for prose. Broad workspaces expand; additional width supports person context, upcoming moments, or parallel work areas. Verify actual computed widths because Tailwind utilities can override component-layer declarations.
+
+Event-plan detail uses the task area first, adds a context column at 62rem of available width, and shows its local plan directory as a third column at 85rem. Its header wraps actions below the title when needed; viewport width alone must not squeeze the title between fixed side rails.
+
+### Shared Primitives
+- Use `page_header`, `person_identity`, `action_link`, `date_marker`, `profile_section`, `form_reveal` and `form_heading` through the component helper. Components use dry-initializer options and StyleVariantsHelper. Initials identify people without implying a photo-upload feature.
+- Source explanations stay available beside the relevant action. Primary actions use moss; optional, secondary and destructive actions retain distinct treatments. Empty states explain what can be done next without invented activity or relationship scores.
+- English remains default. The shared language controls use actual request and session locale; page language, forms, authentication redirects and Turbo navigation must agree. A direct form has a page heading, while its embedded Turbo response has a section heading.
+
 ### Rails ERB Templates
 - **Template Style:** Use conventional Rails ERB templates with semantic HTML, Rails helpers, partials only for local one-off composition, and ViewComponent for reusable UI.
 - **Copy:** User-facing text belongs in Rails I18n files, not hard-coded templates.

@@ -93,7 +93,7 @@ RSpec.describe "Relationship profiles", type: :request do
       expect(response.body).not_to include("Nora")
     end
 
-    it "eager loads notes and rich text bodies for profile cards" do
+    it "does not load note bodies or vault content for profile cards" do
       user = create(:user)
       2.times do |index|
         profile = create(:relationship_profile, user:, first_name: "Maya#{index}")
@@ -104,9 +104,9 @@ RSpec.describe "Relationship profiles", type: :request do
       sql = capture_sql { get relationship_profiles_path }
 
       expect(response).to have_http_status(:ok)
-      expect(sql.grep(/FROM "relationship_notes"/).size).to eq(1)
-      expect(sql.grep(/FROM "action_text_rich_texts"/).size).to eq(1)
-      expect(sql.grep(/FROM "privacy_vault_items"/).size).to eq(1)
+      expect(sql.grep(/FROM "relationship_notes"/)).to be_empty
+      expect(sql.grep(/FROM "action_text_rich_texts"/)).to be_empty
+      expect(sql.grep(/FROM "privacy_vault_items"/)).to be_empty
     end
 
     it "prevents Turbo from snapshotting protectable profile content" do

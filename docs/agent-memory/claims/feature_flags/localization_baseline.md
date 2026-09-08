@@ -3,7 +3,7 @@ id: feature_flags.localization_baseline
 type: constraint
 system: feature_flags
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Feature flag user-facing copy keeps English and Spanish locales
@@ -27,7 +27,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/admin_feature_flags_spec.rb
   - bundle exec rspec spec/requests/relationship_personas_spec.rb
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Feature flag user-facing copy keeps English and Spanish locales

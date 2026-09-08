@@ -1,5 +1,5 @@
 <% disable_turbo_cache %>
-<main class="mx-auto max-w-5xl px-4 py-8 sm:px-6" aria-labelledby="space-title">
+<div class="" aria-labelledby="space-title">
   <%= link_to t("shared_spaces.title"), shared_relationship_spaces_path, class: "inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
   <%= link_to t("shared_spaces.my_inbox"), reminders_path, class: "ml-4 inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4" %>
   <header class="mt-4 border-b border-private-line pb-6">
@@ -38,4 +38,4 @@
     <% end %>
   </details>
   <% end %>
-</main>
+</div>

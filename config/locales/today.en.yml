@@ -1,0 +1,54 @@
+en:
+  today:
+    introduction: Your plans, reminders, and the people behind them.
+    add_person: Add someone
+    add_reminder: Add a reminder
+    people: Spend a moment with your people
+    outlook: Coming up and ready to review
+    showing:
+      one: Showing 1
+      other: "Showing %{count}"
+    relationship_count:
+      one: One person in your circle
+      other: "%{count} people in your circle"
+    welcome:
+      title: Start with someone who matters to you
+      body: Add a person and one date or detail you would like to remember.
+      action: Add your first person
+    agenda:
+      title: Your next steps
+      body: Scheduled for today, or waiting for you to follow through.
+      quiet_title: A little room in your day
+      quiet_body: You have no due items in this preview. You can look ahead or check in with someone.
+      quiet_action: Find someone to check in with
+      all: All reminders
+    check_ins:
+      title: Make a little time
+      body: A gentle nudge based on the contact rhythm you chose.
+      rhythm:
+        one: Every day
+        other: "Your %{count}-day rhythm"
+      last: "Last recorded conversation: %{date}"
+      first: No conversation recorded yet. Your saved rhythm is ready when you are.
+      action: Plan a check-in
+    ideas:
+      title: A thoughtful next move
+      body: Ideas and unfinished plans to choose from, whenever the time feels right.
+      all: Explore ideas with your people
+    moments:
+      title: On the horizon
+      body: Upcoming plans and dates to keep in mind.
+      open: Open plan
+      preview: "%{count} of %{total} upcoming plans"
+      empty: There are no dated plans in the next 30 days.
+      create: Plan a moment together
+      dates: Dates and reminders
+      all: All event plans
+    reviews:
+      title: Your judgment matters
+      body: Check suggestions before they become part of your relationship records.
+      waiting:
+        zero: Open reviews to check for new suggestions.
+        one: One item is waiting in your review queue.
+        other: "%{count} items are waiting in your review queue."
+      action: Open reviews

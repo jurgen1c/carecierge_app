@@ -4,6 +4,7 @@ summary: Repository agent instructions, durable memory workflow, key dependency 
 claim_globs:
   - claims/agent_workflow/**/*.md
 default_queries:
+  - shared workspace navigation locale Today People profile sections pagination
   - agent workflow frontend policy
   - product design source of truth
   - style variants helper
@@ -12,6 +13,20 @@ default_queries:
   - data backfills data_migrate
   - development seed synthetic journeys
 watched_files:
+  - app/views/layouts/application.html.erb
+  - app/views/components/app_navigation_component.*
+  - app/views/components/action_link_component.*
+  - app/views/components/page_header_component.*
+  - app/views/components/person_identity_component.*
+  - app/views/components/date_marker_component.*
+  - app/views/components/form_heading_component.*
+  - app/views/components/ui_icon_component.*
+  - app/assets/stylesheets/application.tailwind.css
+  - app/javascript/controllers/app_menu_controller.js
+  - spec/system/workspace_experience_spec.rb
+  - spec/components/workspace_primitives_spec.rb
+  - spec/components/previews/workspace_preview.rb
+  - .impeccable/design.json
   - lib/development_seeds/**/*.rb
   - lib/tasks/development.rake
   - db/seeds.rb

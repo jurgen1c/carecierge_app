@@ -11,8 +11,9 @@
     </div>
   </header>
 
-  <div class="grid gap-0 lg:grid-cols-[minmax(17rem,0.78fr)_minmax(0,1.22fr)]">
+  <div class="gift-recommendation-layout">
     <% if enabled? %>
+      <%= component "form_reveal", label: t("profile_workspace.find_gift"), expanded: form_state.present? do %>
       <%= form_with url: generate_relationship_profile_gift_recommendations_path(relationship_profile), scope: :gift_recommendation, class: "border-b border-private-line bg-surface p-5 lg:border-b-0 lg:border-r sm:p-6" do |form| %>
         <%= hidden_field_tag "gift_recommendation[relationship_mode]", relationship_profile.relationship_mode %>
         <h3 class="text-base font-semibold text-ink"><%= t("gift_recommendations.form.title") %></h3>
@@ -64,6 +65,7 @@
         </fieldset>
 
         <%= form.submit t("gift_recommendations.form.generate"), class: "mt-5 #{style(:primary_button)}" %>
+      <% end %>
       <% end %>
     <% else %>
       <div class="border-b border-private-line bg-surface px-5 py-6 lg:border-b-0 lg:border-r sm:px-6">

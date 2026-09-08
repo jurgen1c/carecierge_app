@@ -1,6 +1,6 @@
 <% content_for :title, t("notification_preferences.edit.page_title") %>
 
-<main class="flex flex-1 flex-col py-6">
+<div class="flex flex-1 flex-col py-6">
   <%= link_to t("notification_preferences.edit.back"), reminders_path, class: "mb-5 inline-flex min-h-11 w-fit items-center text-sm font-semibold text-stone-700 hover:text-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
 
   <%= form_with model: @notification_preference, url: notification_preference_path, method: :patch do |form| %>
@@ -171,4 +171,4 @@
       </aside>
     </div>
   <% end %>
-</main>
+</div>

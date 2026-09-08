@@ -42,7 +42,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/family_spaces_spec.rb spec/models/family_membership_spec.rb spec/system/family_spaces_spec.rb spec/jobs/dispatch_shared_reminders_job_spec.rb
 
-last_verified_commit: b80c812eb6002f665b943fb6d8c9c11ad40f7d1b
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Family membership is consensual and departure removes personal contributions

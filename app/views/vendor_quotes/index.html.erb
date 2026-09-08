@@ -1,5 +1,5 @@
 <% disable_turbo_cache %>
-<main aria-labelledby="vendor-quotes-title" class="mx-auto w-full max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
+<div aria-labelledby="vendor-quotes-title" class="w-full">
   <% if @event_plan %>
   <header class="border-b border-private-line pb-6">
     <% if @event_plan.archived? || @event_plan.relationship_profile.discarded? %>
@@ -73,4 +73,4 @@
 
     <p class="border-t border-private-line pt-5 text-sm leading-6 text-quiet-note"><%= t("vendor_quotes.review_only") %></p>
   <% end %>
-</main>
+</div>

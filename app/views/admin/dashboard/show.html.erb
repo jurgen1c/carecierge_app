@@ -1,7 +1,7 @@
 <% content_for :title, t(".title") %>
 <% disable_turbo_cache %>
 
-<main class="flex flex-1 flex-col gap-6 py-6 sm:py-8">
+<div class="flex flex-1 flex-col gap-6 py-6 sm:py-8">
   <header>
     <h1 class="text-3xl font-semibold text-ink"><%= t(".title") %></h1>
     <p class="mt-3 max-w-2xl text-base leading-7 text-quiet-note"><%= t(".body") %></p>
@@ -41,4 +41,4 @@
     <p class="mt-3 max-w-2xl text-sm leading-6 text-quiet-note"><%= t(".scope") %></p>
     <%= link_to t(".trust_audit"), admin_audit_events_path(event_action: "privacy_vault.unlock_failed", occurred_from: @observed_at.to_date.iso8601), data: { turbo_prefetch: false }, class: "mt-3 inline-flex min-h-11 items-center rounded-lg px-4 py-2 text-sm font-semibold text-primary hover:bg-canvas focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" %>
   </section>
-</main>
+</div>

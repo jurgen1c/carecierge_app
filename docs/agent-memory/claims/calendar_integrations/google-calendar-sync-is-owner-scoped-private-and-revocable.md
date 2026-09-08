@@ -219,7 +219,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 4a286d0efdaf9cbfc84c5a5c4805e3040166a38f
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Google Calendar sync is owner-scoped, private, and revocable

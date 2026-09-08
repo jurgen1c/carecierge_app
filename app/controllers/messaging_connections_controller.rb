@@ -15,7 +15,7 @@ class MessagingConnectionsController < ApplicationController
     raise Messaging::Error.new(code: "already_connected") if current_user.messaging_connection
     Messaging::Permission.check!(user: current_user)
     state = Messaging::OauthState.issue(user: current_user, session:)
-    redirect_to Messaging::GoogleOauth.authorization_url(state:, redirect_uri: callback_messaging_connection_url), allow_other_host: true
+    redirect_to Messaging::GoogleOauth.authorization_url(state:, redirect_uri: callback_messaging_connection_url(locale: nil)), allow_other_host: true
   end
 
   def callback
@@ -23,7 +23,7 @@ class MessagingConnectionsController < ApplicationController
     generation = Messaging::OauthState.verify(state: params[:state], user: current_user, session:)
     raise Messaging::Error.new(code: "stale") if generation == false
     raise Messaging::Error.new(code: "cancelled") if params[:error].present?
-    Messaging::Connect.call(user: current_user, code: params.require(:code), redirect_uri: callback_messaging_connection_url, generation:)
+    Messaging::Connect.call(user: current_user, code: params.require(:code), redirect_uri: callback_messaging_connection_url(locale: nil), generation:)
     redirect_to messaging_connection_path, notice: t("messaging.notices.connected")
   end
 

@@ -3,7 +3,7 @@ id: event_plans.birthdays_start_from_important_dates_with_one_review_only_next_a
 type: fact
 system: event_plans
 status: needs_verification
-confidence: high
+confidence: verified
 severity: critical
 
 title: Important-date birthday plans start with one review-only next action
@@ -63,7 +63,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/event_plans_spec.rb spec/requests/important_dates_spec.rb spec/models/event_plan_spec.rb spec/services/event_plans/create_spec.rb spec/services/event_plans/template_spec.rb spec/components/event_plan_workspace_component_spec.rb
 
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Important-date birthday plans start with one review-only next action

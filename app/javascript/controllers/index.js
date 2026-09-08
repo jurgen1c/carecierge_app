@@ -9,6 +9,8 @@ import EventPlanFormController from "./event_plan_form_controller"
 import PrivacyVaultController from "./privacy_vault_controller"
 import RelationshipTemplateFieldsController from "./relationship_template_fields_controller"
 import TimezoneController from "./timezone_controller"
+import AppMenuController from "./app_menu_controller"
+import ProfileWorkspaceController from "./profile_workspace_controller"
 
 application.register("hello", HelloController)
 application.register("automation-permissions", AutomationPermissionsController)
@@ -16,3 +18,5 @@ application.register("event-plan-form", EventPlanFormController)
 application.register("privacy-vault", PrivacyVaultController)
 application.register("relationship-template-fields", RelationshipTemplateFieldsController)
 application.register("timezone", TimezoneController)
+application.register("app-menu", AppMenuController)
+application.register("profile-workspace", ProfileWorkspaceController)

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
-    <title><%= content_for(:title) || t("layouts.application.title") %></title>
+    <title><%= workspace_page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Carecierge">
@@ -23,7 +23,7 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="min-h-screen bg-stone-50 text-stone-950 antialiased"
+  <body class="min-h-screen bg-surface text-ink antialiased"
         <% if user_signed_in? %>
           data-controller="privacy-vault"
           data-privacy-vault-lock-key-value="carecierge:privacy-vault:locked:<%= current_user.id %>"
@@ -31,10 +31,31 @@
             data-privacy-vault-lease-duration-value="<%= content_for(:privacy_vault_lease_duration) %>"
           <% end %>
         <% end %>>
-    <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-5 py-6 sm:px-8">
-      <%= render "layouts/flash", notice: notice, alert: alert %>
-
-      <%= yield %>
-    </div>
+    <%= link_to t('workspace.skip'), '#main-content', class: 'app-skip-link' %>
+    <% if user_signed_in? %>
+      <div class="app-shell">
+        <aside class="app-sidebar" aria-label="<%= t('workspace.navigation.label') %>">
+          <%= link_to 'Carecierge', dashboard_path, class: 'app-brand' %>
+          <p class="app-brand-note"><%= t('workspace.tagline') %></p>
+          <%= component 'app_navigation', user: current_user, current_controller: controller_path %>
+        </aside>
+        <div class="app-mobile-header" data-controller="app-menu" data-action="keydown.esc@window->app-menu#close focusin@window->app-menu#closeOutside click@window->app-menu#closeOutside turbo:before-cache@document->app-menu#close">
+          <%= link_to 'Carecierge', dashboard_path, class: 'app-brand' %>
+          <details class="app-mobile-menu" data-app-menu-target="disclosure">
+            <summary class="app-menu-trigger" data-app-menu-target="trigger"><%= component 'ui_icon', name: :menu %><%= t('workspace.menu') %></summary>
+            <div class="app-mobile-navigation"><%= component 'app_navigation', user: current_user, current_controller: controller_path %></div>
+          </details>
+        </div>
+        <main id="main-content" class="app-content" data-page-kind="<%= workspace_page_kind %>" tabindex="-1">
+          <%= render 'layouts/flash', notice: notice, alert: alert %>
+          <%= yield %>
+        </main>
+      </div>
+    <% else %>
+      <main id="main-content" class="public-content" tabindex="-1">
+        <%= render 'layouts/flash', notice: notice, alert: alert %>
+        <%= yield %>
+      </main>
+    <% end %>
   </body>
 </html>

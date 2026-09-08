@@ -32,7 +32,7 @@ RSpec.describe "Admin dashboard", type: :request do
     expect(document.at_css('[data-metric="calendar_failed"]').text).to eq("1")
     expect(document.at_css('a[href="/admin/audit_events"]')).to be_present
     expect(document.at_css('a[href="/admin/feature_flags"]')).to be_present
-    expect(document.css('form')).to be_empty
+    expect(document.css('main form')).to be_empty
     expect(document.css("main a").map { |link| link["data-turbo-prefetch"] }).to all(eq("false"))
   end
 
@@ -60,7 +60,7 @@ RSpec.describe "Admin dashboard", type: :request do
     document = Nokogiri::HTML5.fragment(response.body)
     expect(document.at_css('[data-metric="jobs_failed"]').text).to eq("2")
     expect(document.at_css('[data-metric="workers_recent"]').text).to eq("0")
-    expect(document.css("form")).to be_empty
+    expect(document.css("main form")).to be_empty
   end
 
   it "renders Spanish and explicit unavailable monitoring" do

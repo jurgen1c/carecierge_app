@@ -3,7 +3,7 @@ id: relationship_profiles.preference_metadata
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Relationship preferences store structured metadata
@@ -57,7 +57,7 @@ verification:
   - bundle exec rspec spec/models/relationship_preference_spec.rb spec/queries/relationship_profile/search_query_spec.rb spec/requests/relationship_profiles_spec.rb
   - bundle exec rspec spec/models/relationship_persona_spec.rb spec/requests/relationship_personas_spec.rb
 
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Relationship preferences store structured metadata

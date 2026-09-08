@@ -1,6 +1,6 @@
-<div class="mx-auto max-w-4xl px-4 py-8 text-ink sm:px-6">
+<div class="gift-box-builder">
   <%= link_to t("gift_boxes.back"), relationship_profile_gift_boxes_path(gift_box.relationship_profile), class: style(:button) %>
-  <header class="my-6"><h1 class="text-3xl font-semibold"><%= t("gift_boxes.builder") %></h1><p class="mt-2 max-w-prose text-sm leading-6 text-quiet-note"><%= t("gift_boxes.intro") %></p></header>
+  <header class="my-6"><%= content_tag(embedded ? :h2 : :h1, t("gift_boxes.builder"), class: "text-2xl font-semibold") %><p class="mt-2 max-w-prose text-sm leading-6 text-quiet-note"><%= t("gift_boxes.intro") %></p></header>
   <%= form_with model: gift_box, url: workspace_path, class: "grid gap-8" do |form| %>
     <%= form.hidden_field :lock_version if gift_box.persisted? %>
     <% if gift_box.errors.any? %><section role="alert" class="rounded-xl border border-danger-border bg-danger-surface p-4 text-danger-ink"><h2 class="font-semibold"><%= t("gift_boxes.errors") %></h2><ul class="list-disc pl-5"><% gift_box.errors.full_messages.each do |message| %><li><%= message %></li><% end %></ul></section><% end %>

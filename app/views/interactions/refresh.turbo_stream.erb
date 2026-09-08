@@ -5,3 +5,7 @@
 <%= turbo_stream.replace "flash" do %>
   <%= render "layouts/flash", notice: notice, alert: alert %>
 <% end %>
+
+<%= turbo_stream.replace "profile_overview" do %>
+  <%= render "relationship_profiles/overview", relationship_profile: @relationship_profile, interactions: @interactions %>
+<% end %>

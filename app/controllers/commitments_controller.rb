@@ -74,6 +74,7 @@ class CommitmentsController < ApplicationController
     flash.now[alert ? :alert : :notice] = message
     @relationship_profile.reload
     @relationship_profile.commitments.includes(:reminders).load
+    @relationship_reminders = @relationship_profile.reminders.active.by_effective_delivery.limit(5).to_a
 
     respond_to do |format|
       format.turbo_stream { render :refresh, status: }

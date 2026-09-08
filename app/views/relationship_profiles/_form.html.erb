@@ -61,7 +61,7 @@
           <% if contact_fields.object.persisted? %>
             <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
               <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
             </div>
           <% end %>
         </div>
@@ -76,7 +76,7 @@
           <% if contact_fields.object.persisted? %>
             <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
               <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
             </div>
           <% end %>
         </div>
@@ -91,7 +91,7 @@
           <% if contact_fields.object.persisted? %>
             <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
               <%= contact_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "font-medium text-stone-700" %>
+              <%= contact_fields.label :_destroy, t(".remove_contact_method"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
             </div>
           <% end %>
         </div>
@@ -116,7 +116,7 @@
           <% if note_fields.object.persisted? && !note_fields.object.vault_protected? %>
             <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
               <%= note_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-              <%= note_fields.label :_destroy, t(".remove_note"), class: "font-medium text-stone-700" %>
+              <%= note_fields.label :_destroy, t(".remove_note"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
             </div>
           <% end %>
         </div>
@@ -137,7 +137,7 @@
           <% if note_fields.object.persisted? && !note_fields.object.vault_protected? %>
             <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
               <%= note_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-              <%= note_fields.label :_destroy, t(".remove_private_note"), class: "font-medium text-stone-700" %>
+              <%= note_fields.label :_destroy, t(".remove_private_note"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
             </div>
           <% end %>
         </div>
@@ -194,7 +194,7 @@
                 <% if preference_fields.object.persisted? %>
                   <div class="flex items-center gap-2 text-sm text-stone-700">
                     <%= preference_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-                    <%= preference_fields.label :_destroy, t(".remove_preference"), class: "font-medium text-stone-700" %>
+                    <%= preference_fields.label :_destroy, t(".remove_preference"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
                   </div>
                 <% end %>
               </fieldset>
@@ -240,12 +240,12 @@
                         <% end %>
                         <div class="flex items-center gap-2 text-sm text-stone-700" <%= "hidden" if field_value.vault_protected? %>>
                           <%= field_value_fields.check_box :hidden, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-                          <%= field_value_fields.label :hidden, t(".hide_suggested_field"), class: "font-medium text-stone-700" %>
+                          <%= field_value_fields.label :hidden, t(".hide_suggested_field"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
                         </div>
                         <% if field_value_fields.object.persisted? && !field_value.vault_protected? %>
                           <div class="flex items-center gap-2 text-sm text-stone-700">
                             <%= field_value_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-                            <%= field_value_fields.label :_destroy, t(".remove_field_value"), class: "font-medium text-stone-700" %>
+                            <%= field_value_fields.label :_destroy, t(".remove_field_value"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
                           </div>
                         <% end %>
                       </div>
@@ -280,7 +280,7 @@
                 <% if field_value_fields.object.persisted? && !field_value.vault_protected? %>
                   <div class="flex items-center gap-2 text-sm text-stone-700">
                     <%= field_value_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-                    <%= field_value_fields.label :_destroy, t(".remove_field_value"), class: "font-medium text-stone-700" %>
+                    <%= field_value_fields.label :_destroy, t(".remove_field_value"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
                   </div>
                 <% end %>
               </div>
@@ -310,7 +310,7 @@
                 <% if tag_fields.object.persisted? %>
                   <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
                     <%= tag_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-                    <%= tag_fields.label :_destroy, t(".remove_tag"), class: "font-medium text-stone-700" %>
+                    <%= tag_fields.label :_destroy, t(".remove_tag"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
                   </div>
                 <% end %>
               </div>
@@ -340,7 +340,7 @@
                 <% if group_fields.object.persisted? %>
                   <div class="mt-2 flex items-center gap-2 text-sm text-stone-700">
                     <%= group_fields.check_box :_destroy, class: "h-4 w-4 rounded border-stone-300 text-emerald-800 focus:ring-emerald-700" %>
-                    <%= group_fields.label :_destroy, t(".remove_group"), class: "font-medium text-stone-700" %>
+                    <%= group_fields.label :_destroy, t(".remove_group"), class: "inline-flex min-h-11 items-center font-medium text-stone-700" %>
                   </div>
                 <% end %>
               </div>

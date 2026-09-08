@@ -4,12 +4,16 @@ summary: Devise-backed account registration, confirmation, login, logout, lockou
 claim_globs:
   - claims/authentication/**/*.md
 default_queries:
+  - shared workspace navigation locale Today People profile sections pagination
   - authentication account access
   - devise registration login logout dashboard
   - onboarding first-run relationship profile setup
   - google oauth user account
   - production seeds initial account password
 watched_files:
+  - lib/localized_failure_app.rb
+  - app/helpers/workspace_helper.rb
+  - spec/requests/app_workspace_spec.rb
   - db/seeds/production.rb
   - app/models/user.rb
   - app/controllers/application_controller.rb

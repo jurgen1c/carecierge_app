@@ -1,37 +1,223 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-11T11:05:07Z",
+  "generatedAt": "2026-09-08T10:39:28.082013+00:00",
   "title": "Design System: Carecierge",
   "extensions": {
     "colorMeta": {
-      "canvas": { "role": "neutral", "displayName": "Clear Desk White", "canonical": "#ffffff", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#e7e5e4", "#f5f5f4", "#ffffff"] },
-      "surface": { "role": "neutral", "displayName": "Soft Ledger Surface", "canonical": "#fafaf9", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#e7e5e4", "#f5f5f4", "#fafaf9"] },
-      "private-line": { "role": "neutral", "displayName": "Private Line", "canonical": "#e7e5e4", "tonalRamp": ["#1c1917", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#e7e5e4", "#f5f5f4", "#fafaf9"] },
-      "quiet-note": { "role": "neutral", "displayName": "Quiet Note", "canonical": "#44403c", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#f5f5f4"] },
-      "ink": { "role": "neutral", "displayName": "Trusted Ink", "canonical": "#0c0a09", "tonalRamp": ["#0c0a09", "#1c1917", "#292524", "#44403c", "#78716c", "#a8a29e", "#d6d3d1", "#f5f5f4"] },
-      "primary": { "role": "primary", "displayName": "Concierge Moss", "canonical": "#065f46", "tonalRamp": ["#022c22", "#064e3b", "#065f46", "#047857", "#059669", "#34d399", "#a7f3d0", "#ecfdf5"] },
-      "primary-hover": { "role": "primary", "displayName": "Moss Hover", "canonical": "#064e3b", "tonalRamp": ["#022c22", "#064e3b", "#065f46", "#047857", "#059669", "#34d399", "#a7f3d0", "#ecfdf5"] },
-      "danger-surface": { "role": "danger", "displayName": "Danger Surface", "canonical": "#fef2f2", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#ef4444", "#fca5a5", "#fee2e2", "#fef2f2"] },
-      "danger-border": { "role": "danger", "displayName": "Danger Border", "canonical": "#fca5a5", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#ef4444", "#fca5a5", "#fee2e2", "#fef2f2"] },
-      "danger-ink": { "role": "danger", "displayName": "Danger Ink", "canonical": "#991b1b", "tonalRamp": ["#450a0a", "#7f1d1d", "#991b1b", "#b91c1c", "#ef4444", "#fca5a5", "#fee2e2", "#fef2f2"] }
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Clear Desk White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#1c1917",
+          "#44403c",
+          "#78716c",
+          "#a8a29e",
+          "#d6d3d1",
+          "#e7e5e4",
+          "#f5f5f4",
+          "#ffffff"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Soft Ledger Surface",
+        "canonical": "#fafaf9",
+        "tonalRamp": [
+          "#1c1917",
+          "#44403c",
+          "#78716c",
+          "#a8a29e",
+          "#d6d3d1",
+          "#e7e5e4",
+          "#f5f5f4",
+          "#fafaf9"
+        ]
+      },
+      "private-line": {
+        "role": "neutral",
+        "displayName": "Private Line",
+        "canonical": "#e7e5e4",
+        "tonalRamp": [
+          "#1c1917",
+          "#44403c",
+          "#78716c",
+          "#a8a29e",
+          "#d6d3d1",
+          "#e7e5e4",
+          "#f5f5f4",
+          "#fafaf9"
+        ]
+      },
+      "quiet-note": {
+        "role": "neutral",
+        "displayName": "Quiet Note",
+        "canonical": "#44403c",
+        "tonalRamp": [
+          "#0c0a09",
+          "#1c1917",
+          "#292524",
+          "#44403c",
+          "#78716c",
+          "#a8a29e",
+          "#d6d3d1",
+          "#f5f5f4"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Trusted Ink",
+        "canonical": "#0c0a09",
+        "tonalRamp": [
+          "#0c0a09",
+          "#1c1917",
+          "#292524",
+          "#44403c",
+          "#78716c",
+          "#a8a29e",
+          "#d6d3d1",
+          "#f5f5f4"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Concierge Moss",
+        "canonical": "#065f46",
+        "tonalRamp": [
+          "#022c22",
+          "#064e3b",
+          "#065f46",
+          "#047857",
+          "#059669",
+          "#34d399",
+          "#a7f3d0",
+          "#ecfdf5"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Moss Hover",
+        "canonical": "#064e3b",
+        "tonalRamp": [
+          "#022c22",
+          "#064e3b",
+          "#065f46",
+          "#047857",
+          "#059669",
+          "#34d399",
+          "#a7f3d0",
+          "#ecfdf5"
+        ]
+      },
+      "danger-surface": {
+        "role": "danger",
+        "displayName": "Danger Surface",
+        "canonical": "#fef2f2",
+        "tonalRamp": [
+          "#450a0a",
+          "#7f1d1d",
+          "#991b1b",
+          "#b91c1c",
+          "#ef4444",
+          "#fca5a5",
+          "#fee2e2",
+          "#fef2f2"
+        ]
+      },
+      "danger-border": {
+        "role": "danger",
+        "displayName": "Danger Border",
+        "canonical": "#fca5a5",
+        "tonalRamp": [
+          "#450a0a",
+          "#7f1d1d",
+          "#991b1b",
+          "#b91c1c",
+          "#ef4444",
+          "#fca5a5",
+          "#fee2e2",
+          "#fef2f2"
+        ]
+      },
+      "danger-ink": {
+        "role": "danger",
+        "displayName": "Danger Ink",
+        "canonical": "#991b1b",
+        "tonalRamp": [
+          "#450a0a",
+          "#7f1d1d",
+          "#991b1b",
+          "#b91c1c",
+          "#ef4444",
+          "#fca5a5",
+          "#fee2e2",
+          "#fef2f2"
+        ]
+      }
     },
     "typographyMeta": {
-      "headline": { "displayName": "Headline", "purpose": "Page titles and primary workflow headings." },
-      "title": { "displayName": "Title", "purpose": "Section and panel headings." },
-      "body": { "displayName": "Body", "purpose": "Readable product copy and relationship context." },
-      "label": { "displayName": "Label", "purpose": "Controls, fields, metadata, and navigation." }
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles and primary workflow headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section and panel headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Readable product copy and relationship context."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Controls, fields, metadata, and navigation."
+      }
     },
     "shadows": [
-      { "name": "interactive-lift", "value": "0 1px 2px rgb(28 25 23 / 0.08)", "purpose": "Hoverable panels only when the whole panel is actionable." },
-      { "name": "overlay-lift", "value": "0 10px 30px rgb(28 25 23 / 0.14)", "purpose": "Menus, dialogs, popovers, and live guidance surfaces." }
+      {
+        "name": "interactive-lift",
+        "value": "0 1px 2px rgb(28 25 23 / 0.08)",
+        "purpose": "Hoverable panels only when the whole panel is actionable."
+      },
+      {
+        "name": "overlay-lift",
+        "value": "0 10px 30px rgb(28 25 23 / 0.14)",
+        "purpose": "Menus, dialogs, popovers, and live guidance surfaces."
+      }
     ],
     "motion": [
-      { "name": "state-change", "value": "200ms cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Hover, focus, selection, and disclosure transitions." }
+      {
+        "name": "state-change",
+        "value": "200ms cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Hover, focus, selection, and disclosure transitions."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "lg", "value": "1024px" }
-    ]
+      {
+        "name": "mobile header",
+        "value": "below 1024px"
+      },
+      {
+        "name": "desktop rail",
+        "value": "1024px"
+      },
+      {
+        "name": "Today context columns",
+        "value": "58rem container"
+      },
+      {
+        "name": "profile context rail",
+        "value": "65rem container"
+      },
+      {
+        "name": "wide workspace",
+        "value": "92rem container"
+      }
+    ],
+    "authenticatedNavigation": {
+      "mobileHeader": "Keep the wordmark intact. Let the Menu control wrap onto a second row when enlarged text needs more room.",
+      "mobileMenu": "Fit the open menu within the remaining viewport below the actual header height; allow independent scrolling."
+    }
   },
   "components": [
     {
@@ -70,19 +256,87 @@
       "description": "A flat major feature section separated by border and spacing.",
       "html": "<section class=\"ds-section\"><h2>Relationship context</h2><p>Private by default, useful when allowed.</p></section>",
       "css": ".ds-section { border: 1px solid var(--color-private-line, #e7e5e4); border-radius: 16px; background: var(--color-canvas, #ffffff); color: var(--color-ink, #0c0a09); padding: 20px; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-section h2 { margin: 0; font-size: 20px; line-height: 1.4; } .ds-section p { margin: 8px 0 0; max-width: 65ch; color: var(--color-quiet-note, #44403c); font-size: 16px; line-height: 1.5; }"
+    },
+    {
+      "name": "Person Identity",
+      "kind": "custom",
+      "description": "A person's name and relationship context with a familiar initials marker.",
+      "html": "<span class=\"person-identity\"><span class=\"person-avatar\" aria-hidden=\"true\">MR</span><span class=\"person-identity-text\"><span class=\"person-name\">Maya Rivera</span><span class=\"person-subtitle\">Friend</span></span></span>",
+      "css": ".person-name { font-size: 1.75rem; line-height: 1.2; letter-spacing: -.025em; }\n.person-subtitle { margin-top: .375rem; font-size: .875rem; }\n.person-name { color: var(--color-primary); text-decoration: underline; }\n.person-identity { display: inline-flex; align-items: center; gap: .75rem; min-width: 0; }\n.person-avatar { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem; border: 1px solid var(--color-private-line); border-radius: 50%; background: var(--color-surface); color: var(--color-primary); font-size: .875rem; font-weight: 600; }\n.person-identity-large .person-avatar { width: 4rem; height: 4rem; font-size: 1.25rem; }\n.person-identity-text { display: flex; flex-direction: column; gap: .125rem; min-width: 0; }\n.person-name { font-size: .9375rem; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }\n.person-subtitle { color: var(--color-quiet-note); font-size: .8125rem; line-height: 1.4; }"
+    },
+    {
+      "name": "Workspace Navigation",
+      "kind": "nav",
+      "description": "The same authorized destinations power desktop and mobile navigation.",
+      "html": "<nav class=\"app-navigation\"><a class=\"app-nav-link app-nav-link-current\" aria-current=\"page\" href=\"#\">Today</a><a class=\"app-nav-link\" href=\"#\">People</a><a class=\"app-nav-link\" href=\"#\">Reminders</a></nav>",
+      "css": ".app-navigation { display: flex; flex-direction: column; gap: 1.5rem; }\n.app-nav-link { display: flex; gap: .75rem; align-items: center; min-height: 2.75rem; padding: .625rem .75rem; border-radius: .5rem; color: var(--color-quiet-note); font-size: .875rem; font-weight: 500; line-height: 1.4; text-decoration: none; }\n.app-nav-link:hover { background: var(--color-canvas); color: var(--color-ink); }\n.app-nav-link-current { background: var(--color-primary); color: var(--color-canvas); font-weight: 600; }\n.app-nav-link-current:hover { background: var(--color-primary-hover); color: var(--color-canvas); }\n.app-navigation { margin-top: 2rem; }"
+    },
+    {
+      "name": "Date Marker",
+      "kind": "custom",
+      "description": "A true date with readable month and day, paired with its source moment.",
+      "html": "<time class=\"date-marker\" datetime=\"2026-09-12\" aria-label=\"September 12, 2026\"><span class=\"date-marker-month\">Sep</span><span class=\"date-marker-day\">12</span></time>",
+      "css": ".date-marker { width: 3.25rem; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .125rem; padding: .5rem .25rem; border: 1px solid var(--color-private-line); border-radius: .625rem; color: var(--color-primary); background: var(--color-surface); line-height: 1; }\n.date-marker-month { font-size: .75rem; font-weight: 500; }\n.date-marker-day { font-size: 1.375rem; font-weight: 600; }"
+    },
+    {
+      "name": "Action Link",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "A specific next action in the primary, secondary or quiet treatment.",
+      "html": "<a class=\"workspace-action workspace-action-primary\" href=\"#\">Plan a reminder</a>",
+      "css": ".workspace-action { margin-top: auto; }\n.workspace-actions { display: flex; flex-wrap: wrap; gap: .625rem; align-items: center; }\n.workspace-action { display: inline-flex; min-height: 2.75rem; max-width: 100%; align-items: center; justify-content: center; gap: .5rem; padding: .625rem 1rem; border: 1px solid transparent; border-radius: .5rem; font-size: .875rem; line-height: 1.4; font-weight: 600; cursor: pointer; text-align: center; }\n.workspace-action-primary { background: var(--color-primary); color: var(--color-canvas); }\n.workspace-action-primary:hover { background: var(--color-primary-hover); }\n.workspace-action-secondary { background: var(--color-canvas); border-color: var(--color-private-line); color: var(--color-primary); }\n.workspace-action-secondary:hover { background: var(--color-surface); border-color: var(--color-primary); }\n.workspace-action-quiet { color: var(--color-primary); padding-inline: .5rem; }\n.workspace-action-quiet:hover { background: var(--color-surface); }\n.workspace-action { margin-top: .75rem; }\n.workspace-action { justify-content: flex-start; text-align: left; }"
     }
   ],
   "narrative": {
     "northStar": "The Trusted Concierge Desk",
     "overview": "Carecierge should feel like the quiet desk in a well-run boutique hotel: warm, discreet, capable, human, and organized. The product is friendly and familiar, but it never turns relationship care into performance, surveillance, or sentimentality.",
-    "keyCharacteristics": ["Quietly capable", "Warm but unsentimental", "Familiar controls", "Discreet guidance", "Human cadence"],
-    "rules": [
-      { "name": "The Ten Percent Accent Rule", "body": "Concierge Moss is rare by default. If more than 10% of a working screen is accented, the product starts to feel decorative instead of trustworthy.", "section": "colors" },
-      { "name": "The Semantic Red Rule", "body": "Red stays under 5% of a working screen and appears only for destructive actions, irreversible decisions, or critical errors.", "section": "colors" },
-      { "name": "The Clean Surface Rule", "body": "Warmth comes from guidance, rhythm, and accent choices, not from beige body backgrounds.", "section": "colors" },
-      { "name": "The Discreet Depth Rule", "body": "If the shadow is the first thing a user notices, it is too heavy.", "section": "elevation" }
+    "keyCharacteristics": [
+      "Quietly capable",
+      "Warm but unsentimental",
+      "Familiar controls",
+      "Discreet guidance",
+      "Human cadence"
     ],
-    "dos": ["Do reuse the semantic palette before considering any new color.", "Do keep primary actions clear, rare, and visually trustworthy.", "Do make automation explainable, reversible, and visibly in service of the user's intent."],
-    "donts": ["Don't use red as a decorative accent.", "Don't use generic chatbot scaffolding as the product's main visual metaphor.", "Don't use hearts, pink gradients, cheesy intimacy language, or couple-tracking aesthetics."]
+    "rules": [
+      {
+        "name": "The Ten Percent Accent Rule",
+        "body": "Concierge Moss is rare by default. If more than 10% of a working screen is accented, the product starts to feel decorative instead of trustworthy.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Red Rule",
+        "body": "Red stays under 5% of a working screen and appears only for destructive actions, irreversible decisions, or critical errors.",
+        "section": "colors"
+      },
+      {
+        "name": "The Clean Surface Rule",
+        "body": "Warmth comes from guidance, rhythm, and accent choices, not from beige body backgrounds.",
+        "section": "colors"
+      },
+      {
+        "name": "The Discreet Depth Rule",
+        "body": "If the shadow is the first thing a user notices, it is too heavy.",
+        "section": "elevation"
+      },
+      {
+        "name": "Context before tools",
+        "body": "Keep shared navigation available. Start with the person and useful timing. Reveal deeper profile tools on intent; let wide screens hold context beside the work.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do reuse the semantic palette before considering any new color.",
+      "Do keep primary actions clear, rare, and visually trustworthy.",
+      "Do make automation explainable, reversible, and visibly in service of the user's intent."
+    ],
+    "donts": [
+      "Don't use red as a decorative accent.",
+      "Don't use generic chatbot scaffolding as the product's main visual metaphor.",
+      "Don't use hearts, pink gradients, cheesy intimacy language, or couple-tracking aesthetics."
+    ]
+  },
+  "breakpoints": {
+    "eventPlanContext": "62rem container",
+    "eventPlanDirectory": "85rem container"
   }
 }

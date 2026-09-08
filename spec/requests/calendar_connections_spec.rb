@@ -31,10 +31,11 @@ RSpec.describe "Calendar connections", type: :request do
     sign_in user
     allow(CalendarConnections::OauthState).to receive(:issue).with(user:, session: kind_of(ActionDispatch::Request::Session)).and_return("signed-state")
 
-    get new_calendar_connection_path
+    get new_calendar_connection_path(locale: :es)
 
     expect(response).to redirect_to(%r{\Ahttps://accounts\.google\.com/o/oauth2/v2/auth\?})
     expect(response.location).to include("state=signed-state")
+    expect(Rack::Utils.parse_nested_query(URI(response.location).query).fetch("redirect_uri")).to eq(callback_calendar_connection_url)
   end
 
   it "does not start or complete OAuth while revocation is unresolved" do
@@ -76,9 +77,10 @@ RSpec.describe "Calendar connections", type: :request do
     end.to change { CalendarConnection.where(user:).count }.by(1)
       .and have_enqueued_job(CalendarSyncJob)
 
-    expect(response).to redirect_to(calendar_connection_path)
+    expect(response).to redirect_to(calendar_connection_path(locale: :es))
     expect(user.calendar_connection.access_token).to eq("new-access")
     expect(user.calendar_connection.locale).to eq("es")
+    expect(CalendarConnections::GoogleOauth).to have_received(:exchange).with(code: "oauth-code", redirect_uri: callback_calendar_connection_url)
   end
 
 

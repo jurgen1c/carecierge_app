@@ -4,10 +4,14 @@ summary: Owner-scoped priority queue derived from existing relationship sources 
 claim_globs:
   - claims/daily_feed/**/*.md
 default_queries:
+  - shared workspace navigation locale Today People profile sections pagination
   - concierge queue daily relationship feed dashboard priorities
   - feed item dismiss snooze source action complete
   - reminders suggestions commitments important dates gifts drafts goals plans
 watched_files:
+  - app/queries/today/**/*.rb
+  - config/locales/today.*.yml
+  - spec/queries/today/**/*.rb
   - app/controllers/dashboard_controller.rb
   - app/controllers/feed_items_controller.rb
   - app/models/concerns/feed_item_state_source.rb

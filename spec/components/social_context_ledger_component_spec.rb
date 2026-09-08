@@ -123,7 +123,7 @@ RSpec.describe SocialContextLedgerComponent, type: :component do
     expect(page).to have_link(
       "Revisar permiso de análisis",
       href: Rails.application.routes.url_helpers.edit_automation_permissions_path(
-        capability: "analyze_uploaded_social_content",
+        capability: "analyze_uploaded_social_content", locale: :es,
         anchor: "capability-panel-analyze_uploaded_social_content"
       )
     )

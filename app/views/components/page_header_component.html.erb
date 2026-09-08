@@ -1,0 +1,4 @@
+<header class="<%= style %>">
+  <div class="workspace-header-copy"><% if context.present? %><p class="workspace-context"><%= context %></p><% end %><%= content_tag :h1, title, id: heading_id %><% if description.present? %><p class="workspace-description"><%= description %></p><% end %></div>
+  <% if content.present? %><div class="workspace-actions"><%= content %></div><% end %>
+</header>

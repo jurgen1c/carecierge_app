@@ -3,7 +3,7 @@ id: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_use
 type: fact
 system: event_plans
 status: current
-confidence: high
+confidence: verified
 severity: important
 
 title: Personal touch checklists are owner-scoped source-backed and user-controlled
@@ -105,7 +105,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Personal touch checklists are owner-scoped source-backed and user-controlled

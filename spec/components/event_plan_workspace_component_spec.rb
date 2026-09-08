@@ -16,7 +16,7 @@ RSpec.describe EventPlanWorkspaceComponent, type: :component do
       vault_unlocked: false
     ))
 
-    expect(page).to have_css("main[aria-labelledby='event-plan-title']")
+    expect(page).to have_css("div[aria-labelledby='event-plan-title']")
     expect(page).to have_css("section[aria-labelledby='planning-runway-title']")
     expect(page).to have_button("Suggest next steps")
     expect(page).to have_text("Draft the invitation")

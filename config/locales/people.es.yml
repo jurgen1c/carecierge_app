@@ -1,0 +1,20 @@
+es:
+  people:
+    title: Personas
+    description: "Las personas de tu vida y lo que quieres recordar de ellas."
+    search: Buscar
+    filters: Más filtros
+    results:
+      one: "1 persona"
+      other: "%{count} personas"
+    last_recorded: "Última interacción registrada:"
+    no_interaction: Aún no hay interacciones registradas.
+    labels: Etiquetas y grupos
+    open_profile: Abrir perfil
+    pagination: Páginas de personas
+    previous: Anterior
+    next: Siguiente
+    page: "%{page} de %{pages}"
+    empty_title: Encuentra a alguien de tu círculo
+    empty_body: "Agrega una persona para empezar o ajusta tu búsqueda y filtros."
+    clear_filters: Quitar filtros

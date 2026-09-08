@@ -34,7 +34,7 @@ RSpec.describe "Onboarding", type: :request do
 
       follow_redirect!
 
-      expect(response.body).to include("Continue onboarding")
+      expect(response.body).to include("Add your first person")
     end
   end
 

@@ -1,6 +1,6 @@
 <% content_for :title, t(".title") %>
 
-<main class="flex flex-1 flex-col gap-6 py-8">
+<div class="flex flex-1 flex-col gap-6 py-8">
   <%= link_to t(".back"), dashboard_path, class: "inline-flex min-h-11 w-fit items-center text-sm font-semibold text-stone-700 hover:text-emerald-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>
 
   <header class="border-b border-stone-200 pb-6">
@@ -59,4 +59,4 @@
     <h2 class="text-base font-semibold text-emerald-950"><%= t(".private_title") %></h2>
     <p class="mt-2 max-w-3xl text-sm leading-6 text-emerald-950"><%= t(".private_body") %></p>
   </aside>
-</main>
+</div>

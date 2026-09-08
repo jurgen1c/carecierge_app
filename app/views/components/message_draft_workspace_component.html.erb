@@ -11,6 +11,7 @@
     </div>
   </header>
 
+  <div class="p-5 sm:p-6"><%= component "form_reveal", label: t("profile_workspace.prepare_message"), expanded: message_draft.present? do %>
   <div class="<%= style(:layout) %>">
     <aside class="border-b border-private-line bg-surface p-5 lg:border-b-0 lg:border-r sm:p-6">
       <%= form_with scope: :message_draft,
@@ -209,4 +210,5 @@
       <% end %>
     </div>
   </div>
+  <% end %></div>
 </section>

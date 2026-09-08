@@ -68,7 +68,7 @@ verification:
   - bundle exec rspec
   - bundle exec rspec spec/models/external_provider_action_spec.rb spec/requests/external_provider_actions_spec.rb
   - bin/memory validate
-last_verified_commit: 2be8a13a9cb8fc20726f1e7a42890614638a3da1
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Provider records are manual owner scoped and private

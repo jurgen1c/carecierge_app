@@ -1,11 +1,11 @@
 <% form_url = interaction.persisted? ? relationship_profile_interaction_path(relationship_profile, interaction) : relationship_profile_interactions_path(relationship_profile) %>
 
 <%= form_with model: interaction, url: form_url, method: interaction.persisted? ? :patch : :post, class: "mt-4 rounded-xl border border-stone-200 bg-stone-50 p-4" do |form| %>
-  <h3 class="text-base font-semibold text-stone-950"><%= interaction.persisted? ? t("contact_rhythm.form.edit_title") : t("contact_rhythm.form.new_title") %></h3>
+  <%= component "form_heading", title: (interaction.persisted? ? t("contact_rhythm.form.edit_title") : t("contact_rhythm.form.new_title")) %>
   <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("contact_rhythm.form.body") %></p>
 
   <% if interaction.errors.any? %>
-    <div class="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-950">
+    <div role="alert" class="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-950">
       <p class="font-semibold"><%= t("contact_rhythm.form.errors") %></p>
       <ul class="mt-2 list-disc space-y-1 pl-5">
         <% interaction.errors.full_messages.each do |message| %><li><%= message %></li><% end %>

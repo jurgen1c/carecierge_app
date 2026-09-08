@@ -1,6 +1,141 @@
 id: core_relationships
 name: Core system relationships
 edges:
+  - source: relationship_profiles.commitments
+    target: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    relation: requires
+    reason: Commitment forms reuse shared form headings while their explicit page titles remain authoritative.
+    strength: 90
+  - source: calendar_integrations.google_calendar_sync_is_owner_scoped_private_and_revocable
+    target: authentication.request_locale_follows_explicit_session_choice
+    relation: requires
+    reason: Calendar authorization and token exchange keep registered callback URLs locale-neutral while the settings flow preserves the selected UI language.
+    strength: 90
+  - source: contacts_integrations.contacts_imports_are_owner_reviewed_private_and_reversible
+    target: authentication.request_locale_follows_explicit_session_choice
+    relation: requires
+    reason: Contacts authorization uses locale-neutral callback URLs and preserves language through explicit import, link and undo workflows.
+    strength: 90
+  - source: messaging_integrations.gmail_excerpts_and_replies_are_explicit_private_source_bound_and_revocable
+    target: authentication.request_locale_follows_explicit_session_choice
+    relation: requires
+    reason: Messaging authorization keeps the registered callback URL stable while explicit source and reply workflows retain request language.
+    strength: 90
+  - source: data_controls.data_portability_and_deletion
+    target: authentication.request_locale_follows_explicit_session_choice
+    relation: requires
+    reason: Export labels and provider-revocation recovery pages use the selected request locale without changing owner authorization or deletion compensation.
+    strength: 90
+  - source: relationship_profiles.profile_crud_owner_scope
+    target: authentication.request_locale_follows_explicit_session_choice
+    relation: requires
+    reason: Owner-scoped profile forms and search links carry the selected language through the shared layout and authentication recovery.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: authentication.request_locale_follows_explicit_session_choice
+    relation: requires
+    reason: Bilingual profile navigation preserves source IDs, filters and inline-form destinations through the request locale wrapper.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: contacts_integrations.contacts_imports_are_owner_reviewed_private_and_reversible
+    relation: requires
+    reason: The profile workspace retains explicit imported-contact provenance and its connection link; compact presentation does not import or overwrite provider data.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: event_plans.anniversary_plans_start_from_milestones_with_adjustable_review_only_context
+    relation: requires
+    reason: Anniversary and milestone links use the owner-local occurrence and hand off to the existing source-validated anniversary plan workflow.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: The profile planning section renders existing personal-touch checklist context while preserving owner-scoped, explicit checklist actions.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: Profile plan previews and ImportantDate handoffs retain source provenance, owner-local timing and explicit plan actions.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    relation: requires
+    reason: The Ideas disclosure reveals the existing private briefing workflow and preserves its source consent and manual generation boundary.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.conversation_recaps
+    relation: requires
+    reason: Recap mutations refresh the profile overview from their canonical derived Interaction while retaining protected timeline and extraction-review behavior.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    relation: requires
+    reason: The profile Gifts section and embedded gift-box directory expose existing private manual bundles without adding purchase or provider actions.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.mood_notes
+    relation: requires
+    reason: Mood-note mutations refresh recorded interaction context without turning observations into diagnoses or bypassing timeline visibility preferences.
+    strength: 90
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    relation: requires
+    reason: The Ideas section preserves deterministic manual gesture actions; action-only frame refreshes do not inherit editable-form focus changes.
+    strength: 90
+  - source: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    target: agent_workflow.frontend_policy_sources_of_truth
+    relation: requires
+    reason: Shared navigation and container layouts follow the existing product direction and component styling policy.
+    strength: 100
+  - source: authentication.request_locale_follows_explicit_session_choice
+    target: authentication.localization_baseline
+    relation: requires
+    reason: Request language selection preserves English default and Spanish availability.
+    strength: 100
+  - source: authentication.request_locale_follows_explicit_session_choice
+    target: authentication.user_access_flow
+    relation: requires
+    reason: Locale follows existing sign-in and onboarding destinations without changing their eligibility.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    relation: requires
+    reason: The relationship workspace composes within the global navigation and single main landmark.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.preference_metadata
+    relation: requires
+    reason: Compact About sections retain preference values and confidence metadata.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    relation: requires
+    reason: Grouped forms preserve mode guards and selected work context on every existing generation path.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.relationship_personas_remain_source_backed_and_uncertainty_aware
+    relation: requires
+    reason: The Ideas section retains source-backed personas and legacy evidence anchors.
+    strength: 100
+  - source: daily_feed.concierge_queue_is_derived_and_owner_scoped
+    target: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    relation: requires
+    reason: Today adds useful contextual columns inside the shared authenticated workspace.
+    strength: 100
+  - source: authentication.request_locale_follows_explicit_session_choice
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Language selection precedes authentication and preserves the existing Devise authority.
+    strength: 100
+  - source: relationship_profiles.workspace_keeps_context_before_tools
+    target: relationship_profiles.profile_crud_owner_scope
+    relation: requires
+    reason: Directory previews and profile sections retain the existing owner-scoped relationship authority.
+    strength: 100
+  - source: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
+    target: authentication.request_locale_follows_explicit_session_choice
+    relation: requires
+    reason: Shared navigation and document language follow the selected request locale.
+    strength: 100
   - source: authentication.production_seeds_provision_the_initial_account_without_replacing_credentials
     target: authentication.account_access_boundary
     relation: requires

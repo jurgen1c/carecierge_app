@@ -19,7 +19,7 @@ class CalendarConnectionsController < ApplicationController
     state = CalendarConnections::OauthState.issue(user: current_user, session:)
     redirect_to CalendarConnections::GoogleOauth.authorization_url(
       state:,
-      redirect_uri: callback_calendar_connection_url
+      redirect_uri: callback_calendar_connection_url(locale: nil)
     ), allow_other_host: true
   end
 
@@ -45,7 +45,7 @@ class CalendarConnectionsController < ApplicationController
       begin
         credentials = CalendarConnections::GoogleOauth.exchange(
           code: params.require(:code),
-          redirect_uri: callback_calendar_connection_url
+          redirect_uri: callback_calendar_connection_url(locale: nil)
         )
         CalendarConnection.transaction(requires_new: true) do
           CalendarConnections::SaveCredentials.call(

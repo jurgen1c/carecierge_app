@@ -50,3 +50,29 @@ Billing dependencies must extend this manifest with plan, trial, paid, exhausted
 ## Verification
 
 `bundle exec rspec spec/db/seeds_spec.rb spec/lib/development_seeds/world_spec.rb` checks environment guards, repeatability, isolation, collisions, reset and outbound boundaries. Full `bin/ci` is the coverage authority. Walk through the routes above using the indicated persona and locale; verify private profile denial when switching owners. No new interface is introduced by these fixtures.
+
+
+## Workspace walkthrough
+
+Today separates scheduled work from optional ideas. People shows 24 profiles per
+page, with search immediately above the directory. Open a person for essential
+context, then expand Moments, Plans, Notes, About, Ideas, or Privacy. The section
+links and existing source fragments still work. New inline forms open when their
+action is selected; AI generation remains explicit and subject to permissions.
+
+Use the shell's English / Español controls to exercise actual request language;
+the selection persists through navigation and authentication. Resize the same
+journeys to 320, 390, 768, 1024, 1440, 1920 and 2560px. Desktop navigation stays in
+the sidebar; smaller widths expose the same destinations in Menu.
+
+For deterministic busy, overdue, review, long-name and 28-person directory
+coverage, run:
+
+```sh
+CAPTURE_WORKSPACE_UI=true bundle exec rspec spec/system/workspace_experience_spec.rb
+```
+
+This writes local screenshots under `tmp/ui-improvements/states/` when requested.
+The examples use the test database and Timecop; they do not reset development
+journeys. Focused RSpec can fail the project's overall coverage threshold despite
+passing its examples; the complete RSpec suite remains coverage authority.

@@ -40,7 +40,7 @@
           </div>
         <% end %>
 
-        <%= turbo_frame_tag "new_interaction", src: new_relationship_profile_interaction_path(relationship_profile), loading: :lazy do %>
+        <%= turbo_frame_tag "new_interaction" do %>
           <span class="sr-only"><%= t("contact_rhythm.interactions.form_loading") %></span>
         <% end %>
       </div>
@@ -73,7 +73,7 @@
             <p class="mt-4 border-t border-stone-200 pt-4 text-sm leading-6 text-stone-700"><%= t("contact_rhythm.cadence.suggestion_body") %></p>
           <% end %>
 
-          <%= turbo_frame_tag "contact_cadence_form", src: cadence ? edit_relationship_profile_contact_cadence_path(relationship_profile) : new_relationship_profile_contact_cadence_path(relationship_profile), loading: :lazy do %>
+          <%= turbo_frame_tag "contact_cadence_form" do %>
             <%= link_to cadence ? t("contact_rhythm.cadence.adjust") : t("contact_rhythm.cadence.use_suggestion"),
               cadence ? edit_relationship_profile_contact_cadence_path(relationship_profile) : new_relationship_profile_contact_cadence_path(relationship_profile),
               class: "mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-emerald-700 bg-white px-4 py-2 text-sm font-semibold text-emerald-800 transition hover:bg-emerald-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700" %>

@@ -110,11 +110,15 @@ RSpec.describe "Commitments", type: :request do
       commitment = create(:commitment, relationship_profile: profile)
       sign_in user
 
-      get new_relationship_profile_commitment_path(profile)
-      expect(response.body).to include(%(<turbo-frame id="new_commitment">))
+      %i[en es].each do |locale|
+        get new_relationship_profile_commitment_path(profile, locale:)
+        expect(response.body).to include(%(<turbo-frame id="new_commitment">))
+        expect(response.parsed_body.at_css("title").text).to eq(I18n.t("commitments.form.new_title", locale:))
 
-      get edit_relationship_profile_commitment_path(profile, commitment)
-      expect(response.body).to include(%(<turbo-frame id="commitment_#{commitment.id}">))
+        get edit_relationship_profile_commitment_path(profile, commitment, locale:)
+        expect(response.body).to include(%(<turbo-frame id="commitment_#{commitment.id}">))
+        expect(response.parsed_body.at_css("title").text).to eq(I18n.t("commitments.form.edit_title", locale:))
+      end
     end
   end
 

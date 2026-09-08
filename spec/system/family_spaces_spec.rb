@@ -14,7 +14,7 @@ RSpec.describe "Family planning", type: :system do
     end
     select "Attending", from: "My response"
     click_button "Save my response"
-    expect(page).to have_content("Attending")
+    expect(page).to have_content("#{space.owner.email} · Attending")
     click_link "Add shared item"
     select "Task", from: "Type"
     select "Care tasks", from: "Family activity"
@@ -22,6 +22,7 @@ RSpec.describe "Family planning", type: :system do
     click_button "Save shared item"
     expect(page).to have_content("Bring groceries")
     click_button "I’ll take this"
+    expect(page).to have_button("Release responsibility")
     select "My responsibilities", from: "Show"
     click_button "Show items"
     expect(page).to have_content("Bring groceries")

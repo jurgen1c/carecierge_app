@@ -3,7 +3,7 @@ id: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
 type: fact
 system: event_plans
 status: needs_verification
-confidence: high
+confidence: verified
 severity: critical
 
 title: Event plans are owner-scoped, source-backed, and user-controlled
@@ -159,7 +159,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
 ---
 
 # Event plans are owner-scoped, source-backed, and user-controlled

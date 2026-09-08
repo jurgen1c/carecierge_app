@@ -3,12 +3,12 @@
 
 <%= form_with model: mood_note, url: form_url, method: mood_note.persisted? ? :patch : :post, class: "rounded-xl border border-stone-200 bg-white p-4" do |form| %>
   <div>
-    <h3 class="text-base font-semibold text-stone-950"><%= mood_note.persisted? ? t("mood_notes.form.edit_title") : t("mood_notes.form.new_title") %></h3>
+    <%= component "form_heading", title: (mood_note.persisted? ? t("mood_notes.form.edit_title") : t("mood_notes.form.new_title")) %>
     <p class="mt-1 text-sm leading-6 text-stone-700"><%= t("mood_notes.form.body") %></p>
   </div>
 
   <% if mood_note.errors.any? %>
-    <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950">
+    <div role="alert" class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-950">
       <p class="font-semibold"><%= t("mood_notes.form.errors_heading", count: mood_note.errors.count) %></p>
       <ul class="mt-2 list-disc space-y-1 pl-5">
         <% mood_note.errors.full_messages.each do |message| %>

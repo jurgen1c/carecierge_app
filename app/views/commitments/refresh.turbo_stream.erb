@@ -1,3 +1,5 @@
 <%= turbo_stream.replace "commitments_section", partial: "commitments/section", locals: { relationship_profile: @relationship_profile, selected_type: @timeline_type } %>
+<%= turbo_stream.update "profile_plan_preview" do %><%= profile_work_preview(relationship_profile: @relationship_profile, reminders: @relationship_reminders) %><% end %>
+<%= turbo_stream.replace "profile_reminders", partial: "reminders/section", locals: { relationship_profile: @relationship_profile, reminders: @relationship_reminders } %>
 <%= turbo_stream.replace "timeline_entries_section", partial: "timeline_entries/section", locals: { relationship_profile: @relationship_profile, selected_type: @timeline_type } %>
 <%= turbo_stream.replace "flash", partial: "layouts/flash", locals: { notice: flash.now[:notice], alert: flash.now[:alert] } %>

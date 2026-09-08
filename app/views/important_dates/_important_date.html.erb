@@ -1,5 +1,5 @@
 <%= turbo_frame_tag dom_id(important_date) do %>
-  <% occurrence = important_date.next_occurrence_on %>
+  <% occurrence = important_date.next_occurrence_on(as_of:) %>
   <article id="<%= dom_id(important_date, :row) %>" class="rounded-lg border border-stone-200 bg-white p-4">
     <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
       <div>

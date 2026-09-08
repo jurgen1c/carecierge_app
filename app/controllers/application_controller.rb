@@ -29,13 +29,19 @@ class ApplicationController < ActionController::Base
   private
 
   def with_request_locale(&action)
+    previous_pagy_locale = Pagy::I18n.locale
     available = I18n.available_locales.map(&:to_s)
     if params.key?(:locale) && request.headers["X-Sec-Purpose"] != "prefetch"
       requested = params[:locale]
       session[:locale] = available.include?(requested) ? requested : I18n.default_locale.to_s
     end
     locale = session[:locale].presence_in(available) || I18n.locale
-    I18n.with_locale(locale, &action)
+    I18n.with_locale(locale) do
+      Pagy::I18n.locale = I18n.locale
+      action.call
+    end
+  ensure
+    Pagy::I18n.locale = previous_pagy_locale
   end
 
   def user_not_authorized

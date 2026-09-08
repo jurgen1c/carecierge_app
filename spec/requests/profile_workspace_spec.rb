@@ -41,4 +41,51 @@ RSpec.describe "Profile workspace", type: :request do
     expect(summary.text).to include("Call Maya tomorrow")
     expect(summary.text).not_to include("Personal context stays in About")
   end
+
+  it "keeps promise preview text current through inline changes" do
+    promise = create(:commitment, relationship_profile: profile, title: "Make dinner")
+    get relationship_profile_path(profile)
+    expect(response.parsed_body.at_css("#profile-plans > summary").text).to include("Make dinner")
+
+    patch relationship_profile_commitment_path(profile, promise), params: { commitment: { title: "Plan a picnic" } }, as: :turbo_stream
+    expect(Nokogiri::HTML(response.body).at_css("turbo-stream[target='profile_plan_preview'] template").text).to include("Plan a picnic")
+    patch complete_relationship_profile_commitment_path(profile, promise), as: :turbo_stream
+    expect(Nokogiri::HTML(response.body).at_css("turbo-stream[target='profile_plan_preview'] template").text.strip).to eq("")
+    patch reopen_relationship_profile_commitment_path(profile, promise), as: :turbo_stream
+    expect(Nokogiri::HTML(response.body).at_css("turbo-stream[target='profile_plan_preview'] template").text).to include("Plan a picnic")
+    patch cancel_relationship_profile_commitment_path(profile, promise), as: :turbo_stream
+    expect(Nokogiri::HTML(response.body).at_css("turbo-stream[target='profile_plan_preview'] template").text.strip).to eq("")
+    delete relationship_profile_commitment_path(profile, promise), as: :turbo_stream
+    expect(Nokogiri::HTML(response.body).at_css("turbo-stream[target='profile_plan_preview'] template").text.strip).to eq("")
+  end
+
+  it "uses the owner-local day for both the upcoming link and its planning target" do
+    [ [ "America/Costa_Rica", Time.utc(2026, 9, 7, 2), Date.new(2026, 9, 6) ],
+      [ "Pacific/Auckland", Time.utc(2026, 9, 6, 22), Date.new(2026, 9, 7) ] ].each do |zone, instant, date|
+      Timecop.freeze(instant) do
+        user.notification_preference&.destroy!
+        create(:notification_preference, user:, time_zone: zone)
+        appointment = create(:important_date, relationship_profile: profile, starts_on: date, recurrence: "none", date_type: "appointment")
+        %i[en es].each do |locale|
+          get relationship_profile_path(profile, locale:)
+          body = response.parsed_body
+          link = body.at_css("#upcoming_important_dates a[href='#planning_important_date_#{appointment.id}']")
+          expect(link).to be_present
+          target = body.at_css(link["href"])
+          expect(target).to be_present
+          expect(target.text).to include(I18n.t("important_dates.section.days_until", count: 0, locale:))
+        end
+      end
+    end
+  end
+
+  it "removes linked reminders from the profile when their promise is deleted" do
+    promise = create(:commitment, relationship_profile: profile)
+    reminder = create(:reminder, user:, relationship_profile: profile, commitment: promise, title: "A promise follow-up")
+    delete relationship_profile_commitment_path(profile, promise), as: :turbo_stream
+
+    reminders = Nokogiri::HTML(response.body).at_css("turbo-stream[target='profile_reminders'] template")
+    expect(reminders).to be_present
+    expect(reminders.text).not_to include(reminder.title)
+  end
 end

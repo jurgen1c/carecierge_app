@@ -33,7 +33,7 @@
   <%= render "important_dates/section", relationship_profile: @relationship_profile %>
   <%= render "contact_cadences/section", relationship_profile: @relationship_profile, interactions: @interactions %>
       <% end %>
-      <%= component "profile_section", section: "plans", context: profile_work_preview, expanded: profile_section_expanded?("plans") do %>
+      <%= component "profile_section", section: "plans", context: profile_work_preview(relationship_profile: @relationship_profile, reminders: @relationship_reminders), context_id: "profile_plan_preview", expanded: profile_section_expanded?("plans") do %>
   <%= render "reminders/section", relationship_profile: @relationship_profile, reminders: @relationship_reminders %>
   <%= render "event_plans/relationship_section", relationship_profile: @relationship_profile %>
   <%= render "commitments/section", relationship_profile: @relationship_profile, selected_type: @timeline_type %>

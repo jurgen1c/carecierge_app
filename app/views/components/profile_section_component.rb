@@ -2,6 +2,7 @@ class ProfileSectionComponent < ApplicationViewComponent
   option :section
   option :expanded, default: -> { false }
   option :context, optional: true
+  option :context_id, optional: true
 
   style { base { %w[profile-section workspace-panel] } }
 

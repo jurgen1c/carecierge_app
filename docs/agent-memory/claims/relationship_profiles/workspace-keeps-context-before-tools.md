@@ -9,7 +9,7 @@ severity: normal
 title: Relationship workspace keeps person context before tools
 
 claim: >
-  The owner-scoped People directory uses Ransack filters with 24 records per Pagy page, batch last-interaction dates and upcoming date context without eagerly loading note bodies or vault contents. Profiles lead with identity, practical actions and recorded facts, then six native addressable sections. Primary interaction and date actions target their inline form frames, scroll them into view and focus their first available field, and manual, recap and mood interaction changes refresh the recorded overview. Inline creation and generation forms open on intent; validation, Turbo refreshes and legacy fragments reveal the relevant section. Saved AI tools redirect with section=ideas while retaining legacy anchors.
+  The owner-scoped People directory uses Ransack filters with 24 records per Pagy page, batch last-interaction dates and upcoming date context without eagerly loading note bodies or vault contents. Profiles lead with identity, practical actions and recorded facts, then six native addressable sections. Primary interaction and date actions target their inline form frames, scroll them into view and focus their first available field, and manual, recap and mood interaction changes refresh the recorded overview. Inline creation and generation forms open on intent; validation, Turbo refreshes and legacy fragments reveal the relevant section. Saved AI tools redirect with section=ideas while retaining legacy anchors. Promise changes refresh the addressable plan preview and compact reminders, including linked-reminder deletion. Upcoming date links, occurrence labels and detailed planning targets share one owner-local reference day per render.
 
 source_files:
   - app/controllers/relationship_profiles_controller.rb
@@ -32,6 +32,11 @@ related_files:
   - app/controllers/message_drafts_controller.rb
   - app/controllers/relationship_briefings_controller.rb
   - app/views/interactions/refresh.turbo_stream.erb
+  - app/controllers/commitments_controller.rb
+  - app/views/commitments/refresh.turbo_stream.erb
+  - app/views/reminders/_section.html.erb
+  - app/views/important_dates/_section.html.erb
+  - app/views/important_dates/_important_date.html.erb
   - app/views/conversation_recaps/refresh.turbo_stream.erb
   - app/views/mood_notes/refresh.turbo_stream.erb
   - app/views/important_dates/_upcoming.html.erb
@@ -50,6 +55,8 @@ related_files:
 symbols:
   - People::Summaries
   - ProfileWorkspaceHelper
+  - ProfileWorkspaceHelper#profile_calendar_date
+  - ProfileWorkspaceHelper#profile_work_preview
   - ProfileSectionComponent
   - FormRevealComponent
   - RelationshipProfilesController#index
@@ -64,7 +71,7 @@ tags:
   - localization
 
 verification:
-  - bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb
+  - bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/commitments_spec.rb spec/requests/important_dates_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb
 
 last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
 ---
@@ -73,7 +80,7 @@ last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
 
 ## Claim
 
-The owner-scoped People directory uses Ransack filters with 24 records per Pagy page, batch last-interaction dates and upcoming date context without eagerly loading note bodies or vault contents. Profiles lead with identity, practical actions and recorded facts, then six native addressable sections. Primary interaction and date actions target their inline form frames, scroll them into view and focus their first available field, and manual, recap and mood interaction changes refresh the recorded overview. Inline creation and generation forms open on intent; validation, Turbo refreshes and legacy fragments reveal the relevant section. Saved AI tools redirect with section=ideas while retaining legacy anchors.
+The owner-scoped People directory uses Ransack filters with 24 records per Pagy page, batch last-interaction dates and upcoming date context without eagerly loading note bodies or vault contents. Profiles lead with identity, practical actions and recorded facts, then six native addressable sections. Primary interaction and date actions target their inline form frames, scroll them into view and focus their first available field, and manual, recap and mood interaction changes refresh the recorded overview. Inline creation and generation forms open on intent; validation, Turbo refreshes and legacy fragments reveal the relevant section. Saved AI tools redirect with section=ideas while retaining legacy anchors. Promise changes refresh the addressable plan preview and compact reminders, including linked-reminder deletion. Upcoming date links, occurrence labels and detailed planning targets share one owner-local reference day per render.
 
 ## Why It Matters
 
@@ -81,4 +88,4 @@ Grouping an existing capability must not remove it or strand its errors inside a
 
 ## Verification
 
-- `bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb`
+- `bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/commitments_spec.rb spec/requests/important_dates_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb`

@@ -5,11 +5,15 @@ module ProfileWorkspaceHelper
     PROFILE_SECTIONS
   end
 
-  def profile_work_preview
-    if (reminder = @relationship_reminders.first)
+  def profile_calendar_date
+    @profile_calendar_date ||= OwnerLocalCalendar.date_for(user: current_user)
+  end
+
+  def profile_work_preview(relationship_profile:, reminders:)
+    if (reminder = reminders.first)
       date = OwnerLocalCalendar.date_for(user: current_user, at: reminder.effective_delivery_at)
       t("profile_workspace.next_reminder", title: reminder.title, date: l(date, format: :long))
-    elsif (promise = @relationship_profile.commitments.reject(&:new_record?).find(&:open?))
+    elsif (promise = relationship_profile.commitments.reject(&:new_record?).find(&:open?))
       t("profile_workspace.open_promise", title: promise.title)
     end
   end

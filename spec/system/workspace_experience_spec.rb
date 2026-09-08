@@ -167,6 +167,19 @@ RSpec.describe "Relationship workspace experience", type: :system do
     end
   end
 
+  it "removes completed promises from the visible plan summary without reloading" do
+    profile = create(:relationship_profile, user:)
+    promise = create(:commitment, relationship_profile: profile, title: "Arrange a picnic")
+    sign_in user
+    visit relationship_profile_path(profile)
+    expect(page).to have_css("#profile-plans > summary", text: promise.title)
+    find("#profile-plans > summary").click
+    within("#commitment_#{promise.id}") { click_button I18n.t("commitments.item.complete") }
+    expect(page).to have_text(I18n.t("commitments.complete.notice"))
+    expect(page).to have_no_css("#profile-plans > summary", text: promise.title)
+    expect(page).to have_css("#profile-plans[open]")
+  end
+
   private
 
   def press_key(selector, key)

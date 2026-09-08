@@ -1,4 +1,4 @@
 <details id="profile-<%= section %>" class="<%= style %>" data-profile-section="<%= section %>" <%= "open" if expanded %>>
-  <summary><span><span class="profile-section-title"><%= title %></span><span class="profile-section-description"><%= description %></span><% if context.present? %><span class="profile-section-context"><%= context %></span><% end %></span><%= component "ui_icon", name: "chevron" %></summary>
+  <summary><span><span class="profile-section-title"><%= title %></span><span class="profile-section-description"><%= description %></span><% if context.present? || context_id.present? %><%= tag.span context, id: context_id, class: "profile-section-context" %><% end %></span><%= component "ui_icon", name: "chevron" %></summary>
   <div class="profile-section-content"><%= content %></div>
 </details>

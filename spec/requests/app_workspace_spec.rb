@@ -116,6 +116,34 @@ RSpec.describe "Application workspace", type: :request do
     end
   end
 
+  it "localizes Pagy navigation and restores its previous thread locale" do
+    space = create(:shared_relationship_space, owner: user)
+    create_list(:shared_item, 21, shared_relationship_space: space, creator: user)
+    previous_locale = Pagy::I18n.locale
+    Pagy::I18n.locale = :es
+
+    %w[en es].each do |locale|
+      get shared_relationship_space_path(space, locale:)
+      navigation = response.parsed_body.at_css("nav.pagy")
+      expect(navigation["aria-label"]).to eq(locale == "es" ? "Páginas" : "Pages")
+      expect(Pagy::I18n.locale).to eq("es")
+    end
+  ensure
+    Pagy::I18n.locale = previous_locale
+  end
+
+  it "restores the pagination locale when rendering raises" do
+    previous_locale = Pagy::I18n.locale
+    Pagy::I18n.locale = :es
+    allow(Today::Overview).to receive(:new).and_raise(RuntimeError, "Rendering failed")
+
+    expect { get dashboard_path(locale: :en) }.to raise_error(RuntimeError, "Rendering failed")
+    expect(Pagy::I18n.locale).to eq("es")
+    expect(I18n.locale).to eq(:en)
+  ensure
+    Pagy::I18n.locale = previous_locale
+  end
+
   it "preserves Spanish through the authentication redirect" do
     sign_out user
     get dashboard_path(locale: :es)

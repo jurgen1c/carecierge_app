@@ -54,6 +54,7 @@
   .profile-section-title { display: block; font-size: 1rem; font-weight: 600; line-height: 1.5; }
   .profile-section-description { display: block; margin-top: .25rem; max-width: 65ch; color: var(--color-quiet-note); font-size: .8125rem; line-height: 1.5; }
   .profile-section-context { display: block; margin-top: .75rem; color: var(--color-primary); font-size: .875rem; font-weight: 600; line-height: 1.5; }
+  .profile-section-context:empty { display: none; }
   .profile-section > summary > svg { color: var(--color-primary); transition: transform 150ms; }
   .profile-section[open] > summary > svg { transform: rotate(180deg); }
   .profile-section-content { display: grid; gap: 1.5rem; padding: 1.25rem; border-top: 1px solid var(--color-private-line); min-width: 0; }

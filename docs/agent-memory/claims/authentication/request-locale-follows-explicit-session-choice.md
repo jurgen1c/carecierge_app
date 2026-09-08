@@ -9,7 +9,7 @@ severity: normal
 title: Request locale follows explicit session choice
 
 claim: >
-  An allowlisted explicit request locale updates the session before authentication. Language links disable Turbo prefetch, and speculative Turbo requests do not change the saved locale. Requests without a locale keep the valid session choice; malformed explicit values reset to English. Spanish generated paths and Devise failure redirects preserve locale, and the shared language switch copies only supported navigation/filter parameters.
+  An allowlisted explicit request locale updates the session before authentication. Language links disable Turbo prefetch, and speculative Turbo requests do not change the saved locale. Requests without a locale keep the valid session choice; malformed explicit values reset to English. Spanish generated paths and Devise failure redirects preserve locale, and the shared language switch copies only supported navigation/filter parameters, including source IDs, reminder milestone/time-zone context and the selected approval ID; unrelated query data is excluded.
 
 source_files:
   - app/controllers/application_controller.rb
@@ -48,7 +48,7 @@ last_verified_commit: null
 
 ## Claim
 
-An allowlisted explicit request locale updates the session before authentication. Language links disable Turbo prefetch, and speculative Turbo requests do not change the saved locale. Requests without a locale keep the valid session choice; malformed explicit values reset to English. Spanish generated paths and Devise failure redirects preserve locale, and the shared language switch copies only supported navigation/filter parameters.
+An allowlisted explicit request locale updates the session before authentication. Language links disable Turbo prefetch, and speculative Turbo requests do not change the saved locale. Requests without a locale keep the valid session choice; malformed explicit values reset to English. Spanish generated paths and Devise failure redirects preserve locale, and the shared language switch copies only supported navigation/filter parameters, including source IDs, reminder milestone/time-zone context and the selected approval ID; unrelated query data is excluded.
 
 ## Why It Matters
 

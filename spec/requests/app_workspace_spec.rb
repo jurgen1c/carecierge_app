@@ -3,6 +3,8 @@ require "rails_helper"
 RSpec.describe "Application workspace", type: :request do
   let(:user) { create(:user) }
 
+  around { |example| Timecop.freeze(Time.zone.local(2026, 9, 7, 16), &example) }
+
   before { sign_in user }
 
   it "keeps the same primary destinations on standalone and nested pages" do
@@ -56,6 +58,38 @@ RSpec.describe "Application workspace", type: :request do
   it "never exposes administrator destinations to an ordinary owner" do
     get dashboard_path
     expect(response.parsed_body.css("nav[data-app-navigation] a[href^='/admin']")).to be_empty
+  end
+
+  it "keeps the source date and suggested schedule when changing a reminder form language" do
+    profile = create(:relationship_profile, user:)
+    date = create(:important_date, relationship_profile: profile, starts_on: Date.current + 5.days)
+    get new_reminder_path(relationship_profile_id: profile.id, important_date_id: date.id, time_zone: "America/Costa_Rica")
+    schedule = response.parsed_body.at_css("#reminder_scheduled_at")["value"]
+    spanish_path = response.parsed_body.at_css(".app-language a[lang='es']")["href"]
+
+    get spanish_path
+
+    expect(response.parsed_body.at_css("html")["lang"]).to eq("es")
+    expect(response.parsed_body.at_css("#reminder_important_date_id option[selected]")["value"]).to eq(date.id)
+    expect(response.parsed_body.at_css("#reminder_scheduled_at")["value"]).to eq(schedule)
+    expect(response.parsed_body.at_css("#reminder_time_zone option[selected]")["value"]).to eq("America/Costa_Rica")
+  end
+
+  it "keeps the selected approval when changing language" do
+    profile = create(:relationship_profile, user:)
+    create(:extracted_memory, relationship_profile: profile, title: "Another review")
+    selected = create(:extracted_memory, relationship_profile: profile, title: "The chosen review")
+    ApprovalQueue::Synchronize.call(user:)
+    approval = user.approval_requests.find_by!(subject: selected)
+    get approvals_path(id: approval.id, mode: "edit", token: "not-navigation-context")
+    spanish_path = response.parsed_body.at_css(".app-language a[lang='es']")["href"]
+    expect(spanish_path).not_to include("not-navigation-context")
+
+    get spanish_path
+
+    expect(response.parsed_body.at_css("html")["lang"]).to eq("es")
+    expect(response.parsed_body.at_css("[data-approval-selected-item]").text).to include("The chosen review")
+    expect(response.parsed_body.at_css("#approval_request_corrected_title")["value"]).to eq("The chosen review")
   end
 
   it "preserves Spanish through the authentication redirect" do

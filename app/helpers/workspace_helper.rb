@@ -2,7 +2,9 @@ module WorkspaceHelper
   LOCALE_QUERY_KEYS = %w[
     q status tag_id group_id page section timeline_type suggestion suggestion_type gesture
     draft_page social_context_page memory_proposal selected_capability capability
-    relationship_profile_id tab mode kind risk_level category occasion
+    relationship_profile_id important_date_id commitment_id event_plan_id plan_task_id
+    vendor_quote_id booking_id booking_milestone gift_purchase_plan_id gift_milestone
+    gift_box_id id time_zone tab mode kind risk_level category occasion
   ].freeze
 
   def workspace_page_kind

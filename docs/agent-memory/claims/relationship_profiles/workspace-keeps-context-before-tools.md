@@ -3,7 +3,7 @@ id: relationship_profiles.workspace_keeps_context_before_tools
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: normal
 
 title: Relationship workspace keeps person context before tools
@@ -73,7 +73,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/commitments_spec.rb spec/requests/important_dates_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb
 
-last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
+last_verified_commit: 0782e8ed4760b1b7673f99f8d17f2d9c3d0057aa
 ---
 
 # Relationship workspace keeps person context before tools

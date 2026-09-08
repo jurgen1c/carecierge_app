@@ -3,7 +3,7 @@ id: authentication.request_locale_follows_explicit_session_choice
 type: fact
 system: authentication
 status: current
-confidence: high
+confidence: verified
 severity: normal
 
 title: Request locale follows explicit session choice
@@ -47,7 +47,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/app_workspace_spec.rb spec/requests/calendar_connections_spec.rb spec/requests/contacts_connections_spec.rb spec/requests/messaging_connections_spec.rb spec/system/workspace_experience_spec.rb
 
-last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
+last_verified_commit: 0782e8ed4760b1b7673f99f8d17f2d9c3d0057aa
 ---
 
 # Request locale follows explicit session choice

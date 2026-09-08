@@ -3,7 +3,7 @@ id: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
 type: fact
 system: agent_workflow
 status: current
-confidence: high
+confidence: verified
 severity: normal
 
 title: Authenticated UI uses one shared shell and local reading measures
@@ -68,7 +68,7 @@ verification:
   - bun run build:css
   - bun run lint:js
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: 882c72d7c93468ba703d163bae62d91fa766fe0f
 ---
 
 # Authenticated UI uses one shared shell and local reading measures

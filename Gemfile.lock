@@ -197,7 +197,7 @@ GEM
       logger
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    image_processing (2.0.3)
+    image_processing (2.1.0)
     io-console (0.9.1)
     irb (1.18.0)
       pp (>= 0.6.0)
@@ -572,7 +572,7 @@ DEPENDENCIES
   faker (~> 3.8)
   ferrum_pdf (~> 3.1)
   friendly_id (~> 5.7)
-  image_processing (~> 2.0)
+  image_processing (~> 2.1)
   jsbundling-rails
   kamal
   letter_opener_web (~> 3.0)

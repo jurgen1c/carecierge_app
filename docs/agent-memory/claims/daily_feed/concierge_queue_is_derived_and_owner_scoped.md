@@ -3,7 +3,7 @@ id: daily_feed.concierge_queue_is_derived_and_owner_scoped
 type: fact
 system: daily_feed
 status: current
-confidence: high
+confidence: verified
 severity: critical
 
 title: The Concierge Queue is derived, owner-scoped, and source-authoritative
@@ -114,7 +114,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
 ---
 
 # The Concierge Queue is derived, owner-scoped, and source-authoritative

@@ -3,7 +3,7 @@ id: relationship_profiles.workspace_keeps_context_before_tools
 type: fact
 system: relationship_profiles
 status: current
-confidence: high
+confidence: verified
 severity: normal
 
 title: Relationship workspace keeps person context before tools
@@ -66,7 +66,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb
 
-last_verified_commit: null
+last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
 ---
 
 # Relationship workspace keeps person context before tools
@@ -83,4 +83,4 @@ Grouping an existing capability must not remove it or strand its errors inside a
 
 - `bundle exec rspec spec/requests/people_workspace_spec.rb spec/requests/profile_workspace_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/mood_notes_spec.rb spec/requests/gift_recommendations_spec.rb spec/requests/message_drafts_spec.rb spec/requests/relationship_briefings_spec.rb spec/system/workspace_experience_spec.rb`
 
-Local changes are validated before commit; no committed revision is claimed as verified.
+Full `bin/ci` passed on `2d93680db18b6ed38fedaca363b27416b90346f3` with all claim-related examples included.

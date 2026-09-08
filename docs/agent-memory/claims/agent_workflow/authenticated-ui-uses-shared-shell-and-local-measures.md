@@ -3,7 +3,7 @@ id: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
 type: fact
 system: agent_workflow
 status: current
-confidence: high
+confidence: verified
 severity: normal
 
 title: Authenticated UI uses one shared shell and local reading measures
@@ -67,7 +67,7 @@ verification:
   - bun run build:css
   - bun run lint:js
 
-last_verified_commit: null
+last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
 ---
 
 # Authenticated UI uses one shared shell and local reading measures
@@ -87,4 +87,4 @@ A page-specific sidebar or global max-width recreates the navigation and wide-sc
 - `bun run build:css`
 - `bun run lint:js`
 
-Local changes are validated before commit; no committed revision is claimed as verified.
+Full `bin/ci` passed on `2d93680db18b6ed38fedaca363b27416b90346f3` with all claim-related examples included.

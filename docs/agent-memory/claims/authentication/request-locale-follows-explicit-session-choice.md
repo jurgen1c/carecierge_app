@@ -3,7 +3,7 @@ id: authentication.request_locale_follows_explicit_session_choice
 type: fact
 system: authentication
 status: current
-confidence: high
+confidence: verified
 severity: normal
 
 title: Request locale follows explicit session choice
@@ -41,7 +41,7 @@ tags:
 verification:
   - bundle exec rspec spec/requests/app_workspace_spec.rb spec/system/workspace_experience_spec.rb
 
-last_verified_commit: null
+last_verified_commit: 2d93680db18b6ed38fedaca363b27416b90346f3
 ---
 
 # Request locale follows explicit session choice
@@ -58,4 +58,4 @@ Translation availability alone does not make a Spanish journey work. Authenticat
 
 - `bundle exec rspec spec/requests/app_workspace_spec.rb spec/system/workspace_experience_spec.rb`
 
-Local changes are validated before commit; no committed revision is claimed as verified.
+Full `bin/ci` passed on `2d93680db18b6ed38fedaca363b27416b90346f3` with all claim-related examples included.

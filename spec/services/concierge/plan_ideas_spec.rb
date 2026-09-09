@@ -142,6 +142,17 @@ RSpec.describe "Conversational event suggestions", type: :service do
     expect(ConciergeAction.where(turn_id: turn.id)).to be_empty
   end
 
+  it "fails the surviving action immediately when its plan becomes unavailable during generation" do
+    allow_any_instance_of(EventPlans::LlmSuggester).to receive(:generate) do
+      plan.reload.complete!
+      ideas
+    end
+    expect do
+      expect(generate).to include("status" => "failed", "error_code" => "context_unavailable")
+    end.not_to change(PlanTask, :count)
+    expect(turn.actions.sole).to have_attributes(state: "failed", run_token: nil, error_code: "context_unavailable")
+  end
+
   it "uses selected work sources for a selected work plan and excludes old personal task content" do
     profile.update!(relationship_mode: "professional", professional_context: { "organization" => "Studio", "event_plans" => [ plan.id ] })
     personal = profile.memory_records.create!(title: "Personal detail", body: "Personal holiday")

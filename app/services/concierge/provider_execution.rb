@@ -26,7 +26,7 @@ module Concierge
       raise ProviderUnavailable unless action.reload.state == "succeeded"
       action.result
     rescue ActiveRecord::RecordNotFound
-      { "status" => "unavailable" }
+      fail_action!("context_unavailable")
     rescue StandardError => error
       # Never retain provider bodies, arguments, or exception text in the ledger/log.
       fail_action!(error.is_a?(Error) ? error.code : "provider_unavailable")

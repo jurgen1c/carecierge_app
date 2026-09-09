@@ -29,6 +29,8 @@ claim: >
   operations such as backup promotion separately bind their required generation version.
   Fixed RubyLLM operation adapters validate allowed fields and
   invoke existing domain services and policies under owner, profile, and target locks.
+  ConfigureContext enforces conversation update authorization in the service,
+  including current relationship availability, before changing profile context.
   Decisions are separate authenticated requests bound to exact arguments, target versions,
   current permission, and expiry; model text cannot approve them. Provider tools are
   individually named and expose each operation's exact field schema and validator.

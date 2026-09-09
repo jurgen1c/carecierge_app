@@ -3,7 +3,7 @@ module Concierge
     def self.call(user:, conversation:, attributes:, expected_version:)
       user.with_lock("FOR NO KEY UPDATE") do
         conversation.with_lock do
-          Pundit.authorize(user, conversation, :show?)
+          Pundit.authorize(user, conversation, :update?)
           profile = user.relationship_profiles.active.find(conversation.relationship_profile_id)
           profile.with_lock do
             Pundit.authorize(user, profile, :update?)

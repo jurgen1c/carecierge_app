@@ -16,7 +16,9 @@ claim: >
   with high-impact automation blocked. Rejection creates no canonical memory.
   MemoryRecord records are owner-scoped relationship-profile facts with trust,
   review, correction, and high-impact automation approval metadata. Conventional
-  forms and concierge tools share MemoryRecords::Update for corrections. Semantic
+  forms and concierge tools share MemoryRecords::Update for corrections, holding
+  the owner FOR NO KEY UPDATE lock before the profile lock through correction
+  and revision persistence. Semantic
   title or body corrections set user-corrected provenance and corrected status;
   body corrections and submitted correction notes also create MemoryRevision
   rows transactionally, including notes attached to title-only corrections. Archived
@@ -41,6 +43,7 @@ source_files:
   - db/migrate/20260708120100_create_memory_revisions.rb
 
 related_files:
+  - spec/services/memory_records/update_spec.rb
   - spec/services/concierge/memory_proposals_spec.rb
   - app/services/approval_decisions/apply.rb
   - spec/models/memory_record_spec.rb

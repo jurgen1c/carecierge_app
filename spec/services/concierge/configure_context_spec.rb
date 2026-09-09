@@ -58,6 +58,6 @@ RSpec.describe Concierge::ConfigureContext, type: :service do
     end.to raise_error(Pundit::NotAuthorizedError)
     conversation
     profile.archive!
-    expect { configure({}) }.to raise_error(ActiveRecord::RecordNotFound)
+    expect { configure({}) }.to raise_error(Pundit::NotAuthorizedError)
   end
 end

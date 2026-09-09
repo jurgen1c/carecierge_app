@@ -3,26 +3,34 @@
 # Table name: concierge_actions
 # Database name: primary
 #
-#  id           :uuid             not null, primary key
-#  arguments    :text
-#  decided_at   :datetime
-#  expires_at   :datetime
-#  fingerprint  :string(64)       not null
-#  name         :string           not null
-#  precondition :text
-#  result       :text
-#  state        :string           default("pending"), not null
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  turn_id      :uuid             not null
+#  id              :uuid             not null, primary key
+#  arguments       :text
+#  attempts        :integer          default(0), not null
+#  decided_at      :datetime
+#  error_code      :string
+#  execution_order :integer          default(0), not null
+#  expires_at      :datetime
+#  fingerprint     :string(64)       not null
+#  name            :string           not null
+#  precondition    :text
+#  result          :text
+#  run_token       :uuid
+#  source_keys     :text             default([]), not null, is an Array
+#  started_at      :datetime
+#  state           :string           default("pending"), not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  turn_id         :uuid             not null
 #
 # Indexes
 #
-#  index_concierge_actions_on_turn_id_and_fingerprint  (turn_id,fingerprint) UNIQUE
+#  index_concierge_actions_on_source_keys                  (source_keys) USING gin
+#  index_concierge_actions_on_turn_id_and_execution_order  (turn_id,execution_order) UNIQUE
+#  index_concierge_actions_on_turn_id_and_fingerprint      (turn_id,fingerprint) UNIQUE
 #
 # Foreign Keys
 #
-#  fk_rails_...  (turn_id => concierge_turns.id)
+#  fk_rails_...  (turn_id => concierge_turns.id) ON DELETE => cascade
 #
 require "digest"
 

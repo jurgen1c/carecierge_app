@@ -1,0 +1,19 @@
+id: ai
+name: AI provider configuration
+summary: Environment defaults and private provider adapters for native Ollama development and OpenAI production.
+claim_globs:
+  - claims/ai/**/*.md
+default_queries:
+  - Ollama OpenAI development production local model RubyLLM
+  - provider model timeout generation errors no cloud fallback
+watched_files:
+  - app/agents/ai/**/*.rb
+  - config/initializers/ruby_llm.rb
+  - config/ollama/*
+  - spec/agents/ai/**/*.rb
+  - spec/config/ollama_configuration_spec.rb
+  - docs/development/local-ai.md
+tags:
+  - ai
+  - privacy
+  - ollama

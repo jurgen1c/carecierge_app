@@ -3,7 +3,7 @@ id: approvals.owner_scoped_review_queue
 type: fact
 system: approvals
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Approval queue centralizes owner decisions without external execution
@@ -20,8 +20,17 @@ claim: >
   content-free evidence. Source decisions are allowlisted and idempotent only for
   matching normalized corrections; malformed, mismatched, or ineligible state fails closed.
   Future kinds fail closed, and high-impact approval never has an external effect.
+  Concierge reads and decisions reuse Synchronize and Apply for the two supported
+  memory-review kinds. Approval/rejection/correction previews bind both request and
+  source content, including same-timestamp edits; higher-impact effects are disclosed.
+  Deferral and dismissal preserve the source. Corrected proposal receipts include
+  reviewed text and the canonical memory, while protected and professional sources
+  remain outside this conversational queue.
 
 source_files:
+  - app/services/concierge/operations/approvals.rb
+  - app/services/concierge/approval_sources.rb
+  - app/services/concierge/record_version.rb
   - app/models/approval_request.rb
   - app/models/approval_decision.rb
   - app/services/approval_queue/synchronize.rb
@@ -37,6 +46,7 @@ source_files:
   - db/migrate/20260828133138_create_approval_queue.rb
 
 related_files:
+  - spec/services/concierge/approvals_spec.rb
   - app/controllers/extracted_memories_controller.rb
   - app/controllers/memory_records_controller.rb
   - app/models/audit_event.rb
@@ -85,13 +95,14 @@ tags:
   - automation_guardrails
 
 verification:
+  - bundle exec rspec spec/services/concierge/approvals_spec.rb spec/services/approval_decisions spec/services/approval_queue spec/requests/approvals_spec.rb
   - bundle exec rspec spec/models/approval_request_spec.rb spec/models/extracted_memory_spec.rb spec/models/audit_event_spec.rb spec/services/approval_queue/record_source_decision_spec.rb spec/services/approval_queue/synchronize_spec.rb spec/services/approval_decisions/apply_spec.rb spec/services/memory_extractions/review_spec.rb spec/policies/approval_request_policy_spec.rb spec/presenters/approval_queue/item_spec.rb spec/components/approval_queue_item_component_spec.rb spec/requests/approvals_spec.rb spec/requests/memory_records_spec.rb spec/requests/data_controls_spec.rb spec/system/approval_queue_spec.rb
   - bin/memory validate
   - bin/memory coverage --git-diff
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Approval queue centralizes owner decisions without external execution

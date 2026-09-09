@@ -3,13 +3,14 @@ id: relationship_profiles.mood_notes
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Mood notes are observation-first owner-scoped follow-up records
 
 claim: >
   MoodNote records use authenticated, owner-scoped RelationshipProfile routes and
+  the shared MoodNotes::Save operation used by both forms and concierge tools to
   store a non-diagnostic category, multiline observation, normalized timeline
   title, observed time, optional supportive action and follow-up, and timeline
   visibility that defaults off. Timeline-visible notes control one protected
@@ -20,6 +21,8 @@ claim: >
   and Spanish, and sensitive text is filtered from request logs.
 
 source_files:
+  - app/services/mood_notes/save.rb
+  - app/services/concierge/operations/moods.rb
   - app/models/mood_note.rb
   - app/controllers/mood_notes_controller.rb
   - app/policies/mood_note_policy.rb
@@ -48,9 +51,10 @@ tags:
   - follow_ups
 
 verification:
+  - bundle exec rspec spec/services/concierge/profile_records_spec.rb spec/requests/mood_notes_spec.rb
   - bundle exec rspec spec/models/mood_note_spec.rb spec/policies/mood_note_policy_spec.rb spec/requests/mood_notes_spec.rb spec/models/timeline_entry_spec.rb
   - bundle exec rspec
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Mood notes are observation-first owner-scoped follow-up records

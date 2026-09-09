@@ -19,6 +19,7 @@ class AppNavigationComponent < ApplicationViewComponent
 
   def groups
     everyday = [
+      entry(:concierge, :chat, concierge_conversations_path, %w[concierge_conversations concierge_turns concierge_actions]),
       entry(:today, :today, dashboard_path, %w[dashboard]),
       entry(:people, :people, relationship_profiles_path, PEOPLE_CONTROLLERS),
       entry(:reminders, :reminders, reminders_path, %w[reminders]),

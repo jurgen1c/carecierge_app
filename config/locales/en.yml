@@ -387,6 +387,9 @@ en:
       personal_touch_checklist_created:
         title: "Personal touch checklist created"
         description: "A practical personal touch checklist was created for %{target}."
+      personal_touch_item_updated:
+        title: Personal touch updated
+        description: A personal touch was corrected.
       personal_touch_item_created:
         title: "Personal touch added"
         description: "A personal touch was added for %{target}."
@@ -670,7 +673,7 @@ en:
       not_provided: "Not provided"
       back: "Back to relationships"
       delete: "Delete"
-      delete_confirm: "Delete this relationship profile? This removes its contact details, notes, tag assignments, and group assignments."
+      delete_confirm: "Delete this relationship profile? This removes its contact details, notes, tag assignments, group assignments, and concierge conversations that referenced this person, including mixed-person conversations."
     types:
       friend: "Friend"
       best_friend: "Best friend"
@@ -2074,9 +2077,9 @@ en:
       confirmation: "Type %{email} to confirm"
       delete_ai:
         title: "Delete AI-generated data"
-        body: "Permanently removes AI-inferred memories, AI-extraction timeline records, social-context interpretations with their review state and proposed uses, gift recommendations in every state, and event-plan suggestions. Your event plans, template and manually created plan steps, plan reminders, social notes and uploads, user-confirmed memories, manually created timeline entries, and gifts saved from recommendations stay in place."
+        body: "Permanently removes concierge conversations and their messages, AI-inferred memories, AI-extraction timeline records, social-context interpretations with their review state and proposed uses, gift recommendations in every state, and event-plan suggestions. Your event plans, template and manually created plan steps, plan reminders, social notes and uploads, user-confirmed memories, manually created timeline entries, and gifts saved from recommendations stay in place."
         action: "Delete AI-generated data"
-        confirm: "Delete all AI-generated data, including social-context interpretations, gift recommendations, and event-plan suggestions, in this account?"
+        confirm: "Delete all AI-generated data, including concierge conversations and their messages, social-context interpretations, gift recommendations, and event-plan suggestions, in this account?"
       delete_account:
         title: "Delete account"
         body: "Permanently removes your account and all relationship data. Privacy-minimized deletion evidence remains without your email or relationship content."

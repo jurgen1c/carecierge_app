@@ -3,12 +3,17 @@ id: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
 type: fact
 system: event_plans
 status: needs_verification
-confidence: verified
+confidence: high
 severity: critical
 
 title: Event plans are owner-scoped, source-backed, and user-controlled
 
 claim: >
+  Conversational plan suggestions use the same Suggest operation and its source,
+  generation and lifecycle fences. An optional callback inside final persistence
+  commits generated tasks and their chat outcome together; erased or revoked
+  conversations cannot leave unreceipted tasks. Chat task reads and returned plan
+  references exclude tasks whose sensitive sources are not currently selected.
   Active relationship owners create encrypted birthday, anniversary, and generic
   event plans from deterministic localized occasion templates. An owned birthday
   ImportantDate can prefill the plan and is retained with a birthday-origin
@@ -43,7 +48,10 @@ claim: >
   a pair, while an explicit shared model override takes precedence over the
   legacy OpenAI-only model credential and is passed directly to the selected
   provider even when it is newer than RubyLLM's bundled model registry;
-  repository defaults retain registry validation.
+  cloud defaults retain registry validation. Shared defaults now come from
+  Ai::Configuration: development uses a locally prepared Ollama model and production
+  uses OpenAI. Explicit event provider/model overrides remain supported. Local models
+  bypass the cloud registry and local output disables thinking with a bounded token limit.
   Active plans can own multiple manual vendor quotes. Those quotes are compared
   without external action, become read-only when the plan becomes completed or
   archived, and remain explicitly removable. Current, non-stale public
@@ -72,6 +80,10 @@ claim: >
   reminders while preserving plans and template/manual work.
 
 source_files:
+  - app/services/concierge/operations/plan_ideas.rb
+  - app/services/concierge/operations/plans.rb
+  - app/services/concierge/operations/tasks.rb
+  - app/services/concierge/occasion_sources.rb
   - app/models/event_plan.rb
   - app/models/plan_task.rb
   - app/controllers/event_plans_controller.rb
@@ -89,6 +101,8 @@ source_files:
   - db/migrate/20260823144136_add_planning_preferences_to_event_plans.rb
 
 related_files:
+  - spec/services/concierge/plan_ideas_spec.rb
+  - spec/services/concierge/search_spec.rb
   - app/models/concerns/briefing_source_lock.rb
   - app/models/memory_record.rb
   - app/services/memory_extractions/review.rb
@@ -150,6 +164,7 @@ tags:
   - source_provenance
 
 verification:
+  - bundle exec rspec spec/services/concierge/plan_ideas_spec.rb spec/services/concierge/search_spec.rb spec/services/event_plans/suggest_spec.rb
   - bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb
   - bundle exec rspec spec/models/event_plan_spec.rb spec/models/plan_task_spec.rb spec/models/reminder_spec.rb spec/services/event_plans spec/policies/event_plan_policy_spec.rb spec/policies/plan_task_policy_spec.rb spec/components/event_plan_workspace_component_spec.rb spec/requests/event_plans_spec.rb spec/requests/reminders_spec.rb spec/system/event_plans_spec.rb
   - bundle exec rspec spec/requests/data_controls_spec.rb spec/serializers/data_exports/snapshot_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb
@@ -159,7 +174,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Event plans are owner-scoped, source-backed, and user-controlled
@@ -198,3 +213,5 @@ silent sensitive-context reuse, and accidental action on the user's behalf.
 - `bin/memory coverage --git-diff`
 - `bin/memory audit --git-diff`
 - `bin/ci`
+
+Concierge callers supply optional task filters and an under-lock preparation callback to preserve complete generation-input provenance without changing the domain default for conventional screens. Backup promotion accepts the same task filter used by generation when validating prior-plan context. Conversational AI task/backup reuse requires the full encrypted action origin, not only model-selected citations; legacy outputs need regeneration for chat. Verification: bundle exec rspec spec/services/event_plans spec/services/backup_plans spec/services/concierge/plan_ideas_spec.rb spec/services/concierge/occasions_spec.rb.

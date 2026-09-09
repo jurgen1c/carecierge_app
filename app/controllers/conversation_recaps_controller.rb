@@ -48,19 +48,7 @@ class ConversationRecapsController < ApplicationController
       return
     end
 
-    should_enqueue = @conversation_recap.with_lock do
-      next false unless @conversation_recap.extraction_status == "failed"
-
-      @conversation_recap.update!(
-        extraction_status: "requested",
-        extraction_requested_at: Time.current,
-        extraction_started_at: nil,
-        extraction_completed_at: nil,
-        extraction_error_code: nil
-      )
-      true
-    end
-    MemoryExtractionJob.perform_later(@conversation_recap) if should_enqueue
+    should_enqueue = ConversationRecaps::RetryExtraction.call(@conversation_recap)
 
     redirect_to relationship_profile_path(@relationship_profile, anchor: "memory-review"),
       notice: should_enqueue ? t(".notice") : nil,
@@ -92,39 +80,11 @@ class ConversationRecapsController < ApplicationController
   end
 
   def save_conversation_recap
-    extraction_requested = false
-    @relationship_profile.with_lock do
-      ConversationRecap.transaction do
-        @conversation_recap.save!
-        extraction_requested = @conversation_recap.saved_change_to_extraction_status?(from: "not_requested", to: "requested")
-        sync_timeline_entry!
-        Interaction.sync_from_source!(@conversation_recap)
-      end
-    end
-    enqueue_memory_extraction if extraction_requested && memory_extraction_enabled?
-    true
-  rescue ActiveRecord::RecordInvalid
-    false
-  end
-
-  def enqueue_memory_extraction
-    MemoryExtractionJob.perform_later(@conversation_recap)
+    ConversationRecaps::Save.call(@conversation_recap, extraction_enabled: memory_extraction_enabled?)
   end
 
   def memory_extraction_enabled?
     @memory_extraction_enabled ||= FeatureFlag.enabled?("ai_memory_extraction", user: current_user, environment: Rails.env)
-  end
-
-  def sync_timeline_entry!
-    timeline_entry = @conversation_recap.timeline_entry || @relationship_profile.timeline_entries.build(source_record: @conversation_recap)
-    timeline_entry.assign_attributes(
-      entry_type: "conversation_recap",
-      origin: "system",
-      title: @conversation_recap.title,
-      body: @conversation_recap.body,
-      occurred_at: @conversation_recap.occurred_at
-    )
-    timeline_entry.save!
   end
 
   def refresh_conversation_recaps(message, alert: false, status: :ok)

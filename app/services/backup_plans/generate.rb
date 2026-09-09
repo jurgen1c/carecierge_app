@@ -20,6 +20,9 @@ module BackupPlans
       private_note_ids: [],
       vault_item_ids: [],
       vault_lease: nil,
+      on_persist: nil,
+      on_prepare: nil,
+      task_filter: nil,
       locale: I18n.locale,
       generator: LlmGenerator.new
     )
@@ -31,6 +34,9 @@ module BackupPlans
         private_note_ids:,
         vault_item_ids:,
         vault_lease:,
+        on_persist:,
+        on_prepare:,
+        task_filter:,
         locale:,
         generator:
       ).call
@@ -65,12 +71,14 @@ module BackupPlans
             raise EventPlans::GenerationError, "Backup plan response had no usable options" if options.empty?
             options = attach_reviewed_reminders(options)
 
-            persist_backup_plan!(
+            backup_plan = persist_backup_plan!(
               options:,
               sources: current_context.sources,
               generation_version:,
               context_fingerprint: current_context.fingerprint
             )
+            @on_persist&.call(backup_plan)
+            backup_plan
           end
         end
       end
@@ -92,6 +100,7 @@ module BackupPlans
             validate_selected_sources!(context)
             record_sensitive_access(context.categories)
             plan_snapshot = build_plan_snapshot(sources: context.sources)
+            @on_prepare&.call(context:, task_ids: plan_snapshot.existing_tasks.map(&:id))
             event_plan.increment!(:generation_version)
             [ event_plan.generation_version, context, plan_snapshot ]
           end
@@ -120,7 +129,8 @@ module BackupPlans
         event_plan:,
         private_note_ids:,
         vault_item_ids:,
-        locale:
+        locale:,
+        task_filter: @task_filter
       ).call
     end
 
@@ -133,6 +143,7 @@ module BackupPlans
     def build_plan_snapshot(sources:)
       authorized_source_ids = sources.map(&:id)
       tasks = event_plan.plan_tasks.current.where.missing(:booking).ordered.limit(50).filter_map do |task|
+        next if @task_filter && !@task_filter.call(task)
         persisted_source_ids = task.source_context.filter_map { |source| source["id"] }
         next unless persisted_source_ids.empty? || (persisted_source_ids - authorized_source_ids).empty?
 

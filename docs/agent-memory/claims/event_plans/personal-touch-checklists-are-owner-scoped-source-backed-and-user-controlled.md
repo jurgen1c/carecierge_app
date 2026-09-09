@@ -3,12 +3,19 @@ id: event_plans.personal_touch_checklists_are_owner_scoped_source_backed_and_use
 type: fact
 system: event_plans
 status: current
-confidence: verified
+confidence: high
 severity: important
 
 title: Personal touch checklists are owner-scoped source-backed and user-controlled
 
 claim: >
+  Concierge tools reuse checklist seeding and item lifecycle methods.
+  An explicit wording correction retains the item ID, changes its origin to manual,
+  clears generated source claims, and records a content-free update event. Chat does
+  not import unselected personal preference evidence into professional checklists.
+  Work-mode chat requires a selected plan or date and selected preference sources;
+  new work checklists use practical agenda, message and follow-up prompts. Gift
+  suggestions and authored gift items require explicit work-gift suitability.
   Active relationship owners attach one encrypted personal-touch checklist to an
   event plan or important date, including birthdays, anniversaries, and custom
   moments. Deterministic localized prompts and a bounded set of structured
@@ -29,6 +36,8 @@ claim: >
   user's care.
 
 source_files:
+  - app/services/concierge/operations/touches.rb
+  - app/services/concierge/occasion_sources.rb
   - app/models/personal_touch_checklist.rb
   - app/models/personal_touch_item.rb
   - app/services/personal_touch_checklists/create.rb
@@ -62,6 +71,7 @@ source_files:
   - spec/serializers/data_exports/snapshot_spec.rb
 
 related_files:
+  - spec/services/concierge/occasions_spec.rb
   - spec/models/personal_touch_checklist_spec.rb
   - spec/models/personal_touch_item_spec.rb
   - spec/services/personal_touch_checklists/create_spec.rb
@@ -97,6 +107,7 @@ tags:
   - data_controls
 
 verification:
+  - bundle exec rspec spec/services/concierge/occasions_spec.rb spec/services/backup_plans spec/services/personal_touch_checklists spec/models/audit_event_spec.rb
   - bundle exec rspec spec/models/personal_touch_checklist_spec.rb spec/models/personal_touch_item_spec.rb spec/models/audit_event_spec.rb spec/services/personal_touch_checklists/create_spec.rb spec/policies/personal_touch_checklist_policy_spec.rb spec/policies/personal_touch_item_policy_spec.rb spec/components/personal_touch_checklist_component_spec.rb spec/requests/personal_touch_checklists_spec.rb spec/serializers/data_exports/snapshot_spec.rb
   - bundle exec rspec spec/requests/event_plans_spec.rb spec/requests/important_dates_spec.rb spec/requests/audit_event_integrations_spec.rb spec/requests/localization_spec.rb spec/requests/data_controls_spec.rb
   - bin/rubocop
@@ -105,7 +116,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Personal touch checklists are owner-scoped source-backed and user-controlled

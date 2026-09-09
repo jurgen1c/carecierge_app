@@ -3,7 +3,7 @@ id: relationship_profiles.gift_recommendations_are_private_source_backed_and_use
 type: decision
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Gift recommendations are private, source-backed, and user-controlled
@@ -42,8 +42,15 @@ claim: >
   planning, dismiss it, or request a distinct alternative, but the feature never
   contacts a vendor or purchases anything. Recommendations participate in owner
   exports and selective AI deletion.
+  Chat generation and alternatives reuse the exact currently authorized turn-selected
+  sources and recheck permission at execution. The optional persistence callback
+  commits the conversational outcome in the generation transaction; a fenced or
+  revoked action cannot leave unreceipted recommendations. Sensitive or professional
+  recommendations require a matching still-authorized chat origin before reuse.
 
 source_files:
+  - app/services/concierge/operations/gift_ideas.rb
+  - app/services/concierge/generated_sources.rb
   - app/models/professional_context.rb
   - app/models/concerns/professional_relationship.rb
   - app/models/gift_recommendation.rb
@@ -60,6 +67,7 @@ source_files:
   - db/migrate/20260820040000_create_gift_recommendations.rb
 
 related_files:
+  - spec/services/concierge/gifts_spec.rb
   - app/models/gift.rb
   - app/models/relationship_profile.rb
   - app/serializers/data_exports/snapshot.rb
@@ -104,6 +112,7 @@ tags:
   - automation_boundary
 
 verification:
+  - bundle exec rspec spec/services/concierge/gifts_spec.rb spec/services/concierge/generated_actions_spec.rb
   - bundle exec rspec spec/models/professional_relationship_spec.rb spec/services/professional_context_spec.rb spec/requests/professional_relationships_spec.rb spec/system/professional_relationships_spec.rb
   - bundle exec rspec spec/models/gift_recommendation_spec.rb spec/services/gift_recommendations spec/policies/gift_recommendation_policy_spec.rb spec/components/gift_recommendation_workspace_component_spec.rb spec/requests/gift_recommendations_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/system/gift_recommendations_spec.rb
   - bin/rubocop app/models/gift_recommendation.rb app/controllers/gift_recommendations_controller.rb app/services/gift_recommendations app/policies/gift_recommendation_policy.rb app/views/components/gift_recommendation_workspace_component.rb
@@ -113,7 +122,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Gift recommendations are private, source-backed, and user-controlled

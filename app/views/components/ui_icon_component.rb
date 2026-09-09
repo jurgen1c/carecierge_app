@@ -2,6 +2,7 @@ class UiIconComponent < ApplicationViewComponent
   option :name
 
   PATHS = {
+    chat: "M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z",
     today: "M3 10 12 3l9 7v11h-6v-7H9v7H3Z",
     people: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M16 4a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-3.87M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0",
     reminders: "M9 3h6M12 7v5l3 2M21 13a9 9 0 1 1-18 0 9 9 0 0 1 18 0",

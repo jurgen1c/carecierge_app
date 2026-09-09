@@ -3,12 +3,17 @@ id: relationship_profiles.briefings_are_source_backed_private_and_user_controlle
 type: constraint
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Relationship briefings are source-backed, private, and user-controlled
 
 claim: >
+  Concierge callers pass explicit private-note and allowed vault-item IDs rather
+  than category-wide inclusion. The shared generator releases application locks for
+  provider work and invokes an optional persistence callback inside its final transaction
+  so chat can commit the result and receipt atomically. Context and vault access are
+  revalidated before persistence, and sensitive-access evidence uses owner/profile locks.
   In professional mode, the dedicated work-context boundary replaces ordinary profile
   sourcing with explicitly selected current work records; personal/private/vault data
   is not imported automatically. See the professional-mode constraint for selection
@@ -35,6 +40,8 @@ claim: >
   selective AI deletion, and filter submitted interaction context from logs.
 
 source_files:
+  - app/services/concierge/operations/briefings.rb
+  - app/services/concierge/generated_sources.rb
   - app/models/professional_context.rb
   - app/models/concerns/professional_relationship.rb
   - app/models/relationship_briefing.rb
@@ -56,6 +63,7 @@ source_files:
   - config/deploy.yml
 
 related_files:
+  - spec/services/concierge/generated_actions_spec.rb
   - app/models/audit_event.rb
   - app/policies/relationship_briefing_policy.rb
   - config/routes.rb
@@ -97,6 +105,7 @@ tags:
   - constraint
 
 verification:
+  - bundle exec rspec spec/services/concierge/generated_actions_spec.rb spec/services/message_drafts spec/services/relationship_briefings spec/services/professional_context_spec.rb
   - bundle exec rspec spec/models/professional_relationship_spec.rb spec/services/professional_context_spec.rb spec/requests/professional_relationships_spec.rb spec/system/professional_relationships_spec.rb
   - bundle exec rspec spec/models/relationship_briefing_spec.rb spec/services/relationship_briefings spec/services/memory_extractions/extract_spec.rb spec/policies/relationship_briefing_policy_spec.rb spec/components/relationship_briefing_workspace_component_spec.rb spec/requests/relationship_briefings_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/data_controls_spec.rb spec/services/data_deletions/delete_ai_data_spec.rb spec/config/filter_parameter_logging_spec.rb spec/config/ai_memory_deploy_spec.rb
   - bin/rubocop
@@ -106,7 +115,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Relationship briefings are source-backed, private, and user-controlled

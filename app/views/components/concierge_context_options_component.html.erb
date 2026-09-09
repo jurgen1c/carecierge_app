@@ -1,0 +1,10 @@
+<%= helpers.turbo_frame_tag frame_id(pagination.page) do %>
+  <% records.each do |record| %>
+    <label><%= check_box_tag "concierge_message[#{field}][]", record.id, false, id: dom_id(record, :concierge_context) %> <%= label(record) %></label>
+  <% end %>
+  <% if pagination.next %>
+    <%= helpers.turbo_frame_tag frame_id(pagination.next), data: { action: 'turbo:frame-load->concierge-chat#focusContextPage' } do %>
+      <%= link_to t("concierge.more_context.#{kind}"), next_path, class: style(:link), data: { turbo_prefetch: false } %>
+    <% end %>
+  <% end %>
+<% end %>

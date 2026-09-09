@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_06_044421) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_09_045534) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -310,6 +310,64 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_044421) do
     t.index ["status", "due_on"], name: "index_commitments_on_open_due_on", where: "(((status)::text = 'open'::text) AND (due_on IS NOT NULL))"
   end
 
+  create_table "concierge_actions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "arguments"
+    t.integer "attempts", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "decided_at"
+    t.string "error_code"
+    t.integer "execution_order", default: 0, null: false
+    t.datetime "expires_at"
+    t.string "fingerprint", limit: 64, null: false
+    t.string "name", null: false
+    t.text "precondition"
+    t.text "result"
+    t.uuid "run_token"
+    t.text "source_keys", default: [], null: false, array: true
+    t.datetime "started_at"
+    t.string "state", default: "pending", null: false
+    t.uuid "turn_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_keys"], name: "index_concierge_actions_on_source_keys", using: :gin
+    t.index ["turn_id", "execution_order"], name: "index_concierge_actions_on_turn_id_and_execution_order", unique: true
+    t.index ["turn_id", "fingerprint"], name: "index_concierge_actions_on_turn_id_and_fingerprint", unique: true
+    t.check_constraint "state::text = ANY (ARRAY['pending'::character varying, 'awaiting_approval'::character varying, 'approved'::character varying, 'running'::character varying, 'succeeded'::character varying, 'failed'::character varying, 'rejected'::character varying]::text[])", name: "concierge_actions_state"
+  end
+
+  create_table "concierge_conversations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "relationship_profile_id"
+    t.text "title"
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["relationship_profile_id"], name: "index_concierge_conversations_on_relationship_profile_id"
+    t.index ["user_id", "updated_at", "id"], name: "idx_concierge_conversations_history"
+    t.index ["user_id"], name: "index_concierge_conversations_on_user_id"
+  end
+
+  create_table "concierge_turns", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "attempts", default: 0, null: false
+    t.text "content", null: false
+    t.text "context"
+    t.uuid "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.string "error_code"
+    t.datetime "finished_at"
+    t.integer "input_tokens", default: 0, null: false
+    t.string "locale", default: "en", null: false
+    t.integer "output_tokens", default: 0, null: false
+    t.string "request_key", limit: 64, null: false
+    t.text "response"
+    t.uuid "run_token"
+    t.datetime "started_at"
+    t.string "state", default: "queued", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id", "created_at", "id"], name: "idx_concierge_turns_history"
+    t.index ["conversation_id", "request_key"], name: "index_concierge_turns_on_conversation_id_and_request_key", unique: true
+    t.check_constraint "locale::text = ANY (ARRAY['en'::character varying, 'es'::character varying]::text[])", name: "concierge_turns_locale"
+    t.check_constraint "state::text = ANY (ARRAY['queued'::character varying, 'running'::character varying, 'completed'::character varying, 'failed'::character varying]::text[])", name: "concierge_turns_state"
+  end
+
   create_table "contact_cadences", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "interval_days", null: false
@@ -435,6 +493,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_044421) do
   end
 
   create_table "draft_revisions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "concierge_origin_required", default: false, null: false
     t.text "content", null: false
     t.jsonb "context_categories", default: [], null: false
     t.datetime "created_at", null: false
@@ -653,6 +712,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_044421) do
   end
 
   create_table "gift_recommendations", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "concierge_origin_required", default: false, null: false
     t.boolean "allow_repeats", default: false, null: false
     t.integer "budget_cents"
     t.datetime "created_at", null: false
@@ -1032,6 +1092,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_044421) do
   end
 
   create_table "relationship_briefings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "concierge_origin_required", default: false, null: false
     t.jsonb "context_categories", default: [], null: false
     t.datetime "created_at", null: false
     t.datetime "dismissed_at"
@@ -1598,6 +1659,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_044421) do
   add_foreign_key "calendar_credential_revocations", "users", on_delete: :cascade
   add_foreign_key "calendar_event_syncs", "calendar_connections", on_delete: :cascade
   add_foreign_key "commitments", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "concierge_actions", "concierge_turns", column: "turn_id", on_delete: :cascade
+  add_foreign_key "concierge_conversations", "relationship_profiles", on_delete: :cascade
+  add_foreign_key "concierge_conversations", "users"
+  add_foreign_key "concierge_turns", "concierge_conversations", column: "conversation_id", on_delete: :cascade
   add_foreign_key "contact_cadences", "relationship_profiles", on_delete: :cascade
   add_foreign_key "contact_methods", "relationship_profiles"
   add_foreign_key "contacts_connections", "users"

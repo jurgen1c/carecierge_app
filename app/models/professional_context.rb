@@ -1,7 +1,7 @@
 # The owner selects existing work records explicitly; unrelated profile data stays outside this boundary.
 class ProfessionalContext
   FIELDS = %w[boundaries organization role goals communication_preferences review_preparation].freeze
-  COLLECTIONS = %w[relationship_notes relationship_preferences commitments important_dates gifts].freeze
+  COLLECTIONS = %w[relationship_notes relationship_preferences commitments important_dates gifts event_plans reminders gift_boxes vendors vendor_shortlists].freeze
   Entry = Data.define(:id, :kind, :section, :content, :certainty)
 
   def initialize(profile, as_of: nil)
@@ -11,9 +11,11 @@ class ProfessionalContext
 
   def candidates(collection)
     raise ArgumentError unless COLLECTIONS.include?(collection)
+    return @profile.user.vendors if collection == "vendors"
 
     scope = @profile.public_send(collection)
     return scope.where(private: false).where.missing(:privacy_vault_item).includes(:rich_text_body) if collection == "relationship_notes"
+    return scope.visible if collection == "event_plans"
 
     scope
   end
@@ -23,6 +25,8 @@ class ProfessionalContext
   end
 
   def entries
+    # Selected plans, reminders, gift boxes, vendors and comparisons authorize conversational control. They do not
+    # implicitly add their contents or related records to generated work guidance.
     [ entry("professional:mode", "professional", "preferences", "Professional relationship; gifts allowed: #{@profile.professional_gifts_allowed?}") ] +
       details + preference_entries + commitment_entries + date_entries + note_entries + gift_entries
   end
@@ -32,7 +36,7 @@ class ProfessionalContext
     when RelationshipNote then record.body.to_plain_text.squish.truncate(100)
     when RelationshipPreference then "#{record.key}: #{record.value}".truncate(100)
     when ImportantDate then record.display_title
-    when Gift then record.name
+    when Gift, GiftBox, Vendor then record.name
     else record.title
     end
   end

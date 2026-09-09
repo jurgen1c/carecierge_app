@@ -3,15 +3,28 @@ id: agent_workflow.authenticated_ui_uses_shared_shell_and_local_measures
 type: fact
 system: agent_workflow
 status: current
-confidence: verified
+confidence: high
 severity: normal
 
 title: Authenticated UI uses one shared shell and local reading measures
 
 claim: >
+  Conversation history and messages use separate bounded Pagy navigation, retaining
+  locale and the viewed message page during streaming updates. Verified receipts
+  expose localized correction prompts and explicit person choices when available.
+  The concierge is the normal authenticated landing, with Today, People, event plans and shared spaces retained in shared navigation. Its conversation uses verified receipts and current-person context; mobile history starts collapsed and the transcript yields space to the composer and Send action. Polling replacements preserve the transcript reading offset and keyboard focus on the transcript or its controls through stable focus keys; when a focused control disappears, focus returns to the transcript. Readers at the bottom continue following new content. PRODUCT.md, DESIGN.md and the Impeccable sidecar carry this direction in both locale implementations.
   The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. At enlarged text sizes the wordmark stays intact, the Menu control can wrap to a second row, and the open menu scrolls within the remaining viewport below the actual header height. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md. Standalone form headings supply a document title only when the page has not already provided one.
 
 source_files:
+  - app/controllers/concerns/concierge_workspace.rb
+  - app/helpers/concierge_helper.rb
+  - app/views/components/concierge_pagination_component.rb
+  - app/views/components/concierge_pagination_component.html.erb
+  - app/views/concierge_conversations/index.html.erb
+  - app/views/concierge_conversations/_transcript.html.erb
+  - app/views/components/concierge_receipt_component.rb
+  - app/views/components/concierge_receipt_component.html.erb
+  - app/javascript/controllers/concierge_chat_controller.js
   - app/views/layouts/application.html.erb
   - app/views/components/app_navigation_component.rb
   - app/views/components/app_navigation_component.html.erb
@@ -21,6 +34,9 @@ source_files:
   - DESIGN.md
 
 related_files:
+  - spec/requests/concierge_spec.rb
+  - spec/system/concierge_spec.rb
+  - spec/system/concierge_journeys_spec.rb
   - app/helpers/workspace_helper.rb
   - app/helpers/style_variants_helper.rb
   - app/views/components/action_link_component.rb
@@ -63,17 +79,22 @@ tags:
   - localization
 
 verification:
+  - bundle exec rspec spec/system/concierge_spec.rb spec/requests/concierge_spec.rb
   - bundle exec rspec spec/components/workspace_primitives_spec.rb spec/requests/app_workspace_spec.rb spec/system/workspace_experience_spec.rb
   - bun run build
   - bun run build:css
   - bun run lint:js
 
-last_verified_commit: 882c72d7c93468ba703d163bae62d91fa766fe0f
+last_verified_commit: null
 ---
 
 # Authenticated UI uses one shared shell and local reading measures
 
 ## Claim
+
+The conversational landing keeps familiar navigation and verified action receipts. Mobile
+history starts collapsed; the transcript scrolls within the available space so the composer
+and Send button remain reachable. Existing manual workspaces remain first-class destinations.
 
 The application layout owns the single main landmark and shared authenticated navigation. Desktop uses a persistent 15rem sidebar from 1024px; smaller screens use a native disclosure menu with Escape, outside-focus/pointer and Turbo-cache closing. At enlarged text sizes the wordmark stays intact, the Menu control can wrap to a second row, and the open menu scrolls within the remaining viewport below the actual header height. Both derive links and role visibility from AppNavigationComponent. Main workspaces are fluid; local forms and prose retain readable measures. Today and profile layouts add useful columns according to available container width. Shared primitives use ViewComponent, dry-initializer and StyleVariantsHelper, following PRODUCT.md and DESIGN.md. Standalone form headings supply a document title only when the page has not already provided one.
 

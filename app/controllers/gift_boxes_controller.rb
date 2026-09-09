@@ -15,9 +15,9 @@ class GiftBoxesController < ApplicationController
   end
 
   def create
-    @gift_box = @relationship_profile.gift_boxes.new(box_params)
+    @gift_box = @relationship_profile.gift_boxes.new
     authorize @gift_box
-    persist { @gift_box.save! }
+    persist { GiftBoxes::Save.call(box: @gift_box, attributes: box_params) }
   end
 
   def update
@@ -27,12 +27,7 @@ class GiftBoxesController < ApplicationController
     raise ActionController::BadRequest if attributes[:lock_version].blank?
 
     persist do
-      @gift_box.lock!
-      raise ActiveRecord::StaleObjectError.new(@gift_box, "update") unless @gift_box.lock_version.to_s == attributes[:lock_version].to_s
-
-      @gift_box.assign_attributes(attributes)
-      @gift_box.updated_at = Time.current
-      @gift_box.save!
+      GiftBoxes::Save.call(box: @gift_box, attributes: attributes.except(:lock_version), expected_version: attributes[:lock_version].to_s)
     end
   rescue ActiveRecord::StaleObjectError
     redirect_to relationship_profile_gift_box_path(@relationship_profile, @gift_box), alert: t("gift_boxes.changed")

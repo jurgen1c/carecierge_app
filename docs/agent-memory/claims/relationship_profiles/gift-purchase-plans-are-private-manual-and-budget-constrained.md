@@ -3,7 +3,7 @@ id: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_cons
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Gift purchase plans are private manual and budget constrained
@@ -33,8 +33,16 @@ claim: >
   Spanish workspace disables snapshots and HTTP caching. Logistics are filtered
   from logs, exported under their gift and deleted with it. Gift-given outcomes
   remain in the existing gift-history flow.
+  Chat invokes the same Save and AddTask services; work mode requires explicitly
+  suitable selected gifts and selected plans. Chat requires the last read
+  edit version, and keeps option removal behind exact content-bound confirmation.
+  Explicitly timed gift milestone reminders use the ordinary reminder domain and
+  current send_reminders permission without copying shipping details.
 
 source_files:
+  - app/services/concierge/operations/gift_purchases.rb
+  - app/services/concierge/operations/gifts.rb
+  - app/services/concierge/gift_sources.rb
   - app/models/gift_purchase_plan.rb
   - app/models/gift.rb
   - app/controllers/gift_purchase_plans_controller.rb
@@ -53,6 +61,7 @@ source_files:
   - db/migrate/20260905092245_create_gift_purchase_plans.rb
   - db/schema.rb
 related_files:
+  - spec/services/concierge/gifts_spec.rb
   - spec/services/gift_purchase_plans/owner_lock_spec.rb
   - spec/models/gift_purchase_plan_spec.rb
   - spec/requests/gift_purchase_plans_spec.rb
@@ -75,10 +84,11 @@ tags:
   - budget
   - privacy
 verification:
+  - bundle exec rspec spec/services/concierge/gifts_spec.rb
   - bundle exec rspec spec/services/gift_purchase_plans/owner_lock_spec.rb spec/models/gift_purchase_plan_spec.rb spec/requests/gift_purchase_plans_spec.rb spec/components/gift_purchase_workspace_component_spec.rb spec/serializers/data_exports/gift_purchase_snapshot_spec.rb spec/system/gift_purchase_plans_spec.rb
   - bundle exec rspec
   - bin/ci
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Gift purchase plans are private manual and budget constrained

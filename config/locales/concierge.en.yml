@@ -1,0 +1,330 @@
+en:
+  workspace:
+    navigation:
+      concierge: Concierge
+    pages:
+      concierge_conversations: Concierge
+      concierge_turns: Concierge
+      concierge_actions: Concierge
+      concierge_contexts: Relationship context
+  concierge:
+    relationship_context:
+      title: Relationship context
+      edit: Choose personal or work context
+      description: Changes start a fresh conversation. For a work relationship, only the records you select become available to the concierge. Existing messages stay in their original conversation.
+      save: Save context and continue
+      cancel: Back to the conversation
+      saved: Your relationship context is ready.
+      invalid: Check your work context and choose up to six available records in each category.
+    choose_person: "Choose %{name}"
+    memory_proposal_preview: "From your words: “%{excerpt}”. Possible memory — %{title}: %{body}. Accepting saves this as an interpretation, with higher-impact automation still disabled."
+    correct: Correct
+    correct_record: Correct %{title}
+    correction_prompt: 'Correct “%{title}”: '
+    when: When
+    recorded_amount: Recorded amount
+    manual_record: Saved in your records. No provider was contacted and no payment or reservation was made.
+    backup_replaces: "Tasks to replace: %{tasks}. Reminders to retire: %{reminders}."
+    delete_conversation: Delete this conversation
+    delete_conversation_description: This removes the messages and receipts in this conversation. Memories, plans, and other records you saved remain in the app.
+    export_title: Concierge conversations
+    export_turns:
+      one: "%{count} message"
+      other: "%{count} messages"
+    note: Relationship note
+    connection_interrupted: Updates were interrupted. Your message and completed changes are saved.
+    check_response: Check for a reply
+    title: Concierge
+    subtitle: A place to remember, plan, and follow through.
+    welcome: Who’s on your mind?
+    welcome_body: Tell me one thing you want to remember or take care of. We can work through it together.
+    history: Recent conversations
+    history_empty: Your conversations will be here when you want to pick them up again.
+    pagination:
+      history: Conversation pages
+      turn: Message pages
+      older: Older
+      newer: Newer
+    new_conversation: New conversation
+    person_context: About
+    any_person: Choose as we talk
+    change_context: Change person
+    message_label: Your message
+    placeholder: Remember something, ask about someone, or start a plan…
+    composer_help: Enter to send. Shift + Enter for a new line.
+    send: Send
+    you: You
+    conversation: Conversation
+    working: Working on your request…
+    reply_ready: Your reply is ready.
+    retry: Try again
+    no_results: No matching saved records were found.
+    review_change: Review this change before it is applied.
+    more_context:
+      private_notes: Show more private notes
+      vault_items: Show more protected items
+    select_context: Include private context
+    context_once: Select up to six items of each kind for this message only.
+    unlock_context: Unlock protected context
+    context_changed: The context for this reply has changed. Ask again to use the information currently available.
+    decisions:
+      approve: Confirm change
+      reject: Leave it as it is
+    action_states:
+      running: Preparing your result
+      pending: Preparing
+      awaiting_approval: Waiting for your decision
+      approved: Confirmed
+      succeeded: Done
+      failed: Could not complete
+      rejected: Not changed
+    errors:
+      invalid_message: Write a message of up to 8,000 characters to continue.
+      invalid_arguments: A detail is missing or invalid. Check your selection and try again.
+      request_conflict: This request has changed. Review the current information and try again.
+      conversation_busy: Finish the current request before sending another message.
+      context_unavailable: This relationship or selected context is no longer available. Choose a person or start a new conversation.
+      vault_locked: Unlock your protected context before including it in this request.
+      provider_unavailable: I couldn’t finish the reply. Any completed changes are shown below. You can safely try again.
+      execution_expired: This request was interrupted. Review completed changes and try again.
+      limit_reached: This request needs a smaller next step. Review what was completed and tell me what to do next.
+      permission_denied: This action needs permission. Review your automation settings before continuing.
+    starters:
+      remember:
+        label: Remember something about someone
+        prompt: "Remember that "
+      recall:
+        label: Recall a detail from a conversation
+        prompt: "What do I have saved about "
+      plan:
+        label: Start planning an occasion
+        prompt: "Help me plan "
+      follow_up:
+        label: Find what needs a follow-up
+        prompt: What should I follow up on this week?
+    review_effect:
+      approve_high_impact_memory: Approving this memory allows its use in higher-impact suggestions. Review its accuracy before deciding.
+      review_extracted_memory: Approving this extracted detail saves it as a reviewed memory. Check the proposed or corrected text before deciding.
+    operations:
+      ideas:
+        search: Suggestions
+        read: Suggestion
+        alternative: Another gesture
+        feedback: Feedback saved
+        save: Gesture saved for later
+        complete: Gesture completed
+        dismiss: Suggestion dismissed
+        remind: Reminder for this suggestion
+      plan_ideas:
+        generate: Suggest steps for this plan
+      approvals:
+        search: Pending reviews
+        read: Review details
+        approve: Approve this memory review
+        reject: Reject this memory review
+        edit: Correct and approve this proposal
+        defer: Review this later
+        dismiss: Dismiss this review
+      work:
+        read: Work context
+        update: Update work context
+      gifts:
+        search: Gift history
+        read: Gift details
+        create: Record a gift
+        update: Correct this gift
+        destroy: Delete this gift
+        mark_given: Record giving this gift
+      gift_ideas:
+        generate: Prepare gift ideas
+        alternative: Find another gift idea
+        search: Gift ideas
+        read: Gift idea details
+        save: Save this gift idea
+        dismiss: Dismiss this gift idea
+        mark_purchased: Record a purchase you made
+      gift_purchases:
+        read: Gift purchase preparation
+        save: Save purchase preparation
+        add_option: Add a purchase option
+        remove_option: Remove this purchase option
+        add_task: Add a gift task to the plan
+        remind: Schedule a gift reminder
+      gift_boxes:
+        search: Gift boxes
+        read: Gift box details
+        create: Start a gift box
+        update: Update this gift box
+        destroy: Delete this gift box
+        add_item: Add an item to the box
+        update_item: Update this item
+        remove_item: Remove this item
+        suggest_companions: Small extras for this box
+        remind: Schedule a box delivery reminder
+      vendors:
+        search: Saved vendors
+        read: Vendor details
+        create: Save a vendor
+        update: Correct this vendor
+        destroy: Delete this vendor
+        attach: Add this vendor to the plan
+        detach: Remove this vendor from the plan
+      shortlists:
+        search: Vendor comparisons
+        read: Comparison details
+        create: Start a vendor comparison
+      vendor_options:
+        create: Add a vendor option
+        update: Update this option
+        favorite: Set this favorite
+        select: Choose this option
+        reject: Reject this option
+        restore: Restore this option
+        destroy: Remove this option
+      quotes:
+        search: Recorded quotes
+        read: Quote details
+        create: Record a quote
+        update: Update this quote
+        destroy: Delete this quote
+      bookings:
+        search: Manual booking records
+        read: Booking record details
+        create: Record a booking
+        update: Update this booking record
+        destroy: Delete this booking record
+      backups:
+        generate: Prepare backup options
+        search: Backup options
+        read: Backup option details
+        promote: Apply this backup option
+      touches:
+        prepare: Personal-touch checklist
+        search: Personal touches
+        create: Add a personal touch
+        update: Correct this personal touch
+        complete: Complete this personal touch
+        reopen: Reopen this personal touch
+        dismiss: Dismiss this personal touch
+        move_up: Move this personal touch up
+        move_down: Move this personal touch down
+      drafts:
+        generate: Prepare a message draft
+        read: Message drafts
+        update: Correct this draft
+        restore: Restore this revision
+        destroy: Delete this draft
+      briefings:
+        generate: Prepare a relationship briefing
+        search: Relationship briefings
+        read: Briefing details
+        save: Save this briefing
+        dismiss: Dismiss this briefing
+      priorities:
+        search: Your follow-ups
+        dismiss: Hide this suggestion
+        snooze: Bring this back tomorrow
+      people:
+        clarify: Choose a person
+        search: People found
+        read: Relationship details
+        create: Add a person
+        update: Update relationship details
+        archive: Archive this relationship
+      memories:
+        propose: Possible memory
+        search: Saved memories
+        read: Memory details
+        create: Save this memory
+        update: Correct this memory
+        review: Confirm this memory
+        destroy: Delete this memory
+      recaps:
+        search: Conversation recaps
+        read: Recap details
+        create: Save a recap
+        update: Correct this recap
+        destroy: Delete this recap
+        retry_extraction: Retry memory extraction
+      moods:
+        search: Mood notes
+        read: Mood note details
+        create: Record an observation
+        update: Correct this observation
+        destroy: Delete this observation
+      interactions:
+        search: Interactions
+        read: Interaction details
+        create: Record an interaction
+        update: Correct this interaction
+        destroy: Delete this interaction
+      timeline:
+        search: Relationship timeline
+        read: Timeline entry
+        create: Add a timeline entry
+        update: Correct this entry
+        destroy: Delete this entry
+      commitments:
+        search: Commitments and promises
+        read: Commitment details
+        create: Save a commitment
+        update: Update this commitment
+        destroy: Delete this commitment
+        complete: Complete this commitment
+        cancel: Cancel this commitment
+        reopen: Reopen this commitment
+      desires:
+        search: Wishes and goals
+        read: Wish or goal details
+        create: Save a wish or goal
+        update: Update this wish or goal
+        destroy: Delete this wish or goal
+        fulfill: Record a fulfilled wish or goal
+      dates:
+        search: Important dates
+        read: Date details
+        create: Save an important date
+        update: Update this date
+        destroy: Delete this date
+      preferences:
+        search: Preferences
+        read: Preference details
+        create: Save a preference
+        update: Correct this preference
+        destroy: Delete this preference
+      notes:
+        search: Relationship notes
+        read: Note details
+        create: Save a note
+        update: Correct this note
+        destroy: Delete this note
+      cadence:
+        read: Contact rhythm
+        save: Save the contact rhythm
+      plans:
+        search: Event plans
+        read: Plan details
+        create: Start a plan
+        update: Update this plan
+        complete: Complete this plan
+        reopen: Reopen this plan
+        archive: Archive this plan
+      tasks:
+        search: Plan tasks
+        read: Task details
+        create: Add a task
+        update: Update this task
+        destroy: Remove this task
+        complete: Complete this task
+        reopen: Reopen this task
+      reminders:
+        search: Reminders
+        read: Reminder details
+        create: Set a reminder
+        update: Update this reminder
+        snooze: Snooze this reminder
+        complete: Complete this reminder
+        destroy: Delete this reminder
+      proposals:
+        search: Memories to review
+        review: Review this proposed memory

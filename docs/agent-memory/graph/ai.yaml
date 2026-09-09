@@ -1,0 +1,38 @@
+id: ai_provider_boundaries
+name: AI generation preserves domain privacy and review rules
+edges:
+  - source: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: requires
+    reason: Backup generation inherits the same provider defaults and bounded output configuration.
+    strength: 100
+  - source: relationship_profiles.ai_memory_extraction
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: requires
+    reason: Local extraction uses the shared native client while retaining feature gating and review-only proposals.
+    strength: 100
+  - source: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: requires
+    reason: The selected provider receives only the existing authorized source catalog and validated briefing schema.
+    strength: 100
+  - source: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: requires
+    reason: Gift ideas use shared provider defaults without changing source, budget or review constraints.
+    strength: 100
+  - source: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: requires
+    reason: Native local drafts reuse the same selected context and remain revisioned manual drafts.
+    strength: 100
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: constrains
+    reason: Changing provider never authorizes personal or unselected work context in professional generation.
+    strength: 100
+  - source: relationship_profiles.social_context_is_user_provided_reviewed_and_revocable
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: requires
+    reason: Local text and vision analysis retain deliberate input selection, validation and owner review with no cloud fallback.
+    strength: 100

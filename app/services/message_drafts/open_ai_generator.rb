@@ -23,6 +23,12 @@ module MessageDrafts
       formality: "balanced",
       locale: I18n.locale
     )
+      unless Ai::Configuration.provider == "openai"
+        return Ai::TextGeneration.call(model:, instructions: instructions(locale:),
+          input: JSON.generate(input_payload(draft_type:, tone:, situation:, response_length:, formality:, context:)),
+          output_token_limit: 700)
+      end
+
       raise GenerationError, "Message drafting is not configured" if api_key.blank?
 
       response = transport.call(
@@ -37,6 +43,8 @@ module MessageDrafts
       raise GenerationError, "Message drafting response was invalid" if content.blank?
 
       content
+    rescue Ai::GenerationError
+      raise GenerationError, "Message drafting provider was unavailable"
     rescue JSON::ParserError, KeyError, TypeError
       raise GenerationError, "Message drafting response was invalid"
     end
@@ -46,6 +54,8 @@ module MessageDrafts
     end
 
     def self.default_model
+      return ENV["CARECIERGE_MESSAGE_DRAFTING_MODEL"].presence || Ai::Configuration.model unless Ai::Configuration.provider == "openai"
+
       Rails.application.credentials.dig(:openai, :message_drafting_model).presence ||
         ENV.fetch("CARECIERGE_MESSAGE_DRAFTING_MODEL", DEFAULT_MODEL)
     end
@@ -63,16 +73,13 @@ module MessageDrafts
         store: false,
         max_output_tokens: 700,
         instructions: instructions(locale:),
-        input: JSON.generate(
-          purpose: draft_type,
-          tone:,
-          response_length:,
-          formality:,
-          message_or_situation: situation,
-          relationship_context: context
-        )
+        input: JSON.generate(input_payload(draft_type:, tone:, situation:, response_length:, formality:, context:))
       )
       request
+    end
+
+    def input_payload(draft_type:, tone:, situation:, response_length:, formality:, context:)
+      { purpose: draft_type, tone:, response_length:, formality:, message_or_situation: situation, relationship_context: context }
     end
 
     def instructions(locale:)

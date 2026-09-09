@@ -43,6 +43,16 @@ module GiftRecommendations
     end
 
     def generate(sources:, budget_cents:, needed_by:, occasion:, allow_repeats:, excluded_titles:, locale:, count: 3)
+      unless Ai::Configuration.provider == "openai"
+        output = Ai::TextGeneration.call(model:, instructions: instructions(locale:, count:),
+          input: JSON.generate(input_payload(sources:, budget_cents:, needed_by:, occasion:, allow_repeats:, excluded_titles:)),
+          output_token_limit: 1_400, schema: { name: "gift_recommendations", schema: SCHEMA })
+        recommendations = output.fetch("recommendations")
+        raise TypeError unless recommendations.is_a?(Array)
+
+        return recommendations.first(count)
+      end
+
       raise GenerationError, "Gift recommendations are not configured" if api_key.blank?
 
       response = transport.call(build_request(
@@ -64,6 +74,8 @@ module GiftRecommendations
       raise GenerationError, "Gift recommendation response was invalid" unless recommendations.is_a?(Array)
 
       recommendations.first(count)
+    rescue Ai::GenerationError
+      raise GenerationError, "Gift recommendation provider was unavailable"
     rescue JSON::ParserError, KeyError, TypeError
       raise GenerationError, "Gift recommendation response was invalid"
     end
@@ -73,6 +85,8 @@ module GiftRecommendations
     end
 
     def self.default_model
+      return ENV["CARECIERGE_GIFT_RECOMMENDATION_MODEL"].presence || Ai::Configuration.model unless Ai::Configuration.provider == "openai"
+
       Rails.application.credentials.dig(:openai, :gift_recommendation_model).presence ||
         ENV.fetch("CARECIERGE_GIFT_RECOMMENDATION_MODEL", DEFAULT_MODEL)
     end
@@ -90,14 +104,7 @@ module GiftRecommendations
         store: false,
         max_output_tokens: 1_400,
         instructions: instructions(locale:, count:),
-        input: JSON.generate(
-          budget_cents:,
-          needed_by: needed_by&.iso8601,
-          occasion:,
-          allow_repeats:,
-          excluded_titles:,
-          sources: sources.map(&:to_h)
-        ),
+        input: JSON.generate(input_payload(sources:, budget_cents:, needed_by:, occasion:, allow_repeats:, excluded_titles:)),
         text: {
           format: {
             type: "json_schema",
@@ -108,6 +115,10 @@ module GiftRecommendations
         }
       )
       request
+    end
+
+    def input_payload(sources:, budget_cents:, needed_by:, occasion:, allow_repeats:, excluded_titles:)
+      { budget_cents:, needed_by: needed_by&.iso8601, occasion:, allow_repeats:, excluded_titles:, sources: sources.map(&:to_h) }
     end
 
     def instructions(locale:, count:)

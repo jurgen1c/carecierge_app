@@ -1,0 +1,105 @@
+<% disable_turbo_cache %>
+<% content_for :title, "#{t('concierge.title')} · Carecierge" %>
+<section class="concierge-workspace" data-controller="concierge-chat"
+  data-concierge-chat-url-value="<%= transcript_concierge_conversation_path(@conversation, turn_page: @turns_pagy.page, history_page: @history_pagy.page) if @conversation.persisted? %>"
+  data-concierge-chat-page-value="<%= @conversation.persisted? ? concierge_conversation_path(@conversation) : concierge_conversations_path %>">
+  <header class="concierge-heading">
+    <div>
+      <h1><%= t('concierge.title') %></h1>
+      <p><%= t('concierge.subtitle') %></p>
+    </div>
+    <%= component 'action_link', label: t('concierge.new_conversation'), path: concierge_conversations_path %>
+  </header>
+
+  <div class="concierge-layout">
+    <aside class="concierge-history" aria-label="<%= t('concierge.history') %>">
+      <details data-concierge-chat-target="history">
+        <summary><%= t('concierge.history') %></summary>
+        <% if @history.any? %>
+          <ul>
+            <% @history.each do |conversation| %>
+              <li><%= link_to concierge_history_title(conversation), concierge_conversation_path(conversation),
+                aria: { current: conversation == @conversation ? 'page' : nil }, data: { turbo_prefetch: false } %></li>
+            <% end %>
+          </ul>
+          <%= component 'concierge_pagination', pagination: @history_pagy, kind: 'history' %>
+        <% else %>
+          <p><%= t('concierge.history_empty') %></p>
+        <% end %>
+      </details>
+      <% if @conversation.persisted? %>
+        <details class="concierge-delete-history">
+          <summary><%= t('concierge.delete_conversation') %></summary>
+          <p><%= t('concierge.delete_conversation_description') %></p>
+          <%= button_to t('concierge.delete_conversation'), concierge_conversation_path(@conversation), method: :delete,
+            params: { confirm_delete: '1' }, class: 'workspace-action workspace-action-danger' %>
+        </details>
+      <% end %>
+    </aside>
+
+    <div class="concierge-desk">
+      <% if @conversation.persisted? %>
+        <%= form_with url: concierge_conversation_path(@conversation), method: :patch, class: 'concierge-person-context' do |form| %>
+          <%= form.label :relationship_profile_id, t('concierge.person_context') %>
+          <%= form.collection_select :relationship_profile_id, @profiles, :id, :display_name, { selected: @conversation.relationship_profile_id, include_blank: t('concierge.any_person') } %>
+          <%= form.submit t('concierge.change_context'), class: 'workspace-action workspace-action-secondary' %>
+        <% end %>
+        <% if @conversation.relationship_profile && @conversation.context_available? %>
+          <%= component 'form_reveal', label: t('concierge.relationship_context.title') do %>
+            <%= turbo_frame_tag dom_id(@conversation, :relationship_context) do %>
+              <%= link_to t('concierge.relationship_context.edit'), edit_concierge_conversation_relationship_context_path(@conversation), class: 'workspace-action workspace-action-secondary' %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= render 'concierge_conversations/transcript', conversation: @conversation, turns: @turns %>
+      <p class="sr-only" role="status" aria-live="polite" data-concierge-chat-target="status"></p>
+      <div class="concierge-error" data-concierge-chat-target="recovery" role="status" hidden>
+        <p><%= t('concierge.connection_interrupted') %></p>
+        <button type="button" class="workspace-action workspace-action-secondary" data-action="concierge-chat#resume"><%= t('concierge.check_response') %></button>
+      </div>
+
+      <div class="concierge-composer">
+        <% if @error_code %><p role="alert" class="concierge-error"><%= t("concierge.errors.#{@error_code}") %></p><% end %>
+        <% if @conversation.context_available? %>
+          <%= form_with url: concierge_submission_path(@conversation), scope: :concierge_message,
+            data: { concierge_chat_target: 'form' } do |form| %>
+            <%= form.hidden_field :request_key, value: @request_key %>
+            <% unless @conversation.persisted? %>
+              <div class="concierge-person-context">
+                <%= form.label :relationship_profile_id, t('concierge.person_context') %>
+                <%= form.collection_select :relationship_profile_id, @profiles, :id, :display_name,
+                  { selected: @conversation.relationship_profile_id, include_blank: t('concierge.any_person') } %>
+              </div>
+            <% end %>
+            <%= form.label :content, t('concierge.message_label'), class: 'sr-only' %>
+            <%= form.text_area :content, value: @content, rows: 3, maxlength: ConciergeTurn::MAX_CONTENT_LENGTH, required: true,
+              placeholder: t('concierge.placeholder'), aria: { describedby: 'concierge_composer_help' },
+              data: { concierge_chat_target: 'input', action: 'keydown->concierge-chat#submitWithKeyboard' } %>
+            <% if !@conversation.relationship_profile&.professional? && (@private_notes.any? || @vault_items.any?) %>
+              <details class="concierge-private-context">
+                <summary><%= t('concierge.select_context') %></summary>
+                <p><%= t('concierge.context_once') %></p>
+                <% if @private_notes_pagy %>
+                  <%= component 'concierge_context_options', kind: 'private_notes', records: @private_notes, pagination: @private_notes_pagy %>
+                <% end %>
+                <% if privacy_vault_unlocked? && @vault_items_pagy %>
+                  <%= component 'concierge_context_options', kind: 'vault_items', records: @vault_items, pagination: @vault_items_pagy %>
+                <% elsif @vault_items.any? %>
+                  <%= link_to t('concierge.unlock_context'), relationship_profile_privacy_vault_path(@conversation.relationship_profile), class: 'concierge-source-link' %>
+                <% end %>
+              </details>
+            <% end %>
+            <div class="concierge-composer-footer">
+              <p id="concierge_composer_help"><%= t('concierge.composer_help') %></p>
+              <%= form.submit t('concierge.send'), class: 'workspace-action workspace-action-primary', data: { concierge_chat_target: 'send' }, disabled: concierge_busy?(@turns) %>
+            </div>
+          <% end %>
+        <% else %>
+          <p><%= t('concierge.errors.context_unavailable') %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>

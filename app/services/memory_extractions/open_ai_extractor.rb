@@ -30,13 +30,22 @@ module MemoryExtractions
       required: [ "memories" ]
     }.freeze
 
-    def initialize(api_key: ENV["OPENAI_API_KEY"], model: ENV.fetch("CARECIERGE_MEMORY_EXTRACTION_MODEL", DEFAULT_MODEL), transport: nil)
+    def initialize(api_key: ENV["OPENAI_API_KEY"], model: self.class.default_model, transport: nil)
       @api_key = api_key.to_s
       @model = model.to_s
       @transport = transport || method(:perform_request)
     end
 
     def extract(conversation_recap)
+      unless Ai::Configuration.provider == "openai"
+        output = Ai::TextGeneration.call(model:, instructions:, input: source_text(conversation_recap),
+          output_token_limit: 1_800, schema: { name: "relationship_memory_proposals", schema: SCHEMA })
+        memories = output.fetch("memories")
+        raise TypeError unless memories.is_a?(Array)
+
+        return memories
+      end
+
       raise ExtractionError, "AI extraction is not configured" if api_key.blank?
 
       response = transport.call(build_request(conversation_recap))
@@ -47,8 +56,14 @@ module MemoryExtractions
       raise ExtractionError, "AI extraction response was invalid" unless memories.is_a?(Array)
 
       memories
+    rescue Ai::GenerationError
+      raise ExtractionError, "AI extraction provider was unavailable"
     rescue JSON::ParserError, KeyError, TypeError
       raise ExtractionError, "AI extraction response was invalid"
+    end
+
+    def self.default_model
+      ENV["CARECIERGE_MEMORY_EXTRACTION_MODEL"].presence || Ai::Configuration.model
     end
 
     private

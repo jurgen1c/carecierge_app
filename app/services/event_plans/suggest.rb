@@ -21,6 +21,9 @@ module EventPlans
       private_note_ids: [],
       vault_item_ids: [],
       vault_lease: nil,
+      on_persist: nil,
+      on_prepare: nil,
+      task_filter: nil,
       locale: I18n.locale,
       generator: LlmSuggester.new
     )
@@ -31,6 +34,9 @@ module EventPlans
         private_note_ids:,
         vault_item_ids:,
         vault_lease:,
+        on_persist:,
+        on_prepare:,
+        task_filter:,
         locale:,
         generator:
       ).call
@@ -66,6 +72,7 @@ module EventPlans
               target: event_plan,
               metadata: { result: "generated", count: persisted.length }
             )
+            @on_persist&.call(persisted)
             persisted
           end
         end
@@ -88,6 +95,7 @@ module EventPlans
             validate_selected_sources!(context)
             record_sensitive_access(context.categories)
             plan_snapshot = build_plan_snapshot(sources: context.sources)
+            @on_prepare&.call(context:, task_ids: @snapshot_task_ids)
             event_plan.increment!(:generation_version)
             [ event_plan.generation_version, context, plan_snapshot ]
           end
@@ -121,16 +129,20 @@ module EventPlans
         event_plan:,
         private_note_ids:,
         vault_item_ids:,
-        locale:
+        locale:,
+        task_filter: @task_filter
       ).call
     end
 
     def build_plan_snapshot(sources:)
+      @snapshot_task_ids = []
       authorized_source_ids = sources.map(&:id)
       tasks = event_plan.plan_tasks.current.where.missing(:booking).ordered.limit(50).filter_map do |task|
+        next if @task_filter && !@task_filter.call(task)
         persisted_source_ids = task.source_context.filter_map { |source| source["id"] }
         next unless persisted_source_ids.empty? || (persisted_source_ids - authorized_source_ids).empty?
 
+        @snapshot_task_ids << task.id
         TaskSnapshot.new(
           phase: task.phase,
           kind: task.kind,

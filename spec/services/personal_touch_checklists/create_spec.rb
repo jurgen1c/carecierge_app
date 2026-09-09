@@ -131,4 +131,16 @@ RSpec.describe PersonalTouchChecklists::Create do
       described_class.call(actor: plan.user, moment: plan)
     end.to raise_error(ActiveRecord::RecordNotFound)
   end
+
+  it "uses work prompts and only selected preferences for a professional relationship" do
+    profile = create(:relationship_profile, relationship_mode: "professional")
+    plan = create(:event_plan, user: profile.user, relationship_profile: profile)
+    selected = create(:relationship_preference, relationship_profile: profile, key: "Agenda", value: "Send in advance", category: "communication")
+    create(:relationship_preference, relationship_profile: profile, key: "Personal detail", value: "Personal holiday")
+    profile.update!(professional_context: { "relationship_preferences" => [ selected.id ] })
+    checklist = described_class.call(actor: profile.user, moment: plan, locale: :en)
+    expect(checklist.personal_touch_items.flat_map(&:source_context).pluck("source_id")).to eq([ selected.id ])
+    expect(checklist.personal_touch_items.pluck(:title).join(" ")).not_to include("Personal holiday", "meaningful memory")
+    expect(checklist.personal_touch_items.pluck(:title)).to include("Confirm the purpose and agenda")
+  end
 end

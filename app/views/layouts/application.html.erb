@@ -35,12 +35,12 @@
     <% if user_signed_in? %>
       <div class="app-shell">
         <aside class="app-sidebar" aria-label="<%= t('workspace.navigation.label') %>">
-          <%= link_to 'Carecierge', dashboard_path, class: 'app-brand' %>
+          <%= link_to 'Carecierge', concierge_conversations_path, class: 'app-brand' %>
           <p class="app-brand-note"><%= t('workspace.tagline') %></p>
           <%= component 'app_navigation', user: current_user, current_controller: controller_path %>
         </aside>
         <div class="app-mobile-header" data-controller="app-menu" data-action="keydown.esc@window->app-menu#close focusin@window->app-menu#closeOutside click@window->app-menu#closeOutside turbo:before-cache@document->app-menu#close">
-          <%= link_to 'Carecierge', dashboard_path, class: 'app-brand' %>
+          <%= link_to 'Carecierge', concierge_conversations_path, class: 'app-brand' %>
           <details class="app-mobile-menu" data-app-menu-target="disclosure">
             <summary class="app-menu-trigger" data-app-menu-target="trigger"><%= component 'ui_icon', name: :menu %><%= t('workspace.menu') %></summary>
             <div class="app-mobile-navigation"><%= component 'app_navigation', user: current_user, current_controller: controller_path %></div>

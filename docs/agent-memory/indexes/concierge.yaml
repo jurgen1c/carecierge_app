@@ -1,0 +1,44 @@
+id: concierge
+name: Conversational Concierge
+summary: Encrypted owner-scoped chat, verified domain actions, source privacy, decisions, retries, and data lifecycle; the development capability matrix records remaining implementation scope.
+claim_globs:
+  - claims/concierge/**/*.md
+default_queries:
+  - concierge natural language relationship tools memories plans reminders approvals
+  - RubyLLM encrypted conversation turn action fingerprint worker token retry source revalidation
+  - concierge landing login onboarding EN ES mobile composer streaming recovery
+  - concierge history export deletion vault redaction professional selected context
+watched_files:
+  - spec/support/concierge_provider_responses.rb
+  - docs/development/concierge-provider-testing.md
+  - app/agents/concierge/**/*.rb
+  - app/tools/concierge/**/*.rb
+  - app/services/concierge.rb
+  - app/services/concierge/**/*.rb
+  - app/models/concierge_*.rb
+  - app/policies/concierge_conversation_policy.rb
+  - app/jobs/concierge_*_job.rb
+  - app/controllers/concierge_*_controller.rb
+  - app/controllers/concerns/concierge_workspace.rb
+  - app/helpers/concierge_helper.rb
+  - app/javascript/controllers/concierge_chat_controller.js
+  - app/views/concierge_conversations/**/*.erb
+  - app/views/concierge_contexts/**/*.erb
+  - app/views/components/concierge_*_component.*
+  - config/locales/concierge.*.yml
+  - db/migrate/*create_concierge_workspace.rb
+  - db/migrate/*execution_state_to_concierge_actions.rb
+  - db/migrate/*execution_order_to_concierge_actions.rb
+  - db/migrate/*source_keys_to_concierge_actions.rb
+  - app/serializers/data_exports/concierge_conversations.rb
+  - docs/development/concierge-capabilities.md
+  - spec/services/concierge/**/*.rb
+  - spec/agents/concierge/**/*.rb
+  - spec/models/concierge_*_spec.rb
+  - spec/migrations/add_concierge_source_keys_spec.rb
+  - spec/requests/concierge*_spec.rb
+  - spec/system/concierge*_spec.rb
+tags:
+  - concierge
+  - privacy
+  - relationship_tools

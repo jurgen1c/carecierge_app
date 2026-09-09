@@ -3,7 +3,7 @@ id: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservativ
 type: fact
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: critical
 title: Gift boxes are private manual bundles with conservative companion suggestions
 claim: >
@@ -12,7 +12,8 @@ claim: >
   retain independent manual purchase and readiness states, named vendors, safe
   HTTP(S) purchase links and optional costs. Unknown costs are excluded from
   the labeled known total. Account-to-profile locks and a mandatory box revision
-  serialize writes, including item-only edits; deletion takes the same account,
+  serialize writes through GiftBoxes::Save in conventional screens and chat,
+  including item-only edits within a single timestamp tick; deletion takes the same account,
   profile and box lock order while allowing foreign-key readers. Local companion ideas use only
   confirmed positive preferences; any negative preference, constraint, allergy,
   boundary or cultural constraint withholds ideas for manual review, as do box
@@ -23,7 +24,17 @@ claim: >
   creates no reminder and later box edits do not reschedule saved reminders.
   EN/ES views use no-store and disable Turbo snapshots. Box parameters are
   filtered from logs, owner exports include items and profile deletion cascades.
+  Chat supports boxes, bounded item edits, companion ideas and explicitly
+  timed independent delivery reminders with current send_reminders permission.
+  Item and box removal require exact content-bound confirmation.
+  Work boxes require explicit gift suitability and bounded work selection;
+  companion generation keeps its existing work-mode exclusion of personal evidence.
+
 source_files:
+  - app/services/concierge/professional_scope.rb
+  - app/services/gift_boxes/save.rb
+  - app/services/concierge/operations/gift_boxes.rb
+  - app/services/concierge/gift_sources.rb
   - app/models/gift_box.rb
   - app/models/gift_box_item.rb
   - app/models/relationship_profile.rb
@@ -44,6 +55,8 @@ source_files:
   - db/migrate/20260905114943_create_gift_boxes.rb
   - db/schema.rb
 related_files:
+  - spec/services/gift_boxes/save_spec.rb
+  - spec/services/concierge/gifts_spec.rb
   - spec/requests/gift_box_locking_spec.rb
   - spec/requests/gift_boxes_spec.rb
   - spec/models/gift_box_spec.rb
@@ -54,16 +67,18 @@ symbols:
   - GiftBox
   - GiftBoxItem
   - GiftBoxes::Companions
+  - GiftBoxes::Save
   - GiftBoxesController
 routes:
   - relationship_profile_gift_boxes
   - relationship_profile_gift_box
 tags: [gifts, gift_boxes, privacy, review_only, budget]
 verification:
+  - bundle exec rspec spec/services/concierge/gifts_spec.rb spec/services/gift_boxes/save_spec.rb
   - bundle exec rspec spec/requests/gift_box_locking_spec.rb spec/requests/gift_boxes_spec.rb spec/models/gift_box_spec.rb spec/services/gift_boxes spec/system/gift_boxes_spec.rb spec/serializers/data_exports/gift_box_snapshot_spec.rb
   - bundle exec rspec
   - bin/ci
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Gift boxes are private manual bundles with conservative companion suggestions
@@ -73,6 +88,5 @@ suitability, available stock, price or permission to act externally. Migration a
 only new UUID tables, indexed foreign keys and cascading deletion; rollback removes
 those tables and their data. Existing tables are not rewritten.
 
-The verification reference identifies the implementation commit that passed the
-full suite and signoff before this metadata update; the metadata commit also
-receives its own final CI/signoff, without creating a self-referencing Git hash.
+The current chat extension has local uncommitted verification. A new committed
+verification reference must be recorded when delivery validation is completed.

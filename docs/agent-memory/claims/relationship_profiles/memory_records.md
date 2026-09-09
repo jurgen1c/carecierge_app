@@ -9,8 +9,14 @@ severity: important
 title: Memory records track source, confidence, review, and automation approval
 
 claim: >
+  Explicit conversational requests create user-confirmed memories directly. A model
+  interpretation stays in an encrypted inline proposal until the owner accepts its
+  exact wording; its supporting excerpt must occur in the current user message.
+  Accepted interpretations retain ai-inferred provenance and inferred confidence,
+  with high-impact automation blocked. Rejection creates no canonical memory.
   MemoryRecord records are owner-scoped relationship-profile facts with trust,
-  review, correction, and high-impact automation approval metadata. Semantic
+  review, correction, and high-impact automation approval metadata. Conventional
+  forms and concierge tools share MemoryRecords::Update for corrections. Semantic
   title or body corrections set user-corrected provenance and corrected status;
   body corrections and submitted correction notes also create MemoryRevision
   rows transactionally, including notes attached to title-only corrections. Archived
@@ -22,6 +28,8 @@ claim: >
   new envelope after a terminal decision, without executing automation.
 
 source_files:
+  - app/services/memory_records/update.rb
+  - app/services/concierge/operations/memories.rb
   - app/models/memory_record.rb
   - app/models/memory_revision.rb
   - app/controllers/memory_records_controller.rb
@@ -33,6 +41,7 @@ source_files:
   - db/migrate/20260708120100_create_memory_revisions.rb
 
 related_files:
+  - spec/services/concierge/memory_proposals_spec.rb
   - app/services/approval_decisions/apply.rb
   - spec/models/memory_record_spec.rb
   - spec/policies/memory_record_policy_spec.rb
@@ -58,6 +67,8 @@ tags:
   - automation_guardrails
 
 verification:
+  - bundle exec rspec spec/services/concierge/memory_proposals_spec.rb
+  - bundle exec rspec spec/services/memory_records/update_spec.rb spec/services/concierge/execute_spec.rb
   - bundle exec rspec spec/models/memory_record_spec.rb spec/policies/memory_record_policy_spec.rb spec/requests/memory_records_spec.rb
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb spec/models/memory_record_spec.rb spec/policies/memory_record_policy_spec.rb spec/requests/memory_records_spec.rb
   - bundle exec rspec

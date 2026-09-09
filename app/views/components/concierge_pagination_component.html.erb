@@ -1,0 +1,10 @@
+<nav class="<%= style(:container) %>" aria-label="<%= t("concierge.pagination.#{kind}") %>">
+  <% if pagination.next %>
+    <%= link_to t('concierge.pagination.older'), page_path(pagination.next), class: style(:link),
+      data: { concierge_pagination: "#{kind}-older", turbo_prefetch: false } %>
+  <% end %>
+  <% if pagination.previous %>
+    <%= link_to t('concierge.pagination.newer'), page_path(pagination.previous), class: style(:link),
+      data: { concierge_pagination: "#{kind}-newer", turbo_prefetch: false } %>
+  <% end %>
+</nav>

@@ -3,12 +3,15 @@ id: audit_events.account_activity_ledger
 type: fact
 system: audit_events
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Audit events provide privacy-minimized account and admin history
 
 claim: >
+  Concierge personal-touch wording corrections use the allowlisted
+  personal_touch_item.updated event with localized English and Spanish labels and no
+  authored text in metadata.
   AuditEvent is an append-only, account-owned ledger of action, actor kind,
   source, occurrence time, optional authorized actor and owner-matched target,
   and allowlisted scalar metadata. It rejects unsupported or cross-account
@@ -55,6 +58,7 @@ claim: >
   update event. Out-of-range dates and non-scalar filter shapes fail closed.
 
 source_files:
+  - app/services/concierge/operations/touches.rb
   - app/models/audit_event.rb
   - app/services/audit_events/track.rb
   - app/queries/audit_events/query.rb
@@ -67,6 +71,7 @@ source_files:
   - db/migrate/20260807045425_create_audit_events.rb
 
 related_files:
+  - spec/services/concierge/occasions_spec.rb
   - app/services/privacy_vault/verify.rb
   - app/services/privacy_vault/enrollment.rb
   - app/services/privacy_vault/manage_mfa.rb
@@ -124,6 +129,7 @@ tags:
   - authorized_audit_admin
 
 verification:
+  - bundle exec rspec spec/services/concierge/occasions_spec.rb spec/services/backup_plans spec/services/personal_touch_checklists spec/models/audit_event_spec.rb
   - bundle exec rspec spec/requests/vault_mfas_spec.rb spec/services/privacy_vault/unlock_spec.rb spec/services/privacy_vault/enrollment_spec.rb
   - bundle exec rspec spec/models/audit_event_spec.rb spec/services/audit_events/track_spec.rb spec/queries/audit_events/query_spec.rb spec/policies/audit_event_policy_spec.rb spec/requests/audit_events_spec.rb spec/requests/admin_audit_events_spec.rb spec/requests/audit_event_integrations_spec.rb spec/models/vault_access_event_spec.rb spec/services/automation_permissions/change_spec.rb
   - bundle exec rspec
@@ -133,7 +139,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Audit events provide privacy-minimized account and admin history

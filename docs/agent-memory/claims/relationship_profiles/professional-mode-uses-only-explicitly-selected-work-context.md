@@ -3,13 +3,41 @@ id: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_c
 type: constraint
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: critical
 title: Professional mode uses only explicitly selected work context
-claim: Active owners explicitly choose professional mode independently of the profile
+claim: Concierge execution and decisions preflight professional scope before mutation,
+  including known-ID writes and global queries. Personal records and birthdays cannot
+  enter professional turns. Newly requested work notes, preferences, commitments and
+  dates, suitable gifts and gift boxes, plans, reminders, vendors and comparisons add only their new record to the bounded work selection; existing personal
+  records are not imported and full categories refuse creation before persistence.
+  Work metadata and gift-suitability edits require exact inline approval and preserve
+  selected IDs. Authorized context extension also refreshes the profile source
+  in the same action result, preserving follow-through after people lookup and
+  revalidation of unrelated later profile changes. Generated work content keeps an immutable authorization fingerprint
+  including selected source content versions, so later edits cannot reauthorize old output.
+  Chat reuses the owner-facing work-context editor with exact profile-version checks.
+  Changed mode or source selection starts an empty conversation, invalidates prior
+  captured context even before its first tool, and preserves the old messages without
+  importing them. Suitable generated gifts are accepted into selected work records;
+  earlier ideas must be refreshed after the work selection changes.
+  Selected plans, reminders, gift boxes, vendors and comparisons authorize conversational control without automatically
+  importing their contents or related records into generated work guidance. Plans,
+  tasks, suggestions and reviewed backups retain selected work evidence; old tasks
+  with unselected personal sources remain excluded even inside a selected plan.
+  Reminder links resolve only selected same-person sources, and source-backed work
+  suggestions can create explicitly timed selected reminders. Adding a new work
+  record prunes unavailable old selections without importing other records. Gift preparation
+  requires selected gifts and plans plus explicit suitability. Manual quotes require a
+  selected vendor and plan; comparisons expose only selected vendor options. Manual
+  booking receipts omit personal timeline entries in work mode. Checklists require a
+  selected occasion and selected preference evidence; new work checklists use practical
+  work prompts and omit gift prompts when gifts are unsuitable.
+  Active owners explicitly choose professional mode independently of the profile
   STI type. Encrypted work context supplements at most six explicitly selected live
-  notes, preferences, commitments, milestones and gift records per category; selectors
-  are profile-scoped and exclude private or vault-protected notes. Professional draft,
+  notes, preferences, commitments, milestones, gifts, plans, reminders, gift boxes, vendors
+  and comparisons per category. Vendors are owner-scoped; other selectors are
+  profile-scoped and exclude private or vault-protected notes. Professional draft,
   briefing, gift and event context excludes unselected personal sources even when
   sensitive flags are submitted; personal generation ignores dedicated work context.
   Work drafts force professional tone, generation rechecks source changes and mode/context
@@ -21,6 +49,39 @@ claim: Active owners explicitly choose professional mode independently of the pr
   persist their mode. Owner exports include decrypted work context, account/profile
   deletion removes it, and requests filter context with no-store profile pages.
 source_files:
+- app/services/concierge/operations/gift_purchases.rb
+- app/services/concierge/operations/gift_boxes.rb
+- app/services/concierge/gift_sources.rb
+- app/services/concierge/operations/vendors.rb
+- app/services/concierge/operations/shortlists.rb
+- app/services/concierge/operations/vendor_options.rb
+- app/services/concierge/operations/quotes.rb
+- app/services/concierge/operations/bookings.rb
+- app/services/concierge/operations/manual_plan_records.rb
+- app/services/concierge/vendor_sources.rb
+- app/services/concierge/operations/touches.rb
+- app/services/personal_touch_checklists/create.rb
+- app/services/concierge/operations/plans.rb
+- app/services/concierge/operations/tasks.rb
+- app/services/concierge/operations/reminders.rb
+- app/services/concierge/operations/plan_ideas.rb
+- app/services/concierge/operations/backups.rb
+- app/services/concierge/operations/ideas.rb
+- app/services/concierge/occasion_sources.rb
+- app/services/concierge/history.rb
+- app/services/concierge/configure_context.rb
+- app/services/concierge/context.rb
+- app/controllers/concierge_contexts_controller.rb
+- app/views/concierge_contexts/edit.html.erb
+- app/views/concierge_conversations/index.html.erb
+- app/services/concierge/operations/gifts.rb
+- app/services/concierge/operations/gift_ideas.rb
+- app/services/concierge/professional_scope.rb
+- app/services/concierge/operations/work.rb
+- app/services/concierge/operations/profile_records.rb
+- app/services/concierge/operations/people.rb
+- app/services/concierge/operations/notes.rb
+- app/services/concierge/generated_sources.rb
 - app/controllers/relationship_briefings_controller.rb
 - app/controllers/gift_recommendations_controller.rb
 - app/controllers/event_plans_controller.rb
@@ -70,6 +131,17 @@ source_files:
 - db/schema.rb
 - docs/features/14-03-professional-relationship-mode.md
 related_files:
+- spec/services/concierge/vendors_spec.rb
+- spec/services/personal_touch_checklists/create_spec.rb
+- spec/services/concierge/plan_ideas_spec.rb
+- spec/services/concierge/occasions_spec.rb
+- spec/services/concierge/ideas_spec.rb
+- spec/services/concierge/configure_context_spec.rb
+- spec/requests/concierge_contexts_spec.rb
+- spec/system/concierge_spec.rb
+- spec/services/concierge/gifts_spec.rb
+- spec/services/concierge/professional_scope_spec.rb
+- spec/services/concierge/generated_actions_spec.rb
 - spec/requests/professional_generation_modes_spec.rb
 - spec/requests/event_plans_spec.rb
 - spec/components/professional_context_boundary_spec.rb
@@ -83,6 +155,8 @@ symbols:
 - MessageDrafts::ContextBuilder
 - RelationshipBriefings::ContextBuilder
 routes:
+- GET /concierge/:concierge_conversation_id/relationship_context/edit
+- PATCH /concierge/:concierge_conversation_id/relationship_context
 - GET /relationship_profiles/:id
 - PATCH /relationship_profiles/:id
 tags:
@@ -91,17 +165,21 @@ tags:
 - privacy
 - source-selection
 verification:
+- bundle exec rspec spec/services/concierge/gifts_spec.rb spec/services/concierge/vendors_spec.rb spec/services/concierge/occasions_spec.rb spec/services/personal_touch_checklists/create_spec.rb
+- bundle exec rspec spec/services/concierge/professional_scope_spec.rb spec/services/concierge/plan_ideas_spec.rb spec/services/concierge/occasions_spec.rb spec/services/concierge/ideas_spec.rb
+- bundle exec rspec spec/services/concierge/configure_context_spec.rb spec/services/concierge/professional_scope_spec.rb spec/services/concierge/gifts_spec.rb spec/requests/concierge_contexts_spec.rb spec/system/concierge_spec.rb
+- bundle exec rspec spec/services/concierge/professional_scope_spec.rb spec/services/concierge/generated_actions_spec.rb
 - bundle exec rspec spec/models/professional_relationship_spec.rb spec/services/professional_context_spec.rb
   spec/requests/professional_relationships_spec.rb spec/system/professional_relationships_spec.rb
 - bundle exec rspec
 - bin/memory validate
 - bin/memory audit --git-diff
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: null
 ---
 
 # Professional work context
 
-Active owners explicitly choose professional mode independently of the profile STI type. Encrypted work context supplements at most six explicitly selected live notes, preferences, commitments, milestones and gift records per category; selectors are profile-scoped and exclude private or vault-protected notes. Professional draft, briefing, gift and event context excludes unselected personal sources even when sensitive flags are submitted; personal generation ignores dedicated work context. Work drafts force professional tone, generation rechecks source changes and mode/context writes advance profile fences. Local suggestions offer work follow-ups from selected commitments and date-only cadence prompts; gift recommendations require explicit suitability and work boundaries. Existing core records remain manually editable, and professional preparation links expose notes, follow-ups, milestones and review briefings. Generated draft history and briefings are filtered by mode and gift recommendations persist their mode. Owner exports include decrypted work context, account/profile deletion removes it, and requests filter context with no-store profile pages.
+Active owners explicitly choose professional mode independently of the profile STI type. Encrypted work context permits at most six live records per category. Notes, preferences, commitments, milestones and gifts supply generated work guidance. Plans, reminders, gift boxes, vendors and comparisons additionally authorize conversational control without importing their related records. Vendors belong to the owner account; other selectors belong to the profile and exclude private or vault-protected notes. Professional draft, briefing, gift and event context excludes unselected personal sources even when sensitive flags are submitted; personal generation ignores dedicated work context. Work drafts force professional tone, generation rechecks source changes and mode/context writes advance profile fences. Local suggestions offer work follow-ups from selected commitments and date-only cadence prompts; gift recommendations require explicit suitability and work boundaries. Existing core records remain manually editable, and professional preparation links expose notes, follow-ups, milestones and review briefings. Generated draft history and briefings are filtered by mode and gift recommendations persist their mode. Owner exports include decrypted work context, account/profile deletion removes it, and requests filter context with no-store profile pages.
 
 ## Why It Matters
 

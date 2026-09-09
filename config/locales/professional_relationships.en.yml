@@ -26,10 +26,11 @@ en:
       context.
     sources_title: Choose work records
     sources_hint: Select up to six records per category. Create or edit notes, commitments,
-      preferences, milestones, and gifts in the existing profile sections, save them,
+      preferences, milestones, gifts, plans, and reminders in their existing workspaces, save them,
       then select them here. Selected records stay current; private or vault-protected
       notes cannot be selected. The newest 100 records and existing selections are
       shown.
+    control_sources_hint: Selected plans, reminders, gift boxes, vendors, and comparisons can be managed in chat. They do not automatically add their contents or related records to drafts, briefings, or other generated guidance. Vendor choices apply only to this relationship.
     empty_sources: No eligible records yet. Save this profile, add a record in its
       profile section, then return to select it.
     collections:
@@ -38,6 +39,11 @@ en:
       commitments: Commitments and follow-ups
       important_dates: Client milestones
       gifts: Professional gift history
+      event_plans: Work plans
+      reminders: Work reminders
+      gift_boxes: Work gift boxes
+      vendors: Saved work vendors
+      vendor_shortlists: Work vendor comparisons
     actions: Professional preparation
     meeting_notes: Write meeting notes
     follow_ups: Track commitments and follow-ups

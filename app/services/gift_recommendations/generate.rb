@@ -16,6 +16,7 @@ module GiftRecommendations
       vault_item_ids: [],
       vault_lease: nil,
       explicitly_approved: false,
+      on_persist: nil,
       locale: I18n.locale,
       replace: nil,
       generator: OpenAiGenerator.new
@@ -32,6 +33,7 @@ module GiftRecommendations
         vault_item_ids:,
         vault_lease:,
         explicitly_approved:,
+        on_persist:,
         locale:,
         replace:,
         generator:
@@ -86,6 +88,7 @@ module GiftRecommendations
             target: relationship_profile,
             metadata: { result: "generated", count: persisted.length }
           )
+          @on_persist&.call(persisted)
           persisted
         end
       end

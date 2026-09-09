@@ -21,6 +21,15 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   get "dashboard" => "dashboard#index", as: :dashboard
+  resources :concierge_conversations, path: "concierge", only: %i[index create show update destroy] do
+    resource :relationship_context, controller: "concierge_contexts", only: %i[edit update]
+    get :transcript, on: :member
+    resources :concierge_turns, path: "messages", only: :create do
+      post :retry, on: :member
+    end
+    resources :concierge_actions, path: "actions", only: :update
+    resources :concierge_clarifications, path: "choices", only: :create
+  end
   resources :approvals, controller: "approval_requests", only: %i[index update]
   resources :feed_items, only: [] do
     patch :dismiss, on: :member

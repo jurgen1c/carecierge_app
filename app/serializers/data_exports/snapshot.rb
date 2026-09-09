@@ -14,6 +14,7 @@ module DataExports
         "exported_at" => Time.current.iso8601,
         "scope" => relationship_profile ? "relationship_profile" : "account",
         "account" => account_attributes,
+        "concierge_conversations" => ConciergeConversations.new(user:, relationship_profile:, include_sensitive:).to_a,
         "relationship_profiles" => profiles.map { |profile| profile_attributes(profile) }
       }.merge(approval_data).merge(account_data)
     end

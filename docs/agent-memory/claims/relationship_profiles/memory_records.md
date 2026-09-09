@@ -72,7 +72,7 @@ verification:
   - bundle exec rspec spec/models/memory_record_spec.rb spec/policies/memory_record_policy_spec.rb spec/requests/memory_records_spec.rb
   - bundle exec rspec spec/requests/relationship_profiles_spec.rb spec/models/memory_record_spec.rb spec/policies/memory_record_policy_spec.rb spec/requests/memory_records_spec.rb
   - bundle exec rspec
-last_verified_commit: null
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Memory records track source, confidence, review, and automation approval

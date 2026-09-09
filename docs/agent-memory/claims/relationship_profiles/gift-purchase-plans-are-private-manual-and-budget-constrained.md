@@ -88,7 +88,7 @@ verification:
   - bundle exec rspec spec/services/gift_purchase_plans/owner_lock_spec.rb spec/models/gift_purchase_plan_spec.rb spec/requests/gift_purchase_plans_spec.rb spec/components/gift_purchase_workspace_component_spec.rb spec/serializers/data_exports/gift_purchase_snapshot_spec.rb spec/system/gift_purchase_plans_spec.rb
   - bundle exec rspec
   - bin/ci
-last_verified_commit: null
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Gift purchase plans are private manual and budget constrained

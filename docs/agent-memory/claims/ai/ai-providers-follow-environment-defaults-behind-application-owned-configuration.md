@@ -69,7 +69,7 @@ verification:
   - bundle exec rspec spec/agents/ai spec/agents/event_plans spec/agents/backup_plans spec/agents/concierge spec/config/ollama_configuration_spec.rb
   - bundle exec rspec spec/services/message_drafts/open_ai_generator_spec.rb spec/services/relationship_briefings/open_ai_generator_spec.rb spec/services/gift_recommendations/open_ai_generator_spec.rb spec/services/memory_extractions/open_ai_extractor_spec.rb spec/services/social_context_notes/open_ai_analyzer_spec.rb
 
-last_verified_commit: null
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # AI provider selection

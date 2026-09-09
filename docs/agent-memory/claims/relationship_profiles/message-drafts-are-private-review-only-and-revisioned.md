@@ -128,7 +128,7 @@ verification:
   - bin/memory coverage --git-diff
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Message drafts are private, review-only, and revisioned

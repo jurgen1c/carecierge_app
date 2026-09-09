@@ -54,7 +54,7 @@ verification:
   - bundle exec rspec spec/services/concierge/profile_records_spec.rb spec/requests/mood_notes_spec.rb
   - bundle exec rspec spec/models/mood_note_spec.rb spec/policies/mood_note_policy_spec.rb spec/requests/mood_notes_spec.rb spec/models/timeline_entry_spec.rb
   - bundle exec rspec
-last_verified_commit: null
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Mood notes are observation-first owner-scoped follow-up records

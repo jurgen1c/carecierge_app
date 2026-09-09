@@ -60,7 +60,7 @@ verification:
   - bundle exec rspec spec/requests/concierge_spec.rb spec/system/concierge_spec.rb
   - bundle exec rspec spec/requests/onboarding_spec.rb spec/system/user_access_flow_spec.rb spec/requests/localization_spec.rb
   - bundle exec rspec spec/requests/authentication_gate_spec.rb
-last_verified_commit: null
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # User access flow redirects through welcome, onboarding, and the concierge

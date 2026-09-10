@@ -224,7 +224,7 @@ verification:
   - bundle exec rspec spec/services/concierge spec/models/concierge_conversation_spec.rb spec/models/concierge_turn_spec.rb spec/jobs/concierge_response_job_spec.rb spec/agents/concierge spec/requests/concierge_spec.rb
   - bundle exec rspec spec/system/concierge_spec.rb spec/config/concierge_parameter_logging_spec.rb
 
-last_verified_commit: 9f8af3314710fbc0c46ef3598cc6524a2be8d61a
+last_verified_commit: 58503718d8470e848afdef3e92ee31a89992aa00
 ---
 
 # Conversational actions use encrypted owner-scoped state and domain authority

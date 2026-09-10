@@ -182,7 +182,7 @@ RSpec.describe "Relationship concierge", type: :request do
   %w[en es].each do |locale|
     it "restores the HTML conversation after signing in from an expired #{locale} polling request" do
       conversation = ConciergeConversation.create!(user:)
-      get transcript_concierge_conversation_path(conversation, locale:), headers: { "ACCEPT" => "text/vnd.turbo-stream.html" }
+      get transcript_concierge_conversation_path(conversation, locale:, turn_page: 2), headers: { "ACCEPT" => "text/vnd.turbo-stream.html" }
       expect(response).to have_http_status(:redirect)
       post user_session_path(locale:), params: { user: { email: user.email, password: user.password } }
       destination = locale == "en" ? concierge_conversation_path(conversation) : concierge_conversation_path(conversation, locale:)

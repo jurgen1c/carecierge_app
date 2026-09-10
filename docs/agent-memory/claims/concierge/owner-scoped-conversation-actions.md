@@ -39,6 +39,8 @@ claim: >
   global and record-derived resolvers keep their existing optional scope semantics.
   Core people lookup and memory tools start enabled; a fixed capability selector loads up to two
   additional groups at a time without establishing authority or mutating domain data.
+  The selector's enabled_tools response lists the complete registered tool set,
+  including the capability selector itself, so later steps can select other groups.
   RubyLLM tool execution uses concurrency false, the installed gem's serial mode.
   Empty provider responses fail the turn instead of completing a blank reply.
   Malformed provider tool-argument JSON becomes a recoverable provider-unavailable

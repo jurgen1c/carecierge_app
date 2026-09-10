@@ -16,6 +16,7 @@ RSpec.describe "On-demand concierge capabilities" do
 
     expect(result).to include("status" => "ready")
     expect(chat).to have_received(:with_tools) do |*tools, **options|
+      expect(result.fetch("enabled_tools")).to match_array(tools.map(&:name))
       expect(tools.map(&:name)).to include("people_search", "memories_create", "plans_create", "reminders_create", "capabilities")
       expect(tools.map(&:name)).not_to include("quotes_create")
       expect(tools.find { |entry| entry.name == "plans_create" }.params_schema).to include(required: include("title"))

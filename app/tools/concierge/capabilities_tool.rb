@@ -32,8 +32,8 @@ module Concierge
       raise InvalidArguments unless names.all? { |name| name.is_a?(String) && allowed.include?(name) }
 
       tools = Catalog.tools(turn: @turn, token: @token, operation_names: CORE) + Catalog.tools(turn: @turn, token: @token, names:)
-      tools = tools.uniq(&:name)
-      @chat.with_tools(*tools, self, replace: true, concurrency: false)
+      tools = (tools + [ self ]).uniq(&:name)
+      @chat.with_tools(*tools, replace: true, concurrency: false)
       { "status" => "ready", "enabled_tools" => tools.map(&:name) }
     rescue InvalidArguments
       { "status" => "invalid_arguments", "instruction" => "Choose one or two listed capability groups." }

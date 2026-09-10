@@ -20,7 +20,7 @@
           <div class="concierge-assistant-message" aria-busy="<%= turn.state == 'running' %>">
             <span class="concierge-speaker"><%= t('concierge.title') %></span>
             <% if turn.response.present? && Concierge::History.sources_current?(read_turn) %><%= simple_format(h(turn.response)) %><% end %>
-            <% turn.actions.each do |action| %><%= component 'concierge_receipt', action: action, user: current_user, read_turn: read_turn %><% end %>
+            <% turn.actions.sort_by(&:execution_order).each do |action| %><%= component 'concierge_receipt', action: action, user: current_user, read_turn: read_turn %><% end %>
             <% if turn.state.in?(%w[queued running]) && !turn.stalled? %><p class="concierge-progress"><%= t('concierge.working') %></p><% end %>
             <% if turn.state == 'failed' || turn.stalled? %>
               <p class="concierge-error"><%= t("concierge.errors.#{turn.error_code}", default: t('concierge.errors.provider_unavailable')) %></p>

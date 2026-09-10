@@ -12,6 +12,8 @@ claim: >
   Concierge conversations, turns, and action payloads are encrypted and owner scoped.
   Browser request keys, claimed worker tokens, and per-turn action fingerprints prevent
   duplicate execution. An explicit per-turn execution order resolves timestamp ties.
+  HTML and Turbo transcripts render preloaded action receipts in that execution order,
+  including after an earlier action result changes, without requerying each turn's actions.
   Canonical content fingerprints cover source bodies, selected rich text, and exact
   approval targets so same-timestamp edits cannot reuse obsolete consent or facts.
   Fingerprints normalize timestamps to UTC so provider and browser time zones do not
@@ -103,6 +105,7 @@ claim: >
   a record cannot be replayed through this control.
 
 source_files:
+  - app/views/concierge_conversations/_transcript.html.erb
   - app/services/concierge/read_turn.rb
   - app/services/concierge/export_turn.rb
   - app/controllers/concerns/privacy_vault_session.rb
@@ -176,6 +179,7 @@ source_files:
   - db/schema.rb
 
 related_files:
+  - spec/views/concierge_conversations/_transcript.html.erb_spec.rb
   - spec/services/concierge/planning_spec.rb
   - spec/services/concierge/profile_records_spec.rb
   - spec/migrations/add_concierge_source_keys_spec.rb
@@ -218,6 +222,7 @@ tags:
   - constraint
 
 verification:
+  - bundle exec rspec spec/views/concierge_conversations/_transcript.html.erb_spec.rb spec/requests/concierge_spec.rb spec/system/concierge_spec.rb
   - bundle exec rspec spec/agents/concierge spec/requests/concierge_provider_integration_spec.rb
   - bundle exec rspec spec/services/concierge/planning_spec.rb spec/services/concierge/profile_records_spec.rb spec/services/concierge/record_version_spec.rb
   - bundle exec rspec spec/services/concierge/generated_actions_spec.rb spec/services/message_drafts spec/services/relationship_briefings spec/services/professional_context_spec.rb

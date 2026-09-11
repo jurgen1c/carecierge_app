@@ -3,12 +3,13 @@ id: vendor_discovery.saved_vendors_are_owner_scoped_sourced_and_review_only
 type: fact
 system: vendor_discovery
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Saved vendors are owner-scoped, sourced, and review-only
 
 claim: >
+  Saved-vendor chat tools use owner queries and the existing attach, detach and guarded deletion services. Professional chat resolves only explicitly selected owner vendors and selects only a newly requested vendor into that work context. Receipts describe manually recorded observations and never imply live availability, provider contact, or a transaction.
   Authenticated owners maintain a private saved-vendor catalog whose records are
   scoped through VendorPolicy, bounded at validation and query boundaries, and
   attributed either to manual entry or to a named external source with an
@@ -34,6 +35,8 @@ claim: >
   available in English and Spanish. External provider discovery remains future work; self-registration uses a separate VendorAccount aggregate without altering saved-vendor ownership.
 
 source_files:
+  - app/services/concierge/operations/vendors.rb
+  - app/services/concierge/vendor_sources.rb
   - app/models/vendor.rb
   - app/models/event_plan_vendor.rb
   - app/queries/vendors/search_query.rb
@@ -46,6 +49,7 @@ source_files:
   - db/migrate/20260901120000_create_vendors_and_event_plan_vendors.rb
 
 related_files:
+  - spec/services/concierge/vendors_spec.rb
   - app/controllers/event_plans_controller.rb
   - app/models/event_plan.rb
   - app/models/user.rb
@@ -101,6 +105,7 @@ tags:
   - localization
 
 verification:
+  - bundle exec rspec spec/services/concierge/vendors_spec.rb spec/requests/concierge_spec.rb
   - bundle exec rspec spec/models/vendor_spec.rb spec/queries/vendors/search_query_spec.rb spec/policies/vendor_policy_spec.rb spec/components/vendor_result_component_spec.rb spec/components/event_plan_workspace_component_spec.rb spec/requests/vendors_spec.rb spec/requests/daily_feed_spec.rb spec/requests/data_controls_spec.rb spec/services/event_plan_vendors/attach_spec.rb spec/services/event_plan_vendors/detach_spec.rb spec/services/vendors/destroy_spec.rb spec/config/filter_parameter_logging_spec.rb
   - bin/rubocop
   - bin/memory validate
@@ -108,7 +113,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Saved vendors are owner-scoped, sourced, and review-only

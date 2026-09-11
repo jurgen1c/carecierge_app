@@ -3,12 +3,13 @@ id: data_controls.data_portability_and_deletion
 type: fact
 system: data_controls
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Data exports and permanent deletion stay owner-scoped and privacy-minimized
 
 claim: >
+  Concierge JSON/CSV exports include owner-scoped messages and action outcomes while excluding worker tokens, request keys, fingerprints, and leases. Ordinary exports redact protected conversational text; sensitive exports require existing reauthentication and revalidate current selections without renewing stored leases. Export-only context wraps the real persisted turn and generated origins so action/source checks retain their associations while using the export's temporary vault lease. Revoked items remain redacted. Generated draft exports require current input fingerprints; briefing and gift origins revalidate retained input-source authorizations, including uncited inputs. Tool-free follow-up answers retain transitive history source dependencies and observed profiles, so revocation also redacts dependent exports and profile lifecycle checks include inherited relationships. Profile exports include only turns whose known relationship references exclusively match that profile; the PDF summarizes conversation counts. Selective AI deletion removes entire concierge histories while preserving explicitly saved canonical records. Profile deletion holds the owner lock and removes complete conversations with known references to that profile, including mixed-person conversations, so dependent prose cannot retain deleted context. Account deletion cascades chat state and delayed jobs cannot recreate deleted turns.
   Account JSON/CSV exports include active participating couple spaces and only the requester's own shared-reminder preference; private partner records are excluded. Deleting either participant destroys the entire shared workspace and its notification history.
   Connection revocation failures preserve the account and report a provider-neutral recovery message through ConnectionRevocationError.
   Gmail exports include encrypted-at-rest source snippets and local replies without credentials. Selective AI deletion preserves manual-only communication drafts and clears generated replies plus their edited derivatives. Disconnect and source deletion remove both imported context and replies, and account deletion revokes Gmail access with compensated retry state.
@@ -52,6 +53,16 @@ claim: >
   creation cannot race after irreversible provider revocation.
 
 source_files:
+  - app/services/concierge/history.rb
+  - spec/requests/concierge_provider_integration_spec.rb
+  - app/services/concierge/export_turn.rb
+  - app/services/concierge/read_turn.rb
+  - app/services/concierge/generated_sources.rb
+  - app/models/concierge_conversation.rb
+  - app/models/concierge_turn.rb
+  - app/models/relationship_profile.rb
+  - app/services/concierge/erase_relationship.rb
+  - app/serializers/data_exports/concierge_conversations.rb
   - app/controllers/data_controls_controller.rb
   - app/controllers/data_exports_controller.rb
   - app/services/data_exports/prepare.rb
@@ -84,6 +95,8 @@ source_files:
   - app/services/calendar_connections/disconnect.rb
 
 related_files:
+  - spec/services/concierge/data_lifecycle_spec.rb
+  - spec/services/concierge/generated_actions_spec.rb
   - spec/requests/contacts_connections_spec.rb
   - spec/services/contacts/provider_spec.rb
   - spec/requests/messaging_connections_spec.rb
@@ -111,6 +124,7 @@ related_files:
   - spec/services/calendar_connections/disconnect_spec.rb
 
 symbols:
+  - Concierge::ExportTurn
   - DirectUploadsController
   - SocialContextScreenshotsController
   - PurgeAbandonedSocialContextUploadJob
@@ -143,6 +157,7 @@ tags:
   - account_deletion
 
 verification:
+  - bundle exec rspec spec/services/concierge/data_lifecycle_spec.rb spec/requests/concierge_spec.rb spec/requests/data_controls_spec.rb
   - bundle exec rspec spec/services/data_exports/prepare_spec.rb spec/requests/vault_mfa_exports_spec.rb
   - bundle exec rspec
   - bundle exec rspec spec/requests/contacts_connections_spec.rb spec/services/contacts/provider_spec.rb spec/requests/messaging_connections_spec.rb
@@ -153,7 +168,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Data exports and permanent deletion stay owner-scoped and privacy-minimized
@@ -201,3 +216,11 @@ content into a second store.
 - `bin/memory coverage --git-diff`
 - `bin/memory audit --git-diff`
 - `bin/ci`
+
+## Concierge lifecycle
+
+Reauthenticated exports use an export-only wrapper over real turn associations for both source receipts and generated origins. An expired original lease is not renewed in persistence, and revoked source items remain unavailable.
+
+Concierge JSON/CSV exports include owner-scoped messages and action outcomes while excluding worker tokens, request keys, fingerprints, and leases. Ordinary exports redact protected conversational text; sensitive exports require existing reauthentication and revalidate current selections without renewing stored leases. Profile exports include only turns whose known relationship references exclusively match that profile; the PDF summarizes conversation counts. Selective AI deletion removes entire concierge histories while preserving explicitly saved canonical records. Profile deletion holds the owner lock and removes complete conversations with known references to that profile, including mixed-person conversations, so dependent prose cannot retain deleted context. Account deletion cascades chat state and delayed jobs cannot recreate deleted turns.
+
+Concierge relationship-scoped exports include inherited history source profile IDs when determining whether a turn belongs only to the selected relationship. A tool-free follow-up that inherits another person is excluded from a single-relationship export. Verify with bundle exec rspec spec/services/concierge/data_lifecycle_spec.rb.

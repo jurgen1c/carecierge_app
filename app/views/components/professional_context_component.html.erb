@@ -21,6 +21,7 @@
       </label>
       <h3 class="text-base font-semibold"><%= t("professional_relationships.sources_title") %></h3>
       <p class="mt-2 max-w-prose text-sm leading-6 text-quiet-note"><%= t("professional_relationships.sources_hint") %></p>
+      <p class="mt-2 max-w-prose text-sm leading-6 text-quiet-note"><%= t("professional_relationships.control_sources_hint") %></p>
       <% ProfessionalContext::COLLECTIONS.each do |collection| %>
         <fieldset class="mt-5">
           <legend class="text-sm font-semibold"><%= t("professional_relationships.collections.#{collection}") %></legend>

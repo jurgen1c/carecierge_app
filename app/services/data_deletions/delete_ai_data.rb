@@ -2,6 +2,7 @@ module DataDeletions
   class DeleteAiData
     def self.call(user:)
       user.with_lock("FOR NO KEY UPDATE") do
+        user.concierge_conversations.find_each(&:destroy!)
         user.messaging_connection&.imported_message_contexts&.where(reply_ai_generated: true)&.find_each do |context|
           context.update!(reply_draft: nil, reply_ai_generated: false)
         end

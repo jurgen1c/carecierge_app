@@ -63,31 +63,7 @@ class MoodNotesController < ApplicationController
   end
 
   def save_mood_note
-    MoodNote.transaction do
-      @mood_note.save!
-      sync_timeline_entry!
-      Interaction.sync_from_source!(@mood_note)
-    end
-    true
-  rescue ActiveRecord::RecordInvalid
-    false
-  end
-
-  def sync_timeline_entry!
-    unless @mood_note.timeline_visible?
-      @mood_note.timeline_entry&.destroy!
-      return
-    end
-
-    timeline_entry = @mood_note.timeline_entry || @relationship_profile.timeline_entries.build(source_record: @mood_note)
-    timeline_entry.assign_attributes(
-      entry_type: "mood_note",
-      origin: "system",
-      title: @mood_note.display_title,
-      body: @mood_note.supportive_action,
-      occurred_at: @mood_note.observed_at
-    )
-    timeline_entry.save!
+    MoodNotes::Save.call(@mood_note)
   end
 
   def refresh_mood_notes(message, alert: false, status: :ok)

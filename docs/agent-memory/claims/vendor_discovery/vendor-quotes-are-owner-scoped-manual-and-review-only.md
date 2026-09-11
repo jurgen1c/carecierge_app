@@ -3,12 +3,13 @@ id: vendor_discovery.vendor_quotes_are_owner_scoped_manual_and_review_only
 type: fact
 system: vendor_discovery
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Vendor quotes are owner-scoped, manual, and review-only
 
 claim: >
+  Concierge quote tools use integer cents with an explicit currency, owner-scoped vendors and plans, existing context locks, and optimistic versions. Professional chat requires selected work vendors and plans, including quote-linked reminders. Confirmed deletion retains domain restrictions and does not contact or accept terms with a vendor.
   Authenticated owners manually record encrypted vendor quote scope, next
   action, and notes together with amount, three-letter currency, expiration,
   decision deadline, and explicit status for one saved vendor and active event
@@ -29,6 +30,9 @@ claim: >
   ownership foreign keys cascade on account or plan deletion.
 
 source_files:
+  - app/services/concierge/operations/manual_plan_records.rb
+  - app/services/concierge/operations/quotes.rb
+  - app/services/concierge/vendor_sources.rb
   - app/models/vendor_quote.rb
   - app/controllers/vendor_quotes_controller.rb
   - app/policies/vendor_quote_policy.rb
@@ -37,6 +41,7 @@ source_files:
   - db/migrate/20260903044916_add_vendor_quote_reference_to_reminders.rb
 
 related_files:
+  - spec/services/concierge/vendors_spec.rb
   - app/models/reminder.rb
   - app/models/vendor.rb
   - app/models/event_plan.rb
@@ -81,6 +86,7 @@ tags:
   - localization
 
 verification:
+  - bundle exec rspec spec/services/concierge/vendors_spec.rb spec/requests/concierge_spec.rb
   - bundle exec rspec spec/models/vendor_quote_spec.rb spec/components/vendor_quote_comparison_component_spec.rb spec/requests/vendor_quotes_spec.rb spec/models/reminder_spec.rb spec/requests/reminders_spec.rb spec/services/vendors/destroy_spec.rb spec/serializers/data_exports/snapshot_spec.rb
   - bundle exec rspec spec/requests/data_controls_spec.rb spec/config/filter_parameter_logging_spec.rb spec/components/event_plan_workspace_component_spec.rb
   - bun run build:css
@@ -90,7 +96,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Vendor quotes are owner-scoped, manual, and review-only

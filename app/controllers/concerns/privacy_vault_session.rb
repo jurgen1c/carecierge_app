@@ -5,7 +5,7 @@ module PrivacyVaultSession
   SESSION_KEY = "privacy_vault_lease".freeze
 
   included do
-    helper_method :privacy_vault_unlocked?, :privacy_vault_lease_expires_at
+    helper_method :privacy_vault_unlocked?, :privacy_vault_lease_expires_at, :privacy_vault_lease
   end
 
   private

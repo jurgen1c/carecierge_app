@@ -3,12 +3,17 @@ id: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promote
 type: fact
 system: event_plans
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Backup plans are source-backed, comparable, and explicitly promoted
 
 claim: >
+  Concierge generation uses the same source-fenced service with an optional
+  persistence callback to commit its encrypted action receipt alongside backup options.
+  Chat reads revalidate personal-mode source selection and current unpromoted context;
+  promotion requires an exact inline decision bound to the option and plan version,
+  showing affected tasks and reminders before the existing atomic promotion operation.
   Active event-plan owners manually choose one supported recovery scenario and
   generate up to three encrypted structured backup options without changing the
   active plan. The non-stored provider request uses the existing bounded
@@ -49,6 +54,8 @@ claim: >
   palette.
 
 source_files:
+  - app/services/concierge/operations/backups.rb
+  - app/services/concierge/occasion_sources.rb
   - app/models/backup_plan.rb
   - app/models/backup_option.rb
   - app/services/backup_plans/generate.rb
@@ -62,6 +69,7 @@ source_files:
   - db/migrate/20260822210000_add_reviewed_reminders_to_backup_options.rb
 
 related_files:
+  - spec/services/concierge/occasions_spec.rb
   - app/models/user.rb
   - app/models/event_plan.rb
   - app/models/plan_task.rb
@@ -105,6 +113,7 @@ tags:
   - recovery
 
 verification:
+  - bundle exec rspec spec/services/concierge/occasions_spec.rb spec/services/backup_plans spec/services/personal_touch_checklists spec/models/audit_event_spec.rb
   - bundle exec rspec spec/agents/event_plans/llm_configuration_spec.rb spec/agents/event_plans/llm_suggester_spec.rb spec/agents/backup_plans/llm_generator_spec.rb
   - bundle exec rspec spec/migrations/create_backup_plans_spec.rb spec/models/backup_plan_spec.rb spec/models/backup_option_spec.rb spec/services/backup_plans spec/requests/backup_plans_spec.rb spec/components/event_plan_workspace_component_spec.rb
   - bundle exec rspec spec/models/event_plan_spec.rb spec/models/plan_task_spec.rb spec/models/reminder_spec.rb spec/services/event_plans spec/requests/event_plans_spec.rb spec/requests/reminders_spec.rb
@@ -115,7 +124,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Backup plans are source-backed, comparable, and explicitly promoted
@@ -153,3 +162,5 @@ from changing a plan and prevents obsolete reminders from firing after recovery.
 - `bin/memory coverage --git-diff`
 - `bin/memory audit --git-diff`
 - `bin/ci`
+
+Concierge callers supply optional task filters and an under-lock preparation callback to preserve complete generation-input provenance without changing the domain default for conventional screens. Backup promotion accepts the same task filter used by generation when validating prior-plan context. Conversational AI task/backup reuse requires the full encrypted action origin, not only model-selected citations; legacy outputs need regeneration for chat. Verification: bundle exec rspec spec/services/event_plans spec/services/backup_plans spec/services/concierge/plan_ideas_spec.rb spec/services/concierge/occasions_spec.rb.

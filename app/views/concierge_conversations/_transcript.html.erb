@@ -1,0 +1,40 @@
+<div id="concierge_transcript" class="concierge-transcript" data-concierge-chat-target="transcript"
+  data-busy="<%= concierge_busy?(turns) %>" data-announcement="<%= t(concierge_busy?(turns) ? 'concierge.working' : 'concierge.reply_ready') %>"
+  aria-label="<%= t('concierge.conversation') %>" tabindex="0">
+  <% if turns.empty? %>
+    <div class="concierge-welcome">
+      <h2><%= t('concierge.welcome') %></h2>
+      <p><%= t('concierge.welcome_body') %></p>
+      <ul class="concierge-starters">
+        <% %w[remember recall plan follow_up].each do |starter| %>
+          <li><button type="button" data-action="concierge-chat#useStarter" data-prompt="<%= t("concierge.starters.#{starter}.prompt") %>"><%= t("concierge.starters.#{starter}.label") %><span aria-hidden="true">↗</span></button></li>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <% turns.each do |turn| %>
+      <article class="concierge-turn" id="<%= dom_id(turn) %>">
+        <% if concierge_turn_available?(turn) %>
+          <% read_turn = concierge_read_turn(turn) %>
+          <div class="concierge-user-message"><span class="concierge-speaker"><%= t('concierge.you') %></span><%= simple_format(h(turn.content)) %></div>
+          <div class="concierge-assistant-message" aria-busy="<%= turn.state == 'running' %>">
+            <span class="concierge-speaker"><%= t('concierge.title') %></span>
+            <% if turn.response.present? && Concierge::History.sources_current?(read_turn) %><%= simple_format(h(turn.response)) %><% end %>
+            <% turn.actions.sort_by(&:execution_order).each do |action| %><%= component 'concierge_receipt', action: action, user: current_user, read_turn: read_turn %><% end %>
+            <% if turn.state.in?(%w[queued running]) && !turn.stalled? %><p class="concierge-progress"><%= t('concierge.working') %></p><% end %>
+            <% if turn.state == 'failed' || turn.stalled? %>
+              <p class="concierge-error"><%= t("concierge.errors.#{turn.error_code}", default: t('concierge.errors.provider_unavailable')) %></p>
+              <% if turn.attempts < ConciergeTurn::MAX_ATTEMPTS %>
+                <%= button_to t('concierge.retry'), retry_concierge_conversation_concierge_turn_path(conversation, turn),
+                  class: 'workspace-action workspace-action-secondary', data: { concierge_focus_key: "#{turn.id}-retry" } %>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="concierge-source-note"><%= t('concierge.context_changed') %></p>
+        <% end %>
+      </article>
+    <% end %>
+    <%= component 'concierge_pagination', pagination: @turns_pagy, kind: 'turn' if @turns_pagy %>
+  <% end %>
+</div>

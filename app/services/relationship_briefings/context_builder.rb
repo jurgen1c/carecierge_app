@@ -16,9 +16,12 @@ module RelationshipBriefings
       include_private_notes: false,
       include_vault_context: false,
       locale: I18n.locale,
+      private_note_ids: nil,
+      vault_item_ids: nil,
       as_of: nil
     )
       @relationship_profile = relationship_profile
+      @private_note_ids, @vault_item_ids = private_note_ids, vault_item_ids
       @include_private_notes = include_private_notes
       @include_vault_context = include_vault_context
       @locale = locale.to_sym
@@ -123,8 +126,9 @@ module RelationshipBriefings
     def note_sources(private:)
       return [] if private && !include_private_notes
 
-      relationship_profile.relationship_notes
-        .where(private:)
+      scope = relationship_profile.relationship_notes
+      scope = scope.where(id: @private_note_ids) if private && !@private_note_ids.nil?
+      scope.where(private:)
         .where.missing(:privacy_vault_item)
         .includes(:rich_text_body)
         .order(created_at: :desc, id: :desc)
@@ -148,7 +152,9 @@ module RelationshipBriefings
     def vault_sources
       return [] unless include_vault_context
 
-      relationship_profile.privacy_vault_items.ordered.limit(MAX_PER_KIND).map do |item|
+      scope = relationship_profile.privacy_vault_items
+      scope = scope.suggestion_allowed.where(id: @vault_item_ids) unless @vault_item_ids.nil?
+      scope.ordered.limit(MAX_PER_KIND).map do |item|
         source(
           id: "vault:#{item.id}",
           kind: "vault",

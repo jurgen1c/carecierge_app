@@ -1,0 +1,60 @@
+<div class="<%= style(:container, pending: pending?) %>" data-concierge-action-id="<%= action.id %>">
+  <div class="concierge-receipt-heading">
+    <strong><%= operation_label %></strong>
+    <span><%= t("concierge.action_states.#{action.state}") %></span>
+  </div>
+  <% if pending? && !decision_available? %>
+    <p><%= t('concierge.errors.request_conflict') %></p>
+  <% elsif pending? %>
+    <% if preview.present? %><%= simple_format(h(preview)) %><% end %>
+    <p><%= t('concierge.review_change') %></p>
+    <div class="concierge-decisions">
+      <% %w[approve reject].each do |decision| %>
+        <%= button_to t("concierge.decisions.#{decision}"), concierge_conversation_concierge_action_path(action.turn.conversation, action), method: :patch,
+          params: { decision: decision, fingerprint: action.fingerprint }, class: style(:decision, choice: decision),
+          data: { concierge_focus_key: "#{action.id}-#{decision}" } %>
+      <% end %>
+    </div>
+  <% elsif action.state == 'failed' || action.stalled? %>
+    <p><%= t("concierge.errors.#{action.error_code}", default: t('concierge.errors.provider_unavailable')) %></p>
+    <% if action.retryable? %>
+      <%= button_to t('concierge.retry'), concierge_conversation_concierge_action_path(action.turn.conversation, action), method: :patch,
+          params: { decision: 'retry', fingerprint: action.fingerprint }, class: style(:decision, choice: 'reject'),
+          data: { concierge_focus_key: "#{action.id}-retry" } %>
+    <% end %>
+  <% elsif records.any? %>
+    <ul class="concierge-sources">
+      <% records.each do |source| %>
+        <li>
+          <% if (path = helpers.concierge_source_path(source)) %>
+            <%= link_to source.fetch('title'), path, class: 'concierge-source-link',
+              data: { turbo_prefetch: false, concierge_focus_key: "#{action.id}-#{source.fetch('id')}-source" } %>
+          <% else %>
+            <strong><%= source.fetch('title') %></strong>
+          <% end %>
+          <% if source['body'].present? %><p><%= source['body'] %></p><% end %>
+          <% if source['manual_record'] %><p class="concierge-source-note"><%= t('concierge.manual_record') %></p><% end %>
+          <% if (details = record_details(source)).any? %>
+            <dl class="concierge-receipt-details">
+              <% details.each do |label, value| %><div><dt><%= label %></dt><dd><%= value %></dd></div><% end %>
+            </dl>
+          <% end %>
+          <% if source['certainty'].present? %><span class="concierge-source-note"><%= t("memory_records.confidences.#{source['certainty']}") %></span><% end %>
+          <% if clarification_available? %>
+            <%= button_to t('concierge.choose_person', name: source.fetch('title')), concierge_conversation_concierge_clarifications_path(action.turn.conversation),
+              params: { action_id: action.id, relationship_profile_id: source.fetch('id') }, class: style(:correction),
+              data: { concierge_focus_key: "#{action.id}-#{source.fetch('id')}-choose" } %>
+          <% end %>
+          <% if correctable?(source) %>
+            <button type="button" class="<%= style(:correction) %>" data-action="concierge-chat#useStarter"
+              data-concierge-focus-key="<%= "#{action.id}-#{source.fetch('id')}-correct" %>"
+              data-prompt="<%= t('concierge.correction_prompt', title: source.fetch('title')) %>"
+              aria-label="<%= t('concierge.correct_record', title: source.fetch('title')) %>"><%= t('concierge.correct') %></button>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% elsif action.result['records'] == [] %>
+    <p><%= t('concierge.no_results') %></p>
+  <% end %>
+</div>

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-08T10:39:28.082013+00:00",
+  "generatedAt": "2026-09-08T14:27:55.535291+00:00",
   "title": "Design System: Carecierge",
   "extensions": {
     "colorMeta": {
@@ -216,7 +216,9 @@
     ],
     "authenticatedNavigation": {
       "mobileHeader": "Keep the wordmark intact. Let the Menu control wrap onto a second row when enlarged text needs more room.",
-      "mobileMenu": "Fit the open menu within the remaining viewport below the actual header height; allow independent scrolling."
+      "mobileMenu": "Fit the open menu within the remaining viewport below the actual header height; allow independent scrolling.",
+      "landing": "Concierge is the normal authenticated landing; Today, People, plans and shared spaces remain in persistent navigation.",
+      "conciergeMobile": "Collapse history initially; keep the composer and Send action reachable while the transcript scrolls."
     }
   },
   "components": [
@@ -321,6 +323,11 @@
       {
         "name": "Context before tools",
         "body": "Keep shared navigation available. Start with the person and useful timing. Reveal deeper profile tools on intent; let wide screens hold context beside the work.",
+        "section": "components"
+      },
+      {
+        "name": "Conversation outcomes",
+        "body": "Show the current person, source-backed answers, actual saved results and explicit decisions. Keep sensitive context selection per request, and preserve completed receipts during recovery.",
         "section": "components"
       }
     ],

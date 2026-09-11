@@ -41,6 +41,14 @@
           <% end %>
         </div>
       </section>
+      <section class="mt-8">
+        <h2 class="text-xl font-semibold"><%= t('concierge.export_title') %></h2>
+        <ul class="mt-4 grid gap-3">
+          <% snapshot.fetch('concierge_conversations', []).each do |conversation| %>
+            <li><%= conversation['title'].presence || t('concierge.conversation') %> · <%= t('concierge.export_turns', count: conversation.fetch('turns').size) %></li>
+          <% end %>
+        </ul>
+      </section>
     </main>
   </body>
 </html>

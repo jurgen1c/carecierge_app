@@ -704,6 +704,9 @@ es:
       personal_touch_checklist_created:
         title: "Lista de detalles personales creada"
         description: "Se creó una lista práctica de detalles personales para %{target}."
+      personal_touch_item_updated:
+        title: Detalle personal actualizado
+        description: Se corrigió un detalle personal.
       personal_touch_item_created:
         title: "Detalle personal agregado"
         description: "Se agregó un detalle personal para %{target}."
@@ -987,7 +990,7 @@ es:
       not_provided: "Sin información"
       back: "Volver a relaciones"
       delete: "Eliminar"
-      delete_confirm: "¿Eliminar este perfil de relación? Esto elimina sus detalles de contacto, notas, asignaciones de etiquetas y asignaciones de grupos."
+      delete_confirm: "¿Eliminar este perfil de relación? Esto elimina sus detalles de contacto, notas, etiquetas, grupos y conversaciones con el concierge que mencionaron a esta persona, incluso conversaciones sobre varias personas."
     types:
       friend: "Amigo"
       best_friend: "Mejor amigo"
@@ -2050,9 +2053,9 @@ es:
       confirmation: "Escribe %{email} para confirmar"
       delete_ai:
         title: "Eliminar datos generados por IA"
-        body: "Elimina permanentemente memorias inferidas por IA, registros de cronología de extracción por IA, interpretaciones de contexto social con su estado de revisión y usos propuestos, recomendaciones de regalos en cualquier estado y sugerencias de planes de eventos. Tus planes de eventos, los pasos de plantilla y creados manualmente, los recordatorios de planes, tus notas sociales y archivos subidos, las memorias confirmadas, las entradas manuales y los regalos guardados desde recomendaciones permanecen."
+        body: "Elimina permanentemente las conversaciones con el concierge y sus mensajes, memorias inferidas por IA, registros de cronología de extracción por IA, interpretaciones de contexto social con su estado de revisión y usos propuestos, recomendaciones de regalos en cualquier estado y sugerencias de planes de eventos. Tus planes de eventos, los pasos de plantilla y creados manualmente, los recordatorios de planes, tus notas sociales y archivos subidos, las memorias confirmadas, las entradas manuales y los regalos guardados desde recomendaciones permanecen."
         action: "Eliminar datos generados por IA"
-        confirm: "¿Eliminar todos los datos generados por IA, incluidas las interpretaciones de contexto social, las recomendaciones de regalos y las sugerencias de planes de eventos, de esta cuenta?"
+        confirm: "¿Eliminar todos los datos generados por IA, incluidas las conversaciones con el concierge y sus mensajes, las interpretaciones de contexto social, las recomendaciones de regalos y las sugerencias de planes de eventos, de esta cuenta?"
       delete_account:
         title: "Eliminar cuenta"
         body: "Elimina permanentemente tu cuenta y todos los datos de relaciones. Se conserva evidencia minimizada de la eliminación sin tu correo ni contenido de relaciones."

@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
     return onboarding_path if resource.respond_to?(:onboarding_pending?) && resource.onboarding_pending?
 
-    dashboard_path
+    restored_sign_in_destination(resource) || concierge_conversations_path
   end
 
   def after_sign_out_path_for(_resource_or_scope)
@@ -27,6 +27,20 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def restored_sign_in_destination(resource)
+    destination = url_from(stored_location_for(resource))
+    return unless destination
+
+    route = Rails.application.routes.recognize_path(destination, method: :get)
+    if route[:controller] == "concierge_conversations" && route[:action] == "transcript"
+      concierge_conversation_path(route.fetch(:id))
+    else
+      destination
+    end
+  rescue ActionController::RoutingError
+    destination
+  end
 
   def with_request_locale(&action)
     previous_pagy_locale = Pagy::I18n.locale

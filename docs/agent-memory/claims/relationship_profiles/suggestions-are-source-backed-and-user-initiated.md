@@ -3,12 +3,21 @@ id: relationship_profiles.suggestions_are_source_backed_and_user_initiated
 type: decision
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Suggestions are source-backed and user-initiated
 
 claim: >
+  Chat uses the same deterministic suggestions, feedback and alternative rotation.
+  It revalidates current source content, social-context downstream consent and
+  selected professional context before returning evidence or changing feedback.
+  Suggestion receipts distinguish the inferred idea from its source certainty.
+  Explicitly timed personal and selected work follow-up reminders honor current automation permission and
+  bind required approvals to the exact suggestion and source versions; the
+  suggestion becomes acted only in the successful reminder save transaction.
+  A newly requested work reminder joins only its own selected work category;
+  unrelated personal reminder records remain unavailable.
   The relationship-profile suggestion engine deterministically derives up to ten
   supported suggestion types from current owner-scoped source records, retains
   evidence and confirmed or inferred certainty, and fails closed for archived
@@ -39,6 +48,11 @@ claim: >
   state participates in owner-scoped data exports.
 
 source_files:
+  - app/services/concierge/operations/ideas.rb
+  - app/services/concierge/suggestion_sources.rb
+  - app/services/concierge/sources.rb
+  - app/services/concierge/record_version.rb
+  - app/services/concierge/history.rb
   - app/services/suggestions/for_profile.rb
   - app/services/suggestions/next_gesture_variation.rb
   - app/models/suggestion.rb
@@ -54,6 +68,7 @@ source_files:
   - app/views/mood_notes/_section.html.erb
 
 related_files:
+  - spec/services/concierge/ideas_spec.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/models/interaction.rb
   - app/controllers/concerns/relationship_profile_show_workspace.rb
@@ -100,6 +115,7 @@ tags:
   - decision
 
 verification:
+  - bundle exec rspec spec/services/concierge/ideas_spec.rb spec/services/suggestions spec/requests/suggestions_spec.rb
   - bundle exec rspec spec/models/suggestion_spec.rb spec/models/suggestion_feedback_spec.rb spec/services/suggestions/for_profile_spec.rb spec/policies/suggestion_feedback_policy_spec.rb spec/components/suggestion_list_item_component_spec.rb spec/components/suggestion_inspector_component_spec.rb spec/requests/suggestions_spec.rb spec/requests/reminders_spec.rb spec/requests/relationship_profiles_spec.rb spec/services/daily_feed/for_user_spec.rb spec/requests/daily_feed_spec.rb
   - bundle exec rspec spec/system/spontaneous_gestures_spec.rb
   - bin/rubocop app/models/suggestion.rb app/models/suggestion_feedback.rb app/services/suggestions app/services/daily_feed/for_user.rb app/controllers/suggestions_controller.rb app/controllers/relationship_profiles_controller.rb app/controllers/reminders_controller.rb app/policies/suggestion_feedback_policy.rb app/views/components/suggestion_list_item_component.rb app/views/components/suggestion_inspector_component.rb spec/models/suggestion_spec.rb spec/models/suggestion_feedback_spec.rb spec/services/suggestions spec/policies/suggestion_feedback_policy_spec.rb spec/components/suggestion_list_item_component_spec.rb spec/components/suggestion_inspector_component_spec.rb spec/requests/suggestions_spec.rb
@@ -107,7 +123,7 @@ verification:
   - bin/memory coverage --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Suggestions are source-backed and user-initiated

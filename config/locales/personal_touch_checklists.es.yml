@@ -24,6 +24,15 @@ es:
     suggestions:
       preference_prompt: "Toma en cuenta %{key}: %{value}"
       prompts:
+        work_agenda:
+          title: Confirma el propósito y la agenda
+          details: Enfoca la reunión en el trabajo compartido y los límites acordados.
+        work_message:
+          title: Revisa el mensaje antes de enviarlo
+          details: Comprueba que la redacción y el nivel de formalidad sean adecuados para esta relación laboral.
+        work_follow_up:
+          title: Acuerden un próximo paso concreto
+          details: Decide qué necesita seguimiento y cuándo retomarlo.
         handwritten_note:
           title: Escribe una nota personal breve
           details: Usa tus propias palabras y agrega un detalle que solo podría venir de ti.

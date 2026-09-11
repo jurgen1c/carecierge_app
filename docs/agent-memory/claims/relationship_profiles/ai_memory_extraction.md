@@ -10,7 +10,9 @@ title: AI memory extraction is asynchronous, source-backed, and owner-approved
 
 claim: >
   Feature-flagged recaps enqueue strict, non-stored extraction. Source-backed
-  proposals remain separate until owner review. Either review surface finalizes
+  recap saves are shared through ConversationRecaps::Save, preserving the timeline,
+  derived interaction, and single extraction enqueue; failed retries use RetryExtraction.
+  Proposals remain separate until owner review. Either review surface finalizes
   or creates an owner-scoped ApprovalRequest with append-only, content-free
   evidence, including result-only rejection evidence when no queue envelope exists.
   Repeated corrections are idempotent only when normalized content
@@ -19,6 +21,10 @@ claim: >
   or corrected canonical memories may feed relationship personas.
 
 source_files:
+  - app/services/conversation_recaps/save.rb
+  - app/services/conversation_recaps/retry_extraction.rb
+  - app/services/concierge/operations/recaps.rb
+  - app/services/concierge/operations/proposals.rb
   - app/models/extracted_memory.rb
   - app/services/memory_extractions/open_ai_extractor.rb
   - app/services/memory_extractions/extract.rb
@@ -79,12 +85,13 @@ tags:
   - owner_scope
 
 verification:
+  - bundle exec rspec spec/services/concierge/profile_records_spec.rb spec/services/concierge/planning_spec.rb spec/requests/conversation_recaps_spec.rb
   - bundle exec rspec spec/models/extracted_memory_spec.rb spec/services/memory_extractions spec/services/data_deletions/delete_ai_data_spec.rb spec/jobs/memory_extraction_job_spec.rb spec/components/extracted_memory_review_component_spec.rb spec/requests/extracted_memories_spec.rb spec/requests/conversation_recaps_spec.rb spec/requests/data_controls_spec.rb spec/config/filter_parameter_logging_spec.rb
   - bin/rubocop app/controllers/extracted_memories_controller.rb app/jobs/memory_extraction_job.rb app/models/extracted_memory.rb app/services/memory_extractions spec/models/extracted_memory_spec.rb spec/services/memory_extractions spec/jobs/memory_extraction_job_spec.rb spec/requests/extracted_memories_spec.rb spec/components/extracted_memory_review_component_spec.rb
   - bundle exec rspec
   - bin/ci
 
-last_verified_commit: null
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # AI memory extraction is asynchronous, source-backed, and owner-approved

@@ -26,10 +26,11 @@ es:
       son apropiadas en el contexto laboral.
     sources_title: Elegir registros laborales
     sources_hint: Selecciona hasta seis registros por categoría. Crea o edita notas,
-      compromisos, preferencias, hitos y regalos en las secciones del perfil, guárdalos
+      compromisos, preferencias, hitos, regalos, planes y recordatorios en sus espacios habituales, guárdalos
       y selecciónalos aquí. Los registros seleccionados se mantienen actualizados;
       no puedes seleccionar notas privadas o protegidas en la bóveda. Se muestran
       los 100 registros más recientes y las selecciones existentes.
+    control_sources_hint: Los planes, recordatorios, cajas de regalo, proveedores y comparaciones seleccionados se pueden gestionar en el chat. Su contenido y sus registros relacionados no se incorporan automáticamente a borradores, resúmenes u otras sugerencias generadas. La selección de proveedores se aplica solo a esta relación.
     empty_sources: Aún no hay registros disponibles. Guarda el perfil, agrega un registro
       en su sección y vuelve para seleccionarlo.
     collections:
@@ -38,6 +39,11 @@ es:
       commitments: Compromisos y seguimientos
       important_dates: Hitos de clientes
       gifts: Historial de regalos profesionales
+      event_plans: Planes laborales
+      reminders: Recordatorios laborales
+      gift_boxes: Cajas de regalo laborales
+      vendors: Proveedores laborales guardados
+      vendor_shortlists: Comparaciones laborales de proveedores
     actions: Preparación profesional
     meeting_notes: Escribir notas de reuniones
     follow_ups: Registrar compromisos y seguimientos

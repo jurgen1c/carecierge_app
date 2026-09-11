@@ -12,6 +12,9 @@ module MessageDrafts
       include_private_notes: false,
       include_vault_context: false,
       vault_lease: nil,
+      private_note_ids: nil,
+      vault_item_ids: nil,
+      on_persist: nil,
       locale: I18n.locale,
       generator: OpenAiGenerator.new
     )
@@ -27,6 +30,9 @@ module MessageDrafts
         include_private_notes:,
         include_vault_context:,
         vault_lease:,
+        private_note_ids:,
+        vault_item_ids:,
+        on_persist:,
         locale:,
         generator:
       ).call
@@ -44,6 +50,9 @@ module MessageDrafts
       include_private_notes:,
       include_vault_context:,
       vault_lease:,
+      private_note_ids:,
+      vault_item_ids:,
+      on_persist:,
       locale:,
       generator:
     )
@@ -54,8 +63,9 @@ module MessageDrafts
       @tone, @formality = normalized_tone_and_formality(tone, formality)
       @situation = situation.to_s.strip
       @response_length = response_length.presence || "medium"
-      @include_private_notes = include_private_notes
-      @include_vault_context = include_vault_context
+      @private_note_ids, @vault_item_ids, @on_persist = private_note_ids, vault_item_ids, on_persist
+      @include_private_notes = private_note_ids.nil? ? include_private_notes : private_note_ids.any?
+      @include_vault_context = vault_item_ids.nil? ? include_vault_context : vault_item_ids.any?
       @vault_lease = vault_lease
       @locale = locale
       @generator = generator
@@ -63,7 +73,6 @@ module MessageDrafts
 
     def call
       generation_version, context, draft_id = prepare_generation!
-      record_sensitive_access(context.categories)
       content = generator.generate(
         draft_type:,
         tone:,
@@ -74,27 +83,21 @@ module MessageDrafts
         locale:
       )
 
-      relationship_profile.with_lock do
-        raise ActiveRecord::RecordNotFound if relationship_profile.discarded?
-        reject_stale_generation!(generation_version:, draft_id:)
-        if relationship_profile.professional? && ContextBuilder.new(relationship_profile:).call != context
-          raise GenerationSupersededError, "Professional source context changed"
-        end
+      actor.with_lock do
+        relationship_profile.with_lock do
+          raise ActiveRecord::RecordNotFound if relationship_profile.discarded? || relationship_profile.user_id != actor.id
+          reject_stale_generation!(generation_version:, draft_id:)
+          raise MessageDraft::ModeChangedError unless @expected_relationship_mode == relationship_profile.relationship_mode
+          validate_vault_access!
+          raise GenerationSupersededError, "Source context changed" unless build_context == context
 
-        draft = MessageDraft.find_by!(id: draft_id, relationship_profile:)
-        revision = draft.append_revision!(
-          content:,
-          origin: "generated",
-          context_categories: context.categories
-        )
-        AuditEvent.record!(
-          user: actor,
-          actor:,
-          action: "message.drafted",
-          target: relationship_profile,
-          metadata: { result: "generated" }
-        )
-        revision
+          draft = MessageDraft.find_by!(id: draft_id, relationship_profile:)
+          revision = draft.append_revision!(content:, origin: "generated", context_categories: context.categories)
+          AuditEvent.record!(user: actor, actor:, action: "message.drafted", target: relationship_profile,
+            metadata: { result: "generated" })
+          @on_persist&.call(revision)
+          revision
+        end
       end
     end
 
@@ -129,11 +132,8 @@ module MessageDrafts
           @tone = "professional" if relationship_profile.professional?
           validate_draft_settings!
           validate_vault_access!
-          context = ContextBuilder.new(
-            relationship_profile:,
-            include_private_notes:,
-            include_vault_context:
-          ).call
+          context = build_context
+          record_sensitive_access(context.categories)
 
           draft = persist_draft_settings!
           relationship_profile.increment!(:message_draft_generation_version)
@@ -141,6 +141,11 @@ module MessageDrafts
           [ relationship_profile.message_draft_generation_version, context, draft.id ]
         end
       end
+    end
+
+    def build_context
+      ContextBuilder.new(relationship_profile:, include_private_notes:, include_vault_context:,
+        private_note_ids: @private_note_ids, vault_item_ids: @vault_item_ids).call
     end
 
     def validate_vault_access!

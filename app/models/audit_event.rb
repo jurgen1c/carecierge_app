@@ -57,6 +57,7 @@ class AuditEvent < ApplicationRecord
     event_plan.backup_option_promoted
     personal_touch_checklist.created
     personal_touch_item.created
+    personal_touch_item.updated
     personal_touch_item.completed
     personal_touch_item.reopened
     personal_touch_item.dismissed

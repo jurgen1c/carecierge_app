@@ -28,6 +28,16 @@ module SocialContextNotes
     end
 
     def analyze(input:, locale: I18n.locale)
+      unless Ai::Configuration.provider == "openai"
+        images = image_blobs(input).map do |blob|
+          RubyLLM::Attachment.new(StringIO.new(download_image(blob)), filename: blob.filename.to_s)
+        end
+        output = Ai::TextGeneration.call(model:, instructions: instructions(locale:),
+          input: JSON.generate(user_note: input.text), images:, output_token_limit: 500,
+          schema: { name: "social_context_interpretation", schema: SCHEMA })
+        return normalize_result(output)
+      end
+
       raise AnalysisError, "Social context analysis is not configured" if api_key.blank?
 
       response = transport.call(build_request(input:, locale:))
@@ -40,6 +50,8 @@ module SocialContextNotes
       raise TypeError unless result.is_a?(Hash)
 
       normalize_result(result)
+    rescue Ai::GenerationError
+      raise AnalysisError, "Social context analysis provider was unavailable"
     rescue JSON::ParserError, KeyError, TypeError
       raise AnalysisError, "Social context analysis response was invalid"
     end
@@ -49,6 +61,8 @@ module SocialContextNotes
     end
 
     def self.default_model
+      return ENV["CARECIERGE_SOCIAL_CONTEXT_MODEL"].presence || Ai::Configuration.model unless Ai::Configuration.provider == "openai"
+
       Rails.application.credentials.dig(:openai, :social_context_model).presence ||
         ENV.fetch("CARECIERGE_SOCIAL_CONTEXT_MODEL", DEFAULT_MODEL)
     end

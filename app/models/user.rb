@@ -55,6 +55,7 @@ class User < ApplicationRecord
   has_many :shared_reminder_subscriptions, dependent: :destroy
 
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
+  has_many :concierge_conversations, dependent: :destroy
   has_many :reminders, dependent: :destroy
   has_many :feed_item_states, dependent: :destroy
   has_many :digest_deliveries, dependent: :destroy

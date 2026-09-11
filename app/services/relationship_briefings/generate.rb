@@ -8,6 +8,9 @@ module RelationshipBriefings
       include_private_notes: false,
       include_vault_context: false,
       vault_lease: nil,
+      private_note_ids: nil,
+      vault_item_ids: nil,
+      on_persist: nil,
       locale: I18n.locale,
       generator: OpenAiGenerator.new
     )
@@ -19,6 +22,9 @@ module RelationshipBriefings
         include_private_notes:,
         include_vault_context:,
         vault_lease:,
+        private_note_ids:,
+        vault_item_ids:,
+        on_persist:,
         locale:,
         generator:
       ).call
@@ -32,6 +38,9 @@ module RelationshipBriefings
       include_private_notes:,
       include_vault_context:,
       vault_lease:,
+      private_note_ids:,
+      vault_item_ids:,
+      on_persist:,
       locale:,
       generator:
     )
@@ -39,8 +48,9 @@ module RelationshipBriefings
       @actor = actor
       @relationship_profile = relationship_profile
       @interaction_context = interaction_context.to_s.squish
-      @include_private_notes = include_private_notes
-      @include_vault_context = include_vault_context
+      @private_note_ids, @vault_item_ids, @on_persist = private_note_ids, vault_item_ids, on_persist
+      @include_private_notes = private_note_ids.nil? ? include_private_notes : private_note_ids.any?
+      @include_vault_context = vault_item_ids.nil? ? include_vault_context : vault_item_ids.any?
       @vault_lease = vault_lease
       @locale = locale.to_sym
       @generator = generator
@@ -82,6 +92,7 @@ module RelationshipBriefings
             target: relationship_profile,
             metadata: { result: "generated" }
           )
+          @on_persist&.call(briefing)
           briefing
         end
       end
@@ -143,6 +154,8 @@ module RelationshipBriefings
         relationship_profile:,
         include_private_notes:,
         include_vault_context:,
+        private_note_ids: @private_note_ids,
+        vault_item_ids: @vault_item_ids,
         locale:
       ).call
     end

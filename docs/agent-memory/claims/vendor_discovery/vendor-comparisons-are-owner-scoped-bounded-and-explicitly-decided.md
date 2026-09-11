@@ -3,12 +3,13 @@ id: vendor_discovery.vendor_comparisons_are_owner_scoped_bounded_and_explicitly_
 type: fact
 system: vendor_discovery
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Vendor comparisons are owner-scoped, bounded, and explicitly decided
 
 claim: >
+  Concierge comparison tools reuse shortlist creation and option lifecycle operations, retain the five-option limit and last-read optimistic version, and return authorized current choices after selection changes. Professional chat requires an explicitly selected comparison and linked plan, and excludes options whose vendor is not selected for work.
   Authenticated owners create encrypted vendor shortlists for one active
   relationship or optional active event plan; plan context is authoritative for
   the relationship. Each shortlist contains at most five same-owner saved
@@ -36,6 +37,9 @@ claim: >
   provenance; ownership foreign keys cascade on account or context deletion.
 
 source_files:
+  - app/services/concierge/operations/vendor_options.rb
+  - app/services/concierge/operations/shortlists.rb
+  - app/services/concierge/vendor_sources.rb
   - app/models/vendor_shortlist.rb
   - app/models/vendor_option.rb
   - app/services/vendor_shortlists/create.rb
@@ -47,6 +51,7 @@ source_files:
   - db/migrate/20260902145635_create_vendor_shortlists_and_options.rb
 
 related_files:
+  - spec/services/concierge/vendors_spec.rb
   - app/models/user.rb
   - app/models/relationship_profile.rb
   - app/models/event_plan.rb
@@ -105,6 +110,7 @@ tags:
   - localization
 
 verification:
+  - bundle exec rspec spec/services/concierge/vendors_spec.rb spec/requests/concierge_spec.rb
   - bundle exec rspec spec/models/vendor_shortlist_spec.rb spec/models/vendor_option_spec.rb spec/services/vendor_shortlists/create_spec.rb spec/policies/vendor_shortlist_policy_spec.rb spec/components/vendor_shortlist_comparison_component_spec.rb spec/requests/vendor_shortlists_spec.rb spec/system/vendor_shortlists_spec.rb
   - bundle exec rspec spec/requests/data_controls_spec.rb spec/config/filter_parameter_logging_spec.rb spec/components/event_plan_workspace_component_spec.rb spec/requests/vendors_spec.rb
   - bun run build:css
@@ -114,7 +120,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Vendor comparisons are owner-scoped, bounded, and explicitly decided

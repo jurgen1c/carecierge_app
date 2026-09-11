@@ -1,0 +1,15 @@
+<% disable_turbo_cache %>
+<% content_for :title, "#{t('concierge.relationship_context.title')} · Carecierge" %>
+<%= turbo_frame_tag dom_id(@conversation, :relationship_context) do %>
+  <%= form_with model: @relationship_profile, scope: :relationship_profile, url: concierge_conversation_relationship_context_path(@conversation), method: :patch,
+    data: { turbo_frame: '_top' } do |form| %>
+    <%= hidden_field_tag :expected_version, Concierge::RecordVersion.for(@relationship_profile) %>
+    <p class="text-sm leading-6 text-quiet-note"><%= t('concierge.relationship_context.description') %></p>
+    <% if @error_message %><p role="alert" class="concierge-error"><%= @error_message %></p><% end %>
+    <%= component 'professional_context', relationship_profile: @relationship_profile, form: %>
+    <div class="mt-4 flex flex-wrap items-center gap-3">
+      <%= form.submit t('concierge.relationship_context.save'), class: 'workspace-action workspace-action-primary' %>
+      <%= link_to t('concierge.relationship_context.cancel'), concierge_conversation_path(@conversation), class: 'workspace-action workspace-action-secondary', data: { turbo_frame: '_top' } %>
+    </div>
+  <% end %>
+<% end %>

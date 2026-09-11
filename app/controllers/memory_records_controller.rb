@@ -25,26 +25,11 @@ class MemoryRecordsController < ApplicationController
   end
 
   def update
-    previous_title = @memory_record.title
-    previous_body = @memory_record.body
-    note = memory_record_correction_note
-    attrs = memory_record_params
-    trust_relevant_change = trust_relevant_change?(attrs)
-    title_corrected = attrs.key?(:title) && normalized_memory_record_value(:title, attrs[:title]) != normalized_memory_record_value(:title, previous_title)
-    body_corrected = attrs.key?(:body) && normalized_memory_record_value(:body, attrs[:body]) != normalized_memory_record_value(:body, previous_body)
-    mark_corrected = title_corrected || body_corrected
-    attrs[:source] = "user_corrected" if mark_corrected
-    attrs[:status] = "corrected" if mark_corrected
-    attrs[:reviewed_at] = nil if trust_relevant_change
-    attrs[:high_impact_automation_approved_at] = nil if trust_relevant_change
-
-    @memory_record.assign_attributes(attrs)
-
-    if @memory_record.invalid?
-      render_form(:edit, status: :unprocessable_entity)
-    else
-      update_record_with_revision!(previous_body, note, body_corrected || note.present?)
+    if MemoryRecords::Update.call(user: current_user, memory_record: @memory_record,
+      attributes: memory_record_params, correction_note: memory_record_correction_note)
       refresh_memory_records(t(".notice"))
+    else
+      render_form(:edit, status: :unprocessable_entity)
     end
   rescue ActiveRecord::RecordInvalid
     @memory_record.reload
@@ -103,39 +88,6 @@ class MemoryRecordsController < ApplicationController
 
   def editable_status_param?(status)
     status.in?(MemoryRecord::EDITABLE_STATUSES) && (@memory_record.blank? || @memory_record.status.in?(MemoryRecord::EDITABLE_STATUSES))
-  end
-
-  def trust_relevant_change?(attrs)
-    %i[title body source confidence status].any? do |key|
-      attrs.key?(key) && normalized_memory_record_value(key, attrs[key]) != normalized_memory_record_value(key, @memory_record.public_send(key))
-    end
-  end
-
-  def normalized_memory_record_value(key, value)
-    case key
-    when :title
-      value.to_s.squish
-    when :body
-      value.to_s.strip
-    else
-      value.to_s
-    end
-  end
-
-  def create_revision(previous_body, note)
-    @memory_record.memory_revisions.create!(
-      user: current_user,
-      previous_body:,
-      revised_body: @memory_record.body,
-      note:
-    )
-  end
-
-  def update_record_with_revision!(previous_body, note, revision_required)
-    MemoryRecord.transaction(requires_new: true) do
-      @memory_record.save!
-      create_revision(previous_body, note) if revision_required
-    end
   end
 
   def refresh_memory_records(message, alert: false, status: :ok)

@@ -24,6 +24,15 @@ en:
     suggestions:
       preference_prompt: "Plan around %{key}: %{value}"
       prompts:
+        work_agenda:
+          title: Confirm the purpose and agenda
+          details: Keep the meeting focused on the shared work and agreed boundaries.
+        work_message:
+          title: Review the message before sending
+          details: Check that the wording and level of formality suit this work relationship.
+        work_follow_up:
+          title: Agree on a practical next step
+          details: Decide what needs a follow-up and when to check back.
         handwritten_note:
           title: Write a short personal note
           details: Use your own words and add one detail that could only come from you.

@@ -3,12 +3,13 @@ id: event_plans.bookings_are_owner_scoped_manual_and_plan_integrated
 type: fact
 system: event_plans
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Bookings are owner-scoped, manual, and plan-integrated
 
 claim: >
+  Concierge manual booking tools use exact offset timestamps and the owner time zone, invoke Bookings::Save and Bookings::Destroy, and preserve task, reminder and timeline side effects. Professional chat requires a selected work plan and omits personal timeline receipts while preserving domain side effects. Receipts explicitly describe local records; no external reservation or payment is executed.
   Event plans own manual reservations and bookings for the authenticated user.
   Encrypted free-text logistics include provider, location, confirmation details,
   cancellation policy, and notes; scheduling uses a stored instant and IANA time
@@ -36,6 +37,9 @@ claim: >
   never contacts providers, books, sends, or pays externally.
 
 source_files:
+  - app/services/concierge/operations/manual_plan_records.rb
+  - app/services/concierge/operations/bookings.rb
+  - app/services/concierge/vendor_sources.rb
   - app/models/booking.rb
   - app/controllers/bookings_controller.rb
   - app/controllers/plan_tasks_controller.rb
@@ -50,6 +54,7 @@ source_files:
   - db/migrate/20260903121000_add_booking_context_to_reminders.rb
 
 related_files:
+  - spec/services/concierge/vendors_spec.rb
   - app/models/reminder.rb
   - app/models/plan_task.rb
   - app/controllers/reminders_controller.rb
@@ -90,6 +95,7 @@ tags:
   - review_only
 
 verification:
+  - bundle exec rspec spec/services/concierge/vendors_spec.rb spec/requests/concierge_spec.rb
   - bundle exec rspec spec/models/booking_spec.rb spec/services/bookings spec/policies/booking_policy_spec.rb spec/requests/bookings_spec.rb spec/requests/booking_reminders_spec.rb spec/components/booking_list_component_spec.rb spec/serializers/data_exports/booking_snapshot_spec.rb spec/system/bookings_spec.rb
   - bin/rubocop
   - bin/memory validate
@@ -97,7 +103,7 @@ verification:
   - bin/memory audit --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Bookings are owner-scoped, manual, and plan-integrated

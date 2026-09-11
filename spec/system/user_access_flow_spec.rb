@@ -41,7 +41,7 @@ RSpec.describe "User access flow", type: :system do
 
     click_button "Skip for now"
 
-    expect(page).to have_current_path(dashboard_path)
+    expect(page).to have_current_path(concierge_conversations_path)
 
     click_button "Sign out"
 

@@ -22,19 +22,19 @@ RSpec.describe "Onboarding", type: :request do
   end
 
   describe "POST /onboarding/skip" do
-    it "lets users skip onboarding and return later from the dashboard" do
+    it "lets users skip onboarding and start with the concierge" do
       user = create(:user)
       sign_in user
 
       post skip_onboarding_path
 
-      expect(response).to redirect_to(dashboard_path)
+      expect(response).to redirect_to(concierge_conversations_path)
       expect(user.reload.onboarding_skipped_at).to be_present
       expect(user.onboarding_completed_at).to be_nil
 
       follow_redirect!
 
-      expect(response.body).to include("Add your first person")
+      expect(response.body).to include("Who’s on your mind?")
     end
   end
 
@@ -81,7 +81,7 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.last
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(user.reload.onboarding_completed_at).to be_present
       expect(profile.first_name).to eq("Maya")
       expect(profile.relationship_preferences.first.value).to eq("Vegetable ramen")
@@ -143,7 +143,7 @@ RSpec.describe "Onboarding", type: :request do
       profile = user.relationship_profiles.sole
       preferences = profile.relationship_preferences.order(:created_at)
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(preferences.pluck(:preference_type, :category, :key, :value, :confidence, :source_notes)).to eq(
         [
           [ "positive", "food", "Comfort meal", "Vegetable ramen", "medium", "Added during onboarding." ],
@@ -177,12 +177,13 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.sole
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(profile.relationship_preferences.first.value).to eq("Vegetable ramen")
 
       follow_redirect!
 
       expect(response.body).to include("Maya")
+      get relationship_profile_path(profile)
       expect(response.body).to include("Vegetable ramen")
 
       get relationship_profiles_path
@@ -204,7 +205,7 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.last
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(profile.birthday).to be_nil
     end
 
@@ -256,7 +257,7 @@ RSpec.describe "Onboarding", type: :request do
       profile = user.relationship_profiles.last
       important_date_titles = profile.important_dates.order(:starts_on).pluck(:title)
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(important_date_titles).to contain_exactly("Birthday", "Work anniversary", "Annual checkup")
       expect(important_date_titles).not_to include("Crafted fourth row")
     end
@@ -305,7 +306,7 @@ RSpec.describe "Onboarding", type: :request do
       profile = user.relationship_profiles.last
       preference_keys = profile.relationship_preferences.order(:created_at).pluck(:key)
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(preference_keys).to eq([ "Comfort meal", "Flowers", "Peanuts" ])
       expect(preference_keys).not_to include("Crafted fourth row")
     end
@@ -354,7 +355,7 @@ RSpec.describe "Onboarding", type: :request do
       profile = user.relationship_profiles.last
       preference_keys = profile.relationship_preferences.order(:created_at).pluck(:key)
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(preference_keys).to eq([ "Comfort meal", "Flowers", "Peanuts" ])
       expect(preference_keys).not_to include("Crafted fourth row")
     end
@@ -388,7 +389,7 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.last
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(profile.relationship_preferences).to be_empty
     end
 
@@ -424,7 +425,7 @@ RSpec.describe "Onboarding", type: :request do
       profile = user.relationship_profiles.last
       preferences = profile.relationship_preferences.order(:created_at)
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(preferences.pluck(:preference_type, :confidence, :source_notes)).to eq(
         [
           [ "positive", "medium", "Added during onboarding." ],
@@ -457,7 +458,7 @@ RSpec.describe "Onboarding", type: :request do
       profile = user.relationship_profiles.last
       preference = profile.relationship_preferences.sole
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(preference).to have_attributes(
         preference_type: "constraint",
         category: "allergies",
@@ -516,7 +517,7 @@ RSpec.describe "Onboarding", type: :request do
       profile = user.relationship_profiles.last
       important_date_titles = profile.important_dates.order(:starts_on).pluck(:title)
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(important_date_titles).to contain_exactly("Birthday", "Work anniversary", "Annual checkup")
       expect(important_date_titles).not_to include("Crafted fourth row")
     end
@@ -535,7 +536,7 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.last
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(profile).to be_a(RelationshipProfiles::Other)
       expect(profile.custom_type_label).to eq("College roommate")
       expect(profile.relationship_type_label).to eq("College roommate")
@@ -606,7 +607,7 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.last
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(profile.type).to eq(RelationshipProfile::DEFAULT_TYPE)
     end
 
@@ -623,7 +624,7 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.last
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(profile.type).to eq(RelationshipProfile::DEFAULT_TYPE)
     end
 
@@ -685,7 +686,7 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.last
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(profile.relationship_preferences).to be_empty
     end
 
@@ -712,7 +713,7 @@ RSpec.describe "Onboarding", type: :request do
 
       profile = user.relationship_profiles.last
 
-      expect(response).to redirect_to(relationship_profile_path(profile))
+      expect(response).to redirect_to(concierge_conversations_path(relationship_profile_id: profile.id))
       expect(profile.important_dates).to be_empty
     end
 

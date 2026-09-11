@@ -9,6 +9,12 @@ module PersonalTouchChecklists
       [ "follow_up", "follow_up" ]
     ].freeze
 
+    WORK_PROMPTS = [
+      [ "logistics", "work_agenda" ],
+      [ "message", "work_message" ],
+      [ "follow_up", "work_follow_up" ]
+    ].freeze
+
     CATEGORY_MAP = {
       "allergies" => "dietary_need",
       "food" => "dietary_need",
@@ -84,7 +90,8 @@ module PersonalTouchChecklists
     end
 
     def generic_suggestions
-      GENERIC_PROMPTS.map do |category, key|
+      prompts = relationship_profile.professional? ? WORK_PROMPTS : GENERIC_PROMPTS
+      prompts.map do |category, key|
         {
           category:,
           title: translate("prompts.#{key}.title"),
@@ -95,7 +102,7 @@ module PersonalTouchChecklists
     end
 
     def preference_suggestions
-      relationship_profile.relationship_preferences
+      preference_scope
         .order(Arel.sql(<<~SQL.squish), :created_at, :id)
           CASE
             WHEN preference_type IN ('constraint', 'negative')
@@ -120,6 +127,13 @@ module PersonalTouchChecklists
             ]
           }
         end
+    end
+
+    def preference_scope
+      return relationship_profile.relationship_preferences unless relationship_profile.professional?
+
+      scope = relationship_profile.work_context.selected("relationship_preferences")
+      relationship_profile.professional_gifts_allowed? ? scope : scope.where.not(category: "gifts")
     end
 
     def bounded_preference_title(preference)

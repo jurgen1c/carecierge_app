@@ -6,8 +6,9 @@ module MessageDrafts
     MAX_PER_CATEGORY = 10
     Result = Data.define(:text, :categories)
 
-    def initialize(relationship_profile:, include_private_notes: false, include_vault_context: false, social_context_notes: nil)
+    def initialize(relationship_profile:, include_private_notes: false, include_vault_context: false, social_context_notes: nil, private_note_ids: nil, vault_item_ids: nil)
       @relationship_profile = relationship_profile
+      @private_note_ids, @vault_item_ids = private_note_ids, vault_item_ids
       @include_private_notes = include_private_notes
       @include_vault_context = include_vault_context
       @social_context_notes = social_context_notes
@@ -44,7 +45,7 @@ module MessageDrafts
 
     def entries
       if relationship_profile.professional?
-        return [ [ "profile", "Professional relationship", relationship_profile.display_name ] ] +
+        return [ [ "professional", "Professional relationship", relationship_profile.display_name ] ] +
           relationship_profile.work_context.entries.map { |entry| [ "professional", entry.kind, "[#{entry.certainty}] #{entry.content}" ] }
       end
 
@@ -148,14 +149,17 @@ module MessageDrafts
     def vault_entries
       return [] unless include_vault_context
 
-      relationship_profile.privacy_vault_items.ordered.limit(MAX_PER_CATEGORY).map do |item|
+      scope = relationship_profile.privacy_vault_items
+      scope = scope.suggestion_allowed.where(id: @vault_item_ids) unless @vault_item_ids.nil?
+      scope.ordered.limit(MAX_PER_CATEGORY).map do |item|
         [ "vault", item.display_title, plain_text(item.display_body) ]
       end
     end
 
     def notes(private:)
-      relationship_profile.relationship_notes
-        .where(private:)
+      scope = relationship_profile.relationship_notes
+      scope = scope.where(id: @private_note_ids) if private && !@private_note_ids.nil?
+      scope.where(private:)
         .where.missing(:privacy_vault_item)
         .includes(:rich_text_body)
         .order(:created_at)

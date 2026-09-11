@@ -34,7 +34,7 @@ class OnboardingController < ApplicationController
       current_user.complete_onboarding!
     end
 
-    redirect_to relationship_profile_path(@relationship_profile), notice: t(".notice")
+    redirect_to concierge_conversations_path(relationship_profile_id: @relationship_profile.id), notice: t(".notice")
   rescue ActiveRecord::RecordInvalid
     prepare_onboarding_relationship_profile
     render :show, status: :unprocessable_entity
@@ -43,7 +43,7 @@ class OnboardingController < ApplicationController
   def skip
     current_user.skip_onboarding!
 
-    redirect_to dashboard_path, notice: t(".notice")
+    redirect_to concierge_conversations_path, notice: t(".notice")
   end
 
   private

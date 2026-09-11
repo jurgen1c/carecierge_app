@@ -1,10 +1,11 @@
 module BackupPlans
   class Promote
-    def self.call(actor:, backup_option:, vault_lease: nil, at: Time.current)
-      new(actor:, backup_option:, vault_lease:, at:).call
+    def self.call(actor:, backup_option:, vault_lease: nil, at: Time.current, task_filter: nil)
+      new(actor:, backup_option:, vault_lease:, at:, task_filter:).call
     end
 
-    def initialize(actor:, backup_option:, vault_lease:, at:)
+    def initialize(actor:, backup_option:, vault_lease:, at:, task_filter: nil)
+      @task_filter = task_filter
       @actor = actor
       @backup_option = backup_option
       @vault_lease = vault_lease
@@ -90,7 +91,8 @@ module BackupPlans
         event_plan:,
         private_note_ids:,
         vault_item_ids:,
-        locale: backup_plan.locale
+        locale: backup_plan.locale,
+        task_filter: @task_filter
       ).call
       return if context.fingerprint == backup_plan.context_fingerprint
 

@@ -13,7 +13,8 @@ module EventPlans
     Source = Data.define(:id, :kind, :content, :certainty, :label, :sensitive)
     Result = Data.define(:sources, :categories, :fingerprint)
 
-    def initialize(event_plan:, private_note_ids: [], vault_item_ids: [], locale: I18n.locale)
+    def initialize(event_plan:, private_note_ids: [], vault_item_ids: [], locale: I18n.locale, task_filter: nil)
+      @task_filter = task_filter
       @event_plan = event_plan
       @relationship_profile = event_plan.relationship_profile
       @private_note_ids = normalize_ids(private_note_ids)
@@ -223,6 +224,7 @@ module EventPlans
     end
 
     def reusable_prior_task?(task, authorized_source_ids:)
+      return false if @task_filter && !@task_filter.call(task)
       return true unless task.origin == "ai"
       return false if task.source_context.empty?
 

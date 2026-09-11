@@ -1,0 +1,88 @@
+id: concierge_relationships
+name: Concierge authority and lifecycle dependencies
+edges:
+  - source: concierge.owner_scoped_conversation_actions
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: requires
+    reason: Chat and nested generation share environment provider defaults while preserving source authority and explicit review.
+    strength: 100
+  - source: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    target: ai.ai_providers_follow_environment_defaults_behind_application_owned_configuration
+    relation: requires
+    reason: Event and backup defaults inherit the same provider and local model configuration.
+    strength: 100
+  - source: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    target: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    relation: constrains
+    reason: Work suggestions use selected work evidence, and an explicitly timed follow-up selects only its new reminder without importing personal records.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: relationship_profiles.suggestions_are_source_backed_and_user_initiated
+    relation: requires
+    reason: Chat suggestions retain current evidence and domain feedback while reminder creation rechecks automation permission.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: event_plans.plans_are_owner_scoped_source_backed_and_user_controlled
+    relation: requires
+    reason: Generated plan tasks and their chat receipt commit together behind the existing context and generation fences.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: event_plans.backup_plans_are_source_backed_comparable_and_explicitly_promoted
+    relation: requires
+    reason: Backup promotion binds exact reviewed source and plan state while preserving unrelated tasks.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
+    relation: requires
+    reason: Conversational drafting keeps immutable revisions and commits provider outcomes within existing domain persistence.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: relationship_profiles.briefings_are_source_backed_private_and_user_controlled
+    relation: requires
+    reason: Conversational briefings use the same current selected context and atomic persistence callback without external delivery.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: approvals.owner_scoped_review_queue
+    relation: requires
+    reason: Conversational review decisions bind the exact request and source before invoking existing canonical approval transitions.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: relationship_profiles.gift_recommendations_are_private_source_backed_and_user_controlled
+    relation: requires
+    reason: Gift generation commits its fenced chat receipt within domain persistence and rechecks permission and selected source consent.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: relationship_profiles.gift_purchase_plans_are_private_manual_and_budget_constrained
+    relation: requires
+    reason: Chat purchase preparation uses the existing versioned save and task handoff while actual commerce remains manual.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: relationship_profiles.gift_boxes_are_private_manual_bundles_with_conservative_companion_suggestions
+    relation: requires
+    reason: Chat and conventional forms share whole-box save revisions and conservative companion suggestions.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: authentication.account_access_boundary
+    relation: requires
+    reason: Every conversation, incremental transcript, tool execution and decision is scoped to the authenticated account.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: automation_permissions.permission_decisions
+    relation: requires
+    reason: Tool adapters re-evaluate current capability decisions before mutation and approval.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: data_controls.data_portability_and_deletion
+    relation: requires
+    reason: Conversation state participates in protected export and account, AI and relationship deletion.
+    strength: 100
+  - source: concierge.owner_scoped_conversation_actions
+    target: relationship_profiles.professional_mode_uses_only_explicitly_selected_work_context
+    relation: requires
+    reason: Conversational recall and provider history cannot import unselected personal sources into professional work.
+    strength: 100
+  - source: authentication.user_access_flow
+    target: concierge.owner_scoped_conversation_actions
+    relation: requires
+    reason: The concierge is the normal landing after login and onboarding while manual workspaces remain available.
+    strength: 90

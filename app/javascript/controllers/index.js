@@ -11,6 +11,7 @@ import RelationshipTemplateFieldsController from "./relationship_template_fields
 import TimezoneController from "./timezone_controller"
 import AppMenuController from "./app_menu_controller"
 import ProfileWorkspaceController from "./profile_workspace_controller"
+import ConciergeChatController from "./concierge_chat_controller"
 
 application.register("hello", HelloController)
 application.register("automation-permissions", AutomationPermissionsController)
@@ -20,3 +21,4 @@ application.register("relationship-template-fields", RelationshipTemplateFieldsC
 application.register("timezone", TimezoneController)
 application.register("app-menu", AppMenuController)
 application.register("profile-workspace", ProfileWorkspaceController)
+application.register("concierge-chat", ConciergeChatController)

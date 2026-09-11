@@ -3,12 +3,17 @@ id: relationship_profiles.message_drafts_are_private_review_only_and_revisioned
 type: constraint
 system: relationship_profiles
 status: current
-confidence: verified
+confidence: high
 severity: critical
 
 title: Message drafts are private, review-only, and revisioned
 
 claim: >
+  Concierge callers pass explicit private-note and allowed vault-item IDs rather
+  than category-wide inclusion. The shared generator releases application locks for
+  provider work and invokes an optional persistence callback inside its final transaction
+  so chat can commit the result and receipt atomically. Context and vault access are
+  revalidated before persistence, and sensitive-access evidence uses owner/profile locks.
   In professional mode, the dedicated work-context boundary replaces ordinary profile
   sourcing with explicitly selected current work records; personal/private/vault data
   is not imported automatically. See the professional-mode constraint for selection
@@ -45,6 +50,8 @@ claim: >
   preventing output built from revoked or deleted context from being persisted.
 
 source_files:
+  - app/services/concierge/operations/drafts.rb
+  - app/services/concierge/generated_sources.rb
   - app/models/professional_context.rb
   - app/models/concerns/professional_relationship.rb
   - app/models/relationship_profile.rb
@@ -68,6 +75,7 @@ source_files:
   - config/deploy.yml
 
 related_files:
+  - spec/services/concierge/generated_actions_spec.rb
   - app/controllers/relationship_profiles_controller.rb
   - app/policies/message_draft_policy.rb
   - config/routes.rb
@@ -111,6 +119,7 @@ tags:
   - constraint
 
 verification:
+  - bundle exec rspec spec/services/concierge/generated_actions_spec.rb spec/services/message_drafts spec/services/relationship_briefings spec/services/professional_context_spec.rb
   - bundle exec rspec spec/models/professional_relationship_spec.rb spec/services/professional_context_spec.rb spec/requests/professional_relationships_spec.rb spec/system/professional_relationships_spec.rb
   - bundle exec rspec spec/models/message_draft_spec.rb spec/models/draft_revision_spec.rb spec/services/message_drafts spec/policies/message_draft_policy_spec.rb spec/components/message_draft_workspace_component_spec.rb spec/requests/message_drafts_spec.rb spec/requests/data_controls_spec.rb spec/system/message_drafts_spec.rb
   - bin/rubocop app/models/message_draft.rb app/models/draft_revision.rb app/services/message_drafts app/controllers/message_drafts_controller.rb app/controllers/relationship_profiles_controller.rb app/policies/message_draft_policy.rb app/views/components/message_draft_workspace_component.rb spec/models/message_draft_spec.rb spec/models/draft_revision_spec.rb spec/services/message_drafts spec/policies/message_draft_policy_spec.rb spec/components/message_draft_workspace_component_spec.rb spec/requests/message_drafts_spec.rb spec/system/message_drafts_spec.rb
@@ -119,7 +128,7 @@ verification:
   - bin/memory coverage --git-diff
   - bin/ci
 
-last_verified_commit: 7559337422b419fae6e64d414310574d502c8a70
+last_verified_commit: cc0ce9edfa8a02156d651f817eea75d9f8ec4a7f
 ---
 
 # Message drafts are private, review-only, and revisioned

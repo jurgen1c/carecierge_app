@@ -1,0 +1,330 @@
+es:
+  workspace:
+    navigation:
+      concierge: Concierge
+    pages:
+      concierge_conversations: Concierge
+      concierge_turns: Concierge
+      concierge_actions: Concierge
+      concierge_contexts: Contexto de la relación
+  concierge:
+    relationship_context:
+      title: Contexto de la relación
+      edit: Elegir contexto personal o laboral
+      description: Los cambios abren una conversación nueva. Para una relación laboral, el concierge solo puede usar los registros que selecciones. Los mensajes anteriores quedan en su conversación original.
+      save: Guardar contexto y continuar
+      cancel: Volver a la conversación
+      saved: El contexto de tu relación está listo.
+      invalid: Revisa el contexto laboral y elige hasta seis registros disponibles por categoría.
+    choose_person: "Elegir a %{name}"
+    memory_proposal_preview: "De tus palabras: «%{excerpt}». Posible recuerdo — %{title}: %{body}. Al aceptar se guarda como interpretación; la automatización de mayor impacto sigue desactivada."
+    correct: Corregir
+    correct_record: Corregir %{title}
+    correction_prompt: 'Corrige «%{title}»: '
+    when: Cuándo
+    recorded_amount: Importe registrado
+    manual_record: Guardado en tus registros. No se contactó a ningún proveedor ni se hizo un pago o una reserva.
+    backup_replaces: "Tareas que se reemplazan: %{tasks}. Recordatorios que se retiran: %{reminders}."
+    delete_conversation: Eliminar esta conversación
+    delete_conversation_description: Se eliminan los mensajes y comprobantes de esta conversación. Los recuerdos, planes y otros registros guardados permanecen en la aplicación.
+    export_title: Conversaciones con el concierge
+    export_turns:
+      one: "%{count} mensaje"
+      other: "%{count} mensajes"
+    note: Nota de la relación
+    connection_interrupted: Se interrumpieron las actualizaciones. Tu mensaje y los cambios completados están guardados.
+    check_response: Buscar una respuesta
+    title: Concierge
+    subtitle: Un espacio para recordar, planear y dar seguimiento.
+    welcome: ¿A quién tienes en mente?
+    welcome_body: Cuéntame algo que quieras recordar o resolver. Podemos verlo paso a paso.
+    history: Conversaciones recientes
+    history_empty: Tus conversaciones estarán aquí cuando quieras retomarlas.
+    pagination:
+      history: Páginas de conversaciones
+      turn: Páginas de mensajes
+      older: Anteriores
+      newer: Más recientes
+    new_conversation: Nueva conversación
+    person_context: Acerca de
+    any_person: Elegir mientras conversamos
+    change_context: Cambiar de persona
+    message_label: Tu mensaje
+    placeholder: Guarda un recuerdo, pregunta por alguien o empieza un plan…
+    composer_help: Enter para enviar. Shift + Enter para otra línea.
+    send: Enviar
+    you: Tú
+    conversation: Conversación
+    working: Estoy trabajando en tu solicitud…
+    reply_ready: Tu respuesta está lista.
+    retry: Intentar de nuevo
+    no_results: No encontré registros guardados que coincidan.
+    review_change: Revisa este cambio antes de aplicarlo.
+    more_context:
+      private_notes: Mostrar más notas privadas
+      vault_items: Mostrar más elementos protegidos
+    select_context: Incluir contexto privado
+    context_once: Selecciona hasta seis elementos de cada tipo solo para este mensaje.
+    unlock_context: Desbloquear contexto protegido
+    context_changed: El contexto de esta respuesta cambió. Pregunta de nuevo para usar la información disponible ahora.
+    decisions:
+      approve: Confirmar cambio
+      reject: Dejar como está
+    action_states:
+      running: Preparando el resultado
+      pending: Preparando
+      awaiting_approval: Esperando tu decisión
+      approved: Confirmado
+      succeeded: Listo
+      failed: No se pudo completar
+      rejected: Sin cambios
+    errors:
+      invalid_message: Escribe un mensaje de hasta 8.000 caracteres para continuar.
+      invalid_arguments: Falta un detalle o no es válido. Revisa tu selección e intenta de nuevo.
+      request_conflict: Esta solicitud cambió. Revisa la información actual e intenta de nuevo.
+      conversation_busy: Termina la solicitud actual antes de enviar otro mensaje.
+      context_unavailable: Esta relación o el contexto seleccionado ya no está disponible. Elige una persona o inicia otra conversación.
+      vault_locked: Desbloquea el contexto protegido antes de incluirlo en esta solicitud.
+      provider_unavailable: No pude terminar la respuesta. Los cambios completados aparecen abajo. Puedes intentar de nuevo sin duplicarlos.
+      execution_expired: Esta solicitud se interrumpió. Revisa los cambios completados e intenta de nuevo.
+      limit_reached: Esta solicitud necesita un siguiente paso más pequeño. Revisa lo completado y dime cómo continuar.
+      permission_denied: Esta acción necesita permiso. Revisa la configuración de automatización antes de continuar.
+    starters:
+      remember:
+        label: Recordar algo sobre alguien
+        prompt: "Recuerda que "
+      recall:
+        label: Recuperar un detalle de una conversación
+        prompt: "¿Qué tengo guardado sobre "
+      plan:
+        label: Empezar a planear una ocasión
+        prompt: "Ayúdame a planear "
+      follow_up:
+        label: Ver qué necesita seguimiento
+        prompt: ¿A qué debería dar seguimiento esta semana?
+    review_effect:
+      approve_high_impact_memory: Aprobar este recuerdo permite usarlo en sugerencias de mayor impacto. Revisa su exactitud antes de decidir.
+      review_extracted_memory: Aprobar este detalle extraído lo guarda como un recuerdo revisado. Comprueba el texto propuesto o corregido antes de decidir.
+    operations:
+      ideas:
+        search: Sugerencias
+        read: Sugerencia
+        alternative: Otro gesto
+        feedback: Opinión guardada
+        save: Gesto guardado para después
+        complete: Gesto completado
+        dismiss: Sugerencia descartada
+        remind: Recordatorio de esta sugerencia
+      plan_ideas:
+        generate: Sugerir pasos para este plan
+      approvals:
+        search: Revisiones pendientes
+        read: Detalles de la revisión
+        approve: Aprobar esta revisión del recuerdo
+        reject: Rechazar esta revisión del recuerdo
+        edit: Corregir y aprobar esta propuesta
+        defer: Revisar esto más adelante
+        dismiss: Descartar esta revisión
+      work:
+        read: Contexto profesional
+        update: Actualizar el contexto profesional
+      gifts:
+        search: Historial de regalos
+        read: Detalles del regalo
+        create: Registrar un regalo
+        update: Corregir este regalo
+        destroy: Eliminar este regalo
+        mark_given: Registrar la entrega del regalo
+      gift_ideas:
+        generate: Preparar ideas de regalos
+        alternative: Buscar otra idea de regalo
+        search: Ideas de regalos
+        read: Detalles de la idea de regalo
+        save: Guardar esta idea de regalo
+        dismiss: Descartar esta idea de regalo
+        mark_purchased: Registrar una compra que hiciste
+      gift_purchases:
+        read: Preparación de la compra del regalo
+        save: Guardar la preparación de la compra
+        add_option: Agregar una opción de compra
+        remove_option: Quitar esta opción de compra
+        add_task: Agregar una tarea de regalo al plan
+        remind: Programar un recordatorio del regalo
+      gift_boxes:
+        search: Cajas de regalos
+        read: Detalles de la caja de regalos
+        create: Crear una caja de regalos
+        update: Actualizar esta caja de regalos
+        destroy: Eliminar esta caja de regalos
+        add_item: Agregar un artículo a la caja
+        update_item: Actualizar este artículo
+        remove_item: Quitar este artículo
+        suggest_companions: Pequeños complementos para esta caja
+        remind: Programar un recordatorio de entrega de la caja
+      vendors:
+        search: Proveedores guardados
+        read: Detalles del proveedor
+        create: Guardar un proveedor
+        update: Corregir este proveedor
+        destroy: Eliminar este proveedor
+        attach: Añadir este proveedor al plan
+        detach: Quitar este proveedor del plan
+      shortlists:
+        search: Comparaciones de proveedores
+        read: Detalles de la comparación
+        create: Iniciar una comparación de proveedores
+      vendor_options:
+        create: Añadir una opción de proveedor
+        update: Actualizar esta opción
+        favorite: Marcar esta opción como favorita
+        select: Elegir esta opción
+        reject: Rechazar esta opción
+        restore: Restaurar esta opción
+        destroy: Quitar esta opción
+      quotes:
+        search: Cotizaciones registradas
+        read: Detalles de la cotización
+        create: Registrar una cotización
+        update: Actualizar esta cotización
+        destroy: Eliminar esta cotización
+      bookings:
+        search: Registros manuales de reservas
+        read: Detalles del registro de reserva
+        create: Registrar una reserva
+        update: Actualizar este registro de reserva
+        destroy: Eliminar este registro de reserva
+      backups:
+        generate: Preparar alternativas para el plan
+        search: Alternativas para el plan
+        read: Detalles de la alternativa
+        promote: Aplicar esta alternativa
+      touches:
+        prepare: Lista de detalles personales
+        search: Detalles personales
+        create: Añadir un detalle personal
+        update: Corregir este detalle personal
+        complete: Completar este detalle personal
+        reopen: Reabrir este detalle personal
+        dismiss: Descartar este detalle personal
+        move_up: Subir este detalle personal
+        move_down: Bajar este detalle personal
+      drafts:
+        generate: Preparar un borrador de mensaje
+        read: Borradores de mensajes
+        update: Corregir este borrador
+        restore: Restaurar esta versión
+        destroy: Eliminar este borrador
+      briefings:
+        generate: Preparar un resumen de la relación
+        search: Resúmenes de la relación
+        read: Detalles del resumen
+        save: Guardar este resumen
+        dismiss: Descartar este resumen
+      priorities:
+        search: Tus seguimientos
+        dismiss: Ocultar esta sugerencia
+        snooze: Volver a mostrar mañana
+      people:
+        clarify: Elige a una persona
+        search: Personas encontradas
+        read: Detalles de la relación
+        create: Agregar una persona
+        update: Actualizar los detalles
+        archive: Archivar esta relación
+      memories:
+        propose: Posible recuerdo
+        search: Recuerdos guardados
+        read: Detalles del recuerdo
+        create: Guardar este recuerdo
+        update: Corregir este recuerdo
+        review: Confirmar este recuerdo
+        destroy: Eliminar este recuerdo
+      recaps:
+        search: Resúmenes de conversaciones
+        read: Detalles del resumen
+        create: Guardar un resumen
+        update: Corregir este resumen
+        destroy: Eliminar este resumen
+        retry_extraction: Reintentar la extracción de recuerdos
+      moods:
+        search: Notas de ánimo
+        read: Detalles de la observación
+        create: Guardar una observación
+        update: Corregir esta observación
+        destroy: Eliminar esta observación
+      interactions:
+        search: Interacciones
+        read: Detalles de la interacción
+        create: Guardar una interacción
+        update: Corregir esta interacción
+        destroy: Eliminar esta interacción
+      timeline:
+        search: Historia de la relación
+        read: Detalle de la historia
+        create: Añadir a la historia
+        update: Corregir este detalle
+        destroy: Eliminar este detalle
+      commitments:
+        search: Compromisos y promesas
+        read: Detalles del compromiso
+        create: Guardar un compromiso
+        update: Actualizar este compromiso
+        destroy: Eliminar este compromiso
+        complete: Completar este compromiso
+        cancel: Cancelar este compromiso
+        reopen: Reabrir este compromiso
+      desires:
+        search: Deseos y metas
+        read: Detalles del deseo o la meta
+        create: Guardar un deseo o meta
+        update: Actualizar este deseo o meta
+        destroy: Eliminar este deseo o meta
+        fulfill: Registrar un deseo o meta cumplido
+      dates:
+        search: Fechas importantes
+        read: Detalles de la fecha
+        create: Guardar una fecha importante
+        update: Actualizar esta fecha
+        destroy: Eliminar esta fecha
+      preferences:
+        search: Preferencias
+        read: Detalles de la preferencia
+        create: Guardar una preferencia
+        update: Corregir esta preferencia
+        destroy: Eliminar esta preferencia
+      notes:
+        search: Notas de la relación
+        read: Detalles de la nota
+        create: Guardar una nota
+        update: Corregir esta nota
+        destroy: Eliminar esta nota
+      cadence:
+        read: Ritmo de contacto
+        save: Guardar el ritmo de contacto
+      plans:
+        search: Planes de eventos
+        read: Detalles del plan
+        create: Empezar un plan
+        update: Actualizar este plan
+        complete: Completar este plan
+        reopen: Reabrir este plan
+        archive: Archivar este plan
+      tasks:
+        search: Tareas del plan
+        read: Detalles de la tarea
+        create: Añadir una tarea
+        update: Actualizar esta tarea
+        destroy: Eliminar esta tarea
+        complete: Completar esta tarea
+        reopen: Reabrir esta tarea
+      reminders:
+        search: Recordatorios
+        read: Detalles del recordatorio
+        create: Crear un recordatorio
+        update: Actualizar este recordatorio
+        snooze: Posponer este recordatorio
+        complete: Completar este recordatorio
+        destroy: Eliminar este recordatorio
+      proposals:
+        search: Recuerdos por revisar
+        review: Revisar este recuerdo propuesto

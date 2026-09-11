@@ -48,6 +48,16 @@ module RelationshipBriefings
     end
 
     def generate(interaction_context:, sources:, locale: I18n.locale)
+      unless Ai::Configuration.provider == "openai"
+        output = Ai::TextGeneration.call(model:, instructions: instructions(locale:),
+          input: JSON.generate(interaction_context:, sources: sources.map(&:to_h)), output_token_limit: 1_800,
+          schema: { name: "relationship_briefing", schema: SCHEMA })
+        sections = output.fetch("sections")
+        raise TypeError unless sections.is_a?(Array)
+
+        return sections
+      end
+
       raise GenerationError, "Relationship briefings are not configured" if api_key.blank?
 
       response = transport.call(build_request(interaction_context:, sources:, locale:))
@@ -60,6 +70,8 @@ module RelationshipBriefings
       raise GenerationError, "Relationship briefing response was invalid" unless sections.is_a?(Array)
 
       sections
+    rescue Ai::GenerationError
+      raise GenerationError, "Relationship briefing provider was unavailable"
     rescue JSON::ParserError, KeyError, TypeError
       raise GenerationError, "Relationship briefing response was invalid"
     end
@@ -69,6 +81,8 @@ module RelationshipBriefings
     end
 
     def self.default_model
+      return ENV["CARECIERGE_RELATIONSHIP_BRIEFING_MODEL"].presence || Ai::Configuration.model unless Ai::Configuration.provider == "openai"
+
       Rails.application.credentials.dig(:openai, :relationship_briefing_model).presence ||
         ENV.fetch("CARECIERGE_RELATIONSHIP_BRIEFING_MODEL", DEFAULT_MODEL)
     end

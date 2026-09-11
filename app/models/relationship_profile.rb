@@ -156,6 +156,7 @@ class RelationshipProfile < ApplicationRecord
   before_validation :normalize_profile_attributes
   before_destroy :remove_automation_permissions_with_audit, prepend: true
   before_destroy :erase_imported_contact_snapshots, prepend: true
+  around_destroy :erase_concierge_history, prepend: true
   after_save :destroy_marked_relationship_assignments
 
   validates :first_name, presence: true
@@ -422,6 +423,13 @@ class RelationshipProfile < ApplicationRecord
 
   def erase_imported_contact_snapshots
     imported_contacts.update_all(relationship_profile_id: nil, applied_data: nil, previous_data: nil, decision: "pending")
+  end
+
+  def erase_concierge_history
+    user.with_lock("FOR NO KEY UPDATE") do
+      Concierge::EraseRelationship.call(profile: self)
+      yield
+    end
   end
 
   def remove_automation_permissions_with_audit
